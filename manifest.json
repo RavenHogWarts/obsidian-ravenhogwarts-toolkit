@@ -1,9 +1,9 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "obsidian-ravenhogwarts-toolkit",
+	"name": "RavenHogwarts's Toolkit",
 	"version": "1.0.0",
 	"minAppVersion": "1.6.7",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
+	"description": "A personal toolkit plugin that integrates various Obsidian utilities, designed to enhance personal note-taking experience.",
 	"author": "RavenHogWarts",
 	"authorUrl": "https://github.com/RavenHogWarts",
 	"fundingUrl": {
