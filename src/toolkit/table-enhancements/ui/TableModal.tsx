@@ -21,9 +21,21 @@ const TableModal: FC = () => {
     const [gridData, setGridData] = useState<ITableGridData[]>([]);
     const [columnDefs, setColumnDefs] = useState<ColDef[]>([]);
     const [showCalculation, setShowCalculation] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
 
     // 获取当前表格
     const currentTable = editedTables[selectedTableIndex];
+
+    // 处理开始编辑
+    const handleStartEdit = useCallback(() => {
+        setIsEditing(true);
+    }, []);
+
+    // 处理取消编辑
+    const handleCancelEdit = useCallback(() => {
+        setIsEditing(false);
+        setEditedTables(tables); // 重置为原始数据
+    }, [tables]);
 
     // 更新表格数据和列定义
     useEffect(() => {
@@ -120,6 +132,7 @@ const TableModal: FC = () => {
         try {
             if (onSave) {
                 await onSave(editedTables);
+                setIsEditing(false); // 保存成功后退出编辑模式
             }
         } catch (error) {
             logger?.error('Error saving tables:', error);
@@ -136,54 +149,81 @@ const TableModal: FC = () => {
         <div className="tableEnhancements-modal">
             {editedTables.length > 0 && (
                 <>
-                    <div className="tableEnhancements-modal-nav">
-                        <select 
-                            value={selectedTableIndex}
-                            onChange={(e) => handleTableChange(Number(e.target.value))}
-                        >
-                            {editedTables.map((table, index) => (
-                                <option key={index} value={index}>
-                                    Table {index + 1} {table.referenceId ? `：${table.referenceId}` : ''}
-                                </option>
-                            ))}
-                        </select>
-                        <button 
-                            className="mod-cta"
-                            onClick={toggleCalculation}
-                            style={{ marginLeft: '8px' }}
-                        >
-                            {showCalculation ? 'Hide Calculator' : 'Show Calculator'}
-                        </button>
-                        <button 
-                            className="mod-cta"
-                            onClick={handleSave}
-                            style={{ marginLeft: '8px' }}
-                        >
-                            Save Changes
-                        </button>
+                    <div className="tableEnhancements-header">
+                        <div className="tableEnhancements-header-left">
+                            <select 
+                                value={selectedTableIndex}
+                                onChange={(e) => handleTableChange(Number(e.target.value))}
+                                className="tableEnhancements-select"
+                            >
+                                {editedTables.map((table, index) => (
+                                    <option key={index} value={index}>
+                                        Table {index + 1} {table.referenceId ? `：${table.referenceId}` : ''}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="tableEnhancements-header-right">
+                            <button 
+                                className={`tableEnhancements-btn ${showCalculation ? 'active' : ''}`}
+                                onClick={toggleCalculation}
+                            >
+                                {showCalculation ? 'Hide Calculator' : 'Show Calculator'}
+                            </button>
+                            {!isEditing ? (
+                                <button 
+                                    className="tableEnhancements-btn primary"
+                                    onClick={handleStartEdit}
+                                >
+                                    Edit Table
+                                </button>
+                            ) : (
+                                <>
+                                    <button 
+                                        className="tableEnhancements-btn primary"
+                                        onClick={handleSave}
+                                    >
+                                        Save Changes
+                                    </button>
+                                    <button 
+                                        className="tableEnhancements-btn secondary"
+                                        onClick={handleCancelEdit}
+                                    >
+                                        Cancel
+                                    </button>
+                                </>
+                            )}
+
+                        </div>
                     </div>
 
                     <div className="tableEnhancements-modal-content">
-                        {currentTable ? (
-                            <TableGrid
-                                rowData={gridData}
-                                columnDefs={columnDefs}
-                                onCellValueChanged={handleCellValueChanged}
-                            />
-                        ) : (
-                            <div className="tableEnhancements-no-data">
-                                No table data available
-                            </div>
-                        )}
+                        <div className="tableEnhancements-grid-container">
+                            {currentTable ? (
+                                <TableGrid
+                                    rowData={gridData}
+                                    columnDefs={columnDefs}
+                                    onCellValueChanged={handleCellValueChanged}
+                                    isEditing={isEditing}
+                                />
+                            ) : (
+                                <div className="tableEnhancements-no-data">
+                                    No table data available
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {showCalculation && currentTable && manager && (
-                        <TableCalculation
-                            table={currentTable}
-                            manager={manager}
-                            onCalculate={handleCalculate}
-                            logger={logger}
-                        />
+                        <div className="tableEnhancements-calculator">
+                            <TableCalculation
+                                table={currentTable}
+                                manager={manager}
+                                onCalculate={handleCalculate}
+                                logger={logger}
+                            />
+                        </div>
                     )}
                 </>
             )}

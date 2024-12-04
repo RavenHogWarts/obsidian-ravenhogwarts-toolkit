@@ -282,7 +282,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
     /**
      * 保存表格数据
      */
-    private async saveTables(updatedTables: IMarkdownTable[]): Promise<void> {
+    public async saveTables(updatedTables: IMarkdownTable[]): Promise<void> {
         try {
             const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
             if (!activeView?.file) {
@@ -295,6 +295,8 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
 
             // 更新每个表格
             let offset = 0; // 用于追踪由于插入空行导致的行号偏移
+            const processedTables: IMarkdownTable[] = [];
+
             for (let i = 0; i < updatedTables.length; i++) {
                 const table = updatedTables[i];
                 const originalTable = this.tables[i];
@@ -308,11 +310,26 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
                 const startLine = originalTable.position.startLine + offset;
                 const endLine = originalTable.position.endLine + offset;
 
-                // 检查表格是否被修改
-                const isModified = JSON.stringify(originalTable.cells) !== JSON.stringify(table.cells);
+                // 检查表格是否需要生成引用ID
+                let needsId = false;
+
+                // 1. 检查单元格值是否被修改
+                const cellsModified = JSON.stringify(originalTable.cells) !== JSON.stringify(table.cells);
+                if (cellsModified) {
+                    needsId = true;
+                    this.logger.debug('Table cells modified');
+                }
+
+                // 2. 检查是否有数学操作
+                const hasCalculations = this.savedCalculations.has(table.referenceId || '') || 
+                                     this.savedCalculations.has(originalTable.referenceId || '');
+                if (hasCalculations) {
+                    needsId = true;
+                    this.logger.debug('Table has calculations');
+                }
                 
                 // 如果表格被修改且没有ID，则生成新ID
-                if (isModified && !table.referenceId) {
+                if (needsId && !table.referenceId) {
                     table.referenceId = this.uuidGenerator.generate();
                     this.logger.debug('Generated new ID for table:', table.referenceId);
                 }
@@ -373,6 +390,43 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
             this.logger.debug('Tables saved successfully');
         } catch (error) {
             this.logger.error('Save tables error:', error);
+            throw error;
+        }
+    }
+
+    public async saveCalculatedTable(table: IMarkdownTable): Promise<string | undefined> {
+        try {
+            // 生成新的引用ID
+            const referenceId = this.uuidGenerator.generate();
+            
+            // 创建带有引用ID的新表格
+            const tableWithId = {
+                ...table,
+                referenceId
+            };
+
+            // 找到对应的原始表格
+            const originalTableIndex = this.tables.findIndex(t => 
+                t.position && table.position &&
+                t.position.startLine === table.position.startLine &&
+                t.position.endLine === table.position.endLine
+            );
+
+            if (originalTableIndex === -1) {
+                throw new Error('Original table not found');
+            }
+            
+            // 创建更新表格数组，保持其他表格不变
+            const updatedTables = [...this.tables];
+            updatedTables[originalTableIndex] = tableWithId;
+
+            // 保存表格到文档
+            await this.saveTables(updatedTables);
+            
+            // 返回引用ID
+            return referenceId;
+        } catch (error) {
+            this.logger.error('Save calculated table error:', error);
             throw error;
         }
     }

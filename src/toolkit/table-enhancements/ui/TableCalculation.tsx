@@ -5,6 +5,7 @@ import { Logger } from "@/src/util/log";
 import { TableCalculationService } from "../services/TableCalculationService";
 import { TableEnhancementsManager } from "../manager/TableEnhancementsManager";
 import { getStandardTime } from "@/src/util/date";
+import { CirclePlay, CircleX, PencilLine, Play } from "lucide-react";
 
 interface TableCalculationProps {
     table: IMarkdownTable;
@@ -86,7 +87,7 @@ export const TableCalculation: FC<TableCalculationProps> = ({
     const executeCalculation = useCallback(async () => {
         try {
             if (!table.referenceId) {
-                throw new Error('Table reference ID not found');
+                table.referenceId = await manager.saveCalculatedTable(table);
             }
 
             const calculation: ISavedCalculation = {
@@ -123,92 +124,119 @@ export const TableCalculation: FC<TableCalculationProps> = ({
     }, [state, table, manager, onCalculate, logger, resetForm]);
 
     const renderCalculationForm = (isNewForm = false) => (
-        <div className="calculation-item calculation-form">
-            <div className="calculation-controls">
-                <select
-                    value={state.selectedColumn}
-                    onChange={(e) => setState(prev => ({ ...prev, selectedColumn: e.target.value }))}
-                >
-                    {table.headers.map(header => (
-                        <option key={header.field} value={header.field}>
-                            {header.headerName || header.content}
-                        </option>
-                    ))}
-                </select>
+        <div className="tableEnhancements-calculation-form">
+            <div className="tableEnhancements-calculation-form-row">
+                {/* 计算类型选择 */}
+                <div className="tableEnhancements-form-group">
+                    <label>Type</label>
+                    <select
+                        value={state.calculationType}
+                        onChange={(e) => setState(prev => ({ ...prev, calculationType: e.target.value as CalculationType }))}
+                        className="tableEnhancements-select"
+                    >
+                        <option value="">Select Type</option>
+                        {Object.values(CalculationType).map(type => (
+                            <option key={type} value={type}>
+                                {type.toUpperCase()}
+                            </option>
+                        ))}
+                    </select>
+                </div>
 
-                <select
-                    value={state.calculationType}
-                    onChange={(e) => setState(prev => ({ ...prev, calculationType: e.target.value as CalculationType }))}
-                >
-                    {Object.values(CalculationType).map(type => (
-                        <option key={type} value={type}>
-                            {type.toUpperCase()}
-                        </option>
-                    ))}
-                </select>
+                {/* 列选择 */}
+                <div className="tableEnhancements-form-group">
+                    <label>Column</label>
+                    <select
+                        value={state.selectedColumn}
+                        onChange={(e) => setState(prev => ({ ...prev, selectedColumn: e.target.value }))}
+                        className="tableEnhancements-select"
+                    >
+                        <option value="">Select Column</option>
+                        {table.headers.map(header => (
+                            <option key={header.field} value={header.field}>
+                                {header.headerName || header.content}
+                            </option>
+                        ))}
+                    </select>
+                </div>
 
-                <select
-                    value={state.outputType}
-                    onChange={(e) => setState(prev => ({ ...prev, outputType: e.target.value as OutputType }))}
-                >
-                    {Object.values(OutputType).map(type => (
-                        <option key={type} value={type}>
-                            {type.toUpperCase()}
-                        </option>
-                    ))}
-                </select>
+                {/* 输出类型选择 */}
+                <div className="tableEnhancements-form-group">
+                    <label>Output</label>
+                    <select
+                        value={state.outputType}
+                        onChange={(e) => setState(prev => ({ ...prev, outputType: e.target.value as OutputType }))}
+                        className="tableEnhancements-select"
+                    >
+                        <option value="">Select Output</option>
+                        {Object.values(OutputType).map(type => (
+                            <option key={type} value={type}>
+                                {type.toUpperCase()}
+                            </option>
+                        ))}
+                    </select>
+                </div>
 
+                {/* Frontmatter Key 输入 */}
                 {state.outputType === OutputType.FRONTMATTER && (
-                    <input
-                        type="text"
-                        value={state.frontmatterKey}
-                        onChange={(e) => setState(prev => ({ ...prev, frontmatterKey: e.target.value }))}
-                        placeholder="Frontmatter key"
-                    />
+                    <div className="tableEnhancements-form-group">
+                        <label>Frontmatter Key</label>
+                        <input
+                            type="text"
+                            value={state.frontmatterKey}
+                            onChange={(e) => setState(prev => ({ ...prev, frontmatterKey: e.target.value }))}
+                            placeholder="Frontmatter key"
+                            className="tableEnhancements-input"
+                        />
+                    </div>
                 )}
+            </div>
 
-                <div className="calculation-actions">
+            <div className="tableEnhancements-calculation-form-actions">
                     <button
-                        className="mod-cta"
+                        className="tableEnhancements-btn primary"
                         onClick={executeCalculation}
                         disabled={!state.selectedColumn || (state.outputType === OutputType.FRONTMATTER && !state.frontmatterKey)}
                     >
                         {state.editingIndex !== null ? 'Update' : 'Save'}
                     </button>
-                    <button className="mod-warning" onClick={resetForm}>
+                    <button 
+                        className="tableEnhancements-btn secondary" 
+                        onClick={resetForm}
+                    >
                         Cancel
                     </button>
                 </div>
-            </div>
         </div>
     );
 
     return (
-        <div className="tableCalculation">
-            <div className="tableCalculation-list">
-                <div className="tableCalculation-header">
-                    <h3>Table Calculations</h3>
-                    <button 
-                        className="mod-cta" 
-                        onClick={() => setState(prev => ({ ...prev, isAdding: true }))}
-                        disabled={state.isAdding || state.editingIndex !== null}
-                    >
-                        + Add Calculation
-                    </button>
-                </div>
+        <div className="tableEnhancements-calculation">
+            <div className="tableEnhancements-calculation-header">
+                <h3>Table Calculations</h3>
+                <button 
+                    className="tableEnhancements-btn primary" 
+                    onClick={() => setState(prev => ({ ...prev, isAdding: true }))}
+                    disabled={state.isAdding || state.editingIndex !== null}
+                >
+                    + Add Calculation
+                </button>
+            </div>
 
-                {/* 新增/编辑表单或已保存的计算列表 */}
+            <div className="tableEnhancements-calculation-list">
+                {/* 新增/编辑表单 */}
                 {(state.isAdding || state.editingIndex !== null) && renderCalculationForm()}
                 
+                {/* 已保存的计算列表 */}
                 {savedCalculations.map((calc, index) => (
                     state.editingIndex !== index && (
-                        <div key={index} className="calculation-item">
-                            <div className="calculation-info">
+                        <div key={index} className="tableEnhancements-calculation-item">
+                            <div className="tableEnhancements-calculation-info">
                                 <span className="calculation-type">
                                     {calc.type.toUpperCase()}
                                 </span>
                                 <span className="calculation-column">
-                                    on {calc.targetColumns.join(', ')}
+                                    {calc.targetColumns.join(', ')}
                                 </span>
                                 <span className="calculation-output">
                                     → {calc.outputType.toUpperCase()}
@@ -224,20 +252,35 @@ export const TableCalculation: FC<TableCalculationProps> = ({
                                     </span>
                                 )}
                             </div>
-                            <div className="calculation-actions">
+                            <div className="tableEnhancements-calculation-actions">
+                                {/* 编辑按钮 */}
                                 <button
-                                    className="mod-cta"
+                                    className="tableEnhancements-btn icon"
                                     onClick={() => startEditing(index)}
                                     disabled={state.isAdding || state.editingIndex !== null}
+                                    aria-label="Edit calculation"
                                 >
-                                    Edit
+                                    <PencilLine />
                                 </button>
+
+                                {/* 删除按钮 */}
                                 <button
-                                    className="mod-warning"
+                                    className="tableEnhancements-btn icon"
                                     onClick={() => manager.deleteCalculation(table.referenceId!, index)}
                                     disabled={state.isAdding || state.editingIndex !== null}
+                                    aria-label="Remove calculation"
                                 >
-                                    Delete
+                                    <CircleX />
+                                </button>
+
+                                {/* 执行按钮 */}
+                                <button
+                                    className="tableEnhancements-btn icon"
+                                    onClick={() => manager.executeCalculation(table, calc)}
+                                    disabled={state.isAdding || state.editingIndex !== null}
+                                    aria-label="Execute calculation"
+                                >
+                                    <CirclePlay />
                                 </button>
                             </div>
                         </div>

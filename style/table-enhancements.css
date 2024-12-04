@@ -1,91 +1,316 @@
+/* Table Enhancements Modal */
 .tableEnhancements-modal {
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
-    padding: 10px;
+    padding: 16px;
+    gap: 16px;
+    background-color: var(--background-primary);
 }
 
-.tableEnhancements-modal-nav {
-    margin-bottom: 10px;
-}
-
-.tableEnhancements-modal-nav select {
-    width: 200px;
-    padding: 5px;
-}
-
-.tableEnhancements-modal-content {
-    flex: 1;
-    min-height: 400px;
-}
-
-/* AG Grid Theme Customization */
-.ag-theme-balham {
-    --ag-background-color: var(--background-primary);
-    --ag-header-background-color: var(--background-modifier-hover);
-    --ag-odd-row-background-color: var(--background-primary);
-    --ag-header-foreground-color: var(--text-normal);
-    --ag-foreground-color: var(--text-normal);
-    --ag-border-color: var(--background-modifier-border);
-    font-family: inherit;
-}
-
-.tableCalculation {
-    padding: 10px;
-}
-
-.tableCalculation-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.calculation-item {
+/* Header */
+.tableEnhancements-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 8px;
-    border-bottom: 1px solid var(--background-modifier-border);
+    background-color: var(--background-secondary);
+    border-radius: 8px;
 }
 
-.calculation-form {
-    background-color: var(--background-modifier-form-field);
-}
-
-.calculation-controls {
+.tableEnhancements-header-left,
+.tableEnhancements-header-right {
     display: flex;
-    gap: 8px;
     align-items: center;
+    gap: 8px;
+}
+
+/* Common Components */
+.tableEnhancements-select {
+    min-width: 120px;
+    height: 32px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--background-modifier-border);
+    background-color: var(--background-primary);
+    color: var(--text-normal);
+}
+
+.tableEnhancements-input {
+    height: 32px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--background-modifier-border);
+    background-color: var(--background-primary);
+    color: var(--text-normal);
+}
+
+.tableEnhancements-btn {
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 4px;
+    border: 1px solid var(--background-modifier-border);
+    background-color: var(--background-primary);
+    color: var(--text-normal);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.tableEnhancements-btn:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.tableEnhancements-btn.primary {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+    border: none;
+}
+
+.tableEnhancements-btn.primary:hover {
+    background-color: var(--interactive-accent-hover);
+}
+
+.tableEnhancements-btn.secondary {
+    background-color: var(--background-secondary);
+}
+
+.tableEnhancements-btn.active {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.tableEnhancements-btn.icon {
+    padding: 4px;
+    height: 24px;
+    width: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Grid */
+.tableEnhancements-grid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
+    background-color: var(--background-primary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tableEnhancements-grid-wrapper {
     flex: 1;
 }
 
-.calculation-controls select,
-.calculation-controls input {
-    height: 28px;
-    padding: 4px 8px;
-    border-radius: 4px;
+/* Calculator */
+.tableEnhancements-calculation {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: var(--background-primary);
+    border-radius: 8px;
+    height: 100%;
 }
 
-.calculation-actions {
+.tableEnhancements-calculation-header {
     display: flex;
-    gap: 4px;
-}
-
-.calculation-info {
-    display: flex;
-    gap: 8px;
+    justify-content: space-between;
     align-items: center;
+    margin-bottom: 1rem;
 }
 
-.calculation-type,
-.calculation-column,
-.calculation-output,
-.calculation-frontmatter,
-.calculation-result {
-    padding: 2px 6px;
+.tableEnhancements-calculation-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text-normal);
+}
+
+.tableEnhancements-calculation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.tableEnhancements-calculation-form {
+    background-color: var(--background-secondary);
+    padding: 1rem;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: fit-content;
+    min-height: 200px;
+}
+
+.tableEnhancements-calculation-form-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.tableEnhancements-form-group {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.tableEnhancements-form-group label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.tableEnhancements-select,
+.tableEnhancements-input {
+    padding: 0.5rem;
+    border: 1px solid var(--background-modifier-border);
     border-radius: 4px;
-    background-color: var(--background-modifier-form-field);
-    font-size: 0.9em;
+    background-color: var(--background-primary);
+    color: var(--text-normal);
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+.tableEnhancements-select:focus,
+.tableEnhancements-input:focus {
+    outline: none;
+    border-color: var(--interactive-accent);
+    box-shadow: 0 0 0 2px var(--background-modifier-border-hover);
+}
+
+.tableEnhancements-calculation-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.tableEnhancements-calculation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background-color: var(--background-secondary);
+    border-radius: 6px;
+    border: 1px solid var(--background-modifier-border);
+    min-height: 60px;
+}
+
+.tableEnhancements-calculation-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tableEnhancements-calculation-info span {
+    font-size: 0.9rem;
+}
+
+.calculation-type {
+    font-weight: 600;
+    color: var(--text-accent);
+}
+
+.calculation-column {
+    color: var(--text-muted);
+}
+
+.calculation-output {
+    color: var(--text-normal);
+}
+
+.calculation-frontmatter {
+    color: var(--text-faint);
+    font-style: italic;
+}
+
+.calculation-result {
+    font-weight: 500;
+    color: var(--text-success);
+}
+
+.tableEnhancements-calculation-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Button Styles */
+.tableEnhancements-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.tableEnhancements-btn.primary {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.tableEnhancements-btn.primary:hover {
+    background-color: var(--interactive-accent-hover);
+}
+
+.tableEnhancements-btn.secondary {
+    background-color: var(--background-modifier-border);
+    color: var(--text-muted);
+}
+
+.tableEnhancements-btn.secondary:hover {
+    background-color: var(--background-modifier-border-hover);
+    color: var(--text-normal);
+}
+
+.tableEnhancements-btn.icon {
+    padding: 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    color: var(--text-muted);
+}
+
+.tableEnhancements-btn.icon:hover {
+    background-color: var(--background-modifier-border);
+    color: var(--text-normal);
+}
+
+.tableEnhancements-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+    .tableEnhancements-calculation-form-row {
+        flex-direction: column;
+    }
+
+    .tableEnhancements-form-group {
+        min-width: 100%;
+    }
+
+    .tableEnhancements-calculation-item {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .tableEnhancements-calculation-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
 }

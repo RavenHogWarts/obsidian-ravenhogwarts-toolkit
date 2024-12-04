@@ -7,6 +7,15 @@ export class TableCalculationService {
     constructor(private logger: Logger) {}
 
     /**
+     * 处理小数位数
+     * @param value 需要处理的数值
+     * @param decimals 保留的小数位数，默认为2
+     */
+    private formatNumber(value: number, decimals = 2): number {
+        return Number(Math.round(Number(value + 'e' + decimals)) + 'e-' + decimals);
+    }
+
+    /**
      * 执行计算操作
      */
     public calculate(table: IMarkdownTable, config: ICalculationConfig): ICalculationResult {
@@ -22,10 +31,6 @@ export class TableCalculationService {
             const num = parseFloat(content);
             return isNaN(num) ? null : num;
         }).filter(v => v !== null) as number[];
-
-        if (values.length === 0) {
-            throw new Error('No valid numeric values found in column');
-        }
 
         let result: number;
         let formula: string;
@@ -101,7 +106,7 @@ export class TableCalculationService {
         }
 
         return {
-            value: result,
+            value: this.formatNumber(result),
             formula: formula,
             type: type,
             targetColumns: targetColumns
@@ -112,14 +117,14 @@ export class TableCalculationService {
      * 计算总和
      */
     private sum(values: number[]): number {
-        return values.reduce((acc, val) => acc + val, 0);
+        return this.formatNumber(values.reduce((acc, val) => acc + val, 0));
     }
 
     /**
      * 计算平均值
      */
     private average(values: number[]): number {
-        return this.sum(values) / values.length;
+        return this.formatNumber(this.sum(values) / values.length);
     }
 
     /**
@@ -128,9 +133,11 @@ export class TableCalculationService {
     private median(values: number[]): number {
         const sorted = [...values].sort((a, b) => a - b);
         const mid = Math.floor(sorted.length / 2);
-        return sorted.length % 2 === 0
-            ? (sorted[mid - 1] + sorted[mid]) / 2
-            : sorted[mid];
+        return this.formatNumber(
+            sorted.length % 2 === 0
+                ? (sorted[mid - 1] + sorted[mid]) / 2
+                : sorted[mid]
+        );
     }
 
     /**
@@ -150,7 +157,7 @@ export class TableCalculationService {
             }
         }
 
-        return mode;
+        return this.formatNumber(mode);
     }
 
     /**
@@ -159,14 +166,14 @@ export class TableCalculationService {
     private variance(values: number[]): number {
         const avg = this.average(values);
         const squareDiffs = values.map(value => Math.pow(value - avg, 2));
-        return this.average(squareDiffs);
+        return this.formatNumber(this.average(squareDiffs));
     }
 
     /**
      * 计算标准差
      */
     private standardDeviation(values: number[]): number {
-        return Math.sqrt(this.variance(values));
+        return this.formatNumber(Math.sqrt(this.variance(values)));
     }
 
     /**
@@ -174,6 +181,6 @@ export class TableCalculationService {
      */
     private percentage(values: number[]): number {
         const total = this.sum(values);
-        return (total / values.length / total) * 100;
+        return this.formatNumber((total / values.length / total) * 100);
     }
 }

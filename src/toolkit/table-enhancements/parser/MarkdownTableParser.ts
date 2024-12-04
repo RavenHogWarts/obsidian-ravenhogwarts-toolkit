@@ -155,11 +155,23 @@ export class MarkdownTableParser implements ITableParser {
      * 判断是否为表格头部行
      */
     private isTableHeader(line: string, config: IParserConfig): boolean {
+        if (!line) return false;
         const delimiter = config.delimiter || '|';
         const trimmed = line.trim();
-        return trimmed.startsWith(delimiter) && 
-               trimmed.endsWith(delimiter) && 
-               trimmed.includes(delimiter);
+
+        // 必须以分隔符开始和结束
+        if (!trimmed.startsWith(delimiter) || !trimmed.endsWith(delimiter)) {
+            return false;
+        }
+
+        // 分割单元格并移除首尾空单元格
+        const cells = trimmed
+            .split(delimiter)
+            .slice(1, -1)
+            .map(cell => cell.trim());
+
+        // 至少要有一个单元格，且不能全是分隔符
+        return cells.length > 0 && !cells.every(cell => cell === '');
     }
 
     /**
@@ -194,10 +206,11 @@ export class MarkdownTableParser implements ITableParser {
      * 解析表格头部
      */
     private parseHeaders(line: string): string[] {
+        const delimiter = this.config.delimiter || '|';
         return line
-            .split(this.config.delimiter || '|')
-            .map(cell => cell.trim())
-            .filter(cell => cell !== '');
+            .split(delimiter)
+            .slice(1, -1)  // 移除首尾空单元格
+            .map(cell => cell.trim());
     }
 
     /**
@@ -219,9 +232,10 @@ export class MarkdownTableParser implements ITableParser {
      * 解析数据行
      */
     private parseRow(line: string): string[] {
+        const delimiter = this.config.delimiter || '|';
         return line
-            .split(this.config.delimiter || '|')
-            .map(cell => cell.trim())
-            .filter(cell => cell !== '');
+            .split(delimiter)
+            .slice(1, -1)  // 移除首尾空单元格
+            .map(cell => cell.trim());
     }
 }
