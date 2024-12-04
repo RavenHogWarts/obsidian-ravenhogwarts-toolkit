@@ -1,5 +1,4 @@
 import { ColDef } from 'ag-grid-community';
-import { ICalculatedColumnConfig } from './operations';
 
 /** 表格单元格对齐方式 */
 export type TableCellAlignment = 'left' | 'center' | 'right';
@@ -70,24 +69,12 @@ export interface IMarkdownTable {
     position: ITablePosition;
     /** 表格引用ID */
     referenceId?: string;
-    /** 表格描述 */
-    description?: string;
-    /** 创建时间 */
-    createdAt?: string;
-    /** 最后修改时间 */
-    updatedAt?: string;
 }
 
 /** AG Grid数据行接口 */
 export interface ITableGridData {
+    /** 行索引 */
+    __rowIndex?: number;
     /** 动态字段，key为列field */
-    [key: string]: string | number | boolean | Date | null;
-}
-
-/** AG Grid列定义工厂接口 */
-export interface IColumnDefinitionFactory {
-    /** 创建基础列定义 */
-    createBaseColumnDef(header: ITableHeader): ColDef;
-    /** 创建计算列定义 */
-    createCalculatedColumnDef(config: ICalculatedColumnConfig): ColDef;
+    [key: string]: string | number | boolean | Date | null | undefined;
 }

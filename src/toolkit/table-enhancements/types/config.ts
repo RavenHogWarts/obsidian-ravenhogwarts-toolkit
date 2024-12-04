@@ -1,4 +1,4 @@
-import { ICalculatedColumnConfig } from './operations';
+import { ICalculationResult, ISavedCalculation } from './operations';
 
 /** 编辑配置接口 */
 export interface IEditConfig {
@@ -18,6 +18,14 @@ export interface IEditConfig {
             validator?: (value: any) => boolean;
         };
     };
+}
+
+/** 表格计算配置接口 */
+export interface ITableCalculationConfig {
+    /** 表格ID */
+    tableId: string;
+    /** 计算历史记录 */
+    calculations: ICalculationResult[];
 }
 
 /** 导出配置接口 */
@@ -58,25 +66,22 @@ export interface IFrontMatterConfig {
 
 /** 表格增强配置接口 */
 export interface ITableEnhancementsConfig {
-    /** 是否启用编辑 */
-    editable?: boolean;
-    /** 是否启用排序 */
-    sortable?: boolean;
-    /** 是否启用过滤 */
-    filterable?: boolean;
-    /** 是否启用列调整 */
-    resizable?: boolean;
-    /** 是否启用范围选择 */
-    rangeSelection?: boolean;
-    /** 主题设置 */
-    theme?: ITableThemeConfig;
-    /** 计算列配置 */
-    calculatedColumns?: ICalculatedColumnConfig[];
-    /** 编辑配置 */
-    edit?: IEditConfig;
-    /** 导出配置 */
-    export?: IExportConfig;
-    /** 前置数据配置 */
-    frontMatter?: IFrontMatterConfig;
+    /** 是否启用 */
+    enabled: boolean;
+    /** 是否自动计算 */
+    autoCalculate: boolean;
+    /** 默认对齐方式 */
+    defaultAlignment: 'left' | 'center' | 'right';
+    /** 是否保存公式 */
+    saveFormulas: boolean;
+}
+
+/** 表格增强数据接口 */
+export interface ITableEnhancementsData {
+    lastModified: string;
+    /** 保存的计算 */
+    savedCalculations: {
+        [tableId: string]: ISavedCalculation[];
+    };
 }
 
