@@ -1,11 +1,11 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { CalculationType, ICalculationConfig, ICalculationResult, ISavedCalculation, OutputType } from "../types/operations";
 import { IMarkdownTable, ITableHeader } from "../types/table";
 import { Logger } from "@/src/util/log";
 import { TableCalculationService } from "../services/TableCalculationService";
 import { TableEnhancementsManager } from "../manager/TableEnhancementsManager";
 import { getStandardTime } from "@/src/util/date";
-import { CirclePlay, CircleX, PencilLine, Play } from "lucide-react";
+import { CirclePlay, CircleX, PencilLine } from "lucide-react";
 
 interface TableCalculationProps {
     table: IMarkdownTable;
@@ -23,6 +23,103 @@ interface CalculationState {
     isAdding: boolean;
 }
 
+// 抽取表单选项为常量
+const CALCULATION_TYPE_OPTIONS = Object.values(CalculationType).map(type => ({
+    value: type,
+    label: type.toUpperCase()
+}));
+
+const OUTPUT_TYPE_OPTIONS = Object.values(OutputType).map(type => ({
+    value: type,
+    label: type.toUpperCase()
+}));
+
+// 抽取表单组件
+const CalculationFormSelect: FC<{
+    label: string;
+    value: string;
+    options: Array<{ value: string; label: string; }>;
+    onChange: (value: string) => void;
+    disabled?: boolean;
+}> = ({ label, value, options, onChange, disabled }) => (
+    <div className="tableEnhancements-form-group">
+        <label>{label}</label>
+        <select
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="tableEnhancements-select"
+            disabled={disabled}
+        >
+            <option value="">Select {label}</option>
+            {options.map(({ value, label }) => (
+                <option key={value} value={value}>
+                    {label}
+                </option>
+            ))}
+        </select>
+    </div>
+);
+
+// 抽取计算项组件
+const CalculationItem: FC<{
+    calc: ISavedCalculation;
+    index: number;
+    onEdit: (index: number) => void;
+    onDelete: (index: number) => void;
+    onExecute: (calc: ISavedCalculation) => void;
+    disabled: boolean;
+}> = ({ calc, index, onEdit, onDelete, onExecute, disabled }) => (
+    <div className="tableEnhancements-calculation-item">
+        <div className="tableEnhancements-calculation-info">
+            <span className="calculation-type">
+                {calc.type.toUpperCase()}
+            </span>
+            <span className="calculation-column">
+                {calc.targetColumns.join(', ')}
+            </span>
+            <span className="calculation-output">
+                → {calc.outputType.toUpperCase()}
+            </span>
+            {calc.frontmatterKey && (
+                <span className="calculation-frontmatter">
+                    ({calc.frontmatterKey})
+                </span>
+            )}
+            {calc.lastResult && (
+                <span className="calculation-result">
+                    = {calc.lastResult.value}
+                </span>
+            )}
+        </div>
+        <div className="tableEnhancements-calculation-actions">
+            <button
+                className="tableEnhancements-btn icon"
+                onClick={() => onEdit(index)}
+                disabled={disabled}
+                aria-label="Edit calculation"
+            >
+                <PencilLine />
+            </button>
+            <button
+                className="tableEnhancements-btn icon"
+                onClick={() => onDelete(index)}
+                disabled={disabled}
+                aria-label="Remove calculation"
+            >
+                <CircleX />
+            </button>
+            <button
+                className="tableEnhancements-btn icon"
+                onClick={() => onExecute(calc)}
+                disabled={disabled}
+                aria-label="Execute calculation"
+            >
+                <CirclePlay />
+            </button>
+        </div>
+    </div>
+);
+
 export const TableCalculation: FC<TableCalculationProps> = ({
     table,
     manager,
@@ -39,14 +136,22 @@ export const TableCalculation: FC<TableCalculationProps> = ({
         isAdding: false,
     });
     const [savedCalculations, setSavedCalculations] = useState<ISavedCalculation[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     // 初始化
     useEffect(() => {
         if (table.referenceId) {
-            const calculations = manager.getSavedCalculations(table.referenceId);
-            setSavedCalculations(calculations);
+            try {
+                const calculations = manager.getSavedCalculations(table.referenceId);
+                setSavedCalculations(calculations);
+                setError(null);
+            } catch (err) {
+                setError('Failed to load saved calculations');
+                logger.error('Error loading calculations:', err);
+            }
         }
-    }, [table.referenceId, manager]);
+    }, [table.referenceId, manager, logger]);
 
     // 初始化选择的列
     useEffect(() => {
@@ -56,7 +161,16 @@ export const TableCalculation: FC<TableCalculationProps> = ({
                 selectedColumn: table.headers[0].field
             }));
         }
-    }, [table.headers]);
+    }, [table.headers, state.selectedColumn]);
+
+    // 表头选项记忆化
+    const headerOptions = useMemo(() => 
+        table.headers.map(header => ({
+            value: header.field,
+            label: header.headerName || header.content
+        })),
+        [table.headers]
+    );
 
     // 重置表单状态
     const resetForm = useCallback(() => {
@@ -68,6 +182,7 @@ export const TableCalculation: FC<TableCalculationProps> = ({
             editingIndex: null,
             isAdding: false,
         });
+        setError(null);
     }, [table.headers]);
 
     // 开始编辑计算
@@ -81,10 +196,13 @@ export const TableCalculation: FC<TableCalculationProps> = ({
             editingIndex: index,
             isAdding: false,
         });
+        setError(null);
     }, [savedCalculations]);
 
     // 执行计算
     const executeCalculation = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
         try {
             if (!table.referenceId) {
                 table.referenceId = await manager.saveCalculatedTable(table);
@@ -99,121 +217,97 @@ export const TableCalculation: FC<TableCalculationProps> = ({
                 updatedAt: getStandardTime(),
             };
 
-            // 执行计算
             await manager.executeCalculation(table, calculation);
 
             if (state.editingIndex !== null) {
-                // 更新现有计算
                 await manager.updateCalculation(table.referenceId, state.editingIndex, calculation);
             } else {
-                // 添加新计算
                 await manager.addCalculation(table.referenceId, calculation);
             }
 
-            // 更新本地状态
             setSavedCalculations(manager.getSavedCalculations(table.referenceId));
-
-            // 重置表单状态
             resetForm();
-
-            // 通知父组件
             onCalculate(table);
         } catch (error) {
+            setError('Failed to execute calculation');
             logger.error('Error executing calculation:', error);
+        } finally {
+            setIsLoading(false);
         }
     }, [state, table, manager, onCalculate, logger, resetForm]);
 
-    const renderCalculationForm = (isNewForm = false) => (
-        <div className="tableEnhancements-calculation-form">
-            <div className="tableEnhancements-calculation-form-row">
-                {/* 计算类型选择 */}
-                <div className="tableEnhancements-form-group">
-                    <label>Type</label>
-                    <select
-                        value={state.calculationType}
-                        onChange={(e) => setState(prev => ({ ...prev, calculationType: e.target.value as CalculationType }))}
-                        className="tableEnhancements-select"
-                    >
-                        <option value="">Select Type</option>
-                        {Object.values(CalculationType).map(type => (
-                            <option key={type} value={type}>
-                                {type.toUpperCase()}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+    // 删除计算
+    const handleDelete = useCallback(async (index: number) => {
+        setIsLoading(true);
+        try {
+            // 先更新本地状态，实现即时反馈
+            const newCalculations = [...savedCalculations];
+            newCalculations.splice(index, 1);
+            setSavedCalculations(newCalculations);
+            
+            // 然后执行删除操作
+            await manager.deleteCalculation(table.referenceId, index);
+            setError(null);
+            
+            // 通知父组件更新
+            onCalculate(table);
+        } catch (err) {
+            // 如果删除失败，恢复原状态
+            setSavedCalculations(manager.getSavedCalculations(table.referenceId!));
+            setError('Failed to delete calculation');
+            logger.error('Error deleting calculation:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [table, manager, logger, onCalculate, savedCalculations]);
 
-                {/* 列选择 */}
-                <div className="tableEnhancements-form-group">
-                    <label>Column</label>
-                    <select
-                        value={state.selectedColumn}
-                        onChange={(e) => setState(prev => ({ ...prev, selectedColumn: e.target.value }))}
-                        className="tableEnhancements-select"
-                    >
-                        <option value="">Select Column</option>
-                        {table.headers.map(header => (
-                            <option key={header.field} value={header.field}>
-                                {header.headerName || header.content}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+    // 执行单个计算
+    const handleExecute = useCallback(async (calc: ISavedCalculation) => {
+        try {
+            await manager.executeCalculation(table, calc);
+            setSavedCalculations(manager.getSavedCalculations(table.referenceId!));
+            onCalculate(table);
+            setError(null);
+        } catch (err) {
+            setError('Failed to execute calculation');
+            logger.error('Error executing calculation:', err);
+        }
+    }, [table, manager, onCalculate, logger]);
 
-                {/* 输出类型选择 */}
-                <div className="tableEnhancements-form-group">
-                    <label>Output</label>
-                    <select
-                        value={state.outputType}
-                        onChange={(e) => setState(prev => ({ ...prev, outputType: e.target.value as OutputType }))}
-                        className="tableEnhancements-select"
-                    >
-                        <option value="">Select Output</option>
-                        {Object.values(OutputType).map(type => (
-                            <option key={type} value={type}>
-                                {type.toUpperCase()}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* Frontmatter Key 输入 */}
-                {state.outputType === OutputType.FRONTMATTER && (
-                    <div className="tableEnhancements-form-group">
-                        <label>Frontmatter Key</label>
-                        <input
-                            type="text"
-                            value={state.frontmatterKey}
-                            onChange={(e) => setState(prev => ({ ...prev, frontmatterKey: e.target.value }))}
-                            placeholder="Frontmatter key"
-                            className="tableEnhancements-input"
-                        />
-                    </div>
-                )}
-            </div>
-
-            <div className="tableEnhancements-calculation-form-actions">
-                    <button
-                        className="tableEnhancements-btn primary"
-                        onClick={executeCalculation}
-                        disabled={!state.selectedColumn || (state.outputType === OutputType.FRONTMATTER && !state.frontmatterKey)}
-                    >
-                        {state.editingIndex !== null ? 'Update' : 'Save'}
-                    </button>
-                    <button 
-                        className="tableEnhancements-btn secondary" 
-                        onClick={resetForm}
-                    >
-                        Cancel
-                    </button>
-                </div>
-        </div>
-    );
+    // 执行所有计算
+    const executeAllCalculations = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            for (const calc of savedCalculations) {
+                await manager.executeCalculation(table, calc);
+            }
+            setSavedCalculations(manager.getSavedCalculations(table.referenceId!));
+            onCalculate(table);
+        } catch (err) {
+            setError('Failed to execute all calculations');
+            logger.error('Error executing all calculations:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [savedCalculations, table, manager, onCalculate, logger]);
 
     return (
         <div className="tableEnhancements-calculation">
             <div className="tableEnhancements-calculation-header">
-                <h3>Table Calculations</h3>
+                <div className="tableEnhancements-calculation-header-left">
+                    <h3>Table Calculations</h3>
+                    {savedCalculations.length > 0 && (
+                        <button 
+                            className="tableEnhancements-btn secondary"
+                            onClick={executeAllCalculations}
+                            disabled={isLoading || state.isAdding || state.editingIndex !== null}
+                        >
+                            {isLoading ? 'Processing...' : 'Execute All'}
+                        </button>
+                    )}
+                </div>
+
                 <button 
                     className="tableEnhancements-btn primary" 
                     onClick={() => setState(prev => ({ ...prev, isAdding: true }))}
@@ -223,67 +317,83 @@ export const TableCalculation: FC<TableCalculationProps> = ({
                 </button>
             </div>
 
+            {error && (
+                <div className="tableEnhancements-error-message">
+                    {error}
+                </div>
+            )}
+
             <div className="tableEnhancements-calculation-list">
                 {/* 新增/编辑表单 */}
-                {(state.isAdding || state.editingIndex !== null) && renderCalculationForm()}
+                {(state.isAdding || state.editingIndex !== null) && (
+                    <div className="tableEnhancements-calculation-form">
+                        <div className="tableEnhancements-calculation-form-row">
+                            <CalculationFormSelect
+                                label="Type"
+                                value={state.calculationType}
+                                options={CALCULATION_TYPE_OPTIONS}
+                                onChange={(value) => setState(prev => ({ ...prev, calculationType: value as CalculationType }))}
+                                disabled={isLoading}
+                            />
+                            <CalculationFormSelect
+                                label="Column"
+                                value={state.selectedColumn}
+                                options={headerOptions}
+                                onChange={(value) => setState(prev => ({ ...prev, selectedColumn: value }))}
+                                disabled={isLoading}
+                            />
+                            <CalculationFormSelect
+                                label="Output"
+                                value={state.outputType}
+                                options={OUTPUT_TYPE_OPTIONS}
+                                onChange={(value) => setState(prev => ({ ...prev, outputType: value as OutputType }))}
+                                disabled={isLoading}
+                            />
+                            {state.outputType === OutputType.FRONTMATTER && (
+                                <div className="tableEnhancements-form-group">
+                                    <label>Frontmatter Key</label>
+                                    <input
+                                        type="text"
+                                        value={state.frontmatterKey}
+                                        onChange={(e) => setState(prev => ({ ...prev, frontmatterKey: e.target.value }))}
+                                        placeholder="Frontmatter key"
+                                        className="tableEnhancements-input"
+                                        disabled={isLoading}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                        <div className="tableEnhancements-calculation-form-actions">
+                            <button
+                                className="tableEnhancements-btn primary"
+                                onClick={executeCalculation}
+                                disabled={isLoading || !state.selectedColumn || (state.outputType === OutputType.FRONTMATTER && !state.frontmatterKey)}
+                            >
+                                {isLoading ? '...' : state.editingIndex !== null ? 'Update' : 'Save'}
+                            </button>
+                            <button 
+                                className="tableEnhancements-btn secondary" 
+                                onClick={resetForm}
+                                disabled={isLoading}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                )}
                 
                 {/* 已保存的计算列表 */}
                 {savedCalculations.map((calc, index) => (
                     state.editingIndex !== index && (
-                        <div key={index} className="tableEnhancements-calculation-item">
-                            <div className="tableEnhancements-calculation-info">
-                                <span className="calculation-type">
-                                    {calc.type.toUpperCase()}
-                                </span>
-                                <span className="calculation-column">
-                                    {calc.targetColumns.join(', ')}
-                                </span>
-                                <span className="calculation-output">
-                                    → {calc.outputType.toUpperCase()}
-                                </span>
-                                {calc.frontmatterKey && (
-                                    <span className="calculation-frontmatter">
-                                        ({calc.frontmatterKey})
-                                    </span>
-                                )}
-                                {calc.lastResult && (
-                                    <span className="calculation-result">
-                                        = {calc.lastResult.value}
-                                    </span>
-                                )}
-                            </div>
-                            <div className="tableEnhancements-calculation-actions">
-                                {/* 编辑按钮 */}
-                                <button
-                                    className="tableEnhancements-btn icon"
-                                    onClick={() => startEditing(index)}
-                                    disabled={state.isAdding || state.editingIndex !== null}
-                                    aria-label="Edit calculation"
-                                >
-                                    <PencilLine />
-                                </button>
-
-                                {/* 删除按钮 */}
-                                <button
-                                    className="tableEnhancements-btn icon"
-                                    onClick={() => manager.deleteCalculation(table.referenceId!, index)}
-                                    disabled={state.isAdding || state.editingIndex !== null}
-                                    aria-label="Remove calculation"
-                                >
-                                    <CircleX />
-                                </button>
-
-                                {/* 执行按钮 */}
-                                <button
-                                    className="tableEnhancements-btn icon"
-                                    onClick={() => manager.executeCalculation(table, calc)}
-                                    disabled={state.isAdding || state.editingIndex !== null}
-                                    aria-label="Execute calculation"
-                                >
-                                    <CirclePlay />
-                                </button>
-                            </div>
-                        </div>
+                        <CalculationItem
+                            key={index}
+                            calc={calc}
+                            index={index}
+                            onEdit={startEditing}
+                            onDelete={handleDelete}
+                            onExecute={handleExecute}
+                            disabled={isLoading || state.isAdding || state.editingIndex !== null}
+                        />
                     )
                 ))}
             </div>
