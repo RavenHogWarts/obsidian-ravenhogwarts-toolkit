@@ -1,5 +1,5 @@
 /* Base Modal Styles */
-.ravenhogwarts-toolkit-modal {
+.rht-toolkit-modal {
     max-width: 90vw;
     max-height: 90vh;
     width: 90vw;
@@ -15,7 +15,7 @@
 }
 
 /* Close Button Styles */
-.ravenhogwarts-toolkit-modal-close {
+.rht-toolkit-modal-close {
     position: absolute;
     top: 2px;
     right: 2px;
@@ -30,18 +30,18 @@
     transition: all 0.2s ease;
 }
 
-.ravenhogwarts-toolkit-modal-close:hover {
+.rht-toolkit-modal-close:hover {
     background-color: var(--background-modifier-hover);
     color: var(--text-normal);
 }
 
-.ravenhogwarts-toolkit-modal-close svg {
+.rht-toolkit-modal-close svg {
     width: 18px;
     height: 18px;
 }
 
 /* Loading State */
-.ravenhogwarts-toolkit-modal-loading {
+.rht-toolkit-modal-loading {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -50,42 +50,42 @@
 }
 
 /* Scrollbar Styles */
-.ravenhogwarts-toolkit-modal::-webkit-scrollbar {
+.rht-toolkit-modal::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
 
-.ravenhogwarts-toolkit-modal::-webkit-scrollbar-track {
+.rht-toolkit-modal::-webkit-scrollbar-track {
     background: var(--background-secondary);
     border-radius: 4px;
 }
 
-.ravenhogwarts-toolkit-modal::-webkit-scrollbar-thumb {
+.rht-toolkit-modal::-webkit-scrollbar-thumb {
     background: var(--background-modifier-border);
     border-radius: 4px;
 }
 
-.ravenhogwarts-toolkit-modal::-webkit-scrollbar-thumb:hover {
+.rht-toolkit-modal::-webkit-scrollbar-thumb:hover {
     background: var(--interactive-accent);
 }
 
 /* Responsive Design */
 @media screen and (max-width: 768px) {
-    .ravenhogwarts-toolkit-modal {
+    .rht-toolkit-modal {
         max-width: 95vw;
         padding: 16px;
         font-size: 0.9rem;
     }
 
     /* 优化滚动条在触摸设备上的体验 */
-    .ravenhogwarts-toolkit-modal {
+    .rht-toolkit-modal {
         -webkit-overflow-scrolling: touch;
         scrollbar-width: thin;
     }
 }
 
 @media screen and (max-width: 480px) {
-    .ravenhogwarts-toolkit-modal {
+    .rht-toolkit-modal {
         max-width: 100vw;
         max-height: 100vh;
         padding: 12px;
@@ -94,13 +94,13 @@
     }
 
     /* 在超窄屏幕上隐藏自定义滚动条 */
-    .ravenhogwarts-toolkit-modal::-webkit-scrollbar {
+    .rht-toolkit-modal::-webkit-scrollbar {
         width: 4px;
         height: 4px;
     }
 }
 
 /* Dark Mode Optimization */
-.theme-dark .ravenhogwarts-toolkit-modal {
+.theme-dark .rht-toolkit-modal {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }

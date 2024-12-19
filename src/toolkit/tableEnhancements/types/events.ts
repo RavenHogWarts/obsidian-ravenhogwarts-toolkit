@@ -1,5 +1,5 @@
 import { ITableGridData } from './table';
-import { ICalculationResult } from './operations';
+import { IFormulaConfig, OutputType } from './operations';
 
 /** 事件类型枚举 */
 export enum TableEventType {
@@ -43,15 +43,10 @@ export interface ITableChangeEvent extends ITableEvent {
 /** 计算事件接口 */
 export interface ICalculationEvent extends ITableEvent {
     type: TableEventType.CALCULATION_COMPLETE;
-    /** 计算结果 */
-    result: ICalculationResult;
-    /** 目标配置 */
-    target: {
-        /** 输出类型 */
-        type: 'frontmatter' | 'cell';
-        /** 输出位置 */
-        location: string;
-    };
+    /** 计算配置 */
+    config: IFormulaConfig;
+    /** 计算时间 */
+    calculatedAt: string;
 }
 
 /** 错误事件接口 */
@@ -59,9 +54,13 @@ export interface ITableErrorEvent extends ITableEvent {
     type: TableEventType.ERROR;
     /** 错误信息 */
     error: {
+        /** 错误代码 */
         code: string;
+        /** 错误消息 */
         message: string;
+        /** 错误详情 */
         details?: any;
+        /** 错误堆栈 */
         stack?: string;
     };
 }

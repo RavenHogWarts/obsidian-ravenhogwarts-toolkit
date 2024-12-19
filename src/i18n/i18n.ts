@@ -3,10 +3,47 @@ import { en } from './en';
 import { zh } from './zh';
 
 export type Message = {
+    common: {
+        settings: string;
+        overview: {
+            title: string;
+            description: string;
+        }
+        back: string;
+        toggle_toolkit: string;
+    },
     toolkit: {
         tableEnhancements: {
             title: string;
+            description: string;
             context_menu: string;
+        },
+        frontmatterSorter: {
+            title: string;
+            description: string;
+        },
+        quickPath: {
+            title: string;
+            description: string;
+            copy_folder_path: string;
+            copy_file_path: string;
+            copy_multiple_files_path: string;
+            copy_success: string;
+            copy_failed: string;
+            settings: {
+                absolutePath: {
+                    title: string;
+                    description: string;
+                },
+                separator: {
+                    title: string;
+                    description: string;
+                    newline: string;
+                    comma: string;
+                    semicolon: string;
+                    space: string;
+                }
+            }
         }
     }
 }

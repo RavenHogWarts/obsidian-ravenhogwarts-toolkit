@@ -1,11 +1,16 @@
 import { Plugin } from 'obsidian';
 import { IRavenHogwartsToolkitConfig } from './manager/types';
 import { PluginManager } from './manager/PluginManager';
-import '../style/styles.css';
-import '../style/table-enhancements.css';
-import { TableEnhancementsManager } from './toolkit/table-enhancements/manager/TableEnhancementsManager';
+import { TableEnhancementsManager } from './toolkit/tableEnhancements/manager/TableEnhancementsManager';
 import { rootLogger } from './util/log';
-import { t } from './i18n/i18n';
+import { FrontMatterSorterManager } from './toolkit/frontmatterSorter/manager/FrontMatterSorterManager';
+import { QuickPathManager } from './toolkit/quickPath/manager/QuickPathManager';
+import { BaseManager } from './manager/BaseManager';
+import RavenHogwartsToolkitSettingTab from './ui/settings/SettingsTab';
+import '../style/styles.css';
+import '../style/settings.css';
+import '../style/tableEnhancements.css';
+import '../style/quickPath.css';
 
 
 export default class RavenHogwartsToolkitPlugin extends Plugin {
@@ -18,7 +23,10 @@ export default class RavenHogwartsToolkitPlugin extends Plugin {
             await this.pluginManager.initialize();
 
             // 注册工具模块
-            this.registerToolkit();
+            await this.registerToolkit();
+
+            // 注册设置页面
+            this.addSettingTab(new RavenHogwartsToolkitSettingTab(this.app, this));
         }
         catch (e) {
             rootLogger.error('Plugin load error', e);
@@ -27,32 +35,28 @@ export default class RavenHogwartsToolkitPlugin extends Plugin {
 	}
 
 	async onunload() {
-        this.pluginManager.unload();
+        try {
+            await this.pluginManager?.unload();
+            rootLogger.info('Plugin unloaded successfully');
+        } catch (error) {
+            rootLogger.error('Plugin unload error:', error);
+        }
     }
 
-	private registerToolkit() {
-        // 注册表格增强工具
-        this.pluginManager.registerManager('tableEnhancements', TableEnhancementsManager);
-        
-        // 注册表格增强的上下文菜单
-        this.registerEvent(
-            this.app.workspace.on("editor-menu", (menu, editor) => {
-                const tableManager = this.pluginManager.getManager<TableEnhancementsManager>('tableEnhancements');
-                if (tableManager && tableManager.isEnabled()) {
-                    menu.addItem((item) => {
-                        item
-                            .setTitle(t('toolkit.tableEnhancements.context_menu'))
-                            .setIcon("tablets")
-                            .onClick(() => {
-                                tableManager.onload();
-                            });
-                    });
-                }
-            })
-        );
+	private async registerToolkit() {
+        const managers = {
+            'tableEnhancements': TableEnhancementsManager,
+            'frontmatterSorter': FrontMatterSorterManager,
+            'quickPath': QuickPathManager,
+        };
+        await this.pluginManager.registerManagers(managers);
     }
 
     async updateSettings(newSettings: Partial<IRavenHogwartsToolkitConfig>) {
         await this.pluginManager.updateSettings(newSettings);
+    }
+
+    getManager<T extends BaseManager<any>>(moduleId: string): T | undefined {
+        return this.pluginManager.getManager<T>(moduleId);     
     }
 }

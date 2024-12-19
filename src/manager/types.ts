@@ -12,15 +12,19 @@ export interface IRavenHogwartsToolkitConfig {
 }
 
 // 工具模块接口
+export interface IToolkitModuleConfig {
+    enabled: boolean;
+    [key: string]: any;
+}
+
+export interface IToolkitModuleData {
+    lastModified: string;
+    [key: string]: any;
+}
+
 export interface IToolkitModule {
-    config: {
-        enabled: boolean;
-        [key: string]: any;
-    };
-    data: {
-        lastModified: string;
-        [key: string]: any;
-    };
+    config: IToolkitModuleConfig;
+    data: IToolkitModuleData;
 }
 
 // 默认配置

@@ -52,16 +52,20 @@ export class PluginManager {
         }
     }
 
-    registerManager<T extends BaseManager<any>>(moduleId: string, managerClass: new (...args: any[]) => T): T {
-        if (this.managers.has(moduleId)) {
-            rootLogger.warn(`Manager already registered for module: ${moduleId}`);
-            return this.managers.get(moduleId) as T;
-        }
+    registerManagers(managers: {[moduleId: string]: new (...args: any[]) => BaseManager<any>}) {
+        Object.entries(managers).forEach(([moduleId, managerClass]) => {
+            if (this.managers.has(moduleId)) {
+                rootLogger.warn(`Manager already registered for module: ${moduleId}`);
+                return;
+            }
 
-        const manager = new managerClass(this.plugin, moduleId, this.settings);
-        this.managers.set(moduleId, manager);
-        rootLogger.info(`Registered manager: ${moduleId}`);
-        return manager;
+            const manager = new managerClass(this.plugin, moduleId, this.settings);
+            this.managers.set(moduleId, manager);
+            manager.onload().catch(error => {
+                rootLogger.error(`Failed to load manager: ${moduleId}`, error);
+            });
+        });
+        rootLogger.info(`Registered manager: ${Object.keys(managers)}`);
     }
 
     getManager<T extends BaseManager<any>>(moduleId: string): T | undefined {

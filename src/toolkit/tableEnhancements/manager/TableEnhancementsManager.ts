@@ -1,4 +1,4 @@
-import { MarkdownView } from 'obsidian';
+import { Editor, MarkdownView, Menu } from 'obsidian';
 import { BaseManager } from '@/src/manager/BaseManager';
 import { MarkdownTableParser } from '../parser/MarkdownTableParser';
 import { TableGenerator } from '../parser/TableGenerator';
@@ -11,7 +11,7 @@ import { ITableEnhancementsConfig, ITableEnhancementsData } from '../types/confi
 import { getStandardTime } from '@/src/util/date';
 import { UUIDGenerator } from '@/src/util/uuid';
 import { updateFrontMatter } from '@/src/util/frontMatter';
-import { ISavedCalculation } from '../types/operations';
+import { ISavedCalculation, OutputType } from '../types/operations';
 
 interface ITableEnhancementsModule extends IToolkitModule {
     config: ITableEnhancementsConfig;
@@ -33,6 +33,8 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
         settings: any
     ) {
         super(plugin, moduleId, settings);
+
+        // 初始化服务和工具
         this.parser = new MarkdownTableParser(this.logger);
         this.generator = new TableGenerator(this.logger);
         this.calculationService = new TableCalculationService(this.logger);
@@ -40,16 +42,40 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
             prefix: 'table',
             length: 12,
         });
-        this.loadSavedCalculations();
     }
 
-    async onload(): Promise<void> {
-        this.logger.debug('Loading table enhancements manager');
-        this.showTableEditor();
+    protected async onModuleLoad(): Promise<void> {
+        this.logger.info('Loading table enhancements manager');
+        await this.loadSavedCalculations();
     }
 
-    onunload(): void {
-        this.logger.debug('Unloading table enhancements manager');
+    protected registerContextMenuItems(): void {
+        this.registerEvent(
+            this.app.workspace.on("editor-menu", (menu: Menu, editor: Editor) => {
+                if (this.isEnabled()) {
+                    this.addMenuItem(menu, {
+                        title: this.t('toolkit.tableEnhancements.context_menu'),
+                        icon: 'tablets',
+                        showSeparator: true,
+                        callback: () => {
+                            this.showTableEditor();
+                        }
+                    });
+                }
+            })
+        )
+    }
+
+    protected onModuleUnload(): void {
+        super.onModuleUnload();
+        // 清理模态框
+        if (this.modal) {
+            this.modal.close();
+            this.modal = null;
+        }
+        // 清理其他资源
+        this.tables = [];
+        this.savedCalculations.clear();
     }
 
     /**
@@ -62,9 +88,11 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
                 Object.entries(data.savedCalculations).forEach(([tableId, calculations]) => {
                     this.savedCalculations.set(tableId, calculations);
                 });
+                this.logger.debug('Loaded saved calculations:', this.savedCalculations.size);
             }
         } catch (error) {
             this.logger.error('Error loading saved calculations:', error);
+            throw error;
         }
     }
 
@@ -145,38 +173,38 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
      */
     public async executeCalculation(table: IMarkdownTable, calculation: ISavedCalculation): Promise<void> {
         try {
-            const result = this.calculationService.calculate(table, calculation);
+            const result = this.calculationService.calculate(table, calculation.config);
 
             // 更新计算结果
             const calculations = this.getSavedCalculations(table.referenceId);
             const index = calculations.findIndex(c => 
-                c.type === calculation.type && 
-                c.targetColumns[0] === calculation.targetColumns[0]
+                c.config.formula === calculation.config.formula && 
+                c.config.output.type === calculation.config.output.type &&
+                c.config.output.value === calculation.config.output.value
             );
 
             if (index !== -1) {
                 await this.updateCalculation(table.referenceId, index, {
-                    lastResult: result
+                    config: {
+                        ...calculation.config,
+                        result: result
+                    }
                 });
             }
 
             // 如果配置了frontmatter键，保存到frontmatter
-            if (calculation.frontmatterKey) {
+            if (calculation.config.output.type === OutputType.FRONTMATTER) {
                 const view = this.app.workspace.getActiveViewOfType(MarkdownView);
                 if (!view?.file) {
                     throw new Error('No active markdown view');
                 }
 
                 const file = view.file;
-                const metadata = this.app.metadataCache.getFileCache(file);
-                const frontmatter = metadata?.frontmatter;
-
-
                 updateFrontMatter(file, (frontmatter) => {
-                    frontmatter[calculation.frontmatterKey!] = result.value;
+                    frontmatter[calculation.config.output.value] = result;
                 });
 
-                this.logger.debug(`Updated frontmatter: ${calculation.frontmatterKey} = ${result.value}`);
+                this.logger.debug(`Updated frontmatter: ${calculation.config.output.value} = ${result}`);
             }
 
         } catch (error) {
@@ -199,8 +227,8 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
             const content = await this.app.vault.read(activeView.file);
             const filePath = activeView.file.path;
 
-            // 解析表格
-            const tables = this.parser.parseTables(content).map(table => ({
+            // 解析表格,更新表格数据
+            this.tables = this.parser.parseTables(content).map(table => ({
                 ...table,
                 position: {
                     ...table.position,
@@ -208,17 +236,9 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
                 }
             }));
 
-            // 更新表格数据
-            this.tables = tables;
-
-            if (!this.tables.length) {
-                this.logger.error('No tables found in current file');
-            } else {
-                this.logger.debug('Found tables:', this.tables);
-            }
-
+            this.logger.debug(`Parsed ${this.tables.length} tables from current file`);
         } catch (error) {
-            this.logger.error('Parse current tables error:', error);
+            this.logger.error('Error parsing current tables:', error);
             throw error;
         }
     }
@@ -233,7 +253,6 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
 
             // 如果没有找到表格，提示用户
             if (!this.tables || this.tables.length === 0) {
-                this.logger.info('No tables found in current file');
                 return;
             }
 

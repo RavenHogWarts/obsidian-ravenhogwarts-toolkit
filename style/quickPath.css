@@ -1,0 +1,60 @@
+/* QuickPath Settings */
+.quick-path-settings {
+  padding: 1rem;
+}
+
+.quick-path-settings .setting-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.quick-path-settings .setting-item:first-child {
+  border-top: none;
+}
+
+.quick-path-settings .setting-item-info {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.quick-path-settings .setting-item-name {
+  font-weight: 500;
+  color: var(--text-normal);
+  margin-bottom: 0.25rem;
+}
+
+.quick-path-settings .setting-item-description {
+  font-size: 0.9em;
+  color: var(--text-muted);
+}
+
+.quick-path-settings .setting-item-control {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quick-path-settings select {
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  color: var(--text-normal);
+  padding: 4px 8px;
+  width: 150px;
+}
+
+.quick-path-settings select:hover {
+  border-color: var(--interactive-hover);
+}
+
+.quick-path-settings-error {
+  color: var(--text-error);
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: var(--background-modifier-error);
+}

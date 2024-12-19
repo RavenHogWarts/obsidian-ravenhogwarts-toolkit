@@ -44,7 +44,7 @@ export function formatDate(date: Date, format = 'YYYY-MM-DD HH:mm:ss.SSS'): stri
 
 /**
  * 获取当前时间的格式化字符串
- * @param format 格式字符串
+ * @param format 格式字符串，默认为 'YYYY-MM-DD HH:mm:ss.SSS'
  * @returns 格式化后的字符串
  */
 export function getCurrentTime(format?: string): string {
@@ -62,7 +62,7 @@ export function getCurrentTimestamp(): number {
 /**
  * 将时间戳转换为格式化字符串
  * @param timestamp 时间戳（毫秒）
- * @param format 格式字符串
+ * @param format 格式字符串，默认为 'YYYY-MM-DD HH:mm:ss.SSS'
  * @returns 格式化后的字符串
  */
 export function formatTimestamp(timestamp: number, format?: string): string {
@@ -70,25 +70,18 @@ export function formatTimestamp(timestamp: number, format?: string): string {
 }
 
 /**
- * 获取标准格式的时间字符串（YYYYMMDDTHHmmss）
+ * 获取标准格式的时间字符串（ISO 8601格式：YYYY-MM-DDTHH:mm:ssZ）
  * @param date 日期对象，默认为当前时间
- * @returns 标准格式的时间字符串
+ * @returns ISO 8601格式的时间字符串
  */
 export function getStandardTime(date: Date = new Date()): string {
-    const year = date.getFullYear();
-    const month = padZero(date.getMonth() + 1);
-    const day = padZero(date.getDate());
-    const hours = padZero(date.getHours());
-    const minutes = padZero(date.getMinutes());
-    const seconds = padZero(date.getSeconds());
-
-    return `${year}${month}${day}T${hours}${minutes}${seconds}`;
+    return formatDate(date, 'YYYY-MM-DDTHH:mm:ssZ');
 }
 
 /**
  * 将时间戳转换为标准格式的时间字符串
  * @param timestamp 时间戳（毫秒）
- * @returns 标准格式的时间字符串
+ * @returns ISO 8601格式的时间字符串
  */
 export function timestampToStandard(timestamp: number): string {
     return getStandardTime(new Date(timestamp));
@@ -100,26 +93,16 @@ export function timestampToStandard(timestamp: number): string {
  * @returns 相对时间描述，如"刚刚"、"5分钟前"等
  */
 export function getRelativeTime(date: Date | number): string {
-    const now = Date.now();
-    const timestamp = date instanceof Date ? date.getTime() : date;
-    const diff = now - timestamp;
+    const targetDate = date instanceof Date ? date : new Date(date);
+    const now = new Date();
+    const diff = now.getTime() - targetDate.getTime();
+    const diffMinutes = Math.floor(diff / (1000 * 60));
+    const diffHours = Math.floor(diff / (1000 * 60 * 60));
+    const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    // 小于1分钟
-    if (diff < 60 * 1000) {
-        return '刚刚';
-    }
-    // 小于1小时
-    if (diff < 60 * 60 * 1000) {
-        return `${Math.floor(diff / (60 * 1000))}分钟前`;
-    }
-    // 小于24小时
-    if (diff < 24 * 60 * 60 * 1000) {
-        return `${Math.floor(diff / (60 * 60 * 1000))}小时前`;
-    }
-    // 小于30天
-    if (diff < 30 * 24 * 60 * 60 * 1000) {
-        return `${Math.floor(diff / (24 * 60 * 60 * 1000))}天前`;
-    }
-    // 其他情况返回完整日期
-    return formatDate(new Date(timestamp), 'YYYY-MM-DD');
+    if (diffMinutes < 1) return '刚刚';
+    if (diffMinutes < 60) return `${diffMinutes}分钟前`;
+    if (diffHours < 24) return `${diffHours}小时前`;
+    if (diffDays < 30) return `${diffDays}天前`;
+    return formatDate(targetDate, 'YYYY-MM-DD');
 }

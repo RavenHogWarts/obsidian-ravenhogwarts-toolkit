@@ -123,6 +123,9 @@ export class Logger {
             parts.push(`[${LogLevel[level]}]`);
         }
 
+        // 添加日志前缀（包括模块名）
+        parts.push(`[${this.name}]`);
+
         // 添加前缀
         if (Logger.config.prefix) {
             parts.push(Logger.config.prefix);

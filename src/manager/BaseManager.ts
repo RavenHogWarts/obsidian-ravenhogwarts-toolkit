@@ -1,10 +1,16 @@
 import { IRavenHogwartsToolkitConfig, IToolkitModule } from './types';
 import RavenHogwartsToolkitPlugin from '../main';
 import { Logger } from '../util/log';
-import { App } from 'obsidian';
+import { App, Component, Menu } from 'obsidian';
 import { getStandardTime } from '../util/date';
+import { t, TranslationKeys } from '../i18n/i18n';
+import { QUICK_PATH_DEFAULT_CONFIG } from '../toolkit/quickPath/types/config';
+import { TABLE_ENHANCEMENTS_DEFAULT_CONFIG } from '../toolkit/tableEnhancements/types/config';
+import { FRONTMATTER_SORTER_DEFAULT_CONFIG } from '../toolkit/frontmatterSorter/types/config';
 
-export abstract class BaseManager<T extends IToolkitModule> {
+export abstract class BaseManager<T extends IToolkitModule> extends Component {
+    // private initialized = false;
+    private initPromise: Promise<void>;
     protected config: T['config'];
     protected data: T['data'];
     protected logger: Logger;
@@ -15,26 +21,75 @@ export abstract class BaseManager<T extends IToolkitModule> {
         protected moduleId: string,
         protected settings: IRavenHogwartsToolkitConfig,
     ) {
-        this.initializeModule();
+        super();
         this.app = this.plugin.app;
         // 使用模块级别的 logger
         this.logger = Logger.getLogger(this.moduleId);
+
+        // 初始化模块（异步）
+        this.initPromise = this.initializeModule()
+           .then(() => {
+            //    this.initialized = true;
+               this.logger.debug('Module initialized:', this.moduleId);
+           })
+           .catch(error => {
+               this.logger.error('Error initializing module:', this.moduleId, error);
+               throw error;
+           });
     }
 
-    private initializeModule() {
+    private async initializeModule() {
         if (!this.settings.toolkit[this.moduleId]) {
-            this.settings.toolkit[this.moduleId] = {
-                config: {
-                    enabled: true
-                },
+            // 初始化模块设置
+           this.settings.toolkit[this.moduleId] = {
+                config: this.getDefaultConfig(),
                 data: {
                     lastModified: getStandardTime()
                 }
-            } as T;
+            };
+            
+            // 保存默认设置到 data.json
+            await this.plugin.saveData(this.settings);
+            this.logger.debug('Initialized default settings for module:', this.moduleId);
         }
         this.config = this.settings.toolkit[this.moduleId].config;
         this.data = this.settings.toolkit[this.moduleId].data;
     }
+
+    protected getDefaultConfig(): T['config'] {
+        switch (this.moduleId) {
+            case 'quickPath':
+                return QUICK_PATH_DEFAULT_CONFIG;
+            case 'tableEnhancements':
+                return TABLE_ENHANCEMENTS_DEFAULT_CONFIG;
+            case 'frontmatterSorter':
+                return FRONTMATTER_SORTER_DEFAULT_CONFIG;
+            default:
+                this.logger.error(`Unknown module ID: ${this.moduleId}`);
+                throw new Error(`Unknown module ID: ${this.moduleId}`);
+        }
+    }
+
+    protected async waitForInitialization(): Promise<void> {
+        await this.initPromise;
+    }
+
+    public async onload(): Promise<void> {
+        await this.waitForInitialization();
+        // 注册上下文菜单
+        this.registerContextMenu();
+        // 调用子类的加载方法
+        await this.onModuleLoad();
+    }
+    protected abstract onModuleLoad(): Promise<void>;
+    public async onunload(): Promise<void> {
+       // 确保在卸载时清理资源
+       this.onModuleUnload();
+   }
+    protected onModuleUnload(): void {
+       // 默认实现，子类可以重写
+       this.logger.debug('Module unloaded:', this.moduleId);
+   }
 
     protected async saveSettings(): Promise<void> {
         try {
@@ -62,6 +117,17 @@ export abstract class BaseManager<T extends IToolkitModule> {
         }
     }
 
+    public async setConfig(newConfig: T['config']): Promise<void> {
+        try {
+            this.config = newConfig;
+            this.data.lastModified = getStandardTime();
+            await this.saveSettings();
+        } catch (error) {
+            this.logger.error('Error setting config for module:', this.moduleId, error);
+            throw error;
+        }
+    }
+
     protected async updateData(newData: Partial<T['data']>): Promise<void> {
         try {
             this.logger.debug('Updating data for module:', this.moduleId, newData);
@@ -72,6 +138,44 @@ export abstract class BaseManager<T extends IToolkitModule> {
             this.logger.error('Error updating data for module:', this.moduleId, error);
             throw error;
         }
+    }
+
+    protected t(key: TranslationKeys, params?: any): string {
+        return t(key, params);
+    }
+
+    // 注册上下文菜单
+    protected registerContextMenu() {
+        // 调用子类实现的方法
+        this.registerContextMenuItems();
+    }
+    // 由子类实现的具体注册菜单项方法
+    protected registerContextMenuItems(): void {}
+    // 通用的添加菜单项方法
+    protected addMenuItem(
+        menu: Menu, 
+        {
+            title,
+            icon,
+            callback,
+            showSeparator = false
+        }: {
+            title: string;
+            icon?: string;
+            callback: () => any;
+            showSeparator?: boolean;
+        }
+    ) {
+        if (showSeparator) {
+            menu.addSeparator();
+        }
+         menu.addItem((item) => {
+            item.setTitle(title);
+            if (icon) {
+                item.setIcon(icon);
+            }
+            item.onClick(callback);
+        });
     }
 
     public getConfig(): T['config'] {
@@ -88,20 +192,17 @@ export abstract class BaseManager<T extends IToolkitModule> {
 
     public async enable(): Promise<void> {
         if (!this.isEnabled()) {
-            await this.updateConfig({ enabled: true });
+            await this.updateConfig({ enabled: true } as Partial<T['config']>);
             this.onEnable();
         }
     }
 
     public async disable(): Promise<void> {
         if (this.isEnabled()) {
-            await this.updateConfig({ enabled: false });
+            await this.updateConfig({ enabled: false } as Partial<T['config']>);
             this.onDisable();
         }
     }
-
-    abstract onload(): Promise<void>;
-    abstract onunload(): void;
 
     protected onEnable(): void {
         this.logger.debug('Module enabled:', this.moduleId);

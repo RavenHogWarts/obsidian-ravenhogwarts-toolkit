@@ -19,7 +19,7 @@ export const ModalContext = React.createContext<{
 } | null >(null);
 
 const ModalLoading: React.FC = () => (
-    <div className="ravenhogwarts-toolkit-modal-loading">
+    <div className="rht-toolkit-modal-loading">
         <span>Loading...</span>
     </div>
 );
@@ -50,7 +50,7 @@ export class BaseModal extends Modal {
         this.root = createRoot(el);
         this.root.render(
             <React.StrictMode>
-                <div className="ravenhogwarts-toolkit-modal">
+                <div className="rht-toolkit-modal">
                     <ModalContext.Provider value={{ 
                         app: this.props.app, 
                         plugin: this.props.plugin,
@@ -61,7 +61,7 @@ export class BaseModal extends Modal {
                         </Suspense>
                     </ModalContext.Provider>
                     <div
-                        className="ravenhogwarts-toolkit-modal-close"
+                        className="rht-toolkit-modal-close"
                         onClick={() => this.close()}
                     >
                         <X />
