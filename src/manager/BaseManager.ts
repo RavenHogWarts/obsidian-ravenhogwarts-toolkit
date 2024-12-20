@@ -19,7 +19,6 @@ interface MenuItemConfig {
 }
 
 export abstract class BaseManager<T extends IToolkitModule> extends Component {
-    // private initialized = false;
     private initPromise: Promise<void>;
     protected config: T['config'];
     protected data: T['data'];

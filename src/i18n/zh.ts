@@ -20,7 +20,45 @@ export const zh: Message = {
         },
         frontmatterSorter: {
             title: "文档属性排序",
-            description: "自动排序文档属性"
+            description: "自动排序文档属性",
+            settings: {
+                sortOnSave: {
+                    title: "保存时排序",
+                    description: "保存时自动排序文档属性"
+                },
+                ignoreFolders: {
+                    title: "忽略文件夹",
+                    description: "忽略特定文件夹中的文档属性"
+                },
+                ignoreFiles: {
+                    title: "忽略文件",
+                    description: "忽略特定文件中的文档属性"
+                },
+                rules: {
+                    title: "排序规则",
+                    description: "自定义排序规则",
+                    priority: {
+                        title: "优先排序",
+                        description: "优先排序的文档属性"
+                    },
+                    customOrder: {
+                        title: "自定义排序",
+                        description: "自定义排序的文档属性"
+                    },
+                    ignoreKeys: {
+                        title: "忽略键",
+                        description: "忽略的文档属性"
+                    },
+                    arraySort: {
+                        title: "数组排序",
+                        description: "是否对数组类型的值进行排序"
+                    },
+                    caseSensitive: {
+                        title: "区分大小写",
+                        description: "英文字母大小写是否敏感"
+                    }
+                }
+            }
         },
         quickPath: {
             title: "快速路径",

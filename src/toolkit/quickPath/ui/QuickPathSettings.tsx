@@ -22,7 +22,7 @@ export const QuickPathSettings: React.FC<QuickPathSettingsProps> = ({ plugin }) 
   };
 
   return (
-    <div className="quick-path-settings">
+    <div className="rht-toolkit-detail-settings">
 
       <SettingItem
         name={t('toolkit.quickPath.settings.addEditorMenu.title')}

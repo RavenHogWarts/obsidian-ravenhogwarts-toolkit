@@ -27,6 +27,7 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
         {toolkits.map(toolkit => (
           <Card 
             key={toolkit.id}
+            className={toolkit.id}
             title={t(`toolkit.${toolkit.id}.title`)}
             icon={toolkit.icon}
             description={t(`toolkit.${toolkit.id}.description`)}

@@ -23,6 +23,45 @@ export type Message = {
         frontmatterSorter: {
             title: string;
             description: string;
+            settings: {
+                sortOnSave: {
+                    title: string;
+                    description: string;
+                };
+                ignoreFolders: {
+                    title: string;
+                    description: string;
+                };
+                ignoreFiles: {
+                    title: string;
+                    description: string;
+                };
+                rules: {
+                    title: string;
+                    description: string;
+                    priority: {
+                        title: string;
+                        description: string;
+                    };
+                    customOrder: {
+                        title: string;
+                        description: string;
+                    };
+                    ignoreKeys: {
+                        title: string;
+                        description: string;
+                    };
+                    arraySort: {
+                        title: string;
+                        description: string;
+                    };
+                    caseSensitive: {
+                        title: string;
+                        description: string;
+                    };
+                };
+                
+            }
         },
         quickPath: {
             title: string;
@@ -49,11 +88,11 @@ export type Message = {
                 addEditorMenu: {
                     title: string;
                     description: string;
-                },
+                };
                 absolutePath: {
                     title: string;
                     description: string;
-                },
+                };
                 separator: {
                     title: string;
                     description: string;

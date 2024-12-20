@@ -25,7 +25,7 @@ export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
       case 'tableEnhancements':
         return <TableEnhancementsSettings />;
       case 'frontmatterSorter':
-        return <FrontmatterSorterSettings />;
+        return <FrontmatterSorterSettings plugin={plugin} />;
       default:
         return null;
     }

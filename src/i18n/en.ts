@@ -20,7 +20,46 @@ export const en: Message = {
         },
         frontmatterSorter: {
             title: "Frontmatter Sorter",
-            description: "Auto sort frontmatter"
+            description: "Auto sort frontmatter",
+            settings: {
+                sortOnSave: {
+                    title: "Sort on Save",
+                    description: "Sort frontmatter on save"
+                },
+                ignoreFolders: {
+                    title: "Ignore Folders",
+                    description: "Ignore specific folders"
+                },
+                ignoreFiles: {
+                    title: "Ignore Files",
+                    description: "Ignore specific files"
+                },
+                rules: {
+                    title: "Sorting Rules",
+                    description: "Custom sorting rules",
+                    priority: {
+                        title: "Priority Sorting",
+                        description: "Priority sorting keys"
+                    },
+                    customOrder: {
+                        title: "Custom Sorting",
+                        description: "Custom sorting keys"
+                    },
+                    ignoreKeys: {
+                        title: "Ignore Keys",
+                        description: "Ignore keys"
+                    },
+                    arraySort: {
+                        title: "Array Sorting",
+                        description: "Sort array values"
+                    },
+                    caseSensitive: {
+                        title: "Case Sensitive",
+                        description: "Case sensitive for English letters"
+                    }
+                }
+
+            }
         },
         quickPath: {
             title: "Quick Path",

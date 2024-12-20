@@ -10,7 +10,7 @@ import RavenHogwartsToolkitSettingTab from './ui/settings/SettingsTab';
 import '../style/styles.css';
 import '../style/settings.css';
 import '../style/tableEnhancements.css';
-import '../style/quickPath.css';
+import '../style/detailSettings.css';
 
 
 export default class RavenHogwartsToolkitPlugin extends Plugin {
