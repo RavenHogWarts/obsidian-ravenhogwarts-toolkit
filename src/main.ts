@@ -15,6 +15,8 @@ import '../style/quickPath.css';
 
 export default class RavenHogwartsToolkitPlugin extends Plugin {
 	public pluginManager: PluginManager;
+	settings: IRavenHogwartsToolkitConfig;
+	registeredMenus: Record<string, Set<string>> = {};
 
 	async onload() {
 		try {

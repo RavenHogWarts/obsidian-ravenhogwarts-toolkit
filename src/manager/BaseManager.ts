@@ -1,12 +1,22 @@
-import { IRavenHogwartsToolkitConfig, IToolkitModule } from './types';
+import { IRavenHogwartsToolkitConfig, IToolkitModule, TOOLKIT_CONFIG } from './types';
 import RavenHogwartsToolkitPlugin from '../main';
 import { Logger } from '../util/log';
-import { App, Command, Component, Menu } from 'obsidian';
+import { App, Command, Component, Menu, MenuItem } from 'obsidian';
 import { getStandardTime } from '../util/date';
 import { t, TranslationKeys } from '../i18n/i18n';
 import { QUICK_PATH_DEFAULT_CONFIG } from '../toolkit/quickPath/types/config';
 import { TABLE_ENHANCEMENTS_DEFAULT_CONFIG } from '../toolkit/tableEnhancements/types/config';
 import { FRONTMATTER_SORTER_DEFAULT_CONFIG } from '../toolkit/frontmatterSorter/types/config';
+import { ToolkitId } from './hooks/useToolkitSettings';
+
+interface MenuItemConfig {
+    title: string;
+    icon?: string;
+    callback?: () => any;
+    group?: string;
+    order?: number;
+    items?: MenuItemConfig[];
+}
 
 export abstract class BaseManager<T extends IToolkitModule> extends Component {
     // private initialized = false;
@@ -33,17 +43,28 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
     private async initializeModule() {
         if (!this.settings.toolkit[this.moduleId]) {
             // 初始化模块设置
-           this.settings.toolkit[this.moduleId] = {
+            this.settings.toolkit[this.moduleId] = {
                 config: this.getDefaultConfig(),
                 data: {
                     lastModified: getStandardTime()
                 }
             };
-            
-            // 保存默认设置到 data.json
-            await this.plugin.saveData(this.settings);
-            this.logger.debug('Initialized default settings for module:', this.moduleId);
+        } else {
+            // 只合并 config，保持 data 不变
+            const defaultConfig = this.getDefaultConfig();
+            this.settings.toolkit[this.moduleId] = {
+                ...this.settings.toolkit[this.moduleId],  // 保留现有的所有数据
+                config: {                                 // 只更新 config
+                    ...defaultConfig,
+                    ...this.settings.toolkit[this.moduleId].config
+                }
+            };
         }
+        
+        // 保存设置到 data.json
+        await this.plugin.saveData(this.settings);
+        this.logger.debug('Module settings initialized:', this.moduleId);
+        
         this.config = this.settings.toolkit[this.moduleId].config;
         this.data = this.settings.toolkit[this.moduleId].data;
     }
@@ -165,29 +186,57 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
 
     // 为菜单项添加提供便捷方法
     protected addMenuItem(
-        menu: Menu, 
-        {
-            title,
-            icon,
-            callback,
-            showSeparator = false
-        }: {
-            title: string;
-            icon?: string;
-            callback: () => any;
-            showSeparator?: boolean;
+        menu: Menu,
+        items: MenuItemConfig | MenuItemConfig[],
+        options: {
+            showSeparator?: boolean;     // 是否显示分隔符
+            useSubmenu?: boolean;        // 是否使用子菜单
+        } = {}
+    ): void {
+        if (!this.isEnabled()) return;
+
+        const { showSeparator = false, useSubmenu = false } = options;
+
+        const menuItems = Array.isArray(items) ? items : [items];
+        const sortedItems = menuItems.sort((a, b) => {
+            return (a.order || 0) - (b.order || 0);
+        });
+
+        if (useSubmenu) {
+            // 创建带子菜单的项目
+            menu.addItem((menuItem) => {
+                menuItem
+                    .setTitle(this.moduleId)
+                    .setIcon(TOOLKIT_CONFIG[this.moduleId as ToolkitId].iconName);
+
+                // 创建子菜单
+                // @ts-ignore
+                const submenu = menuItem.setSubmenu();
+                
+                // 添加子菜单项
+                sortedItems.forEach((item) => {
+                    submenu.addItem((subMenuItem) => {
+                        subMenuItem.setTitle(item.title);
+                        if (item.icon) subMenuItem.setIcon(item.icon);
+                        if (item.callback) subMenuItem.onClick(item.callback);
+                    });
+                });
+            });
+        } else {
+            // 直接添加菜单项
+            sortedItems.forEach((item) => {
+                menu.addItem((menuItem) => {
+                    menuItem.setTitle(item.title);
+                    if (item.icon) menuItem.setIcon(item.icon);
+                    if (item.callback) menuItem.onClick(item.callback);
+                });
+            });
         }
-    ) {
+
+        // 添加开始分隔符
         if (showSeparator) {
             menu.addSeparator();
         }
-         menu.addItem((item) => {
-            item.setTitle(title);
-            if (icon) {
-                item.setIcon(icon);
-            }
-            item.onClick(callback);
-        });
     }
 
     public getConfig(): T['config'] {

@@ -14,7 +14,9 @@ export const zh: Message = {
         tableEnhancements: {
             title: "表格增强编辑",
             description: "表格增强编辑",
-            context_menu: "表格增强编辑"
+            editor_menu: {
+                table_enhancements: "表格增强编辑"
+            }
         },
         frontmatterSorter: {
             title: "文档属性排序",
@@ -23,15 +25,29 @@ export const zh: Message = {
         quickPath: {
             title: "快速路径",
             description: "快速复制文件夹或单(多)文件路径",
-            copy_path: "复制路径",
-            copy_parent_path: "复制父目录路径",
-            no_parent_path: "没有父目录路径",
-            copy_folder_path: "复制文件夹路径",
-            copy_file_path: "复制文件路径",
-            copy_multiple_files_path: "复制多个文件路径",
-            copy_success: "路径已复制到剪贴板",
-            copy_failed: "复制失败",
+            editor_menu: {
+                paste_filePath: "粘贴文件路径",
+                paste_folderPath: "粘贴文件夹路径",
+            },
+            file_menu: {
+                copy_filePath: "复制文件路径",
+                copy_folderPath: "复制文件夹路径",
+                copy_filesPath: "复制文件路径(多文件)",
+            },
+            command: {
+                copy_filePath: "复制文件路径",
+                copy_folderPath: "复制文件夹路径",
+            },
+            status: {
+                copy_success: "路径已复制到剪贴板",
+                copy_failed: "复制失败",
+                no_parent_path: "根目录文件没有父目录",
+            },
             settings: {
+                addEditorMenu: {
+                    title: "添加编辑器菜单",
+                    description: "在编辑器菜单中添加粘贴当前文件路径的选项"
+                },
                 absolutePath: {
                     title: "绝对路径",
                     description: "使用绝对路径，即从操作系统根目录开始的路径"

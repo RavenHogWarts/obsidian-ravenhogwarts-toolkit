@@ -15,5 +15,6 @@ export interface IQuickPathData extends IToolkitModuleData {
 export const QUICK_PATH_DEFAULT_CONFIG: IQuickPathConfig = {
   enabled: true,
   useAbsolutePath: false,
-  pathSeparator: '\n'
+  pathSeparator: '\n',
+  addEditorMenu: true,
 };

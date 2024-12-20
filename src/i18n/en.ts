@@ -14,7 +14,9 @@ export const en: Message = {
         tableEnhancements: {
             title: "Table Enhancements",
             description: "Table Enhancements",
-            context_menu: "Table Enhancements"
+            editor_menu: {
+                table_enhancements: "Table Enhancements"
+            }
         },
         frontmatterSorter: {
             title: "Frontmatter Sorter",
@@ -23,15 +25,29 @@ export const en: Message = {
         quickPath: {
             title: "Quick Path",
             description: "Quickly copy folder or single(multiple) file path",
-            copy_path: "Copy Path",
-            copy_parent_path: "Copy Parent Path",
-            no_parent_path: "No Parent Path",
-            copy_folder_path: "Copy Folder Path",
-            copy_file_path: "Copy File Path",
-            copy_multiple_files_path: "Copy Multiple Files Path",
-            copy_success: "Copied to clipboard",
-            copy_failed: "Copy Failed",
+            editor_menu: {
+                paste_filePath: "Copy File Path",
+                paste_folderPath: "Copy Folder Path",
+            },
+            file_menu: {
+                copy_folderPath: "Copy Folder Path",
+                copy_filePath: "Copy File Path",
+                copy_filesPath: "Copy Multiple Files Path",
+            },
+            command: {
+                copy_filePath: "Copy File Path",
+                copy_folderPath: "Copy Folder Path",
+            },
+            status: {
+                copy_success: "Copied to clipboard",
+                copy_failed: "Copy Failed",
+                no_parent_path: "Root directory file has no parent directory",
+            },
             settings: {
+                addEditorMenu: {
+                    title: "Add Editor Menu",
+                    description: "Add an option to paste the current file path in the editor menu"
+                },
                 absolutePath: {
                     title: "Absolute Path",
                     description: "Use absolute path, starting from the root directory of the operating system"

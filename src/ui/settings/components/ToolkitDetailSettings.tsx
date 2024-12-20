@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { t } from '@/src/i18n/i18n';
 import RavenHogwartsToolkitPlugin from '@/src/main';
-import { QuickPathSettings } from '@/src/toolkit/quickPath/ui/Settings';
-import { FrontmatterSorterSettings } from '@/src/toolkit/frontmatterSorter/ui/Settings';
-import { TableEnhancementsSettings } from '@/src/toolkit/tableEnhancements/ui/Settings';
+import { QuickPathSettings } from '@/src/toolkit/quickPath/ui/QuickPathSettings';
+import { FrontmatterSorterSettings } from '@/src/toolkit/frontmatterSorter/ui/FrontmatterSorterSettings';
+import { TableEnhancementsSettings } from '@/src/toolkit/tableEnhancements/ui/TableEnhancementsSettings';
 import { ToolkitId } from '../../../manager/hooks/useToolkitSettings';
 import { ArrowLeft } from 'lucide-react';
 

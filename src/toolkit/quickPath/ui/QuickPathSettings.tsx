@@ -4,7 +4,6 @@ import { t } from '@/src/i18n/i18n';
 import { IQuickPathConfig } from '../types/config';
 import RavenHogwartsToolkitPlugin from '@/src/main';
 import { useModuleConfig } from '@/src/manager/hooks/useModuleConfig';
-import { FileText, Split } from 'lucide-react';
 import { Toggle } from '@/src/ui/components/Toggle';
 
 interface QuickPathSettingsProps {
@@ -24,10 +23,20 @@ export const QuickPathSettings: React.FC<QuickPathSettingsProps> = ({ plugin }) 
 
   return (
     <div className="quick-path-settings">
+
+      <SettingItem
+        name={t('toolkit.quickPath.settings.addEditorMenu.title')}
+        desc={t('toolkit.quickPath.settings.addEditorMenu.description')}
+      >
+        <Toggle
+          checked={config.addEditorMenu}
+          onChange={(checked) => handleUpdateConfig({ addEditorMenu: checked })}
+        />
+      </SettingItem>
+
       <SettingItem
         name={t('toolkit.quickPath.settings.absolutePath.title')}
         desc={t('toolkit.quickPath.settings.absolutePath.description')}
-        icon={<FileText size={18} />}
       >
         <Toggle
           checked={config.useAbsolutePath}
@@ -38,7 +47,6 @@ export const QuickPathSettings: React.FC<QuickPathSettingsProps> = ({ plugin }) 
       <SettingItem
         name={t('toolkit.quickPath.settings.separator.title')}
         desc={t('toolkit.quickPath.settings.separator.description')}
-        icon={<Split size={18} />}
       >
         <select 
           value={config.pathSeparator}

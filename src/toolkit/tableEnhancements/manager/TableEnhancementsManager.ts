@@ -47,20 +47,18 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
     protected async onModuleLoad(): Promise<void> {
         this.logger.info('Loading table enhancements manager');
         await this.loadSavedCalculations();
-    }
 
-    protected registerContextMenuItems(): void {
         this.registerEvent(
             this.app.workspace.on("editor-menu", (menu: Menu, editor: Editor) => {
                 if (this.isEnabled()) {
                     this.addMenuItem(menu, {
-                        title: this.t('toolkit.tableEnhancements.context_menu'),
+                        title: this.t('toolkit.tableEnhancements.editor_menu.table_enhancements'),
                         icon: 'tablets',
-                        showSeparator: true,
+                        order: 1,
                         callback: () => {
                             this.showTableEditor();
                         }
-                    });
+                    }, {useSubmenu: true});
                 }
             })
         )

@@ -16,7 +16,9 @@ export type Message = {
         tableEnhancements: {
             title: string;
             description: string;
-            context_menu: string;
+            editor_menu: {
+                table_enhancements: string;
+            }
         },
         frontmatterSorter: {
             title: string;
@@ -25,15 +27,29 @@ export type Message = {
         quickPath: {
             title: string;
             description: string;
-            copy_path: string;
-            copy_parent_path: string;
-            no_parent_path: string;
-            copy_folder_path: string;
-            copy_file_path: string;
-            copy_multiple_files_path: string;
-            copy_success: string;
-            copy_failed: string;
+            editor_menu: {
+                paste_filePath: string;
+                paste_folderPath: string;
+            }
+            file_menu: {
+                copy_folderPath: string;
+                copy_filePath: string;
+                copy_filesPath: string;
+            }
+            command: {
+                copy_filePath: string;
+                copy_folderPath: string;
+            }
+            status: {
+                copy_success: string;
+                copy_failed: string;
+                no_parent_path: string;
+            }
             settings: {
+                addEditorMenu: {
+                    title: string;
+                    description: string;
+                },
                 absolutePath: {
                     title: string;
                     description: string;

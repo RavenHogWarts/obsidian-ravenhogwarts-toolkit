@@ -1,4 +1,9 @@
+import { LucideIcon } from "lucide-react";
+import { Table } from "lucide-react";
+import { Link } from "lucide-react";
+import { FileText } from "lucide-react";
 import { DEFAULT_LOGGER_CONFIG, ILoggerConfig, LogLevel } from "../util/log";
+import { ToolkitId } from "./hooks/useToolkitSettings";
 
 // 主配置接口
 export interface IRavenHogwartsToolkitConfig {
@@ -34,4 +39,19 @@ export const DEFAULT_CONFIG: IRavenHogwartsToolkitConfig = {
         logging: DEFAULT_LOGGER_CONFIG
     },
     toolkit: {}
+};
+
+export const TOOLKIT_CONFIG: Record<ToolkitId, { icon: LucideIcon, iconName: string }> = {
+    quickPath: {
+        icon: Link,
+        iconName: 'link'
+    },
+    tableEnhancements: {
+        icon: Table,
+        iconName: 'table'
+    },
+    frontmatterSorter: {
+        icon: FileText,
+        iconName: 'file-text'
+    }
 };

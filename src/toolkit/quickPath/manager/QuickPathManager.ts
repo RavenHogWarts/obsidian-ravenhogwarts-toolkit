@@ -5,6 +5,7 @@ import RavenHogwartsToolkitPlugin from "@/src/main";
 import { TFolder } from "obsidian";
 import { Menu } from "obsidian";
 import { TFile } from "obsidian";
+import { Editor } from "obsidian";
 
 interface IQuickPathModule extends IToolkitModule {
   config: IQuickPathConfig;
@@ -22,10 +23,24 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
     this.registerEvent(
       this.app.workspace.on("file-menu", (menu: Menu, file: TFile | TFolder) => {
         if (!this.isEnabled()) return;
-          if (file instanceof TFolder) {
-            this.addFolderMenuItem(menu, file);
+        if (file instanceof TFolder) {
+          this.addMenuItem(menu, {
+            title: this.t('toolkit.quickPath.file_menu.copy_folderPath'),
+            icon: 'folder-closed',
+            callback: () => {
+              const path = this.getPath(file);
+              this.copyToClipboard(path);
+            }
+          });
         } else {
-            this.addFileMenuItem(menu, file);
+          this.addMenuItem(menu, {
+            title: this.t('toolkit.quickPath.file_menu.copy_filePath'),
+            icon: 'file-text',
+            callback: () => {
+              const path = this.getPath(file);
+              this.copyToClipboard(path);
+            }
+          });
         }
       })
     );
@@ -33,14 +48,62 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
     this.registerEvent(
       this.app.workspace.on("files-menu", (menu: Menu, files: (TFile | TFolder)[]) => {
         if (!this.isEnabled()) return;
-        this.addMultipleFilesMenuItem(menu, files);
+        this.addMenuItem(menu, {
+          title: this.t('toolkit.quickPath.file_menu.copy_filesPath'),
+          icon: 'copy',
+          callback: () => {
+            const paths = files
+              .filter((item): item is TFile => item instanceof TFile)
+              .map(file => this.getPath(file))
+              .join(this.config.pathSeparator || '\n');
+            this.copyToClipboard(paths);
+          }
+        });
       })
     );
 
-    // 注册复制文件路径命令
+    // 注册编辑器菜单
+    if (this.config.addEditorMenu) {
+      this.registerEvent(
+          this.app.workspace.on("editor-menu", (menu: Menu, editor: Editor) => {
+          this.addMenuItem(menu, [
+            {
+              title: this.t('toolkit.quickPath.editor_menu.paste_filePath'),
+              icon: 'copy',
+              order: 1,
+              callback: () => {
+                const activeFile = this.app.workspace.getActiveFile();
+                if (activeFile) {
+                  const path = this.getPath(activeFile);
+                  this.copyToClipboard(path, false);
+                  editor.replaceSelection(path);
+                }
+              }
+            },
+            {
+              title: this.t('toolkit.quickPath.editor_menu.paste_folderPath'),
+              icon: 'folder',
+              order: 2,
+              callback: () => {
+                const activeFile = this.app.workspace.getActiveFile();
+                const parentPath = activeFile && this.getParentPath(activeFile);
+                if (parentPath) {
+                  this.copyToClipboard(parentPath, false);
+                  editor.replaceSelection(parentPath);
+                } else {
+                  this.logger.notice(this.t('toolkit.quickPath.status.no_parent_path'));
+                }
+              }
+            }
+          ], { useSubmenu: true })
+        })
+      );
+    }
+
+    // 保留原有的命令注册（这些只复制，不粘贴）
     this.addCommand({
       id: 'copyPath',
-      name: this.t('toolkit.quickPath.copy_path'),
+      name: this.t('toolkit.quickPath.command.copy_filePath'),
       callback: () => {
         const activeFile = this.app.workspace.getActiveFile();
         if (activeFile) {
@@ -50,69 +113,28 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
       }
     });
 
-    // 注册复制父目录路径命令
     this.addCommand({
       id: 'copyParentPath',
-      name: this.t('toolkit.quickPath.copy_parent_path'),
+      name: this.t('toolkit.quickPath.command.copy_folderPath'),
       callback: () => {
         const activeFile = this.app.workspace.getActiveFile();
-        if (activeFile) {
-          const parentPath = this.getParentPath(activeFile);
-          if (parentPath) {
-            this.copyToClipboard(parentPath);
-          } else {
-            this.logger.notice(this.t('toolkit.quickPath.no_parent_path'));
-          }
+        const parentPath = activeFile && this.getParentPath(activeFile);
+        if (parentPath) {
+          this.copyToClipboard(parentPath);
+        } else {
+          this.logger.notice(this.t('toolkit.quickPath.status.no_parent_path'));
         }
       }
     });
   }
 
-  private addFolderMenuItem(menu: Menu, folder: TFolder): void {
-    this.addMenuItem(menu, {
-      title: this.t('toolkit.quickPath.copy_folder_path'),
-      icon: 'folder-closed',
-      callback: () => {
-        const path = this.getPath(folder);
-        this.copyToClipboard(path);
-      }
-    });
-  }
-
-  private addFileMenuItem(menu: Menu, file: TFile): void {
-    this.addMenuItem(menu, {
-      title: this.t('toolkit.quickPath.copy_file_path'),
-      icon: 'file-text',
-      callback: () => {
-        const path = this.getPath(file);
-        this.copyToClipboard(path);
-      }
-    });
-  }
-
-  private addMultipleFilesMenuItem(menu: Menu, items: (TFile | TFolder)[]): void {
-    const files = items.filter((item): item is TFile => item instanceof TFile);
-    if (!files.length) return;
-    this.addMenuItem(menu, {
-      title: this.t('toolkit.quickPath.copy_multiple_files_path'),
-      icon: 'copy',
-      callback: () => {
-        const paths = files
-          .map(file => this.getPath(file))
-          .join(this.config.pathSeparator || '\n');
-        this.copyToClipboard(paths);
-      }
-    });
-  }
-
   private getParentPath(file: TFile | TFolder): string | null {
-    const path = file.path;
+    const path = this.config.useAbsolutePath 
+      ? `${this.basePath}/${file.path}`
+      : file.path;
     const lastSlashIndex = path.lastIndexOf('/');
     if (lastSlashIndex === -1) return null;
-    const parentPath = path.substring(0, lastSlashIndex);
-    return this.config.useAbsolutePath 
-      ? `${this.basePath}/${parentPath}`
-      : parentPath;
+    return path.substring(0, lastSlashIndex);
   }
 
   private getPath(file: TFile | TFolder): string {
@@ -121,13 +143,17 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
       : file.path;
   }
 
-  private copyToClipboard(text: string): void {
+  private copyToClipboard(text: string, showNotice = true): void {
     navigator.clipboard.writeText(text).then(() => {
       this.logger.debug("Copied to clipboard");
-      this.logger.notice(this.t('toolkit.quickPath.copy_success'));
+      if (showNotice) {
+        this.logger.notice(this.t('toolkit.quickPath.status.copy_success'));
+      }
     }).catch((error) => {
       this.logger.error("Failed to copy to clipboard", error);
-      this.logger.notice(this.t('toolkit.quickPath.copy_failed'));
+      if (showNotice) {
+        this.logger.notice(this.t('toolkit.quickPath.status.copy_failed'));
+      }
     });
   }
 
