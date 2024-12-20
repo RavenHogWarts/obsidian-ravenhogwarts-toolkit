@@ -25,6 +25,9 @@ export type Message = {
         quickPath: {
             title: string;
             description: string;
+            copy_path: string;
+            copy_parent_path: string;
+            no_parent_path: string;
             copy_folder_path: string;
             copy_file_path: string;
             copy_multiple_files_path: string;

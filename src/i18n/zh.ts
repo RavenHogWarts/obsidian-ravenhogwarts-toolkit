@@ -23,6 +23,9 @@ export const zh: Message = {
         quickPath: {
             title: "快速路径",
             description: "快速复制文件夹或单(多)文件路径",
+            copy_path: "复制路径",
+            copy_parent_path: "复制父目录路径",
+            no_parent_path: "没有父目录路径",
             copy_folder_path: "复制文件夹路径",
             copy_file_path: "复制文件路径",
             copy_multiple_files_path: "复制多个文件路径",

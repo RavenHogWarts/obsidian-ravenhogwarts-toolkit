@@ -17,9 +17,7 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
   protected async onModuleLoad(): Promise<void> {
     this.logger.info("Loading quick path manager");
     this.basePath = (this.app.vault.adapter as any).getBasePath()?.replace(/\\/g, '/') || '';
-  }
 
-  protected registerContextMenuItems(): void {
     // 注册文件菜单（单个文件/文件夹）
     this.registerEvent(
       this.app.workspace.on("file-menu", (menu: Menu, file: TFile | TFolder) => {
@@ -38,7 +36,38 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
         this.addMultipleFilesMenuItem(menu, files);
       })
     );
+
+    // 注册复制文件路径命令
+    this.addCommand({
+      id: 'copyPath',
+      name: this.t('toolkit.quickPath.copy_path'),
+      callback: () => {
+        const activeFile = this.app.workspace.getActiveFile();
+        if (activeFile) {
+          const path = this.getPath(activeFile);
+          this.copyToClipboard(path);
+        }
+      }
+    });
+
+    // 注册复制父目录路径命令
+    this.addCommand({
+      id: 'copyParentPath',
+      name: this.t('toolkit.quickPath.copy_parent_path'),
+      callback: () => {
+        const activeFile = this.app.workspace.getActiveFile();
+        if (activeFile) {
+          const parentPath = this.getParentPath(activeFile);
+          if (parentPath) {
+            this.copyToClipboard(parentPath);
+          } else {
+            this.logger.notice(this.t('toolkit.quickPath.no_parent_path'));
+          }
+        }
+      }
+    });
   }
+
   private addFolderMenuItem(menu: Menu, folder: TFolder): void {
     this.addMenuItem(menu, {
       title: this.t('toolkit.quickPath.copy_folder_path'),
@@ -74,6 +103,16 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
         this.copyToClipboard(paths);
       }
     });
+  }
+
+  private getParentPath(file: TFile | TFolder): string | null {
+    const path = file.path;
+    const lastSlashIndex = path.lastIndexOf('/');
+    if (lastSlashIndex === -1) return null;
+    const parentPath = path.substring(0, lastSlashIndex);
+    return this.config.useAbsolutePath 
+      ? `${this.basePath}/${parentPath}`
+      : parentPath;
   }
 
   private getPath(file: TFile | TFolder): string {

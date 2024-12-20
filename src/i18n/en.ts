@@ -23,6 +23,9 @@ export const en: Message = {
         quickPath: {
             title: "Quick Path",
             description: "Quickly copy folder or single(multiple) file path",
+            copy_path: "Copy Path",
+            copy_parent_path: "Copy Parent Path",
+            no_parent_path: "No Parent Path",
             copy_folder_path: "Copy Folder Path",
             copy_file_path: "Copy File Path",
             copy_multiple_files_path: "Copy Multiple Files Path",

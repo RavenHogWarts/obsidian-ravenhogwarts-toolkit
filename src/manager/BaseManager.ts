@@ -1,7 +1,7 @@
 import { IRavenHogwartsToolkitConfig, IToolkitModule } from './types';
 import RavenHogwartsToolkitPlugin from '../main';
 import { Logger } from '../util/log';
-import { App, Component, Menu } from 'obsidian';
+import { App, Command, Component, Menu } from 'obsidian';
 import { getStandardTime } from '../util/date';
 import { t, TranslationKeys } from '../i18n/i18n';
 import { QUICK_PATH_DEFAULT_CONFIG } from '../toolkit/quickPath/types/config';
@@ -27,15 +27,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
         this.logger = Logger.getLogger(this.moduleId);
 
         // 初始化模块（异步）
-        this.initPromise = this.initializeModule()
-           .then(() => {
-            //    this.initialized = true;
-               this.logger.debug('Module initialized:', this.moduleId);
-           })
-           .catch(error => {
-               this.logger.error('Error initializing module:', this.moduleId, error);
-               throw error;
-           });
+        this.initPromise = this.initializeModule();
     }
 
     private async initializeModule() {
@@ -76,8 +68,6 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
 
     public async onload(): Promise<void> {
         await this.waitForInitialization();
-        // 注册上下文菜单
-        this.registerContextMenu();
         // 调用子类的加载方法
         await this.onModuleLoad();
     }
@@ -144,14 +134,36 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
         return t(key, params);
     }
 
-    // 注册上下文菜单
-    protected registerContextMenu() {
-        // 调用子类实现的方法
-        this.registerContextMenuItems();
+    protected get pluginInstance(): RavenHogwartsToolkitPlugin {
+        return this.plugin;
     }
-    // 由子类实现的具体注册菜单项方法
-    protected registerContextMenuItems(): void {}
-    // 通用的添加菜单项方法
+
+    // 重写 Component 的 registerEvent 以添加启用状态检查
+    public registerEvent(eventRef: any): void {
+        if (this.isEnabled()) {
+            super.registerEvent(eventRef);
+        }
+    }
+
+    // 为常用的命令注册提供便捷方法
+    protected addCommand(command: Command): void {
+        const enhancedCommand = {
+            ...command,
+            id: command.id.includes(this.moduleId) ? command.id : `${this.moduleId}.${command.id}`,
+            name: `${this.moduleId}: ${command.name}`,
+            checkCallback: (checking: boolean) => {
+                if (checking) return this.isEnabled();
+                if (this.isEnabled() && command.callback) {
+                    command.callback();
+                    return true;
+                }
+                return false;
+            }
+        }
+        this.plugin.addCommand(enhancedCommand);
+    }
+
+    // 为菜单项添加提供便捷方法
     protected addMenuItem(
         menu: Menu, 
         {
