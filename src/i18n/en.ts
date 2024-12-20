@@ -26,8 +26,8 @@ export const en: Message = {
             title: "Quick Path",
             description: "Quickly copy folder or single(multiple) file path",
             editor_menu: {
-                paste_filePath: "Copy File Path",
-                paste_folderPath: "Copy Folder Path",
+                paste_filePath: "Paste File Path",
+                paste_folderPath: "Paste Folder Path",
             },
             file_menu: {
                 copy_folderPath: "Copy Folder Path",
