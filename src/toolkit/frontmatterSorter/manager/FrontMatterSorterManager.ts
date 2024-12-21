@@ -65,6 +65,10 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
                         
                         const activeFile = this.app.workspace.getActiveFile();
                         if (activeFile && activeFile.path === file.path) {
+                            if (!this.shouldProcessFile(file)) {
+                                this.logger.debug(`文件 ${file.path} ${this.getIgnoreReason(file)}，已跳过自动排序`);
+                                return;
+                            }
                             await this.sortFile(file);
                         }
                     }
@@ -76,22 +80,73 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
     private async sortCurrentFileFrontmatter(): Promise<void> {
         const activeFile = this.app.workspace.getActiveFile();
         if (!activeFile) return;
+
+        if (!this.shouldProcessFile(activeFile)) {
+            const ignoreReason = this.getIgnoreReason(activeFile);
+            this.logger.notice(`当前文件 ${activeFile.path} ${ignoreReason}，已跳过排序`);
+            return;
+        }
+
         await this.sortFile(activeFile);
     }
 
     private async sortAllFrontmatter(): Promise<void> {
         const files = this.app.vault.getMarkdownFiles();
-        const batchSize = 5; // 每批处理的文件数
+        const batchSize = 5;
         
+        let sortedCount = 0;
+        let skippedCount = 0;
+        const skippedFiles: string[] = [];
+
         for (let i = 0; i < files.length; i += batchSize) {
             const batch = files.slice(i, i + batchSize);
-            await Promise.all(batch.map(file => this.sortFile(file)));
+            const results = await Promise.all(
+                batch.map(async file => {
+                    if (!this.shouldProcessFile(file)) {
+                        skippedFiles.push(file.path);
+                        return false;
+                    }
+                    return this.sortFile(file);
+                })
+            );
+            
+            sortedCount += results.filter(Boolean).length;
+            skippedCount += results.filter(r => r === false).length;
         }
+
+        this.logger.notice(
+            `前置元数据排序完成：\n` +
+            `- 已处理：${sortedCount} 个文件\n` +
+            `- 已跳过：${skippedCount} 个文件` +
+            (skippedFiles.length > 0 ? `\n- 跳过的文件：\n  ${skippedFiles.join('\n  ')}` : '')
+        );
+    }
+
+    private getIgnoreReason(file: TFile): string {
+        const ignoredFolder = this.config.ignoreFolders.find(folder => {
+            const normalizedFolder = folder.endsWith('/') ? folder : folder + '/';
+            return file.path.startsWith(normalizedFolder);
+        });
+        if (ignoredFolder) {
+            return `在忽略文件夹 "${ignoredFolder}" 中`;
+        }
+
+        const ignoredPattern = this.config.ignoreFiles.find(pattern => {
+            try {
+                return minimatch(file.path, pattern, { matchBase: true });
+            } catch (error) {
+                return false;
+            }
+        });
+        if (ignoredPattern) {
+            return `匹配忽略规则 "${ignoredPattern}"`;
+        }
+
+        return '在忽略列表中';
     }
 
     private async sortFile(file: TFile): Promise<boolean> {
         if (this.processing) return false;
-        if (!this.shouldProcessFile(file)) return false;
 
         try {
             this.processing = true;
@@ -123,7 +178,6 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
         if (!file || file.extension !== 'md') return false;
 
         const isIgnoredFolder = this.config.ignoreFolders.some(folder =>{
-            // 确保文件夹路径以 / 结尾
             const normalizedFolder = folder.endsWith('/') ? folder : folder + '/';
             return file.path.startsWith(normalizedFolder);
         } );

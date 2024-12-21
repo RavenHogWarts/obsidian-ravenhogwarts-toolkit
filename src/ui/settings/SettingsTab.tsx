@@ -50,6 +50,7 @@ export default class RavenHogwartsToolkitSettingTab extends PluginSettingTab {
             />
           ) : (
             <ToolkitDetailSettings
+              app={this.app}
               plugin={this.plugin}
               moduleId={this.currentView}
               onNavigateBack={() => {

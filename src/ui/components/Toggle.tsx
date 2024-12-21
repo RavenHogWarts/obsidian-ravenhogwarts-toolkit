@@ -5,7 +5,6 @@ interface ToggleProps {
   onChange: (checked: boolean) => void;
   className?: string;
   disabled?: boolean;
-  size?: 'small' | 'medium' | 'large';
   'aria-label'?: string;
 }
 
@@ -14,7 +13,6 @@ export const Toggle: React.FC<ToggleProps> = ({
   onChange,
   className = '',
   disabled = false,
-  size = 'medium',
   'aria-label': ariaLabel,
 }) => {
   const handleChange = React.useCallback(() => {
@@ -32,7 +30,7 @@ export const Toggle: React.FC<ToggleProps> = ({
   }, [checked, disabled, onChange]);
   return (
     <div 
-      className={`rht-toggle ${checked ? 'is-enabled' : ''} ${disabled ? 'is-disabled' : ''} is-${size} ${className}`}
+      className={`rht-toggle ${checked ? 'is-enabled' : ''} ${disabled ? 'is-disabled' : ''} ${className}`}
       onClick={handleChange}
       role="switch"
       aria-checked={checked}

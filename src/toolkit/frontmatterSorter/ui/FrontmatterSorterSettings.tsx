@@ -5,13 +5,21 @@ import { IFrontmatterSorterConfig } from '../types/config';
 import RavenHogwartsToolkitPlugin from '@/src/main';
 import { useModuleConfig } from '@/src/manager/hooks/useModuleConfig';
 import { Toggle } from '@/src/ui/components/Toggle';
+import { TagInput } from '@/src/ui/components/TagInput';
+import { App } from 'obsidian';
+import { useVaultSuggestions } from '@/src/manager/hooks/useVaultSuggestions';
 
 interface FrontmatterSorterSettingsProps {
+  app: App;
   plugin: RavenHogwartsToolkitPlugin;
 }
 
-export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps> = ({ plugin }) => {
+export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps> = ({
+  app,
+  plugin
+}) => {
   const { config, updateConfig } = useModuleConfig<IFrontmatterSorterConfig>(plugin, 'frontmatterSorter');
+  const { folderSuggestions, fileSuggestions, keySuggestions } = useVaultSuggestions(app);
 
   const handleUpdateConfig = async (updates: Partial<IFrontmatterSorterConfig>) => {
     try {
@@ -19,14 +27,6 @@ export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps>
     } catch (err) {
       console.error('Failed to update config:', err);
     }
-  };
-
-  const handleArrayInput = (value: string, field: 'ignoreFolders' | 'ignoreFiles' | 'priority') => {
-    const array = value.split(',').map(item => item.trim()).filter(Boolean);
-    handleUpdateConfig({ 
-      ...config,
-      [field]: array
-    });
   };
 
   return (
@@ -44,15 +44,27 @@ export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps>
       <SettingItem
         name={t('toolkit.frontmatterSorter.settings.ignoreFolders.title')}
         desc={t('toolkit.frontmatterSorter.settings.ignoreFolders.description')}
+        collapsible={true}
+        defaultCollapsed={true}
       >
-        
+        <TagInput 
+          values={config.ignoreFolders || []}
+          onChange={(values) => handleUpdateConfig({ ignoreFolders: values })}
+          suggestions={folderSuggestions}
+        />
       </SettingItem>
 
       <SettingItem
         name={t('toolkit.frontmatterSorter.settings.ignoreFiles.title')}
         desc={t('toolkit.frontmatterSorter.settings.ignoreFiles.description')}
+        collapsible={true}
+        defaultCollapsed={true}
       >
-        
+        <TagInput 
+          values={config.ignoreFiles || []}
+          onChange={(values) => handleUpdateConfig({ ignoreFiles: values })}
+          suggestions={fileSuggestions}
+        />
       </SettingItem>
 
       <h3>{t('toolkit.frontmatterSorter.settings.rules.title')}</h3>
@@ -83,22 +95,35 @@ export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps>
       <SettingItem
         name={t('toolkit.frontmatterSorter.settings.rules.priority.title')}
         desc={t('toolkit.frontmatterSorter.settings.rules.priority.description')}
+        collapsible={true}
+        defaultCollapsed={true}
       >
-        
+        <TagInput 
+          values={config.rules.priority || []}
+          onChange={(values) => handleUpdateConfig({ rules: { ...config.rules, priority: values } })}
+          suggestions={keySuggestions}
+        />
       </SettingItem>
 
       <SettingItem
         name={t('toolkit.frontmatterSorter.settings.rules.ignoreKeys.title')}
         desc={t('toolkit.frontmatterSorter.settings.rules.ignoreKeys.description')}
+        collapsible={true}
+        defaultCollapsed={true}
       >
-        
+        <TagInput 
+          values={config.rules.ignoreKeys || []}
+          onChange={(values) => handleUpdateConfig({ rules: { ...config.rules, ignoreKeys: values } })}
+          suggestions={keySuggestions}
+        />
       </SettingItem>
 
       <SettingItem
         name={t('toolkit.frontmatterSorter.settings.rules.customOrder.title')}
         desc={t('toolkit.frontmatterSorter.settings.rules.customOrder.description')}
+        collapsible={true}
+        defaultCollapsed={true}
       >
-        
       </SettingItem>
     </div>
   );

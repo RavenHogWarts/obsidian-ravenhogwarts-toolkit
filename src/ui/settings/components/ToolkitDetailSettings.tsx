@@ -6,14 +6,17 @@ import { FrontmatterSorterSettings } from '@/src/toolkit/frontmatterSorter/ui/Fr
 import { TableEnhancementsSettings } from '@/src/toolkit/tableEnhancements/ui/TableEnhancementsSettings';
 import { ToolkitId } from '../../../manager/hooks/useToolkitSettings';
 import { ArrowLeft } from 'lucide-react';
+import { App } from 'obsidian';
 
 interface ToolkitDetailSettingsProps {
+  app: App;
   plugin: RavenHogwartsToolkitPlugin;
   moduleId: ToolkitId;
   onNavigateBack: () => void;
 }
 
 export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
+  app,
   plugin,
   moduleId,
   onNavigateBack
@@ -25,7 +28,7 @@ export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
       case 'tableEnhancements':
         return <TableEnhancementsSettings />;
       case 'frontmatterSorter':
-        return <FrontmatterSorterSettings plugin={plugin} />;
+        return <FrontmatterSorterSettings app={app} plugin={plugin} />;
       default:
         return null;
     }
