@@ -8,7 +8,9 @@ export const en: Message = {
             description: "Start/Stop Toolkit, Manage Specific Configurations"
         },
         back: "Back",
-        toggle_toolkit: "Toggle Toolkit"
+        toggle_toolkit: "Toggle Toolkit",
+        confirm: "Confirm",
+        cancel: "Cancel"
     },
     toolkit: {
         tableEnhancements: {
@@ -34,7 +36,11 @@ export const en: Message = {
                 file_ignored: "File {0} ignored, reason: {1}",
                 file_sorted: "File {0} sorted",
                 sort_complete: "Frontmatter sorted:\nProcessed {0} files, skipped {1} files",
-                sort_details: "Frontmatter sorting details:\nProcessed {0} files, skipped {1} files\nSkipped files:\n  {2}"
+                sort_details: "Frontmatter sorting details:\nProcessed {0} files, skipped {1} files\nSkipped files:\n  {2}",
+                confirm_sort_all: {
+                    title: "Confirm Bulk Sort",
+                    message: "This will sort frontmatter in all Markdown files. Do you want to continue?"
+                }
             },
 
             settings: {
@@ -56,17 +62,13 @@ export const en: Message = {
                     title: "Sorting Rules",
                     description: "Custom sorting rules",
                     priority: {
-                        title: "Priority Sorting",
-                        description: "Priority sorting keys",
+                        title: "Priority Sorting Group",
+                        description: "Priority sorting keys, sort within the group alphabetically",
                         placeholder: "Please enter the keys to priority sorting"
                     },
-                    customOrder: {
-                        title: "Custom Sorting",
-                        description: "Custom sorting keys"
-                    },
                     ignoreKeys: {
-                        title: "Ignore Keys",
-                        description: "Ignore keys",
+                        title: "Ignore Sorting Group",
+                        description: "Ignore specific keys, keep relative order, placed after all keys to be sorted",
                         placeholder: "Please enter the keys to ignore"
                     },
                     arraySort: {
@@ -75,7 +77,7 @@ export const en: Message = {
                     },
                     caseSensitive: {
                         title: "Case Sensitive",
-                        description: "Case sensitive for English letters"
+                        description: "When enabled, sorts as AA -> aa -> BB -> bb; otherwise treats cases as equal"
                     }
                 }
 

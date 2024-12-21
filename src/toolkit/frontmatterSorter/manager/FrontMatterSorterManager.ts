@@ -6,6 +6,7 @@ import { FrontMatterSorter } from "../services/FrontMatterSorter";
 import { FrontMatterWriter } from "../services/FrontMatterWriter";
 import minimatch from "minimatch";
 import { TFile } from "obsidian";
+import { Modal } from "obsidian";
 
 interface IFrontMatterSorterModule extends IToolkitModule {
     config: IFrontmatterSorterConfig;
@@ -47,14 +48,14 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
     private registerCommands(): void {
         this.addCommand({
             id: 'sort-frontmatter',
-            name: 'Sort frontmatter in current file',
+            name: this.t('toolkit.frontmatterSorter.command.sortCurrentFile'),
             callback: () => this.sortCurrentFileFrontmatter(),
             // hotkeys: [{ modifiers: ['Ctrl', 'Shift'], key: 'S' }]
         });
 
         this.addCommand({
             id: 'sort-all-frontmatter',
-            name: 'Sort frontmatter in all files',
+            name: this.t('toolkit.frontmatterSorter.command.sortAllFiles'),
             callback: () => this.sortAllFrontmatter()
         });
     }
@@ -121,6 +122,34 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
     }
 
     private async sortAllFrontmatter(): Promise<void> {
+        const confirmed = await new Promise<boolean>(resolve => {
+            const modal = new Modal(this.app);
+            modal.titleEl.setText(this.t('toolkit.frontmatterSorter.notice.confirm_sort_all.title'));
+            modal.contentEl.setText(this.t('toolkit.frontmatterSorter.notice.confirm_sort_all.message'));
+            
+            modal.contentEl.createDiv({ cls: "modal-button-container" }, (buttonContainer) => {
+                buttonContainer
+                    .createEl("button", { text: this.t('common.confirm') })
+                    .addEventListener("click", () => {
+                        modal.close();
+                        resolve(true);
+                    });
+                
+                buttonContainer
+                    .createEl("button", { text: this.t('common.cancel') })
+                    .addEventListener("click", () => {
+                        modal.close();
+                        resolve(false);
+                    });
+            });
+
+            modal.open();
+        });
+
+        if (!confirmed) {
+            return;
+        }
+
         const files = this.app.vault.getMarkdownFiles();
         const batchSize = 5;
         
@@ -128,35 +157,45 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
         let skippedCount = 0;
         const skippedFiles: string[] = [];
 
-        for (let i = 0; i < files.length; i += batchSize) {
-            const batch = files.slice(i, i + batchSize);
-            const results = await Promise.all(
-                batch.map(async file => {
-                    if (!this.shouldProcessFile(file)) {
-                        skippedFiles.push(`${file.path} (${this.getIgnoreReason(file)})`);
-                        return false;
-                    }
-                    return this.sortFile(file);
-                })
-            );
-            
-            sortedCount += results.filter(Boolean).length;
-            skippedCount += results.filter(r => r === false).length;
+        if (this.processing) {
+            return;
         }
 
-        this.logger.notice(
-            `${this.t('toolkit.frontmatterSorter.notice.sort_complete', [sortedCount, skippedCount])}\n` +
-            this.t('toolkit.frontmatterSorter.notice.check_console')
-        );
+        try {
+            this.processing = true;
+            
+            for (let i = 0; i < files.length; i += batchSize) {
+                const batch = files.slice(i, i + batchSize);
+                const results = await Promise.all(
+                    batch.map(async file => {
+                        if (!this.shouldProcessFile(file)) {
+                            skippedFiles.push(`${file.path} (${this.getIgnoreReason(file)})`);
+                            return false;
+                        }
+                        return this.sortFile(file, true);
+                    })
+                );
+                
+                sortedCount += results.filter(Boolean).length;
+                skippedCount += results.filter(r => r === false).length;
+            }
 
-        if (skippedFiles.length > 0) {
-            this.logger.info(
-                this.t('toolkit.frontmatterSorter.notice.sort_details', [
-                    sortedCount,
-                    skippedCount,
-                    skippedFiles.join('\n  ')
-                ])
+            this.logger.notice(
+                `${this.t('toolkit.frontmatterSorter.notice.sort_complete', [sortedCount, skippedCount])}\n` +
+                this.t('toolkit.frontmatterSorter.notice.check_console')
             );
+
+            if (skippedFiles.length > 0) {
+                this.logger.info(
+                    this.t('toolkit.frontmatterSorter.notice.sort_details', [
+                        sortedCount,
+                        skippedCount,
+                        skippedFiles.join('\n  ')
+                    ])
+                );
+            }
+        } finally {
+            this.processing = false;
         }
     }
 
@@ -182,11 +221,14 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
         return this.t('toolkit.frontmatterSorter.notice.ignore_unknown');
     }
 
-    private async sortFile(file: TFile): Promise<boolean> {
-        if (this.processing) return false;
+    private async sortFile(file: TFile, skipProcessingCheck = false): Promise<boolean> {
+        if (!skipProcessingCheck && this.processing) return false;
 
         try {
-            this.processing = true;
+            if (!skipProcessingCheck) {
+                this.processing = true;
+            }
+            
             const content = await this.app.vault.read(file);
             const parsed = this.parser.parse(content);
             this.logger.debug('Parsed frontmatter:', parsed);
@@ -209,7 +251,9 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
             this.logger.error(`Error sorting frontmatter in ${file.path}:`, error);
             return false;
         } finally {
-            this.processing = false;
+            if (!skipProcessingCheck) {
+                this.processing = false;
+            }
         }
     }
 

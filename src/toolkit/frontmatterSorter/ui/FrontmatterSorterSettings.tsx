@@ -121,14 +121,6 @@ export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps>
           placeholder={t('toolkit.frontmatterSorter.settings.rules.ignoreKeys.placeholder')}
         />
       </SettingItem>
-
-      <SettingItem
-        name={t('toolkit.frontmatterSorter.settings.rules.customOrder.title')}
-        desc={t('toolkit.frontmatterSorter.settings.rules.customOrder.description')}
-        collapsible={true}
-        defaultCollapsed={true}
-      >
-      </SettingItem>
     </div>
   );
 };

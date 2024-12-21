@@ -1,6 +1,5 @@
 import { TFile, Vault } from "obsidian";
-import { IFrontMatterEntry, ISortingRules } from "../types/config";
-import { IParsedFrontMatter } from "../types/config";
+import { IFrontMatterEntry, IParsedFrontMatter, ISortingRules } from "../types/config";
 
 export class FrontMatterWriter {
   constructor(private config: ISortingRules) {}

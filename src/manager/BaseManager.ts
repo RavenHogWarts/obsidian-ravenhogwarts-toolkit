@@ -51,12 +51,14 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
         } else {
             // 只合并 config，保持 data 不变
             const defaultConfig = this.getDefaultConfig();
+            const currentConfig = this.settings.toolkit[this.moduleId].config;
+            
+            // 只保留默认配置中存在的字段
+            const cleanConfig = this.cleanConfig(currentConfig, defaultConfig);
+            
             this.settings.toolkit[this.moduleId] = {
-                ...this.settings.toolkit[this.moduleId],  // 保留现有的所有数据
-                config: {                                 // 只更新 config
-                    ...defaultConfig,
-                    ...this.settings.toolkit[this.moduleId].config
-                }
+                ...this.settings.toolkit[this.moduleId],
+                config: cleanConfig
             };
         }
         
@@ -66,6 +68,28 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
         
         this.config = this.settings.toolkit[this.moduleId].config;
         this.data = this.settings.toolkit[this.moduleId].data;
+    }
+
+    private cleanConfig(currentConfig: any, defaultConfig: any): any {
+        // 如果是基本类型或数组，直接返回当前值，如果当前值不存在则返回默认值
+        if (typeof defaultConfig !== 'object' || Array.isArray(defaultConfig) || defaultConfig === null) {
+            return currentConfig ?? defaultConfig;
+        }
+
+        const cleanedConfig: any = {};
+
+        // 遍历默认配置的所有字段
+        for (const key in defaultConfig) {
+            if (key in currentConfig) {
+                // 递归清理嵌套对象
+                cleanedConfig[key] = this.cleanConfig(currentConfig[key], defaultConfig[key]);
+            } else {
+                // 如果字段不存在，使用默认值
+                cleanedConfig[key] = defaultConfig[key];
+            }
+        }
+
+        return cleanedConfig;
     }
 
     protected getDefaultConfig(): T['config'] {

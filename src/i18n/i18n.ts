@@ -12,6 +12,8 @@ export type Message = {
         }
         back: string;
         toggle_toolkit: string;
+        confirm: string;
+        cancel: string;
     },
     toolkit: {
         tableEnhancements: {
@@ -38,6 +40,10 @@ export type Message = {
                 file_sorted: string;
                 sort_complete: string;
                 sort_details: string;
+                confirm_sort_all: {
+                    title: string;
+                    message: string;
+                }
             }
             settings: {
                 sortOnSave: {
@@ -61,10 +67,6 @@ export type Message = {
                         title: string;
                         description: string;
                         placeholder: string;
-                    };
-                    customOrder: {
-                        title: string;
-                        description: string;
                     };
                     ignoreKeys: {
                         title: string;

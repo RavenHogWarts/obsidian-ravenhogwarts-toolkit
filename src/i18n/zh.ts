@@ -8,19 +8,21 @@ export const zh: Message = {
             description: "启停工具包，管理具体配置"
         },
         back: "返回",
-        toggle_toolkit: "启用/禁用工具包"
+        toggle_toolkit: "启用/禁用工具包",
+        confirm: "确认",
+        cancel: "取消"
     },
     toolkit: {
         tableEnhancements: {
-            title: "表格增强编辑",
-            description: "表格增强编辑",
+            title: "表格增强",
+            description: "增强表格编辑，支持计算和格式化",
             editor_menu: {
                 table_enhancements: "表格增强编辑"
             }
         },
         frontmatterSorter: {
             title: "文档属性排序",
-            description: "自动排序文档属性",
+            description: "使用自定义规则自动排序文档属性",
             command: {
                 sortCurrentFile: "排序当前文件",
                 sortAllFiles: "排序所有文件"
@@ -34,12 +36,16 @@ export const zh: Message = {
                 file_ignored: "文件 {0} 被忽略，原因：{1}",
                 file_sorted: "文件 {0} 已排序",
                 sort_complete: "前置元数据排序完成：\n已处理 {0} 个文件，已跳过 {1} 个文件",
-                sort_details: "前置元数据排序详细信息：\n已处理 {0} 个文件，已跳过 {1} 个文件\n跳过的文件：\n  {2}"
+                sort_details: "前置元数据排序详细信息：\n已处理 {0} 个文件，已跳过 {1} 个文件\n跳过的文件：\n  {2}",
+                confirm_sort_all: {
+                    title: "批量排序确认",
+                    message: "此操作将对所有 Markdown 文件的文档属性进行排序，是否继续？"
+                }
             },
             settings: {
                 sortOnSave: {
                     title: "保存时排序",
-                    description: "保存时自动排序文档属性"
+                    description: "保存文件时自动排序文档属性"
                 },
                 ignoreFolders: {
                     title: "忽略文件夹",
@@ -53,28 +59,24 @@ export const zh: Message = {
                 },
                 rules: {
                     title: "排序规则",
-                    description: "自定义排序规则",
+                    description: "配置排序行为和顺序",
                     priority: {
-                        title: "优先排序",
-                        description: "优先排序的文档属性",
+                        title: "优先排序组",
+                        description: "优先排序的文档属性组，组内按字母排序",
                         placeholder: "请输入优先排序的文档属性"
                     },
-                    customOrder: {
-                        title: "自定义排序",
-                        description: "自定义排序的文档属性",
-                    },
                     ignoreKeys: {
-                        title: "忽略键",
-                        description: "忽略的文档属性",
+                        title: "忽略排序组",
+                        description: "忽略的文档属性组，组内保持原始相对顺序，放置在末尾",
                         placeholder: "请输入忽略的文档属性"
                     },
                     arraySort: {
                         title: "数组排序",
-                        description: "对数组类型的文档属性中的值进行排序"
+                        description: "对数组类型的文档属性中的值进行字母排序"
                     },
                     caseSensitive: {
-                        title: "区分大小写",
-                        description: "英文字母大小写是否敏感"
+                        title: "大小写敏感",
+                        description: "启用后按 AA -> aa -> BB -> bb 排序，禁用则视为相同字母"
                     }
                 }
             }
