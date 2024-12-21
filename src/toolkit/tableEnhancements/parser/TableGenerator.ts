@@ -53,13 +53,12 @@ export class TableGenerator {
 
             // 验证表格
             if (!this.validateTable(table)) {
-                throw new Error('Invalid table structure');
+                this.logger.throwError(new Error('Invalid table structure'));
             }
 
             return table;
         } catch (error) {
-            this.logger.error('Generate from AG Grid error:', error);
-            throw error;
+            this.logger.throwError(new Error('Generate from AG Grid error'), error);
         }
     }
 
@@ -84,8 +83,7 @@ export class TableGenerator {
 
             return lines.join('\n');
         } catch (error) {
-            this.logger.error('Generate table text error:', error);
-            throw error;
+            this.logger.throwError(new Error('Generate table text error'), error);
         }
     }
 

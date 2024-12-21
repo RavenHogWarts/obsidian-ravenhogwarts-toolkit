@@ -131,7 +131,7 @@ export class TableCalculationService {
             const strategy = this.strategies[parsed.function];
             
             if (!strategy) {
-                throw new Error(`Unsupported function: ${parsed.function}`);
+                this.logger.throwError(new Error(`Unsupported function: ${parsed.function}`));
             }
 
             const result = strategy(table, parsed.columns, parsed.modifier);
@@ -142,8 +142,7 @@ export class TableCalculationService {
 
             return result;
         } catch (error) {
-            this.logger.error('Calculation failed', error);
-            throw error;
+            this.logger.throwError(new Error('Calculation failed'), error);
         }
     }
     
@@ -152,7 +151,7 @@ export class TableCalculationService {
         const columnIndices = columns.map(column => {
             const index = table.headers.findIndex(h => h.content === column);
             if (index === -1) {
-                throw new Error(`Column not found: ${column}`);
+                this.logger.throwError(new Error(`Column not found: ${column}`));
             }
             return index;
         });

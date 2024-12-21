@@ -32,12 +32,12 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
     private initializeServices(): void {
         this.parser = new FrontMatterParser(this.logger);
         this.sorter = new FrontMatterSorter(this.config.rules);
-        this.writer = new FrontMatterWriter(this.config.rules);
+        this.writer = new FrontMatterWriter(this.config.rules, this.logger);
     }
 
     private validateConfig(): void {
         if (!this.config) {
-            throw new Error('Configuration is missing');
+            this.logger.throwError(new Error('Configuration is missing'));
         }
         
         this.config.ignoreFolders = Array.isArray(this.config.ignoreFolders) ? this.config.ignoreFolders : [];
@@ -286,7 +286,7 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
         
         // 更新 sorter 和 writer 实例以使用新的规则
         this.sorter = new FrontMatterSorter(this.config.rules);
-        this.writer = new FrontMatterWriter(this.config.rules);
+        this.writer = new FrontMatterWriter(this.config.rules, this.logger);
         
         // 处理 sortOnSave 相关的事件处理器
         this.unregisterEventHandlers();

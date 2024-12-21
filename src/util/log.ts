@@ -71,10 +71,8 @@ export class Logger {
      * 初始化根日志记录器配置
      */
     static initRootLogger(config: Partial<ILoggerConfig>) {
-        if (!Logger.initialized) {
-            Logger.updateConfig(config);
-            Logger.initialized = true;
-        }
+        Logger.updateConfig(config);
+        Logger.initialized = true;
     }
 
     /**
@@ -85,6 +83,13 @@ export class Logger {
             ...Logger.config,
             ...config
         };
+        // 确保所有现有的 logger 实例都使用新配置
+        Logger.moduleLoggers.forEach(logger => {
+            logger.updateConfig(Logger.config);
+        });
+        if (Logger.rootInstance) {
+            Logger.rootInstance.updateConfig(Logger.config);
+        }
     }
 
     /**
@@ -104,6 +109,7 @@ export class Logger {
         if (!this.moduleLoggers.has(moduleId)) {
             this.moduleLoggers.set(moduleId, new Logger(moduleId));
         }
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this.moduleLoggers.get(moduleId)!;
     }
 
@@ -216,6 +222,11 @@ export class Logger {
     throwError(error: Error, message?: string): never {
         this.error(message || error.message, error);
         throw error;
+    }
+
+    private updateConfig(config: ILoggerConfig) {
+        // 更新实例级别的配置
+        Logger.config = config;
     }
 }
 

@@ -22,14 +22,28 @@ export class PluginManager {
         try {
             const loadedData = await this.plugin.loadData();
             if (loadedData) {
+                // 递归合并设置，保持现有数据
                 this.settings = {
-                    ...DEFAULT_CONFIG,
-                    ...loadedData
+                    config: {
+                        version: loadedData.config?.version || DEFAULT_CONFIG.config.version,
+                        logger: {
+                            ...DEFAULT_CONFIG.config.logger,
+                            ...(loadedData.config?.logger || {})
+                        },
+                        developer: {
+                            ...DEFAULT_CONFIG.config.developer,
+                            ...(loadedData.config?.developer || {})
+                        }
+                    },
+                    toolkit: {
+                        ...DEFAULT_CONFIG.toolkit,
+                        ...(loadedData.toolkit || {})
+                    }
                 };
 
                 // 初始化 logger 配置
-                if (this.settings.config?.logging) {
-                    Logger.initRootLogger(this.settings.config.logging);
+                if (this.settings.config?.logger) {
+                    Logger.initRootLogger(this.settings.config.logger);
                 }
             } else {
                 // 如果没有加载到数据，使用默认设置并保存
@@ -80,8 +94,8 @@ export class PluginManager {
         };
 
         // 更新 logger 配置
-        if (newSettings.config?.logging) {
-            Logger.initRootLogger(newSettings.config.logging);
+        if (newSettings.config?.logger) {
+            Logger.initRootLogger(newSettings.config.logger);
         }
         
         await this.saveSettings();
@@ -97,5 +111,9 @@ export class PluginManager {
             }
         });
         this.managers.clear();
+    }
+
+    get pluginSettings(): IRavenHogwartsToolkitConfig {
+        return this.settings;
     }
 }

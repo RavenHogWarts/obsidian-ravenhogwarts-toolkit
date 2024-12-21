@@ -89,8 +89,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
                 this.logger.debug('Loaded saved calculations:', this.savedCalculations.size);
             }
         } catch (error) {
-            this.logger.error('Error loading saved calculations:', error);
-            throw error;
+            this.logger.throwError(new Error('Error loading saved calculations'), error);
         }
     }
 
@@ -123,7 +122,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
      */
     public async addCalculation(tableId: string | undefined, calculation: ISavedCalculation): Promise<void> {
         if (!tableId) {
-            throw new Error('Table ID is required');
+            this.logger.throwError(new Error('Table ID is required'));
         }
 
         const calculations = this.getSavedCalculations(tableId);
@@ -194,7 +193,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
             if (calculation.config.output.type === OutputType.FRONTMATTER) {
                 const view = this.app.workspace.getActiveViewOfType(MarkdownView);
                 if (!view?.file) {
-                    throw new Error('No active markdown view');
+                    this.logger.throwError(new Error('No active markdown view'));
                 }
 
                 const file = view.file;
@@ -206,8 +205,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
             }
 
         } catch (error) {
-            this.logger.error('Error executing calculation:', error);
-            throw error;
+            this.logger.throwError(new Error('Error executing calculation'), error);
         }
     }
 
@@ -218,7 +216,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
         try {
             const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
             if (!activeView?.file) {
-                throw new Error('No active markdown view found');
+                this.logger.throwError(new Error('No active markdown view found'));
             }
 
             // 读取当前文件内容
@@ -236,8 +234,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
 
             this.logger.debug(`Parsed ${this.tables.length} tables from current file`);
         } catch (error) {
-            this.logger.error('Error parsing current tables:', error);
-            throw error;
+            this.logger.throwError(new Error('Error parsing current tables'), error);
         }
     }
 
@@ -275,8 +272,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
                             this.modal?.close();
                             this.modal = null;
                         } catch (error) {
-                            this.logger.error('Error saving tables:', error);
-                            throw error;
+                            this.logger.throwError(new Error('Error saving tables'), error);
                         }
                     }
                 }
@@ -303,7 +299,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
         try {
             const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
             if (!activeView?.file) {
-                throw new Error('No active markdown view found');
+                this.logger.throwError(new Error('No active markdown view found'));
             }
 
             // 读取当前文件内容
@@ -406,8 +402,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
 
             this.logger.debug('Tables saved successfully');
         } catch (error) {
-            this.logger.error('Save tables error:', error);
-            throw error;
+            this.logger.throwError(new Error('Save tables error'), error);
         }
     }
 
@@ -430,7 +425,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
             );
 
             if (originalTableIndex === -1) {
-                throw new Error('Original table not found');
+                this.logger.throwError(new Error('Original table not found'));
             }
             
             // 创建更新表格数组，保持其他表格不变
@@ -443,8 +438,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
             // 返回引用ID
             return referenceId;
         } catch (error) {
-            this.logger.error('Save calculated table error:', error);
-            throw error;
+            this.logger.throwError(new Error('Save calculated table error'), error);
         }
     }
 }

@@ -6,14 +6,26 @@ import { Command } from 'obsidian';
 export type Message = {
     common: {
         settings: string;
-        overview: {
-            title: string;
-            description: string;
-        }
         back: string;
         toggle_toolkit: string;
         confirm: string;
         cancel: string;
+        overview: {
+            title: string;
+            description: string;
+        }
+        developer: {
+            title: string;
+            description: string;
+            logger: {
+                level: string;
+                showTimestamp: string;
+                showLevel: string;
+                console: string;
+                showNotifications: string;
+                noticeTimeout: string;
+            }
+        }
     },
     toolkit: {
         tableEnhancements: {

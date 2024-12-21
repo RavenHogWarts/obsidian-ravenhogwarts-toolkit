@@ -41,7 +41,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
 
     private async initializeModule() {
         if (!this.settings.toolkit[this.moduleId]) {
-            // 初始化模块设置
+            // 如果模块完全不存在，才初始化默认设置
             this.settings.toolkit[this.moduleId] = {
                 config: this.getDefaultConfig(),
                 data: {
@@ -49,16 +49,17 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
                 }
             };
         } else {
-            // 只合并 config，保持 data 不变
+            // 如果模块存在，只合并缺失的默认配置，保留现有数据
             const defaultConfig = this.getDefaultConfig();
             const currentConfig = this.settings.toolkit[this.moduleId].config;
-            
-            // 只保留默认配置中存在的字段
-            const cleanConfig = this.cleanConfig(currentConfig, defaultConfig);
+            const currentData = this.settings.toolkit[this.moduleId].data;
             
             this.settings.toolkit[this.moduleId] = {
-                ...this.settings.toolkit[this.moduleId],
-                config: cleanConfig
+                config: {
+                    ...defaultConfig,
+                    ...currentConfig  // 保留现有配置
+                },
+                data: currentData    // 完全保留现有数据
             };
         }
         
@@ -101,8 +102,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
             case 'frontmatterSorter':
                 return FRONTMATTER_SORTER_DEFAULT_CONFIG;
             default:
-                this.logger.error(`Unknown module ID: ${this.moduleId}`);
-                throw new Error(`Unknown module ID: ${this.moduleId}`);
+                this.logger.throwError(new Error(`Unknown module ID: ${this.moduleId}`));
         }
     }
 
@@ -134,8 +134,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
             await this.plugin.saveData(this.settings);
             this.logger.debug('Settings saved for module:', this.moduleId);
         } catch (error) {
-            this.logger.error('Error saving settings for module:', this.moduleId, error);
-            throw error;
+            this.logger.throwError(new Error(`Error saving settings for module: ${this.moduleId}`), error);
         }
     }
 
@@ -152,8 +151,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
                 this.onConfigChange?.();
             }
         } catch (error) {
-            this.logger.error('Error updating config for module:', this.moduleId, error);
-            throw error;
+            this.logger.throwError(new Error(`Error updating config for module: ${this.moduleId}`), error);
         }
     }
 
@@ -169,8 +167,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
                 this.onConfigChange?.();
             }
         } catch (error) {
-            this.logger.error('Error setting config for module:', this.moduleId, error);
-            throw error;
+            this.logger.throwError(new Error(`Error setting config for module: ${this.moduleId}`), error);
         }
     }
 
@@ -181,8 +178,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
             this.data.lastModified = getStandardTime();
             await this.saveSettings();
         } catch (error) {
-            this.logger.error('Error updating data for module:', this.moduleId, error);
-            throw error;
+            this.logger.throwError(new Error(`Error updating data for module: ${this.moduleId}`), error);
         }
     }
 

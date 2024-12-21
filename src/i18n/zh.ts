@@ -7,6 +7,18 @@ export const zh: Message = {
             title: "工具包管理",
             description: "启停工具包，管理具体配置"
         },
+        developer: {
+            title: "开发者设置",
+            description: "离开页面，将关闭开发者模式，需要重新启用",
+            logger: {
+                level: "日志级别",
+                showTimestamp: "日志显示时间戳",
+                showLevel: "日志显示级别",
+                console: "日志输出到控制台",
+                showNotifications: "显示通知",
+                noticeTimeout: "通知消失时间(ms)"
+            }
+        },
         back: "返回",
         toggle_toolkit: "启用/禁用工具包",
         confirm: "确认",

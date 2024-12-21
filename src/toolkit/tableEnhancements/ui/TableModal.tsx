@@ -135,8 +135,7 @@ const TableModal: FC = () => {
                 setIsEditing(false); // 保存成功后退出编辑模式
             }
         } catch (error) {
-            logger?.error('Error saving tables:', error);
-            throw error;
+            logger?.throwError(new Error('Error saving tables'), error);
         }
     }, [onSave, editedTables, logger]);
 

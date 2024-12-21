@@ -7,6 +7,18 @@ export const en: Message = {
             title: "Toolkit Management",
             description: "Start/Stop Toolkit, Manage Specific Configurations"
         },
+        developer: {
+            title: "Developer Settings",
+            description: "Leave the page, the developer mode will be closed, and you need to re-enable it",
+            logger: {
+                level: "Logger Level",
+                showTimestamp: "Show Timestamp",
+                showLevel: "Show Level",
+                console: "Log to Console",
+                showNotifications: "Show Notifications",
+                noticeTimeout: "Notice Timeout (ms)"
+            }
+        },
         back: "Back",
         toggle_toolkit: "Toggle Toolkit",
         confirm: "Confirm",

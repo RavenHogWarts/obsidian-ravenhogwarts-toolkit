@@ -1,14 +1,15 @@
 import { TFile, Vault } from "obsidian";
 import { IFrontMatterEntry, IParsedFrontMatter, ISortingRules } from "../types/config";
+import { Logger } from "@/src/util/log";
 
 export class FrontMatterWriter {
-  constructor(private config: ISortingRules) {}
+  constructor(private config: ISortingRules, private logger: Logger) {}
 
   async writeToFile(vault: Vault, file: TFile, content: string): Promise<void> {
     try {
       await vault.modify(file, content);
     } catch (error) {
-      throw new Error(`Failed to write to file ${file.path}: ${error.message}`);
+      this.logger.throwError(new Error(`Failed to write to file ${file.path}`), error);
     }
   }
 

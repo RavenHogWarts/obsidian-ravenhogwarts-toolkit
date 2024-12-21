@@ -9,7 +9,12 @@ import { ToolkitId } from "./hooks/useToolkitSettings";
 export interface IRavenHogwartsToolkitConfig {
     config: {
         version: string;
-        logging: ILoggerConfig;
+        logger: ILoggerConfig;
+        developer: {
+            enabled: boolean;
+            lastEnabled?: string;
+            enableCount: number;
+        };
     };
     toolkit: {
         [key: string]: IToolkitModule;
@@ -36,7 +41,11 @@ export interface IToolkitModule {
 export const DEFAULT_CONFIG: IRavenHogwartsToolkitConfig = {
     config: {
         version: '1.0.0',
-        logging: DEFAULT_LOGGER_CONFIG
+        logger: DEFAULT_LOGGER_CONFIG,
+        developer: {
+            enabled: false,
+            enableCount: 0
+        }
     },
     toolkit: {}
 };

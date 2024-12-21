@@ -121,7 +121,7 @@ export class MarkdownTableParser implements ITableParser {
 
         // 验证表格
         if (!this.validateTable(table)) {
-            throw new Error('Invalid table structure');
+            this.logger.throwError(new Error('Invalid table structure'));
         }
 
         return table;
