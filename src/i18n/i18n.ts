@@ -1,6 +1,7 @@
 import { rootLogger } from '../util/log';
 import { en } from './en';
 import { zh } from './zh';
+import { Command } from 'obsidian';
 
 export type Message = {
     common: {
@@ -23,6 +24,21 @@ export type Message = {
         frontmatterSorter: {
             title: string;
             description: string;
+            command: {
+                sortCurrentFile: string;
+                sortAllFiles: string;
+            },
+            notice: {
+                ignore_folder: string;
+                ignore_pattern: string;
+                ignore_unknown: string;
+                sortAllFiles_completed: string;
+                check_console: string;
+                file_ignored: string;
+                file_sorted: string;
+                sort_complete: string;
+                sort_details: string;
+            }
             settings: {
                 sortOnSave: {
                     title: string;
@@ -31,10 +47,12 @@ export type Message = {
                 ignoreFolders: {
                     title: string;
                     description: string;
+                    placeholder: string;
                 };
                 ignoreFiles: {
                     title: string;
                     description: string;
+                    placeholder: string;
                 };
                 rules: {
                     title: string;
@@ -42,6 +60,7 @@ export type Message = {
                     priority: {
                         title: string;
                         description: string;
+                        placeholder: string;
                     };
                     customOrder: {
                         title: string;
@@ -50,6 +69,7 @@ export type Message = {
                     ignoreKeys: {
                         title: string;
                         description: string;
+                        placeholder: string;
                     };
                     arraySort: {
                         title: string;
@@ -60,7 +80,6 @@ export type Message = {
                         description: string;
                     };
                 };
-                
             }
         },
         quickPath: {
@@ -172,20 +191,20 @@ export class I18n {
         }, {});
     }
 
-    public t(key: TranslationKeys, ...args: any[]): string {
+    public t(key: TranslationKeys, args?: any[]): string {
         const translation = this.flatTranslations[this.currentLocale][key];
         if (!translation) {
             rootLogger.warn(`Translation key not found: ${key}`);
             return key;
         }
         
-        if (args.length === 0) {
+        if (!args || args.length === 0) {
             return translation;
         }
 
         return translation.replace(/\{(\d+)\}/g, (match, num) => {
             const index = parseInt(num, 10);
-            return args[index] !== undefined ? args[index] : match;
+            return args[index] !== undefined ? args[index].toString() : match;
         });
     }
 

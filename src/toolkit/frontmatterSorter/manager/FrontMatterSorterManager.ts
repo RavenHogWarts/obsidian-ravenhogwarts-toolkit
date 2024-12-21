@@ -17,16 +17,21 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
     private sorter: FrontMatterSorter;
     private writer: FrontMatterWriter;
     private processing = false;
+    private modifyEventRef: any = null;
 
     protected async onModuleLoad(): Promise<void> {
         this.validateConfig();
         
+        this.initializeServices();
+        
+        this.registerCommands();
+        this.registerEventHandlers();
+    }
+
+    private initializeServices(): void {
         this.parser = new FrontMatterParser(this.logger);
         this.sorter = new FrontMatterSorter(this.config.rules);
         this.writer = new FrontMatterWriter(this.config.rules);
-
-        this.registerCommands();
-        this.registerEventHandlers();
     }
 
     private validateConfig(): void {
@@ -44,7 +49,7 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
             id: 'sort-frontmatter',
             name: 'Sort frontmatter in current file',
             callback: () => this.sortCurrentFileFrontmatter(),
-            hotkeys: [{ modifiers: ['Ctrl', 'Shift'], key: 'S' }]
+            // hotkeys: [{ modifiers: ['Ctrl', 'Shift'], key: 'S' }]
         });
 
         this.addCommand({
@@ -55,26 +60,47 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
     }
 
     private registerEventHandlers(): void {
+        this.unregisterEventHandlers();
+        
+        this.logger.debug('Current config when registering events:', {
+            sortOnSave: this.config.sortOnSave,
+            fullConfig: this.config
+        });
+        
         if (this.config.sortOnSave) {
-            // 监听文件修改事件
-            this.registerEvent(
-                this.app.vault.on('modify', 
-                    async (file) => {
-                        if (this.processing) return;
-                        if (!(file instanceof TFile)) return;
-                        
-                        const activeFile = this.app.workspace.getActiveFile();
-                        if (activeFile && activeFile.path === file.path) {
-                            if (!this.shouldProcessFile(file)) {
-                                this.logger.debug(`文件 ${file.path} ${this.getIgnoreReason(file)}，已跳过自动排序`);
-                                return;
-                            }
-                            await this.sortFile(file);
-                        }
-                    }
-                )
+            this.modifyEventRef = this.registerEvent(
+                this.app.vault.on('modify', this.handleFileModify.bind(this))
             );
+            this.logger.debug('Registered auto-sort on save handler');
         }
+    }
+
+    private unregisterEventHandlers(): void {
+        if (this.modifyEventRef) {
+            this.modifyEventRef();
+            this.modifyEventRef = null;
+            this.logger.debug('Unregistered auto-sort on save handler');
+        }
+    }
+
+    private async handleFileModify(file: TFile): Promise<void> {
+        if (!this.config.sortOnSave) {
+            this.logger.debug('Sort on save is disabled, ignoring file modification');
+            return;
+        }
+
+        if (this.processing) return;
+        if (!(file instanceof TFile)) return;
+        
+        const activeFile = this.app.workspace.getActiveFile();
+        if (!activeFile || activeFile.path !== file.path) return;
+        
+        if (!this.shouldProcessFile(file)) {
+            this.logger.debug(`File ${file.path} ${this.getIgnoreReason(file)}, skipped auto-sorting`);
+            return;
+        }
+
+        await this.sortFile(file);
     }
 
     private async sortCurrentFileFrontmatter(): Promise<void> {
@@ -82,8 +108,12 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
         if (!activeFile) return;
 
         if (!this.shouldProcessFile(activeFile)) {
-            const ignoreReason = this.getIgnoreReason(activeFile);
-            this.logger.notice(`当前文件 ${activeFile.path} ${ignoreReason}，已跳过排序`);
+            this.logger.notice(
+                this.t('toolkit.frontmatterSorter.notice.file_ignored', [
+                    activeFile.path,
+                    this.getIgnoreReason(activeFile)
+                ])
+            );
             return;
         }
 
@@ -103,7 +133,7 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
             const results = await Promise.all(
                 batch.map(async file => {
                     if (!this.shouldProcessFile(file)) {
-                        skippedFiles.push(file.path);
+                        skippedFiles.push(`${file.path} (${this.getIgnoreReason(file)})`);
                         return false;
                     }
                     return this.sortFile(file);
@@ -115,11 +145,19 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
         }
 
         this.logger.notice(
-            `前置元数据排序完成：\n` +
-            `- 已处理：${sortedCount} 个文件\n` +
-            `- 已跳过：${skippedCount} 个文件` +
-            (skippedFiles.length > 0 ? `\n- 跳过的文件：\n  ${skippedFiles.join('\n  ')}` : '')
+            `${this.t('toolkit.frontmatterSorter.notice.sort_complete', [sortedCount, skippedCount])}\n` +
+            this.t('toolkit.frontmatterSorter.notice.check_console')
         );
+
+        if (skippedFiles.length > 0) {
+            this.logger.info(
+                this.t('toolkit.frontmatterSorter.notice.sort_details', [
+                    sortedCount,
+                    skippedCount,
+                    skippedFiles.join('\n  ')
+                ])
+            );
+        }
     }
 
     private getIgnoreReason(file: TFile): string {
@@ -128,7 +166,7 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
             return file.path.startsWith(normalizedFolder);
         });
         if (ignoredFolder) {
-            return `在忽略文件夹 "${ignoredFolder}" 中`;
+            return this.t('toolkit.frontmatterSorter.notice.ignore_folder', [ignoredFolder]);
         }
 
         const ignoredPattern = this.config.ignoreFiles.find(pattern => {
@@ -139,10 +177,9 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
             }
         });
         if (ignoredPattern) {
-            return `匹配忽略规则 "${ignoredPattern}"`;
+            return this.t('toolkit.frontmatterSorter.notice.ignore_pattern', [ignoredPattern]);
         }
-
-        return '在忽略列表中';
+        return this.t('toolkit.frontmatterSorter.notice.ignore_unknown');
     }
 
     private async sortFile(file: TFile): Promise<boolean> {
@@ -157,12 +194,14 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 
             const sorted = this.sorter.sort(parsed.entries);
             this.logger.debug('sorted frontmatter:', sorted);
-            const newContent = this.writer.generateContent(sorted);
+            const newContent = this.writer.generateContent(sorted, parsed, content);
             this.logger.debug('newContent:\n', newContent);
 
             if (content !== newContent) {
-                // await this.app.vault.modify(file, newContent);
-                this.logger.notice(`Frontmatter sorted: ${file.path}`);
+                await this.app.vault.modify(file, newContent);
+                this.logger.notice(
+                    this.t('toolkit.frontmatterSorter.notice.file_sorted', [file.path])
+                );
                 return true;
             }
             return false;
@@ -194,8 +233,29 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
         return !isIgnoredFolder && !isIgnoredFile;
     }
 
+    protected onConfigChange(): void {
+        this.logger.debug('Config changed, current config:', {
+            sortOnSave: this.config.sortOnSave,
+            rules: this.config.rules,
+            fullConfig: this.config
+        });
+        
+        // 更新 sorter 和 writer 实例以使用新的规则
+        this.sorter = new FrontMatterSorter(this.config.rules);
+        this.writer = new FrontMatterWriter(this.config.rules);
+        
+        // 处理 sortOnSave 相关的事件处理器
+        this.unregisterEventHandlers();
+        if (this.config.sortOnSave) {
+            this.registerEventHandlers();
+        }
+
+        this.logger.debug('Updated sorter and writer with new rules');
+    }
+
     protected onModuleUnload(): void {
         this.logger.info("Unloading frontmatter sorter manager");
+        this.unregisterEventHandlers();
         this.processing = false;
     }
 }

@@ -21,6 +21,22 @@ export const en: Message = {
         frontmatterSorter: {
             title: "Frontmatter Sorter",
             description: "Auto sort frontmatter",
+            command: {
+                sortCurrentFile: "Sort frontmatter in current file",
+                sortAllFiles: "Sort frontmatter in all files"
+            },
+            notice: {
+                ignore_folder: "In ignored folder {0}",
+                ignore_pattern: "Match ignored pattern {0}",
+                ignore_unknown: "In ignored list",
+                sortAllFiles_completed: "Processed {0} files, skipped {1} files",
+                check_console: "Please check the console for more details",
+                file_ignored: "File {0} ignored, reason: {1}",
+                file_sorted: "File {0} sorted",
+                sort_complete: "Frontmatter sorted:\nProcessed {0} files, skipped {1} files",
+                sort_details: "Frontmatter sorting details:\nProcessed {0} files, skipped {1} files\nSkipped files:\n  {2}"
+            },
+
             settings: {
                 sortOnSave: {
                     title: "Sort on Save",
@@ -28,18 +44,21 @@ export const en: Message = {
                 },
                 ignoreFolders: {
                     title: "Ignore Folders",
-                    description: "Ignore specific folders"
+                    description: "Ignore specific folders",
+                    placeholder: "Please enter the folders to ignore"
                 },
                 ignoreFiles: {
                     title: "Ignore Files",
-                    description: "Ignore specific files"
+                    description: "Ignore specific files",
+                    placeholder: "Please enter the files to ignore"
                 },
                 rules: {
                     title: "Sorting Rules",
                     description: "Custom sorting rules",
                     priority: {
                         title: "Priority Sorting",
-                        description: "Priority sorting keys"
+                        description: "Priority sorting keys",
+                        placeholder: "Please enter the keys to priority sorting"
                     },
                     customOrder: {
                         title: "Custom Sorting",
@@ -47,11 +66,12 @@ export const en: Message = {
                     },
                     ignoreKeys: {
                         title: "Ignore Keys",
-                        description: "Ignore keys"
+                        description: "Ignore keys",
+                        placeholder: "Please enter the keys to ignore"
                     },
                     arraySort: {
                         title: "Array Sorting",
-                        description: "Sort array values"
+                        description: "Sort array values in frontmatter"
                     },
                     caseSensitive: {
                         title: "Case Sensitive",

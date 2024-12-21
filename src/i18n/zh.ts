@@ -21,6 +21,21 @@ export const zh: Message = {
         frontmatterSorter: {
             title: "文档属性排序",
             description: "自动排序文档属性",
+            command: {
+                sortCurrentFile: "排序当前文件",
+                sortAllFiles: "排序所有文件"
+            },
+            notice: {
+                ignore_folder: "在忽略文件夹 {0} 中",
+                ignore_pattern: "匹配忽略规则 {0}",
+                ignore_unknown: "在忽略列表中",
+                sortAllFiles_completed: "已处理 {0} 个文件，已跳过 {1} 个文件",
+                check_console: "请检查控制台以获取更多详细信息",
+                file_ignored: "文件 {0} 被忽略，原因：{1}",
+                file_sorted: "文件 {0} 已排序",
+                sort_complete: "前置元数据排序完成：\n已处理 {0} 个文件，已跳过 {1} 个文件",
+                sort_details: "前置元数据排序详细信息：\n已处理 {0} 个文件，已跳过 {1} 个文件\n跳过的文件：\n  {2}"
+            },
             settings: {
                 sortOnSave: {
                     title: "保存时排序",
@@ -28,30 +43,34 @@ export const zh: Message = {
                 },
                 ignoreFolders: {
                     title: "忽略文件夹",
-                    description: "忽略特定文件夹中的文档属性"
+                    description: "忽略特定文件夹中的文档属性",
+                    placeholder: "请输入忽略的文件夹"
                 },
                 ignoreFiles: {
                     title: "忽略文件",
-                    description: "忽略特定文件中的文档属性"
+                    description: "忽略特定文件中的文档属性",
+                    placeholder: "请输入忽略的文件"
                 },
                 rules: {
                     title: "排序规则",
                     description: "自定义排序规则",
                     priority: {
                         title: "优先排序",
-                        description: "优先排序的文档属性"
+                        description: "优先排序的文档属性",
+                        placeholder: "请输入优先排序的文档属性"
                     },
                     customOrder: {
                         title: "自定义排序",
-                        description: "自定义排序的文档属性"
+                        description: "自定义排序的文档属性",
                     },
                     ignoreKeys: {
                         title: "忽略键",
-                        description: "忽略的文档属性"
+                        description: "忽略的文档属性",
+                        placeholder: "请输入忽略的文档属性"
                     },
                     arraySort: {
                         title: "数组排序",
-                        description: "是否对数组类型的值进行排序"
+                        description: "对数组类型的文档属性中的值进行排序"
                     },
                     caseSensitive: {
                         title: "区分大小写",

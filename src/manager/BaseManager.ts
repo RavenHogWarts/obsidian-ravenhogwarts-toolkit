@@ -118,9 +118,15 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
     protected async updateConfig(newConfig: Partial<T['config']>): Promise<void> {
         try {
             this.logger.debug('Updating config for module:', this.moduleId, newConfig);
+            const oldConfig = { ...this.config };  // 保存旧配置
             this.config = { ...this.config, ...newConfig };
             this.data.lastModified = getStandardTime();
             await this.saveSettings();
+            
+            // 如果配置确实发生了变化，调用 onConfigChange
+            if (JSON.stringify(oldConfig) !== JSON.stringify(this.config)) {
+                this.onConfigChange?.();
+            }
         } catch (error) {
             this.logger.error('Error updating config for module:', this.moduleId, error);
             throw error;
@@ -129,9 +135,15 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
 
     public async setConfig(newConfig: T['config']): Promise<void> {
         try {
+            const oldConfig = { ...this.config };  // 保存旧配置
             this.config = newConfig;
             this.data.lastModified = getStandardTime();
             await this.saveSettings();
+            
+            // 如果配置确实发生了变化，调用 onConfigChange
+            if (JSON.stringify(oldConfig) !== JSON.stringify(this.config)) {
+                this.onConfigChange?.();
+            }
         } catch (error) {
             this.logger.error('Error setting config for module:', this.moduleId, error);
             throw error;
@@ -271,4 +283,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
     protected onDisable(): void {
         this.logger.debug('Module disabled:', this.moduleId);
     }
+
+    // 添加 protected onConfigChange 方法声明
+    protected onConfigChange?(): void;
 }

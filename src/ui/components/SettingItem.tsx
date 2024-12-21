@@ -14,21 +14,16 @@ export const SettingItem: React.FC<SettingItemProps> = ({ name, desc, icon, chil
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   return (
     <div className={`rht-setting-item ${collapsible ? 'is-collapsible' : ''}`}>
-      <div 
-        className={"rht-setting-item-info"}
-        // onClick={collapsible ? () => setIsCollapsed(!isCollapsed) : undefined}
-      >
-        <div className="rht-setting-item-heading">
+      <div className={"rht-setting-item-info"}>
+        <div 
+          className="rht-setting-item-heading" 
+          onClick={collapsible ? () => setIsCollapsed(!isCollapsed) : undefined}
+        >
           {icon && <span className="rht-setting-item-icon">{icon}</span>}
-          <div 
-            className="rht-setting-item-name" 
-            onClick={collapsible ? () => setIsCollapsed(!isCollapsed) : undefined}
+          <div className="rht-setting-item-name" 
           >{name}</div>
           {collapsible && (
-            <span 
-              className="rht-setting-item-collapse-icon" 
-              onClick={collapsible ? () => setIsCollapsed(!isCollapsed) : undefined}
-            >
+            <span className="rht-setting-item-collapse-icon" >
               {isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
             </span>
           )}

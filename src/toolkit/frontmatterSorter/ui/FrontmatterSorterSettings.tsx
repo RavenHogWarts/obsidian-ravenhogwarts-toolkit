@@ -51,6 +51,7 @@ export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps>
           values={config.ignoreFolders || []}
           onChange={(values) => handleUpdateConfig({ ignoreFolders: values })}
           suggestions={folderSuggestions}
+          placeholder={t('toolkit.frontmatterSorter.settings.ignoreFolders.placeholder')}
         />
       </SettingItem>
 
@@ -64,6 +65,7 @@ export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps>
           values={config.ignoreFiles || []}
           onChange={(values) => handleUpdateConfig({ ignoreFiles: values })}
           suggestions={fileSuggestions}
+          placeholder={t('toolkit.frontmatterSorter.settings.ignoreFiles.placeholder')}
         />
       </SettingItem>
 
@@ -102,6 +104,7 @@ export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps>
           values={config.rules.priority || []}
           onChange={(values) => handleUpdateConfig({ rules: { ...config.rules, priority: values } })}
           suggestions={keySuggestions}
+          placeholder={t('toolkit.frontmatterSorter.settings.rules.priority.placeholder')}
         />
       </SettingItem>
 
@@ -115,6 +118,7 @@ export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps>
           values={config.rules.ignoreKeys || []}
           onChange={(values) => handleUpdateConfig({ rules: { ...config.rules, ignoreKeys: values } })}
           suggestions={keySuggestions}
+          placeholder={t('toolkit.frontmatterSorter.settings.rules.ignoreKeys.placeholder')}
         />
       </SettingItem>
 
