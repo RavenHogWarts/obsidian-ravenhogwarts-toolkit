@@ -38,9 +38,21 @@ export class FrontMatterWriter {
     if (Array.isArray(value)) {
       if (this.config.arraySort) {
         const sortedValue = [...value].sort();
-        return `${key}: [${sortedValue.join(', ')}]`;
+        const formattedValues = sortedValue.map(v => {
+          if (typeof v === 'string' && v.includes('[[')) {
+            return `"${v}"`;
+          }
+          return v;
+        });
+        return `${key}: [${formattedValues.join(', ')}]`;
       }
-      return `${key}: [${value.join(', ')}]`;
+      const formattedValues = value.map(v => {
+        if (typeof v === 'string' && v.includes('[[')) {
+          return `"${v}"`;
+        }
+        return v;
+      });
+      return `${key}: [${formattedValues.join(', ')}]`;
     }
 
     if (typeof value === 'object') {

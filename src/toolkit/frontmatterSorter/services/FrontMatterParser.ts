@@ -45,7 +45,14 @@ export class FrontMatterParser {
     }
 
     if (Array.isArray(value)) {
-      return `[${value.join(', ')}]`;
+      // 检查数组元素是否包含 [[ ]] 或其他需要引号的内容
+      const formattedValues = value.map(v => {
+        if (typeof v === 'string' && (v.includes('[[') || /[\s,:]/.test(v))) {
+          return `"${v}"`;
+        }
+        return v;
+      });
+      return `[${formattedValues.join(', ')}]`;
     }
 
     if (typeof value === 'object') {
