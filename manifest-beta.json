@@ -1,0 +1,15 @@
+{
+	"id": "obsidian-ravenhogwarts-toolkit",
+	"name": "RavenHogwarts's Toolkit",
+	"version": "1.0.0-beta.1",
+	"minAppVersion": "1.6.7",
+	"description": "A personal toolkit plugin that integrates various Obsidian utilities, designed to enhance personal note-taking experience.",
+	"author": "RavenHogWarts",
+	"authorUrl": "https://github.com/RavenHogWarts",
+	"fundingUrl": {
+		"爱发电": "https://afdian.net/a/ravenhogwarts",
+		"微信/支付宝": "https://s2.loli.net/2024/05/06/lWBj3ObszUXSV2f.png",
+		"paypal": "https://www.paypal.com/paypalme/RavenHogwarts"
+	},
+	"isDesktopOnly": false
+}
