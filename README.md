@@ -9,6 +9,12 @@ A personal toolkit plugin that integrates various Obsidian utilities, designed t
 3. Reload Obsidian
 4. Enable the plugin in Settings → Community Plugins
 
+### BRAT (Recommended for Beta Users)
+1. Install [BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin
+2. Click "Add Beta plugin" in BRAT settings
+3. Enter `RavenHogWarts/obsidian-ravenhogwarts-toolkit`
+4. Enable the plugin
+
 ## Development
 
 - Clone this repo
@@ -19,7 +25,6 @@ A personal toolkit plugin that integrates various Obsidian utilities, designed t
 ## Support
 
 If you find this plugin helpful, you can support the development through:
-- [Afdian](https://afdian.net/a/ravenhogwarts)
 - [PayPal](https://www.paypal.com/paypalme/RavenHogwarts)
 - WeChat/Alipay: [QR Code](https://s2.loli.net/2024/05/06/lWBj3ObszUXSV2f.png)
 
