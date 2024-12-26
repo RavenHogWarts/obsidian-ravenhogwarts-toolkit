@@ -7,7 +7,7 @@ import { t, TranslationKeys } from '../i18n/i18n';
 import { QUICK_PATH_DEFAULT_CONFIG } from '../toolkit/quickPath/types/config';
 import { TABLE_ENHANCEMENTS_DEFAULT_CONFIG } from '../toolkit/tableEnhancements/types/config';
 import { FRONTMATTER_SORTER_DEFAULT_CONFIG } from '../toolkit/frontmatterSorter/types/config';
-import { ToolkitId } from './hooks/useToolkitSettings';
+import { ToolkitId } from '../manager/types';
 
 interface MenuItemConfig {
     title: string;

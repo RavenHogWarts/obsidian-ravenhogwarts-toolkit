@@ -132,6 +132,14 @@ export const zh: Message = {
                     space: "空格"
                 }
             }
+        },
+        obReader: {
+            title: "OBReader",
+            description: "OBReader"
+        },
+        customIcons: {
+            title: "自定义图标",
+            description: "自定义图标"
         }
     }
 }

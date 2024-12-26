@@ -4,7 +4,7 @@ import RavenHogwartsToolkitPlugin from '@/src/main';
 import { QuickPathSettings } from '@/src/toolkit/quickPath/ui/QuickPathSettings';
 import { FrontmatterSorterSettings } from '@/src/toolkit/frontmatterSorter/ui/FrontmatterSorterSettings';
 import { TableEnhancementsSettings } from '@/src/toolkit/tableEnhancements/ui/TableEnhancementsSettings';
-import { ToolkitId } from '../../../manager/hooks/useToolkitSettings';
+import { ToolkitId } from '../../../manager/types';
 import { ArrowLeft } from 'lucide-react';
 import { App } from 'obsidian';
 
@@ -29,6 +29,8 @@ export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
         return <TableEnhancementsSettings />;
       case 'frontmatterSorter':
         return <FrontmatterSorterSettings app={app} plugin={plugin} />;
+      case 'obReader':
+      case 'customIcons':
       default:
         return null;
     }

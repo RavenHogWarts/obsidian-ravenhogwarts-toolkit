@@ -135,6 +135,14 @@ export type Message = {
                     space: string;
                 }
             }
+        },
+        obReader: {
+            title: string;
+            description: string;
+        },
+        customIcons: {
+            title: string;
+            description: string;
         }
     }
 }

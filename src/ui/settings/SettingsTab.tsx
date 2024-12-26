@@ -4,7 +4,7 @@ import { App, PluginSettingTab } from 'obsidian';
 import { createRoot, Root } from "react-dom/client";
 import { ToolkitOverview } from "./components/ToolkitOverview";
 import { ToolkitDetailSettings } from "./components/ToolkitDetailSettings";
-import { ToolkitId } from "../../manager/hooks/useToolkitSettings";
+import { ToolkitId } from "../../manager/types";
 import { DeveloperSettings } from "./components/DeveloperSettings";
 import { Logger } from "@/src/util/log";
 

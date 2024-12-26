@@ -134,6 +134,14 @@ export const en: Message = {
                     space: "Space"
                 }
             }
+        },
+        obReader: {
+            title: "OBReader",
+            description: "OBReader"
+        },
+        customIcons: {
+            title: "Custom Icons",
+            description: "Custom icons"
         }
     }
 }

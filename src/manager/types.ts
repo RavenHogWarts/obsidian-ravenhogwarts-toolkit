@@ -1,9 +1,8 @@
-import { LucideIcon } from "lucide-react";
+import { BookOpen, FileIcon, LucideIcon } from "lucide-react";
 import { Table } from "lucide-react";
 import { Link } from "lucide-react";
 import { FileText } from "lucide-react";
 import { DEFAULT_LOGGER_CONFIG, ILoggerConfig, LogLevel } from "../util/log";
-import { ToolkitId } from "./hooks/useToolkitSettings";
 
 // 主配置接口
 export interface IRavenHogwartsToolkitConfig {
@@ -50,6 +49,13 @@ export const DEFAULT_CONFIG: IRavenHogwartsToolkitConfig = {
     toolkit: {}
 };
 
+export type ToolkitId = 'tableEnhancements'
+  | 'quickPath'
+  | 'frontmatterSorter'
+  | 'obReader'
+  | 'customIcons'
+;
+
 export const TOOLKIT_CONFIG: Record<ToolkitId, { icon: LucideIcon, iconName: string }> = {
     quickPath: {
         icon: Link,
@@ -62,5 +68,13 @@ export const TOOLKIT_CONFIG: Record<ToolkitId, { icon: LucideIcon, iconName: str
     frontmatterSorter: {
         icon: FileText,
         iconName: 'file-text'
+    },
+    obReader: {
+        icon: BookOpen,
+        iconName: 'book-open'
+    },
+    customIcons: {
+        icon: FileIcon,
+        iconName: 'file-icon'
     }
 };
