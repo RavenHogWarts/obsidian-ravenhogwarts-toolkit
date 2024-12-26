@@ -3,12 +3,7 @@ import RavenHogwartsToolkitPlugin from '@/src/main';
 import { t } from '@/src/i18n/i18n';
 import { FileText, Link, Table } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
-import { TOOLKIT_CONFIG } from '../types';
-
-export type ToolkitId = 'tableEnhancements'
-  | 'quickPath'
-  | 'frontmatterSorter'
-;
+import { TOOLKIT_CONFIG, ToolkitId } from '../types';
 
 export interface ToolkitInfo {
   id: ToolkitId;
@@ -41,18 +36,20 @@ export const useToolkitSettings = ({
   // 初始化工具包列表
   const initializeToolkits = useCallback(() => {
     try {
-      const toolkitList = Object.entries(TOOLKIT_CONFIG).map(([id, config]) => {
-        const toolkitId = id as ToolkitId;
-        const manager = plugin.getManager(toolkitId);
-        return {
-          id: toolkitId,
-          icon: config.icon,
-          enabled: manager?.isEnabled() ?? false,
-          title: t(`toolkit.${toolkitId}.title`),
-          description: t(`toolkit.${toolkitId}.description`),
-          openSettings: () => onNavigateToDetail(toolkitId)
-        };
-      });
+      const toolkitList = Object.entries(TOOLKIT_CONFIG)
+        .map(([id, config]) => {
+          const toolkitId = id as ToolkitId;
+          const manager = plugin.getManager(toolkitId);
+          return {
+            id: toolkitId,
+            icon: config.icon,
+            enabled: manager?.isEnabled() ?? false,
+            title: t(`toolkit.${toolkitId}.title`),
+            description: t(`toolkit.${toolkitId}.description`),
+            openSettings: () => onNavigateToDetail(toolkitId)
+          };
+        })
+        .sort((a, b) => a.id.localeCompare(b.id));
       setToolkits(toolkitList);
       setError(null);
     } catch (err) {
