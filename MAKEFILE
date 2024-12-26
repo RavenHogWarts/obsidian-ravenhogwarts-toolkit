@@ -1,19 +1,19 @@
-# 发布正式版 例如: make release v=1.0.0
+# Release stable version, e.g.: make release v=1.0.0
 release:
-	@git tag "v$(v)"
-	@git push origin "v$(v)"
+	@git tag "$(v)"
+	@git push origin "$(v)"
 
-# 发布测试版 例如: make beta v=1.0.0-beta.1
+# Release beta version, e.g.: make beta v=1.0.0-beta.1
 beta:
-	@git tag "v$(v)"
-	@git push origin "v$(v)"
+	@git tag "$(v)"
+	@git push origin "$(v)"
 
-# 删除某个版本 例如: make del v=1.0.0
+# Delete a version, e.g.: make del v=1.0.0
 del:
-	@git tag -d "v$(v)"
-	@git push origin --delete "v$(v)"
+	@git tag -d "$(v)"
+	@git push origin --delete "$(v)"
 
-# 向后兼容的旧命令
+# Legacy command for backward compatibility
 push:
 	@git tag "$(tag)"
 	@git push origin "$(tag)"

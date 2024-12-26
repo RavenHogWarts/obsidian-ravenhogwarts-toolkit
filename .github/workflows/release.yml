@@ -3,7 +3,7 @@ name: Release Obsidian plugin
 on:
   push:
     tags:
-      - "v*" # Push events to matching any tag format, i.e. 1.0, 20.15.10
+      - "[0-9]+.[0-9]+.[0-9]+*"  # 匹配类似 1.0.0 或 1.0.0-beta.1 的格式
 
 permissions:
   contents: write
