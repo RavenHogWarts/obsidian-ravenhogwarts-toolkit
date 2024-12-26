@@ -2,9 +2,8 @@ name: Release Obsidian plugin
 
 on:
   push:
-    # Sequence of patterns matched against refs/tags
     tags:
-      - "*" # Push events to matching any tag format, i.e. 1.0, 20.15.10
+      - "v*" # Push events to matching any tag format, i.e. 1.0, 20.15.10
 
 env:
   PLUGIN_NAME: obsidian-ravenhogwarts-toolkit
@@ -15,10 +14,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # 获取完整的git历史
+
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: "16.x" # You might need to adjust this value to your own version
+          node-version: "16.x"
+
       - name: Build
         id: build
         run: |
@@ -31,17 +34,78 @@ jobs:
           ls
           echo "::set-output name=tag_name::$(git tag --sort version:refname | tail -n 1)"
 
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          # 获取最近的两个tag
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 `git rev-list --tags --skip=1 --max-count=1`)
+          
+          # 创建临时文件
+          echo -e "## Changes\n" > temp_changelog.md
+          
+          # 定义要处理的commit类型
+          TYPES=("feat" "fix" "perf" "refactor" "style" "docs" "test" "chore")
+          
+          for TYPE in "${TYPES[@]}"; do
+            # 获取特定类型的commits
+            COMMITS=$(git log ${PREVIOUS_TAG}..${LATEST_TAG} --no-merges --pretty=format:"- %s" --reverse | grep "^- ${TYPE}(" || true)
+            
+            if [ ! -z "$COMMITS" ]; then
+              # 转换commit类型为可读文本
+              case $TYPE in
+                "feat") TITLE="✨ New Features";;
+                "fix") TITLE="🐛 Bug Fixes";;
+                "perf") TITLE="⚡ Performance";;
+                "refactor") TITLE="♻️ Refactors";;
+                "style") TITLE="💄 Styles";;
+                "docs") TITLE="📝 Documentation";;
+                "test") TITLE="✅ Tests";;
+                "chore") TITLE="🔧 Chores";;
+                *) TITLE="Other";;
+              esac
+              
+              # 添加分类标题
+              echo -e "\n### ${TITLE}\n" >> temp_changelog.md
+              
+              # 处理每个commit消息，提取scope和描述
+              while IFS= read -r COMMIT; do
+                if [[ $COMMIT =~ ^-\ ${TYPE}\((.*?)\):\ (.*)$ ]]; then
+                  SCOPE="${BASH_REMATCH[1]}"
+                  DESC="${BASH_REMATCH[2]}"
+                  echo "- **${SCOPE}**: ${DESC}" >> temp_changelog.md
+                fi
+              done <<< "$COMMITS"
+            fi
+          done
+          
+          # 将处理后的changelog保存到GITHUB_OUTPUT
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          cat temp_changelog.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ github.ref }}
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           draft: false
-          prerelease: ${{ contains(github.ref, 'b') && true || false }}
+          prerelease: ${{ contains(github.ref, 'beta') }}
+          body: |
+            ${{ contains(github.ref, 'beta') && '🚧 This is a beta release' || '🎉 This is a stable release' }}
+            
+            **Version:** ${{ github.ref_name }}
+            
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ## Installation
+            1. Download the files from the Assets section below
+            2. Copy them to your vault's plugins folder: `<vault>/.obsidian/plugins/obsidian-ravenhogwarts-toolkit/`
+            3. Reload Obsidian
+            4. Enable plugin in settings
 
       - name: Upload zip file
         id: upload-zip

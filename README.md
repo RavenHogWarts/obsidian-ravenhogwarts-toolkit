@@ -25,4 +25,4 @@ If you find this plugin helpful, you can support the development through:
 
 ## License
 
-This project is licensed under the GNU General Public License v3 (GPL-3.0)
+This project is licensed under the [GNU General Public License v3 (GPL-3.0)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/blob/master/LICENSE)
