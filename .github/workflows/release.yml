@@ -5,6 +5,9 @@ on:
     tags:
       - "v*" # Push events to matching any tag format, i.e. 1.0, 20.15.10
 
+permissions:
+  contents: write
+
 env:
   PLUGIN_NAME: obsidian-ravenhogwarts-toolkit
 
