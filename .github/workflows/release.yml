@@ -37,21 +37,35 @@ jobs:
       - name: Generate Changelog
         id: changelog
         run: |
-          # 获取最近的两个tag
-          LATEST_TAG=$(git describe --tags --abbrev=0)
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 `git rev-list --tags --skip=1 --max-count=1`)
-          
-          # 创建临时文件
-          echo -e "## Changes\n" > temp_changelog.md
+          # 检查是否存在任何tag
+          if ! git describe --tags > /dev/null 2>&1; then
+            # 如果没有任何tag，使用初始commit作为起点
+            echo "## 🎉 First Release" > temp_changelog.md
+            COMMITS=$(git log --pretty=format:"- %s" --reverse)
+          else
+            # 获取最近的两个tag
+            LATEST_TAG=$(git describe --tags --abbrev=0)
+            
+            # 尝试获取前一个tag，如果不存在则使用第一个commit
+            if git describe --tags --abbrev=0 `git rev-list --tags --skip=1 --max-count=1` > /dev/null 2>&1; then
+              PREVIOUS_TAG=$(git describe --tags --abbrev=0 `git rev-list --tags --skip=1 --max-count=1`)
+              COMMITS=$(git log ${PREVIOUS_TAG}..${LATEST_TAG} --no-merges --pretty=format:"- %s" --reverse)
+            else
+              FIRST_COMMIT=$(git rev-list --max-parents=0 HEAD)
+              COMMITS=$(git log ${FIRST_COMMIT}..${LATEST_TAG} --no-merges --pretty=format:"- %s" --reverse)
+            fi
+            
+            echo -e "## Changes\n" > temp_changelog.md
+          fi
           
           # 定义要处理的commit类型
           TYPES=("feat" "fix" "perf" "refactor" "style" "docs" "test" "chore")
           
           for TYPE in "${TYPES[@]}"; do
-            # 获取特定类型的commits
-            COMMITS=$(git log ${PREVIOUS_TAG}..${LATEST_TAG} --no-merges --pretty=format:"- %s" --reverse | grep "^- ${TYPE}(" || true)
+            # 从所有commits中过滤出特定类型的commits
+            TYPE_COMMITS=$(echo "$COMMITS" | grep "^- ${TYPE}(" || true)
             
-            if [ ! -z "$COMMITS" ]; then
+            if [ ! -z "$TYPE_COMMITS" ]; then
               # 转换commit类型为可读文本
               case $TYPE in
                 "feat") TITLE="✨ New Features";;
@@ -75,7 +89,7 @@ jobs:
                   DESC="${BASH_REMATCH[2]}"
                   echo "- **${SCOPE}**: ${DESC}" >> temp_changelog.md
                 fi
-              done <<< "$COMMITS"
+              done <<< "$TYPE_COMMITS"
             fi
           done
           
