@@ -9,11 +9,10 @@ export class FrontMatterParser {
     try {
       if (!content) return null;
       
-      // 严格匹配文档开头的 frontmatter
       const match = content.match(/^\s*?---\n([\s\S]*?)\n---/);
       if (!match) return null;
 
-      const yamlContent = match[1];
+      const yamlContent = match[1].replace(/: \[\[(.*?)\]\]/g, ': "[[$1]]"');
       const parsed = parseYaml(yamlContent);
       
       if (!parsed || typeof parsed !== 'object') {
@@ -62,10 +61,16 @@ export class FrontMatterParser {
     }
     
     if (typeof value === 'string') {
+      if (value.includes('[[')) {
+        return `"${value}"`;
+      }
       if (value.includes('\n')) {
         return `|\n  ${value.trim()}`;
       }
-      return /[\s,:]/.test(value) ? `"${value}"` : value;
+      if (/[\s,:[\]]/.test(value)) {
+        return `"${value}"`;
+      }
+      return value;
     }
     
     return String(value);

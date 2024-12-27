@@ -62,13 +62,17 @@ export class FrontMatterWriter {
       return `${key}:\n${nested}`;
     }
 
-    if (typeof value === 'string' && value.includes('\n')) {
-      const lines = value.trim().split('\n');
-      return `${key}: |\n  ${lines.join('\n  ')}`;
-    }
-
-    if (typeof value === 'string' && /[\s,:]/.test(value)) {
-      return `${key}: "${value}"`;
+    if (typeof value === 'string') {
+      if (value.includes('[[')) {
+        return `${key}: "${value}"`;
+      }
+      if (value.includes('\n')) {
+        const lines = value.trim().split('\n');
+        return `${key}: |\n  ${lines.join('\n  ')}`;
+      }
+      if (/[\s,:]/.test(value)) {
+        return `${key}: "${value}"`;
+      }
     }
 
     return `${key}: ${value}`;

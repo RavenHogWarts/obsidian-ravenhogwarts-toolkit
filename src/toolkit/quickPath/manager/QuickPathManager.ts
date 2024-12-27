@@ -2,10 +2,7 @@ import { IToolkitModule } from "@/src/manager/types";
 import { IQuickPathConfig, IQuickPathData } from "../types/config";
 import { BaseManager } from "@/src/manager/BaseManager";
 import RavenHogwartsToolkitPlugin from "@/src/main";
-import { TFolder } from "obsidian";
-import { Menu } from "obsidian";
-import { TFile } from "obsidian";
-import { Editor } from "obsidian";
+import { Editor, Menu, TFile, TFolder } from "obsidian";
 
 interface IQuickPathModule extends IToolkitModule {
   config: IQuickPathConfig;
