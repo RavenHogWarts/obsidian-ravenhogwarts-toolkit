@@ -19,6 +19,39 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
     this.logger.info("Loading quick path manager");
     this.basePath = (this.app.vault.adapter as any).getBasePath()?.replace(/\\/g, '/') || '';
 
+    this.registerCommands();
+    this.registerEventHandlers();
+  }
+
+  private registerCommands(): void {
+    this.addCommand({
+      id: 'copyPath',
+      name: this.t('toolkit.quickPath.command.copy_filePath'),
+      callback: () => {
+        const activeFile = this.app.workspace.getActiveFile();
+        if (activeFile) {
+          const path = this.getPath(activeFile);
+          this.copyToClipboard(path);
+        }
+      }
+    });
+
+    this.addCommand({
+      id: 'copyParentPath',
+      name: this.t('toolkit.quickPath.command.copy_folderPath'),
+      callback: () => {
+        const activeFile = this.app.workspace.getActiveFile();
+        const parentPath = activeFile && this.getParentPath(activeFile);
+        if (parentPath) {
+          this.copyToClipboard(parentPath);
+        } else {
+          this.logger.notice(this.t('toolkit.quickPath.status.no_parent_path'));
+        }
+      }
+    });
+  }
+
+  private registerEventHandlers(): void {
     // 注册文件菜单（单个文件/文件夹）
     this.registerEvent(
       this.app.workspace.on("file-menu", (menu: Menu, file: TFile | TFolder) => {
@@ -98,34 +131,7 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
           ], { useSubmenu: true })
         })
       );
-    }
-
-    // 保留原有的命令注册（这些只复制，不粘贴）
-    this.addCommand({
-      id: 'copyPath',
-      name: this.t('toolkit.quickPath.command.copy_filePath'),
-      callback: () => {
-        const activeFile = this.app.workspace.getActiveFile();
-        if (activeFile) {
-          const path = this.getPath(activeFile);
-          this.copyToClipboard(path);
-        }
-      }
-    });
-
-    this.addCommand({
-      id: 'copyParentPath',
-      name: this.t('toolkit.quickPath.command.copy_folderPath'),
-      callback: () => {
-        const activeFile = this.app.workspace.getActiveFile();
-        const parentPath = activeFile && this.getParentPath(activeFile);
-        if (parentPath) {
-          this.copyToClipboard(parentPath);
-        } else {
-          this.logger.notice(this.t('toolkit.quickPath.status.no_parent_path'));
-        }
-      }
-    });
+    }    
   }
 
   private getParentPath(file: TFile | TFolder): string | null {
