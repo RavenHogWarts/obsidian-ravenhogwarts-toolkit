@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import RavenHogwartsToolkitPlugin from '@/src/main';
 import { t } from '@/src/i18n/i18n';
-import { FileText, Link, Table } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 import { TOOLKIT_CONFIG, ToolkitId } from '../types';
 

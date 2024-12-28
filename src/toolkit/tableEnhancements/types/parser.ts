@@ -1,4 +1,4 @@
-import { IMarkdownTable, ITablePosition } from '../types/table';
+import { IMarkdownTable, ITablePosition } from './table';
 
 /** 解析器配置接口 */
 export interface IParserConfig {

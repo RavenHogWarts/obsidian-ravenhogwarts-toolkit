@@ -5,7 +5,7 @@ import {
     ITablePosition,
     TableCellAlignment 
 } from '../types/table';
-import { IParserConfig, ITableParser } from './interfaces';
+import { IParserConfig, ITableParser } from '../types/parser';
 import { Logger } from '@/src/util/log';
 
 export class MarkdownTableParser implements ITableParser {

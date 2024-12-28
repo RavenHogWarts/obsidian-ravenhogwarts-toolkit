@@ -30,7 +30,6 @@ export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
       case 'frontmatterSorter':
         return <FrontmatterSorterSettings app={app} plugin={plugin} />;
       case 'obReader':
-      case 'customIcons':
       default:
         return null;
     }

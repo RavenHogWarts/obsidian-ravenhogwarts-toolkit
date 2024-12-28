@@ -1,13 +1,13 @@
 import { IRavenHogwartsToolkitConfig, IToolkitModule, TOOLKIT_CONFIG } from './types';
 import RavenHogwartsToolkitPlugin from '../main';
 import { Logger } from '../util/log';
-import { App, Command, Component, Menu, MenuItem } from 'obsidian';
+import { App, Command, Component, Menu } from 'obsidian';
 import { getStandardTime } from '../util/date';
 import { t, TranslationKeys } from '../i18n/i18n';
+import { ToolkitId } from '../manager/types';
 import { QUICK_PATH_DEFAULT_CONFIG } from '../toolkit/quickPath/types/config';
 import { TABLE_ENHANCEMENTS_DEFAULT_CONFIG } from '../toolkit/tableEnhancements/types/config';
 import { FRONTMATTER_SORTER_DEFAULT_CONFIG } from '../toolkit/frontmatterSorter/types/config';
-import { ToolkitId } from '../manager/types';
 
 interface MenuItemConfig {
     title: string;
