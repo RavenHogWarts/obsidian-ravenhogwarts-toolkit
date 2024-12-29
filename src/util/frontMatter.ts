@@ -54,6 +54,21 @@ export async function readFrontMatter(file: TFile): Promise<IFrontMatterData | u
     }
 }
 
+export async function replaceFrontMatterKey(file: TFile, oldKey: string, newKey: string): Promise<void> {
+    try {
+        await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
+            // 如果旧属性存在，将其值复制到新属性并删除旧属性
+            if (oldKey in frontmatter) {
+                const value = frontmatter[oldKey];
+                frontmatter[newKey] = value;
+                delete frontmatter[oldKey];
+            }
+        });
+    } catch (e) {
+        rootLogger.error(`Failed to replace front matter key from ${oldKey} to ${newKey} for file ${file.path}: ${e.message}`);
+    }
+}
+
 export async function hasFrontMatterKey(file: TFile, key: string): Promise<boolean> {
     const data = await this.readFrontMatter(file);
     return data ? key in data : false;

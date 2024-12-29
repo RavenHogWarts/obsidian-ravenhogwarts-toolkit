@@ -1,4 +1,4 @@
-import { Editor, MarkdownView, Menu } from 'obsidian';
+import { Editor, MarkdownView, Menu, TFile } from 'obsidian';
 import { BaseManager } from '@/src/manager/BaseManager';
 import { MarkdownTableParser } from '../parser/MarkdownTableParser';
 import { TableGenerator } from '../parser/TableGenerator';
@@ -10,7 +10,7 @@ import { TableCalculationService } from '../services/TableCalculationService';
 import { ITableEnhancementsConfig, ITableEnhancementsData } from '../types/config';
 import { getStandardTime } from '@/src/util/date';
 import { UUIDGenerator } from '@/src/util/uuid';
-import { updateFrontMatter } from '@/src/util/frontMatter';
+import { replaceFrontMatterKey, updateFrontMatter } from '@/src/util/frontMatter';
 import { ISavedCalculation, OutputType } from '../types/operations';
 
 interface ITableEnhancementsModule extends IToolkitModule {
@@ -162,6 +162,19 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
             };
             this.savedCalculations.set(tableId, calculations);
             await this.saveCalculations();
+        }
+    }
+
+    public async replaceFrontMatterProperty(oldKey: string, newKey: string): Promise<void> {
+        try {
+            const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+            if (!activeView?.file) {
+                this.logger.throwError(new Error('No active markdown view found'));
+            }
+    
+            await replaceFrontMatterKey(activeView.file, oldKey, newKey);
+        } catch (error) {
+            this.logger.throwError(new Error('Failed to replace front matter property'), error);
         }
     }
 

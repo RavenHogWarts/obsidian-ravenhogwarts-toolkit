@@ -175,6 +175,17 @@ export const TableCalculation: FC<TableCalculationProps> = ({
                 updatedAt: getStandardTime(),
             };
 
+            // 如果是编辑现有计算，且输出类型是 FRONTMATTER
+            if (state.editingIndex !== null && state.output === OutputType.FRONTMATTER) {
+                const oldCalculation = savedCalculations[state.editingIndex];
+                const oldOutputValue = oldCalculation.config.output.value;
+                
+                // 如果输出值发生变化，替换 frontmatter 属性
+                if (oldOutputValue !== state.outputValue) {
+                    await manager.replaceFrontMatterProperty(oldOutputValue, state.outputValue);
+                }
+            }
+
             await manager.executeCalculation(table, calculation);
 
             if (state.editingIndex !== null) {
