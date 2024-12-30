@@ -1,4 +1,4 @@
-import { Editor, MarkdownView, Menu, TFile } from 'obsidian';
+import { Editor, MarkdownView, Menu } from 'obsidian';
 import { BaseManager } from '@/src/manager/BaseManager';
 import { MarkdownTableParser } from '../parser/MarkdownTableParser';
 import { TableGenerator } from '../parser/TableGenerator';
@@ -452,6 +452,42 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
             return referenceId;
         } catch (error) {
             this.logger.throwError(new Error('Save calculated table error'), error);
+        }
+    }
+
+    public async executeAndSaveCalculation(
+        table: IMarkdownTable, 
+        calculation: Partial<ISavedCalculation>, 
+        editingIndex?: number
+    ): Promise<void> {
+        try {
+            if (!table.referenceId) {
+                table.referenceId = await this.saveCalculatedTable(table);
+            }
+
+            // 如果是编辑现有计算，且输出类型是 FRONTMATTER
+            if (editingIndex !== undefined && 
+                calculation.config?.output.type === OutputType.FRONTMATTER) {
+                const oldCalculation = this.getSavedCalculations(table.referenceId)[editingIndex];
+                const oldOutputValue = oldCalculation.config.output.value;
+                
+                // 如果输出值发生变化，替换 frontmatter 属性
+                if (oldOutputValue !== calculation.config.output.value) {
+                    await this.replaceFrontMatterProperty(oldOutputValue, calculation.config.output.value);
+                }
+            }
+
+            // 执行计算
+            await this.executeCalculation(table, calculation as ISavedCalculation);
+
+            // 保存计算
+            if (editingIndex !== undefined) {
+                await this.updateCalculation(table.referenceId, editingIndex, calculation);
+            } else {
+                await this.addCalculation(table.referenceId, calculation as ISavedCalculation);
+            }
+        } catch (error) {
+            this.logger.throwError(new Error('Failed to execute and save calculation'), error);
         }
     }
 }

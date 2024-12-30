@@ -2,8 +2,6 @@
 .rht-toolkit-modal {
     max-width: 90vw;
     max-height: 90vh;
-    width: 90vw;
-    height: 90vh;
     overflow-y: auto;
     padding: 20px;
     margin: 0 auto;
@@ -12,6 +10,21 @@
     box-shadow: 0 2px 8px var(--background-modifier-box-shadow);
     position: relative;
     border: 1px solid var(--color-accent);
+}
+
+.rht-toolkit-modal.modal-size-large {
+    width: 90vw;
+    height: 90vh;
+}
+
+.rht-toolkit-modal.modal-size-medium {
+    width: 60vw;
+    height: 60vh;
+}
+
+.rht-toolkit-modal.modal-size-small {
+    width: 40vw;
+    height: 40vh;
 }
 
 /* Close Button Styles */

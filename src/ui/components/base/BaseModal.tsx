@@ -10,6 +10,7 @@ interface IBaseModalProps {
     plugin: RavenHogwartsToolkitPlugin;
     onClose: () => void;
     additionalProps?: Record<string, any>;
+    sizeClass?: string;
 }
 
 export const ModalContext = React.createContext<{
@@ -33,14 +34,16 @@ export class BaseModal extends Modal {
         app: App, 
         plugin: RavenHogwartsToolkitPlugin, 
         componentImport: () => Promise<{ default: React.ComponentType<any> }>,
-        additionalProps: Record<string, any> = {}
+        additionalProps: Record<string, any> = {},
+        sizeClass = 'modal-size-large'
     ) {
         super(app);
         this.props = { 
             app, 
             plugin, 
             onClose: () => this.close(), 
-            additionalProps
+            additionalProps,
+            sizeClass
         };
         this.LazyComponent = React.lazy(componentImport);
     }
@@ -50,7 +53,7 @@ export class BaseModal extends Modal {
         this.root = createRoot(el);
         this.root.render(
             <React.StrictMode>
-                <div className="rht-toolkit-modal">
+                <div className={`rht-toolkit-modal ${this.props.sizeClass}`}>
                     <ModalContext.Provider value={{ 
                         app: this.props.app, 
                         plugin: this.props.plugin,

@@ -306,4 +306,12 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
 
     // 添加 protected onConfigChange 方法声明
     protected onConfigChange?(): void;
+
+    public getApp(): App {
+        return this.app;
+    }
+
+    public getPlugin(): RavenHogwartsToolkitPlugin {
+        return this.plugin;
+    }
 }
