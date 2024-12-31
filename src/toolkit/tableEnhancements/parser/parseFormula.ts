@@ -32,7 +32,8 @@ export class FormulaParser {
     /** 解析公式 */
     public static parse(formula: string): ParsedFormula {
         // 示例公式: "Count([A,B], 'values')" 或 "TimeSpan([Date], 'days')"
-        const match = formula.match(/(\w+)\(\[([\w,\s]+)\](?:,\s*'(\w+)')?\)/);
+        const regex = /^(\w+)\s*\(\s*\[(.*?)\](?:\s*,\s*'([^']*(?::[^']*)?)')?\s*\)$/;
+        const match = formula.match(regex);
         
         if (!match) {
             throw new ParseError(

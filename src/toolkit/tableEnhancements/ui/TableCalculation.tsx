@@ -123,6 +123,7 @@ export const TableCalculation: FC<TableCalculationProps> = ({
             manager.getPlugin(),
             () => import('./FormulaModal'),
             {
+                table: table,
                 initialFormula: calculation.config.formula,
                 initialOutput: calculation.config.output.type,
                 initialOutputValue: calculation.config.output.value,
@@ -155,6 +156,7 @@ export const TableCalculation: FC<TableCalculationProps> = ({
             manager.getPlugin(),
             () => import('./FormulaModal'),
             {
+                table: table,
                 isEditing: false,
                 onSubmit: async (calculation) => {
                     try {
