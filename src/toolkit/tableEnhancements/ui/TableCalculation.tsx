@@ -3,8 +3,9 @@ import { ISavedCalculation, OutputType } from "../types/operations";
 import { IMarkdownTable } from "../types/table";
 import { Logger } from "@/src/util/log";
 import { TableEnhancementsManager } from "../manager/TableEnhancementsManager";
-import { CirclePlay, CircleX, PencilLine } from "lucide-react";
+import { CirclePlay, CircleX, PencilLine, PlayCircle, Plus } from "lucide-react";
 import { BaseModal } from "@/src/ui/components/base/BaseModal";
+import { t } from "@/src/i18n/i18n";
 
 interface TableCalculationProps {
     table: IMarkdownTable;
@@ -54,7 +55,7 @@ const CalculationItem: FC<{
                 className="tableEnhancements-btn icon"
                 onClick={() => onEdit(index)}
                 disabled={disabled}
-                aria-label="Edit calculation"
+                aria-label={t('toolkit.tableEnhancements.formula.edit_calculation')}
             >
                 <PencilLine />
             </button>
@@ -62,7 +63,7 @@ const CalculationItem: FC<{
                 className="tableEnhancements-btn icon"
                 onClick={() => onDelete(index)}
                 disabled={disabled}
-                aria-label="Remove calculation"
+                aria-label={t('toolkit.tableEnhancements.formula.remove_calculation')}
             >
                 <CircleX />
             </button>
@@ -70,7 +71,7 @@ const CalculationItem: FC<{
                 className="tableEnhancements-btn icon"
                 onClick={() => onExecute(calc)}
                 disabled={disabled}
-                aria-label="Execute calculation"
+                aria-label={t('toolkit.tableEnhancements.formula.execute_calculation')}
             >
                 <CirclePlay />
             </button>
@@ -204,6 +205,24 @@ export const TableCalculation: FC<TableCalculationProps> = ({
             setIsLoading(false);
         }
     }, [table, manager, onCalculate, logger]);
+
+    // 添加执行当前表格所有公式
+    const executeAllCalculations = useCallback(async () => {
+        if (!table.referenceId || savedCalculations.length === 0) return;
+
+        setIsLoading(true);
+        try {
+            // 按顺序执行所有保存的计算
+            for (const calculation of savedCalculations) {
+                await manager.executeCalculation(table, calculation);
+            }
+            onCalculate(table);
+        } catch (error) {
+            logger.error('Error executing all calculations:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [table, manager, savedCalculations, onCalculate, logger]);
     
     return (
         <div className="tableEnhancements-calculation">
@@ -212,9 +231,20 @@ export const TableCalculation: FC<TableCalculationProps> = ({
                     className="tableEnhancements-btn"
                     onClick={startAdding}
                     disabled={isLoading}
+                    aria-label={t('toolkit.tableEnhancements.formula.add_calculation')}
                 >
-                    Add Calculation
+                    <Plus />
                 </button>
+                {savedCalculations.length > 0 && (
+                    <button
+                        className="tableEnhancements-btn"
+                        onClick={executeAllCalculations}
+                        disabled={isLoading}
+                        aria-label={t('toolkit.tableEnhancements.formula.execute_all')}
+                    >
+                        <PlayCircle />
+                    </button>
+                )}
             </div>
 
             <div className="tableEnhancements-calculation-list">

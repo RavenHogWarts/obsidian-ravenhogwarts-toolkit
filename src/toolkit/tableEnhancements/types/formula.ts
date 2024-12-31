@@ -1,3 +1,4 @@
+import { t } from "@/src/i18n/i18n";
 import { FormulaFunction } from "./operations";
 
 export interface IFunctionParameter {
@@ -20,14 +21,14 @@ export interface IFunctionHint {
 export const FUNCTION_HINTS: IFunctionHint[] = [
   {
     function: FormulaFunction.COUNT,
-    description: "Count values in selected columns",
+    description: t('toolkit.tableEnhancements.formula_editor.math.COUNT'),
     syntax: "Count([columns], modifier?)",
     example: "Count([Status], 'unique')",
     defaultTemplate: "Count([columns], 'values')",  // 默认使用 'values'
     parameters: [
       {
         name: "modifier",
-        description: "Type of counting",
+        description: t('toolkit.tableEnhancements.formula_editor.math.count_modifier'),
         options: ["values", "empty", "unique"],
         optional: true,
         default: "values"
@@ -36,87 +37,107 @@ export const FUNCTION_HINTS: IFunctionHint[] = [
   },
   {
     function: FormulaFunction.SUM,
-    description: "Sum up values in selected columns",
+    description: t('toolkit.tableEnhancements.formula_editor.math.SUM'),
     syntax: "Sum([columns])",
     example: "Sum([Price,Cost])"
   },
   {
     function: FormulaFunction.AVERAGE,
-    description: "Calculate average of values",
+    description: t('toolkit.tableEnhancements.formula_editor.math.AVERAGE'),
     syntax: "Average([columns])",
     example: "Average([Score])"
   },
   {
     function: FormulaFunction.MIN,
-    description: "Find the minimum value in selected columns",
+    description: t('toolkit.tableEnhancements.formula_editor.math.MIN'),
     syntax: "Min([columns])",
     example: "Min([Score])"
   },
   {
     function: FormulaFunction.MAX,
-    description: "Find the maximum value in selected columns",
+    description: t('toolkit.tableEnhancements.formula_editor.math.MAX'),
     syntax: "Max([columns])",
     example: "Max([Score])"
   },
   {
     function: FormulaFunction.MEDIAN,
-    description: "Find the median value in selected columns",
+    description: t('toolkit.tableEnhancements.formula_editor.math.MEDIAN'),
     syntax: "Median([columns])",
     example: "Median([Score])"
   },
   {
     function: FormulaFunction.MODE,
-    description: "Find the mode value in selected columns",
+    description: t('toolkit.tableEnhancements.formula_editor.math.MODE'),
     syntax: "Mode([columns])",
     example: "Mode([Score])"
   },
   {
     function: FormulaFunction.STDDEV,
-    description: "Calculate standard deviation of values",
+    description: t('toolkit.tableEnhancements.formula_editor.math.STDDEV'),
     syntax: "StdDev([columns])",
     example: "StdDev([Score])"
   },
   {
     function: FormulaFunction.VARIANCE,
-    description: "Calculate variance of values",
+    description: t('toolkit.tableEnhancements.formula_editor.math.VARIANCE'),
     syntax: "Variance([columns])",
     example: "Variance([Score])"
   },
   {
     function: FormulaFunction.PERCENTAGE,
-    description: "Calculate percentage of values",
+    description: t('toolkit.tableEnhancements.formula_editor.math.PERCENTAGE'),
     syntax: "Percentage([columns])",
     example: "Percentage([Score])"
   },
   {
     function: FormulaFunction.TIME_EARLIEST,
-    description: "Find the earliest date in selected columns",
-    syntax: "TimeEarliest([columns])",
-    example: "TimeEarliest([Date])"
-  },
-  {
-    function: FormulaFunction.TIME_LATEST,
-    description: "Find the latest date in selected columns",
-    syntax: "TimeLatest([columns])",
-    example: "TimeLatest([Date])"
-  },
-  {
-    function: FormulaFunction.TIME_SPAN,
-    description: "Calculate time span between dates",
-    syntax: "TimeSpan([column], format?:unit?)",
-    example: "TimeSpan([Date], 'yyyy-MM-dd:days')",
-    defaultTemplate: "TimeSpan([columns], 'yyyy-MM-dd:days')",  // 默认格式和单位
+    description: t('toolkit.tableEnhancements.formula_editor.time.TIME_EARLIEST'),
+    syntax: "TimeEarliest([columns], format?)",
+    example: "TimeEarliest([Date], 'yyyy-MM-dd')",
+    defaultTemplate: "TimeEarliest([columns], 'yyyy-MM-dd')",
     parameters: [
       {
         name: "format",
-        description: "Date format pattern",
-        options: ["yyyy-MM-dd", "yyyy/MM/dd", "yyyy-MM-dd HH:mm:ss"],
+        description: t('toolkit.tableEnhancements.formula_editor.time.time_format'),
+        options: ["yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "HH:mm"],
+        optional: true,
+        default: "yyyy-MM-dd"
+      }
+    ]
+  },
+  {
+    function: FormulaFunction.TIME_LATEST,
+    description: t('toolkit.tableEnhancements.formula_editor.time.TIME_LATEST'),
+    syntax: "TimeLatest([columns], format?)",
+    example: "TimeLatest([Date], 'yyyy-MM-dd')",
+    defaultTemplate: "TimeLatest([columns], 'yyyy-MM-dd')",
+    parameters: [
+      {
+        name: "format",
+        description: t('toolkit.tableEnhancements.formula_editor.time.time_format'),
+        options: ["yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "HH:mm"],
+        optional: true,
+        default: "yyyy-MM-dd"
+      }
+    ]
+  },
+  {
+    function: FormulaFunction.TIME_SPAN,
+    description: t('toolkit.tableEnhancements.formula_editor.time.TIME_SPAN'),
+    syntax: "TimeSpan([column], format?:unit?)",
+    example: "TimeSpan([Date], 'yyyy-MM-dd:days')",
+    defaultTemplate: "TimeSpan([columns], 'yyyy-MM-dd:days')",
+    parameters: [
+      {
+        name: "format",
+        description: t('toolkit.tableEnhancements.formula_editor.time.time_format'),
+        options: ["yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss"],
         optional: true,
         default: "yyyy-MM-dd"
       },
       {
         name: "unit",
-        description: "Time unit for result",
+        description: t('toolkit.tableEnhancements.formula_editor.time.time_unit'),
         options: ["days", "hours", "minutes"],
         optional: true,
         default: "days"

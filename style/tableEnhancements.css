@@ -110,6 +110,17 @@
 }
 
 /* Calculator */
+.tableEnhancements-calculator {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    height: 100%;
+}
+
 .tableEnhancements-calculation {
     display: flex;
     flex-direction: column;
@@ -164,22 +175,6 @@
     align-items: center;
     flex: 1;
     min-width: 0; /* 防止子元素溢出 */
-}
-
-.tableEnhancements-form-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex: 1;
-    min-width: 0; /* 防止子元素溢出 */
-    max-width: 200px;
-}
-
-.tableEnhancements-form-group label {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    white-space: nowrap;
-    flex-shrink: 0; /* 防止标签被压缩 */
 }
 
 .tableEnhancements-select,
@@ -259,7 +254,8 @@ tableEnhancements-select:disabled,
 
 .tableEnhancements-calculation-actions {
     display: flex;
-    gap: 0.5rem;
+    gap: 8px;
+    margin-bottom: 12px;
 }
 
 .tableEnhancements-error-message {
@@ -500,7 +496,7 @@ tableEnhancements-select:disabled,
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    padding-top: 12px;
+    padding: 12px;
     border-top: 1px solid var(--background-modifier-border);
 }
 
@@ -605,7 +601,8 @@ tableEnhancements-select:disabled,
     gap: 12px;
 }
 
-.formula-editor .hint-syntax {
+.formula-editor .hint-syntax,
+.formula-editor .hint-example {
     font-family: var(--font-monospace);
     font-size: 12px;
     color: var(--text-accent);
@@ -613,12 +610,6 @@ tableEnhancements-select:disabled,
     padding: 6px 8px;
     border-radius: 4px;
     word-break: break-all;
-}
-
-.formula-editor .hint-example {
-    font-size: 11px;
-    color: var(--text-muted);
-    font-style: italic;
 }
 
 /* 优化交互状态 */
@@ -774,4 +765,38 @@ tableEnhancements-select:disabled,
 .formula-editor .function-list::-webkit-scrollbar-thumb:hover,
 .formula-editor .function-detail-wrapper::-webkit-scrollbar-thumb:hover {
     background-color: var(--interactive-accent);
+}
+
+.tableEnhancements-calculation-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.tableEnhancements-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    background-color: var(--interactive-normal);
+    color: var(--text-normal);
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid var(--background-modifier-border);
+    transition: all 0.2s ease;
+}
+
+.tableEnhancements-btn:hover {
+    background-color: var(--interactive-hover);
+}
+
+.tableEnhancements-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tableEnhancements-btn svg {
+    width: 16px;
+    height: 16px;
 }

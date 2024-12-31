@@ -3,6 +3,7 @@ import { ISavedCalculation, OutputType } from "../types/operations";
 import { useModal } from "@/src/ui/components/base/BaseModal";
 import { IMarkdownTable } from "../types/table";
 import FormulaEditor from "./FormulaEditor";
+import { t } from "@/src/i18n/i18n";
 
 interface IFormulaModalProps {
   table: IMarkdownTable;
@@ -51,7 +52,7 @@ const FormulaModal: FC = () => {
     <div className="tableEnhancements-formula-modal">
       <div className="tableEnhancements-formula-header">
           <div className="tableEnhancements-form-group">
-            <label>Output Type</label>
+            <label>{t('toolkit.tableEnhancements.formula.output_type')}</label>
             <select
               value={output}
               onChange={(e) => setOutput(e.target.value as OutputType)}
@@ -65,7 +66,7 @@ const FormulaModal: FC = () => {
             </select>
           </div>
           <div className="tableEnhancements-form-group">
-            <label>Output Value</label>
+            <label>{t('toolkit.tableEnhancements.formula.output_value')}</label>
             <input
               type="text"
               value={outputValue}
@@ -77,13 +78,6 @@ const FormulaModal: FC = () => {
       </div>
 
       <div className="tableEnhancements-formula-content">
-        {/* <label>Formula</label>
-        <textarea
-          value={formula}
-          onChange={(e) => setFormula(e.target.value)}
-          placeholder="e.g., Sum([A,B]) or TimeSpan([Date], 'days')"
-          className="tableEnhancements-textarea"
-        /> */}
         <FormulaEditor
           table={table}
           value={formula}
@@ -96,14 +90,14 @@ const FormulaModal: FC = () => {
           className="tableEnhancements-btn"
           onClick={onClose}
         >
-          Cancel
+          {t('toolkit.tableEnhancements.formula.cancel')}
         </button>
         <button
           className="tableEnhancements-btn primary"
           onClick={handleSubmit}
           disabled={!formula}
         >
-          {isEditing ? 'Update' : 'Add'}
+          {isEditing ? t('toolkit.tableEnhancements.formula.update') : t('toolkit.tableEnhancements.formula.add')}
         </button>
       </div>
     </div>

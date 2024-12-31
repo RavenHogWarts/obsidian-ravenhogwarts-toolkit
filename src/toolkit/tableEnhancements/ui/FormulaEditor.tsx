@@ -1,6 +1,7 @@
 import { FC, useState } from 'react';
 import { FUNCTION_HINTS, IFunctionHint, IFunctionParameter } from '../types/formula';
 import { IMarkdownTable } from '../types/table';
+import { t } from '@/src/i18n/i18n';
 
 interface FormulaEditorProps {
   table: IMarkdownTable;
@@ -102,9 +103,9 @@ const FormulaEditor: FC<FormulaEditorProps> = ({ table, value, onChange }) => {
     // 获取参数部分（不包括结束括号）
     const afterBracket = value.slice(closeBracketIndex + 1, hasCloseParen ? closeParenIndex : undefined);
     
-    // 解析现有参数
+    // 解析现有参数，同时处理单引号和双引号
     const params = new Map<string, string>();
-    const paramMatches = afterBracket.match(/(?:,\s*)?'[^']*'|[^,)]+/g) || [];
+    const paramMatches = afterBracket.match(/(?:,\s*)?(['"])(.*?)\1/g) || [];
     
     // 特殊处理 TimeSpan 函数的格式:单位参数
     if (functionName === 'TimeSpan' && param.name === 'unit') {
@@ -120,7 +121,8 @@ const FormulaEditor: FC<FormulaEditorProps> = ({ table, value, onChange }) => {
         // 其他函数的常规参数处理
         activeSuggestion.parameters?.forEach((p, index) => {
             if (paramMatches[index]) {
-                params.set(p.name, paramMatches[index].trim().replace(/^,?\s*'|'$/g, ''));
+                const paramValue = paramMatches[index].replace(/^,\s*['"]|['"]$/g, '');
+                params.set(p.name, paramValue);
             } else if (p.default) {
                 params.set(p.name, p.default);
             }
@@ -141,7 +143,7 @@ const FormulaEditor: FC<FormulaEditorProps> = ({ table, value, onChange }) => {
   return (
     <div className="formula-editor">
         <div className="formula-columns">
-            <h3>Table Columns</h3>
+            <h3>{t('toolkit.tableEnhancements.formula_editor.table_columns')}</h3>
             <div className="column-list">
                 {table.headers.map(column => (
                     <div 
@@ -159,13 +161,13 @@ const FormulaEditor: FC<FormulaEditorProps> = ({ table, value, onChange }) => {
             <textarea
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                placeholder="Select a function or start typing..."
+                placeholder={t('toolkit.tableEnhancements.formula_editor.input_placeholder')}
                 className="formula-textarea"
             />
         </div>
 
         <div className="formula-functions">
-            <h3>Functions</h3>
+            <h3>{t('toolkit.tableEnhancements.formula_editor.function_name')}</h3>
             <div className="functions-container">
                 <div className="function-list">
                     {FUNCTION_HINTS.map(hint => (
@@ -176,7 +178,6 @@ const FormulaEditor: FC<FormulaEditorProps> = ({ table, value, onChange }) => {
                                 insertFunction(hint);
                             }}
                             onMouseEnter={() => setHoverSuggestion(hint)}
-                            // onMouseLeave={() => setHoverSuggestion(null)}
                         >
                             <div className="function-name">{hint.function}</div>
                             <div className="function-desc">{hint.description}</div>
@@ -186,27 +187,27 @@ const FormulaEditor: FC<FormulaEditorProps> = ({ table, value, onChange }) => {
                 <div className="function-detail-wrapper">
                     {currentSuggestion && (
                         <div className="function-detail">
-                            <div className="hint-syntax">Syntax: {currentSuggestion.syntax}</div>
-                            <div className="hint-example">Example: {currentSuggestion.example}</div>
+                            <div className="hint-syntax">{t('toolkit.tableEnhancements.formula_editor.hint_syntax')}: {currentSuggestion.syntax}</div>
+                            <div className="hint-example">{t('toolkit.tableEnhancements.formula_editor.hint_example')}: {currentSuggestion.example}</div>
                             
                             {currentSuggestion.parameters && currentSuggestion.parameters.length > 0 && (
                                 <div className="hint-parameters">
-                                    <div className="parameters-title">Parameters:</div>
+                                    <div className="parameters-title">{t('toolkit.tableEnhancements.formula_editor.hint_parameters')}:</div>
                                     {currentSuggestion.parameters.map((param, index) => (
                                         <div key={index} className="parameter-item">
                                             <div className="parameter-name">
                                                 {param.name}
-                                                {param.optional && <span className="parameter-optional">(optional)</span>}
+                                                {param.optional && <span className="parameter-optional">({t('toolkit.tableEnhancements.formula_editor.parameter_optional')})</span>}
                                             </div>
                                             <div className="parameter-desc">{param.description}</div>
                                             {param.options && (
                                                 <div className="parameter-options">
-                                                    Options: {param.options.map(opt => (
+                                                    {t('toolkit.tableEnhancements.formula_editor.parameter_options')}: {param.options.map(opt => (
                                                         <span 
                                                             key={opt} 
                                                             className="option-tag"
                                                             onClick={() => insertParameter(param, opt)}
-                                                            title={`Insert '${opt}'`}
+                                                            title={`${t('toolkit.tableEnhancements.formula_editor.insert_option')}: '${opt}'`}
                                                         >
                                                             {opt}
                                                         </span>

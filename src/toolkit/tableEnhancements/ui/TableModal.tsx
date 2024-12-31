@@ -8,6 +8,7 @@ import { Logger } from "@/src/util/log";
 import { TableGrid } from "./TableGrid";
 import { TableEnhancementsManager } from "../manager/TableEnhancementsManager";
 import { TableCalculation } from "./TableCalculation";
+import { t } from "@/src/i18n/i18n";
 
 const TableModal: FC = () => {
     const { additionalProps } = useModal();
@@ -20,7 +21,7 @@ const TableModal: FC = () => {
     const [editedTables, setEditedTables] = useState<IMarkdownTable[]>(tables);
     const [gridData, setGridData] = useState<ITableGridData[]>([]);
     const [columnDefs, setColumnDefs] = useState<ColDef[]>([]);
-    const [showCalculation, setShowCalculation] = useState(false);
+    const [showCalculation, setShowCalculation] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
 
     // 获取当前表格
@@ -168,14 +169,14 @@ const TableModal: FC = () => {
                                 className={`tableEnhancements-btn ${showCalculation ? 'active' : ''}`}
                                 onClick={toggleCalculation}
                             >
-                                {showCalculation ? 'Hide Calculator' : 'Show Calculator'}
+                                {showCalculation ? t('toolkit.tableEnhancements.formula.hide_calculator') : t('toolkit.tableEnhancements.formula.show_calculator')}
                             </button>
                             {!isEditing ? (
                                 <button 
                                     className="tableEnhancements-btn primary"
                                     onClick={handleStartEdit}
                                 >
-                                    Edit Table
+                                    {t('toolkit.tableEnhancements.formula.edit_table')}
                                 </button>
                             ) : (
                                 <>
@@ -183,13 +184,13 @@ const TableModal: FC = () => {
                                         className="tableEnhancements-btn primary"
                                         onClick={handleSave}
                                     >
-                                        Save Changes
+                                        {t('toolkit.tableEnhancements.formula.update')}
                                     </button>
                                     <button 
                                         className="tableEnhancements-btn secondary"
                                         onClick={handleCancelEdit}
                                     >
-                                        Cancel
+                                        {t('toolkit.tableEnhancements.formula.cancel')}
                                     </button>
                                 </>
                             )}
@@ -208,7 +209,7 @@ const TableModal: FC = () => {
                                 />
                             ) : (
                                 <div className="tableEnhancements-no-data">
-                                    No table data available
+                                    {t('toolkit.tableEnhancements.formula.no_table_data')}
                                 </div>
                             )}
                         </div>

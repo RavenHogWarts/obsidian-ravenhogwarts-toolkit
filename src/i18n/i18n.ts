@@ -33,6 +33,54 @@ export type Message = {
             description: string;
             editor_menu: {
                 table_enhancements: string;
+            },
+            formula: {
+                output_type: string;
+                output_value: string;
+                add_calculation: string;
+                execute_all: string;
+                cancel: string;
+                update: string;
+                add: string;
+                hide_calculator: string;
+                show_calculator: string;
+                edit_calculation: string;
+                remove_calculation: string;
+                execute_calculation: string;
+                edit_table: string;
+                save_changes: string;
+                no_table_data: string;
+            },
+            formula_editor: {
+                math: {
+                    COUNT: string;
+                    count_modifier: string;
+                    SUM: string;
+                    AVERAGE: string;
+                    MIN: string;
+                    MAX: string;
+                    MEDIAN: string;
+                    MODE: string;
+                    STDDEV: string;
+                    VARIANCE: string;
+                    PERCENTAGE: string;
+                },
+                time: {
+                    TIME_EARLIEST: string;
+                    TIME_LATEST: string;
+                    TIME_SPAN: string;
+                    time_format: string;
+                    time_unit: string;
+                },
+                table_columns: string;
+                input_placeholder: string;
+                function_name: string;
+                hint_syntax: string;
+                hint_example: string;
+                hint_parameters: string;
+                parameter_optional: string;
+                parameter_options: string;
+                insert_option: string;
             }
         },
         frontmatterSorter: {

@@ -30,6 +30,54 @@ export const zh: Message = {
             description: "增强表格编辑，支持计算和格式化",
             editor_menu: {
                 table_enhancements: "表格增强编辑"
+            },
+            formula: {
+                output_type: "输出类型",
+                output_value: "输出值",
+                add_calculation: "添加公式计算",
+                execute_all: "执行当前表格所有公式",
+                cancel: "取消",
+                update: "更新",
+                add: "添加",
+                hide_calculator: "隐藏公式编辑",
+                show_calculator: "显示公式编辑",
+                edit_calculation: "编辑公式",
+                remove_calculation: "删除公式",
+                execute_calculation: "执行公式",
+                edit_table: "编辑表格",
+                save_changes: "保存更改",
+                no_table_data: "没有表格数据"
+            },
+            formula_editor: {
+                math: {
+                    COUNT: "计算选定列数量",
+                    count_modifier: "计数类型",
+                    SUM: "计算选定列数值总和",
+                    AVERAGE: "计算选定列数值平均值",
+                    MIN: "计算选定列数值最小值",
+                    MAX: "计算选定列数值最大值",
+                    MEDIAN: "计算选定列数值中位数",
+                    MODE: "计算选定列数值众数",
+                    STDDEV: "计算选定列数值标准差",
+                    VARIANCE: "计算选定列数值方差",
+                    PERCENTAGE: "计算选定列数值百分比",
+                },
+                time: {
+                    TIME_EARLIEST: "计算选定列最早日期",
+                    TIME_LATEST: "计算选定列最晚日期",
+                    TIME_SPAN: "计算选定列日期跨度",
+                    time_format: "日期格式",
+                    time_unit: "时间单位",
+                },
+                table_columns: "表格列",
+                input_placeholder: "选择一个函数或开始输入...",
+                function_name: "公式函数",
+                hint_syntax: "语法",
+                hint_example: "示例",
+                hint_parameters: "参数",
+                parameter_optional: "可选",
+                parameter_options: "选项",
+                insert_option: "插入"
             }
         },
         frontmatterSorter: {

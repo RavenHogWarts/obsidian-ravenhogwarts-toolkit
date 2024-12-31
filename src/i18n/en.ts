@@ -30,6 +30,54 @@ export const en: Message = {
             description: "Table Enhancements",
             editor_menu: {
                 table_enhancements: "Table Enhancements"
+            },
+            formula: {
+                output_type: "Output Type",
+                output_value: "Output Value",
+                add_calculation: "Add Calculation",
+                execute_all: "Execute All",
+                cancel: "Cancel",
+                update: "Update",
+                add: "Add",
+                hide_calculator: "Hide Calculator",
+                show_calculator: "Show Calculator",
+                edit_calculation: "Edit Calculation",
+                remove_calculation: "Remove Calculation",
+                execute_calculation: "Execute Calculation",
+                edit_table: "Edit Table",
+                save_changes: "Save Changes",
+                no_table_data: "No table data available"
+            },
+            formula_editor: {
+                math: {
+                    COUNT: "Count values in selected columns",
+                    count_modifier: "Type of counting",
+                    SUM: "Sum up values in selected columns",
+                    AVERAGE: "Calculate average of values",
+                    MIN: "Calculate the minimum value in selected columns",
+                    MAX: "Calculate the maximum value in selected columns",
+                    MEDIAN: "Calculate the median value in selected columns",
+                    MODE: "Calculate the mode value in selected columns",
+                    STDDEV: "Calculate standard deviation of values",
+                    VARIANCE: "Calculate variance of values",
+                    PERCENTAGE: "Calculate percentage of values",
+                },
+                time: {
+                    TIME_EARLIEST: "Calculate the earliest date in selected columns",
+                    TIME_LATEST: "Calculate the latest date in selected columns",
+                    TIME_SPAN: "Calculate the span of dates in selected columns",
+                    time_format: "Date format pattern",
+                    time_unit: "Unit of time span"
+                },
+                table_columns: "Table Columns",
+                input_placeholder: "Select a function or start typing...",
+                function_name: "Formula Functions",
+                hint_syntax: "Syntax",
+                hint_example: "Example",
+                hint_parameters: "Parameters",
+                parameter_optional: "Optional",
+                parameter_options: "Options",
+                insert_option: "Insert"
             }
         },
         frontmatterSorter: {

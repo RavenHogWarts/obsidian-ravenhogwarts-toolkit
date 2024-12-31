@@ -32,7 +32,7 @@ export class FormulaParser {
     /** 解析公式 */
     public static parse(formula: string): ParsedFormula {
         // 示例公式: "Count([A,B], 'values')" 或 "TimeSpan([Date], 'days')"
-        const regex = /^(\w+)\s*\(\s*\[(.*?)\](?:\s*,\s*'([^']*(?::[^']*)?)')?\s*\)$/;
+        const regex = /^(\w+)\s*\(\s*\[(.*?)\](?:\s*,\s*(?:'([^']*(?::[^']*)?)'|"([^"]*(?::[^"]*)?)")?)?\s*\)$/;
         const match = formula.match(regex);
         
         if (!match) {
@@ -42,7 +42,7 @@ export class FormulaParser {
             );
         }
 
-        const [_, functionName, columnsStr, modifier] = match;
+        const [_, functionName, columnsStr, singleQuoteModifier, doubleQuoteModifier] = match;
         const columns = columnsStr.split(',').map(c => c.trim());
 
         if (!Object.values(FormulaFunction).includes(functionName as FormulaFunction)) {
@@ -58,6 +58,8 @@ export class FormulaParser {
                 'Invalid column name'
             );
         }
+
+        const modifier = singleQuoteModifier || doubleQuoteModifier;
 
         return {
             function: functionName as FormulaFunction,

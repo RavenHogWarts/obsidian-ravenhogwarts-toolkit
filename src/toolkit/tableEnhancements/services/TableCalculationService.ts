@@ -75,13 +75,15 @@ export class TableCalculationService {
                 const dates = this.getDateValues(table, columns, modifier);
                 if (dates.length === 0) return '';
                 const earliest = this.earliest(dates);
-                return earliest ? format(earliest, "yyyy-MM-dd'T'HH:mm:ssXXX") : '';
+                if (!earliest) return '';
+                return modifier ? format(earliest, modifier) : format(earliest, "yyyy-MM-dd");
             },
             [FormulaFunction.TIME_LATEST]: (table, columns, modifier) => {
                 const dates = this.getDateValues(table, columns, modifier);
                 if (dates.length === 0) return '';
                 const latest = this.latest(dates);
-                return latest ? format(latest, "yyyy-MM-dd'T'HH:mm:ssXXX") : '';
+                if (!latest) return '';
+                return modifier ? format(latest, modifier) : format(latest, "yyyy-MM-dd");
             },
             [FormulaFunction.TIME_SPAN]: (table, columns, modifier) => {
                 let format: string | undefined;
