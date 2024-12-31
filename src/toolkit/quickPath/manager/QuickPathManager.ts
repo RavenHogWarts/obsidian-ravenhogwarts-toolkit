@@ -125,7 +125,7 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
                 }
               }
             }
-          ], { useSubmenu: true })
+          ], { showSeparator: true })
         })
       );
     }    

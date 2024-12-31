@@ -1,4 +1,4 @@
-import { Plugin } from 'obsidian';
+import { Menu, Plugin } from 'obsidian';
 import { DEFAULT_CONFIG, IRavenHogwartsToolkitConfig } from './types';
 import { BaseManager } from './BaseManager';
 import { Logger, rootLogger } from '../util/log';
@@ -6,6 +6,7 @@ import { Logger, rootLogger } from '../util/log';
 export class PluginManager {
     private managers: Map<string, BaseManager<any>> = new Map();
     private settings: IRavenHogwartsToolkitConfig;
+    private toolkitMenu: Menu | null = null;
 
     constructor(private plugin: Plugin) {
         // 初始化默认设置
@@ -86,6 +87,29 @@ export class PluginManager {
         return this.managers.get(moduleId) as T;
     }
 
+    getToolkitMenu(parentMenu: Menu): Menu {
+        this.toolkitMenu = null;
+        
+        // 检查是否已经存在菜单项
+        const existingItem = (parentMenu as any).items?.find((item: any) => 
+            item.titleEl?.textContent === 'RavenHogwartsToolkit'
+        );
+
+        if (existingItem) {
+            this.toolkitMenu = existingItem.submenu;
+        } else {
+            parentMenu.addItem((menuItem) => {
+                menuItem.setTitle('RavenHogwartsToolkit');
+                menuItem.setIcon('gavel');
+                // @ts-ignore
+                this.toolkitMenu = menuItem.setSubmenu();
+            });
+        }
+        
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.toolkitMenu!;
+    }
+
     async updateSettings(newSettings: Partial<IRavenHogwartsToolkitConfig>) {
         rootLogger.debug('Updating settings', newSettings);
         this.settings = {
@@ -102,6 +126,7 @@ export class PluginManager {
     }
 
     unload() {
+        this.toolkitMenu = null;
         this.managers.forEach((manager, moduleId) => {
             try {
                 manager.onunload?.();

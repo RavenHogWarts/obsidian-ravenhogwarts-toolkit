@@ -220,53 +220,31 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
         menu: Menu,
         items: MenuItemConfig | MenuItemConfig[],
         options: {
-            showSeparator?: boolean;     // 是否显示分隔符
-            useSubmenu?: boolean;        // 是否使用子菜单
+            showSeparator?: boolean;
         } = {}
     ): void {
         if (!this.isEnabled()) return;
 
-        const { showSeparator = false, useSubmenu = false } = options;
-
+        const { showSeparator = false } = options;
         const menuItems = Array.isArray(items) ? items : [items];
-        const sortedItems = menuItems.sort((a, b) => {
-            return (a.order || 0) - (b.order || 0);
+        const sortedItems = menuItems.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+        // 获取统一的工具包菜单
+        const toolkitMenu = (this.plugin as RavenHogwartsToolkitPlugin)
+            .pluginManager.getToolkitMenu(menu);
+
+        // 直接添加菜单项到工具包菜单
+        sortedItems.forEach((item) => {
+            toolkitMenu.addItem((menuItem) => {
+                menuItem.setTitle(`${this.moduleId}: ${item.title}`);
+                if (item.icon) menuItem.setIcon(item.icon);
+                if (item.callback) menuItem.onClick(item.callback);
+            });
         });
 
-        if (useSubmenu) {
-            // 创建带子菜单的项目
-            menu.addItem((menuItem) => {
-                menuItem
-                    .setTitle(this.moduleId)
-                    .setIcon(TOOLKIT_CONFIG[this.moduleId as ToolkitId].iconName);
-
-                // 创建子菜单
-                // @ts-ignore
-                const submenu = menuItem.setSubmenu();
-                
-                // 添加子菜单项
-                sortedItems.forEach((item) => {
-                    submenu.addItem((subMenuItem) => {
-                        subMenuItem.setTitle(item.title);
-                        if (item.icon) subMenuItem.setIcon(item.icon);
-                        if (item.callback) subMenuItem.onClick(item.callback);
-                    });
-                });
-            });
-        } else {
-            // 直接添加菜单项
-            sortedItems.forEach((item) => {
-                menu.addItem((menuItem) => {
-                    menuItem.setTitle(item.title);
-                    if (item.icon) menuItem.setIcon(item.icon);
-                    if (item.callback) menuItem.onClick(item.callback);
-                });
-            });
-        }
-
-        // 添加开始分隔符
+        // 添加分隔符
         if (showSeparator) {
-            menu.addSeparator();
+            toolkitMenu.addSeparator();
         }
     }
 

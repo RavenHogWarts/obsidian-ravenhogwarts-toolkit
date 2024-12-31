@@ -53,12 +53,12 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
                 if (this.isEnabled()) {
                     this.addMenuItem(menu, {
                         title: this.t('toolkit.tableEnhancements.editor_menu.table_enhancements'),
-                        icon: 'tablets',
+                        icon: 'wand',
                         order: 1,
                         callback: () => {
                             this.showTableEditor();
                         }
-                    }, {useSubmenu: true});
+                    }, {showSeparator: true});
                 }
             })
         )
