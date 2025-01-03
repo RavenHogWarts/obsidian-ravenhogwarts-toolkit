@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-ravenhogwarts-toolkit",
 	"name": "RavenHogwarts's Toolkit",
-	"version": "1.0.0-beta.3",
+	"version": "1.0.0-beta.4",
 	"minAppVersion": "1.6.7",
 	"description": "A personal toolkit plugin that integrates various Obsidian utilities, designed to enhance personal note-taking experience.",
 	"author": "RavenHogWarts",
