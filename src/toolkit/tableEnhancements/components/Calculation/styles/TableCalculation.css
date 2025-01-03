@@ -1,0 +1,228 @@
+/* Calculator */
+.tableEnhancements-calculator {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  height: 100%;
+}
+
+.tableEnhancements-calculation {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--background-primary);
+  border-radius: 8px;
+  height: 100%;
+}
+
+/* Actions */
+.tableEnhancements-calculation-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--background-primary);
+  border-radius: 10px;
+  border: 1px solid var(--background-modifier-border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  animation: slideIn 0.3s ease-out;
+}
+
+.tableEnhancements-calculation-info:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.calculation-formula {
+  font-family: var(--font-monospace);
+  padding: 6px 12px;
+  background: var(--background-secondary-alt);
+  border-radius: 6px;
+  color: var(--text-accent);
+  font-weight: 500;
+  font-size: 0.95em;
+  border: 1px solid var(--background-modifier-border);
+  flex: 2;
+}
+
+.calculation-hyphen {
+  color: var(--text-muted);
+  font-weight: 400;
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-secondary);
+  border-radius: 50%;
+  font-size: 0.9em;
+}
+
+.calculation-output {
+  color: var(--text-muted);
+  font-weight: 500;
+  padding: 6px 12px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+.calculation-output-value {
+  color: var(--text-faint);
+  font-style: italic;
+  margin-left: 4px;
+  padding: 2px 6px;
+  background: var(--background-secondary);
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.calculation-result {
+  font-weight: 600;
+  color: var(--text-success);
+  padding: 6px 12px;
+  background: var(--background-primary-alt);
+  border: 1px solid var(--background-modifier-success);
+  border-radius: 6px;
+  min-width: 60px;
+  text-align: center;
+  position: relative;
+}
+
+.calculation-result::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 8px;
+  background: linear-gradient(to right, var(--background-modifier-success), transparent);
+  opacity: 0.1;
+  z-index: -1;
+}
+
+/* 添加动画效果 */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 添加暗色主题特殊处理 */
+.theme-dark .calculation-formula {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.theme-dark .calculation-result {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.tableEnhancements-calculation-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  padding-left: 16px;
+  border-left: 1px solid var(--background-modifier-border);
+}
+
+.tableEnhancements-calculation-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tableEnhancements-calculation-actions button:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tableEnhancements-calculation-actions button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.tableEnhancements-calculation-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 编辑按钮特殊样式 */
+.tableEnhancements-calculation-actions button:nth-child(1) {
+  color: var(--text-accent);
+  background: var(--background-secondary-alt);
+}
+
+/* 删除按钮特殊样式 */
+.tableEnhancements-calculation-actions button:nth-child(2) {
+  color: var(--text-error);
+  background: var(--background-secondary-alt);
+}
+
+/* 执行按钮特殊样式 */
+.tableEnhancements-calculation-actions button:nth-child(3) {
+  color: var(--text-success);
+  background: var(--background-secondary-alt);
+}
+
+/* 适配暗色主题 */
+.theme-dark .tableEnhancements-calculation-actions button {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.theme-dark .tableEnhancements-calculation-actions button:hover {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2),
+              0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* List */
+.tableEnhancements-calculation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.tableEnhancements-calculation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: var(--background-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--background-modifier-border);
+  min-height: 60px;
+}
+
+/* Error */
+.tableEnhancements-error-message {
+  padding: 8px 12px;
+  margin-bottom: 1rem;
+  background-color: var(--background-modifier-error);
+  color: var(--text-error);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}

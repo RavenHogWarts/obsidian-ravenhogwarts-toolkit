@@ -1,6 +1,6 @@
 import { parseYaml } from 'obsidian';
 import { IFrontMatterEntry, IParsedFrontMatter } from "../types/config";
-import { Logger } from '@/src/util/log';
+import { Logger } from '@/src/core/services/Log';
 
 export class FrontMatterParser {
   constructor(private logger: Logger) {}

@@ -1,16 +1,16 @@
 import { Editor, MarkdownView, Menu } from 'obsidian';
-import { BaseManager } from '@/src/manager/BaseManager';
+import { BaseManager } from '@/src/core/services/BaseManager';
 import { MarkdownTableParser } from '../parser/MarkdownTableParser';
 import { TableGenerator } from '../parser/TableGenerator';
 import { IMarkdownTable } from '../types/table';
-import { IToolkitModule } from '@/src/manager/types';
+import { IToolkitModule } from '@/src/core/interfaces/types';
 import RavenHogwartsToolkitPlugin from '@/src/main';
-import { BaseModal } from '@/src/ui/components/base/BaseModal';
+import { BaseModal } from '@/src/components/base/Modal/BaseModal';
 import { TableCalculationService } from '../services/TableCalculationService';
 import { ITableEnhancementsConfig, ITableEnhancementsData } from '../types/config';
-import { getStandardTime } from '@/src/util/date';
-import { UUIDGenerator } from '@/src/util/uuid';
-import { replaceFrontMatterKey, updateFrontMatter } from '@/src/util/frontMatter';
+import { getStandardTime } from '@/src/lib/date';
+import { UUIDGenerator } from '@/src/lib/uuid';
+import { replaceFrontMatterKey, updateFrontMatter } from '@/src/lib/frontMatter';
 import { ISavedCalculation, OutputType } from '../types/operations';
 
 interface ITableEnhancementsModule extends IToolkitModule {
@@ -274,7 +274,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
             this.modal = new BaseModal(
                 this.app,
                 this.plugin,
-                () => import('../ui/TableModal'),
+                () => import('../components/Modal/TableModal'),
                 {
                     logger: this.logger,
                     tables: this.tables,

@@ -1,16 +1,14 @@
 import { Plugin } from 'obsidian';
-import { IRavenHogwartsToolkitConfig } from './manager/types';
-import { PluginManager } from './manager/PluginManager';
-import { BaseManager } from './manager/BaseManager';
-import { rootLogger } from './util/log';
-import RavenHogwartsToolkitSettingTab from './ui/settings/SettingsTab';
+import { IRavenHogwartsToolkitConfig } from './core/interfaces/types';
+import { PluginManager } from './core/services/PluginManager';
+import { BaseManager } from './core/services/BaseManager';
+import { rootLogger } from '@/src/core/services/Log';
+import RavenHogwartsToolkitSettingTab from './components/settings/SettingsTab';
 import { TableEnhancementsManager } from './toolkit/tableEnhancements/manager/TableEnhancementsManager';
 import { FrontMatterSorterManager } from './toolkit/frontmatterSorter/manager/FrontMatterSorterManager';
 import { QuickPathManager } from './toolkit/quickPath/manager/QuickPathManager';
-import '../style/styles.css';
-import '../style/settings.css';
-import '../style/tableEnhancements.css';
-
+import '@/style/styles.css';
+import '@/style/settings.css';
 
 export default class RavenHogwartsToolkitPlugin extends Plugin {
 	public pluginManager: PluginManager;

@@ -6,7 +6,7 @@ import {
     TableCellAlignment 
 } from '../types/table';
 import { IParserConfig, ITableParser } from '../types/parser';
-import { Logger } from '@/src/util/log';
+import { Logger } from '@/src/core/services/Log';
 
 export class MarkdownTableParser implements ITableParser {
     private logger: Logger;

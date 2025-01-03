@@ -1,6 +1,6 @@
 import { TFile, Vault } from "obsidian";
 import { IFrontMatterEntry, IParsedFrontMatter, ISortingRules } from "../types/config";
-import { Logger } from "@/src/util/log";
+import { Logger } from "@/src/core/services/Log";
 
 export class FrontMatterWriter {
   constructor(private config: ISortingRules, private logger: Logger) {}

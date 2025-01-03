@@ -1,4 +1,4 @@
-import { IToolkitModuleConfig, IToolkitModuleData } from "@/src/manager/types";
+import { IToolkitModuleConfig, IToolkitModuleData } from "@/src/core/interfaces/types";
 
 export interface IQuickPathConfig extends IToolkitModuleConfig {
   // 是否使用绝对路径

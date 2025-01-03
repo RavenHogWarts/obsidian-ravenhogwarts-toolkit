@@ -1,0 +1,352 @@
+/* Formula Editor */
+.formula-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+  background-color: var(--background-primary);
+  border-radius: 6px;
+  border: 1px solid var(--background-modifier-border);
+  padding: 12px;
+}
+
+/* Columns Section */
+.formula-editor .formula-columns {
+  border-bottom: 1px solid var(--background-modifier-border);
+  padding-bottom: 12px;
+}
+
+.formula-editor .column-list {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  white-space: nowrap;
+}
+
+.formula-editor .column-item {
+  padding: 6px 10px;
+  border-radius: 4px;
+  background-color: var(--background-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.formula-editor .column-item:hover {
+  background-color: var(--background-modifier-hover);
+  border-color: var(--interactive-accent);
+  color: var(--text-normal);
+}
+
+.formula-editor .column-item.selected {
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+}
+
+.formula-editor .column-item.selected:hover {
+  background-color: var(--interactive-accent-hover);
+}
+
+/* Formula Input */
+.formula-editor .formula-input {
+  flex: 0 0 auto;
+}
+
+.formula-editor .formula-textarea {
+  width: 100%;
+  height: 60px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--background-modifier-border);
+  background-color: var(--background-secondary);
+  color: var(--text-normal);
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+/* Functions Section */
+.formula-editor .formula-functions {
+  flex: 1;
+  min-height: 0;
+  border-top: 1px solid var(--background-modifier-border);
+  padding-top: 12px;
+}
+
+.formula-editor .functions-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  height: 240px;
+  min-height: 0;
+}
+
+.formula-editor .function-list {
+  overflow-y: auto;
+  padding-right: 6px;
+  height: 100%;
+}
+
+.formula-editor .function-item {
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  background-color: var(--background-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+/* Footer */
+.tableEnhancements-formula-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+/* Headings */
+.formula-editor h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 8px 0;
+}
+
+/* Scrollbar */
+.formula-editor .column-list::-webkit-scrollbar {
+  height: 4px;
+}
+
+.formula-editor .column-list::-webkit-scrollbar-track,
+.formula-editor .function-list::-webkit-scrollbar-track {
+  background: var(--background-primary);
+  border-radius: 2px;
+}
+
+.formula-editor .column-list::-webkit-scrollbar-thumb,
+.formula-editor .function-list::-webkit-scrollbar-thumb {
+  background-color: var(--background-modifier-border);
+  border-radius: 2px;
+}
+
+.formula-editor .function-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Hover States */
+.formula-editor .column-item:hover,
+.formula-editor .function-item:hover {
+  background-color: var(--background-modifier-hover);
+  border-color: var(--interactive-accent);
+}
+
+.formula-editor .function-item.active {
+  background-color: var(--interactive-accent-hover);
+  border-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.formula-editor .function-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-normal);
+  margin-bottom: 2px;
+}
+
+.formula-editor .function-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.formula-editor .function-detail {
+  background-color: var(--background-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--background-modifier-border);
+  padding: 12px;
+  height: fit-content;
+  min-height: min-content;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formula-editor .hint-syntax,
+.formula-editor .hint-example {
+  font-family: var(--font-monospace);
+  font-size: 12px;
+  color: var(--text-accent);
+  background: var(--background-primary);
+  padding: 6px 8px;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+/* 优化交互状态 */
+.formula-editor .function-item {
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  background-color: var(--background-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.formula-editor .function-item:hover,
+.formula-editor .function-item.active {
+  background-color: var(--background-modifier-hover);
+  border-color: var(--interactive-accent);
+}
+
+.formula-editor .function-item.active {
+  background-color: var(--interactive-accent-hover);
+  color: var(--text-on-accent);
+}
+
+.formula-editor .function-item.active .function-desc {
+  color: var(--text-on-accent);
+  opacity: 0.8;
+}
+
+/* 优化布局 */
+.formula-editor .functions-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  height: 240px;
+  min-height: 0;
+}
+
+.formula-editor .function-list {
+  overflow-y: auto;
+  padding-right: 6px;
+  height: 100%;
+}
+
+/* 确保滚动条样式正确应用 */
+.formula-editor .function-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.formula-editor .function-list::-webkit-scrollbar-track {
+  background: var(--background-primary);
+  border-radius: 2px;
+}
+
+.formula-editor .function-list::-webkit-scrollbar-thumb {
+  background-color: var(--background-modifier-border);
+  border-radius: 2px;
+}
+
+.formula-editor .function-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--interactive-accent);
+}
+
+.formula-editor .hint-parameters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formula-editor .parameters-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.formula-editor .parameter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: var(--background-primary);
+  border-radius: 4px;
+}
+
+.formula-editor .parameter-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-normal);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.formula-editor .parameter-optional {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: normal;
+  font-style: italic;
+}
+
+.formula-editor .parameter-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.formula-editor .parameter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+  z-index: 1;
+}
+
+.formula-editor .option-tag {
+  font-size: 11px;
+  padding: 2px 6px;
+  background: var(--background-modifier-hover);
+  border-radius: 3px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.formula-editor .option-tag:hover {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.formula-editor .function-detail-wrapper {
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.formula-editor .function-list::-webkit-scrollbar,
+.formula-editor .function-detail-wrapper::-webkit-scrollbar {
+  width: 4px;
+}
+
+.formula-editor .function-list::-webkit-scrollbar-track,
+.formula-editor .function-detail-wrapper::-webkit-scrollbar-track {
+  background: var(--background-primary);
+  border-radius: 2px;
+}
+
+.formula-editor .function-list::-webkit-scrollbar-thumb,
+.formula-editor .function-detail-wrapper::-webkit-scrollbar-thumb {
+  background-color: var(--background-modifier-border);
+  border-radius: 2px;
+}
+
+.formula-editor .function-list::-webkit-scrollbar-thumb:hover,
+.formula-editor .function-detail-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: var(--interactive-accent);
+}

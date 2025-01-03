@@ -1,6 +1,6 @@
-import { IToolkitModule } from "@/src/manager/types";
+import { IToolkitModule } from "@/src/core/interfaces/types";
 import { FRONTMATTER_SORTER_DEFAULT_CONFIG, IFrontmatterSorterConfig, IFrontmatterSorterData } from "../types/config";
-import { BaseManager } from "@/src/manager/BaseManager";
+import { BaseManager } from "@/src/core/services/BaseManager";
 import { FrontMatterParser } from "../services/FrontMatterParser";
 import { FrontMatterSorter } from "../services/FrontMatterSorter";
 import { FrontMatterWriter } from "../services/FrontMatterWriter";

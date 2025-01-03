@@ -1,4 +1,4 @@
-import { Logger } from "@/src/util/log";
+import { Logger } from "@/src/core/services/Log";
 import { ColDef, ColumnApi, GridApi } from "ag-grid-community";
 import { IMarkdownTable, ITableCell, ITableHeader, ITablePosition, TableCellAlignment } from "../types/table";
 import { IParserConfig } from "../types/parser";

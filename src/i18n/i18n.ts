@@ -1,7 +1,6 @@
-import { rootLogger } from '../util/log';
-import { en } from './en';
-import { zh } from './zh';
-import { Command } from 'obsidian';
+import { rootLogger } from '@/src/core/services/Log';
+import { en } from './locales/en';
+import { zh } from './locales/zh';
 
 export type Message = {
     common: {
