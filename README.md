@@ -25,7 +25,6 @@ A personal toolkit plugin that integrates various Obsidian utilities, designed t
 ## Support
 
 If you find this plugin helpful, you can support the development through:
-- [PayPal](https://www.paypal.com/paypalme/RavenHogwarts)
 - WeChat/Alipay: [QR Code](https://s2.loli.net/2024/05/06/lWBj3ObszUXSV2f.png)
 
 ## License
