@@ -131,6 +131,14 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
     }    
   }
 
+  private unregisterEventHandlers(): void {
+    this.app.workspace.off('file-menu', this.registerEventHandlers);
+    this.app.workspace.off('files-menu', this.registerEventHandlers);
+    if (this.config.addEditorMenu) {
+      this.app.workspace.off('editor-menu', this.registerEventHandlers);
+    }
+  }
+
   private getParentPath(file: TFile | TFolder): string | null {
     const path = this.config.useAbsolutePath 
       ? `${this.basePath}/${file.path}`
@@ -158,6 +166,13 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
         this.logger.notice(this.t('toolkit.quickPath.status.copy_failed'));
       }
     });
+  }
+
+  protected cleanupModule(): void {
+    // 1. 调用父类的清理方法
+    super.cleanupModule();
+    
+    this.unregisterEventHandlers();
   }
 
   protected onModuleUnload(): void {

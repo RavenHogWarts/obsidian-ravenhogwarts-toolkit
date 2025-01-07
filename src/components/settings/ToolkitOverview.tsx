@@ -6,15 +6,19 @@ import { t } from '@/src/i18n/i18n';
 import RavenHogwartsToolkitPlugin from '@/src/main';
 import { Settings } from 'lucide-react';
 import { useDeveloperMode } from '@/src/core/hooks/useDeveloperMode';
+import { Logger } from '@/src/core/services/Log';
+import { ToolkitId } from '@/src/core/interfaces/types';
 
 interface ToolkitOverviewProps {
   plugin: RavenHogwartsToolkitPlugin;
+  logger: Logger;
   onNavigateToDetail: (moduleId: string) => void;
   onVersionClick: () => void;
 }
 
 export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
   plugin,
+  logger,
   onNavigateToDetail,
   onVersionClick
 }) => {
@@ -23,6 +27,28 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
     plugin,
     onActivated: onVersionClick
   });
+
+  // 处理工具包启用/禁用
+  const handleToolkitToggle = async (toolkitId: ToolkitId, enabled: boolean) => {
+    try {
+      const manager = plugin.getManager(toolkitId);
+      if (!manager) {
+        throw new Error(`Manager not found for toolkit: ${toolkitId}`);
+      }
+
+      if (enabled) {
+        await manager.enable();
+      } else {
+        await manager.disable();
+      }
+
+      // 更新设置
+      await updateToolkit(toolkitId, enabled);
+      
+    } catch (error) {
+      logger.error(`Failed to ${enabled ? 'enable' : 'disable'} toolkit ${toolkitId}:`, error);
+    }
+  };
 
   return (
     <div className="rht-toolkit-overview">
@@ -57,7 +83,7 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
               <>
                 <Toggle
                   checked={toolkit.enabled}
-                  onChange={(checked) => updateToolkit(toolkit.id, checked)}
+                  onChange={(checked) => handleToolkitToggle(toolkit.id, checked)}
                   aria-label={t('common.toggle_toolkit')}
                 />
                 <button

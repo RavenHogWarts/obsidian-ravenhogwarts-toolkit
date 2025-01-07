@@ -24,6 +24,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
     protected data: T['data'];
     protected logger: Logger;
     protected app: App;
+    protected registeredCommands: string[] = [];
     
     constructor(
         protected plugin: RavenHogwartsToolkitPlugin,
@@ -199,6 +200,11 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
         }
     }
 
+    protected unregisterEvents(): void {
+        ((this as any).events || []).forEach(eventRef => eventRef());
+        (this as any).events = [];
+    }
+
     // 为常用的命令注册提供便捷方法
     protected addCommand(command: Command): void {
         const enhancedCommand = {
@@ -215,6 +221,20 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
             }
         }
         this.plugin.addCommand(enhancedCommand);
+        this.registeredCommands.push(enhancedCommand.id);
+    }
+
+    protected unregisterCommand(commandId: string): void {
+        const fullCommandId = `${this.plugin.manifest.id}:${this.moduleId}.${commandId}`;
+        // @ts-ignore - Obsidian internal API
+        this.app.commands?.removeCommand?.(fullCommandId);
+    }
+
+    protected unregisterAllCommands(): void {
+        this.registeredCommands.forEach(commandId => {
+            this.unregisterCommand(commandId);
+        });
+        this.registeredCommands = [];
     }
 
     // 为菜单项添加提供便捷方法
@@ -277,11 +297,23 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
     }
 
     protected onEnable(): void {
-        this.logger.debug('Module enabled:', this.moduleId);
+        this.logger.info('Module enabled:', this.moduleId);
     }
 
     protected onDisable(): void {
-        this.logger.debug('Module disabled:', this.moduleId);
+        this.cleanupModule();
+        this.logger.info('Module disabled:', this.moduleId);
+    }
+
+    protected cleanupModule(): void {
+        // 1. 卸载所有命令
+        this.unregisterAllCommands();
+        
+        // 2. 卸载所有事件
+        this.unregisterEvents();
+        
+        // 3. 记录日志
+        this.logger.debug(`Cleaned up module: ${this.moduleId}`);
     }
 
     // 添加 protected onConfigChange 方法声明

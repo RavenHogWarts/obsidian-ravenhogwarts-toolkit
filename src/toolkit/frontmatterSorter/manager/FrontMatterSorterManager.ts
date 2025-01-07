@@ -297,6 +297,14 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
         this.logger.debug('Updated sorter and writer with new rules');
     }
 
+    protected cleanupModule(): void {
+        // 1. 调用父类的清理方法
+        super.cleanupModule();
+        
+        this.unregisterEventHandlers();
+        this.processing = false;
+    }
+
     protected onModuleUnload(): void {
         this.logger.info("Unloading frontmatter sorter manager");
         this.unregisterEventHandlers();

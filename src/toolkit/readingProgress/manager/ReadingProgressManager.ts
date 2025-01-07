@@ -29,6 +29,18 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
         this.logger.info('Reading progress manager loaded');
     }
 
+    protected onEnable(): void {
+        // 确保先调用父类方法
+        super.onEnable();
+
+        // 初始化
+        this.initResizeObserver();
+        this.registerEventHandlers();
+
+        // 立即更新显示
+        this.updateContainerPosition();
+    }
+
     private initContainer(): void {
         this.container = document.createElement('div');
         this.root = createRoot(this.container);
@@ -114,13 +126,18 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
     }
 
     private unregisterEventHandlers(): void {
-        this.app.workspace.off('active-leaf-change', this.updateContainerPosition);
-        this.app.workspace.off('layout-change', this.updateContainerPosition);
-        this.app.workspace.off('editor-change', this.updateTOC);
-        this.app.metadataCache.off('changed', this.updateTOC);
+        this.app.workspace.off('active-leaf-change', this.registerEventHandlers);
+        this.app.workspace.off('layout-change', this.registerEventHandlers);
+        this.app.workspace.off('editor-change', this.registerEventHandlers);
+        this.app.metadataCache.off('changed', this.registerEventHandlers);
     }
 
     private updateContainerPosition(): void {
+        if (!this.isEnabled()) {
+            this.cleanupCurrentView();
+            return;
+        }
+
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 
         // 先移除所有已存在的容器
@@ -271,6 +288,14 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
         this.container = null;
         this.currentView = null;
         this.scrollElement = null;
+    }
+
+    protected cleanupModule(): void {
+        // 1. 调用父类的清理方法
+        super.cleanupModule();
+        
+        this.cleanupCurrentView();
+        this.unregisterEventHandlers();
     }
 
     protected async onModuleUnload(): Promise<void> {

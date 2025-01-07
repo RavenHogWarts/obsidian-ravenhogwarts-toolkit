@@ -49,6 +49,7 @@ export default class RavenHogwartsToolkitSettingTab extends PluginSettingTab {
             <>
               <ToolkitOverview 
                 plugin={this.plugin}
+                logger={this.logger}
                 onNavigateToDetail={(moduleId) => {
                   this.currentView = moduleId as ToolkitId;
                   this.renderContent();
