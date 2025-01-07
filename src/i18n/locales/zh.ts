@@ -185,9 +185,9 @@ export const zh: Message = {
             title: "OBReader",
             description: "OBReader"
         },
-        customIcons: {
-            title: "自定义图标",
-            description: "自定义图标"
+        readingProgress: {
+            title: "阅读进度",
+            description: "阅读进度"
         }
     }
 }

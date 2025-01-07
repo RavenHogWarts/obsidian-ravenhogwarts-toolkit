@@ -187,9 +187,9 @@ export const en: Message = {
             title: "OBReader",
             description: "OBReader"
         },
-        customIcons: {
-            title: "Custom Icons",
-            description: "Custom icons"
+        readingProgress: {
+            title: "Reading Progress",
+            description: "Reading Progress"
         }
     }
 }

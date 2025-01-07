@@ -7,6 +7,7 @@ import RavenHogwartsToolkitSettingTab from './components/settings/SettingsTab';
 import { TableEnhancementsManager } from './toolkit/tableEnhancements/manager/TableEnhancementsManager';
 import { FrontMatterSorterManager } from './toolkit/frontmatterSorter/manager/FrontMatterSorterManager';
 import { QuickPathManager } from './toolkit/quickPath/manager/QuickPathManager';
+import { ReadingProgressManager } from './toolkit/readingProgress/manager/ReadingProgressManager';
 import '@/style/styles.css';
 import '@/style/settings.css';
 
@@ -46,6 +47,7 @@ export default class RavenHogwartsToolkitPlugin extends Plugin {
             'tableEnhancements': TableEnhancementsManager,
             'frontmatterSorter': FrontMatterSorterManager,
             'quickPath': QuickPathManager,
+            'readingProgress': ReadingProgressManager
         };
         await this.pluginManager.registerManagers(managers);
     }

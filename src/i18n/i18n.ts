@@ -187,7 +187,7 @@ export type Message = {
             title: string;
             description: string;
         },
-        customIcons: {
+        readingProgress: {
             title: string;
             description: string;
         }

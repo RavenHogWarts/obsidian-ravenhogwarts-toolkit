@@ -7,6 +7,7 @@ import { t, TranslationKeys } from '@/src/i18n/i18n';
 import { QUICK_PATH_DEFAULT_CONFIG } from '@/src/toolkit/quickPath/types/config';
 import { TABLE_ENHANCEMENTS_DEFAULT_CONFIG } from '@/src/toolkit/tableEnhancements/types/config';
 import { FRONTMATTER_SORTER_DEFAULT_CONFIG } from '@/src/toolkit/frontmatterSorter/types/config';
+import { READING_PROGRESS_DEFAULT_CONFIG } from '@/src/toolkit/readingProgress/types/config';
 
 interface MenuItemConfig {
     title: string;
@@ -100,6 +101,8 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
                 return TABLE_ENHANCEMENTS_DEFAULT_CONFIG;
             case 'frontmatterSorter':
                 return FRONTMATTER_SORTER_DEFAULT_CONFIG;
+            case 'readingProgress':
+                return READING_PROGRESS_DEFAULT_CONFIG;
             default:
                 this.logger.throwError(new Error(`Unknown module ID: ${this.moduleId}`));
         }

@@ -1,4 +1,4 @@
-import { BookOpen, FileText, Link, LucideIcon, Table } from "lucide-react";
+import { BookOpen, FileText, Link, LucideIcon, Radar, Table } from "lucide-react";
 import { DEFAULT_LOGGER_CONFIG, ILoggerConfig } from "@/src/core/services/Log";
 
 // 主配置接口
@@ -50,6 +50,7 @@ export type ToolkitId = 'tableEnhancements'
   | 'quickPath'
   | 'frontmatterSorter'
   | 'obReader'
+  | 'readingProgress'
 ;
 
 export const TOOLKIT_CONFIG: Record<ToolkitId, { icon: LucideIcon, iconName: string }> = {
@@ -69,4 +70,8 @@ export const TOOLKIT_CONFIG: Record<ToolkitId, { icon: LucideIcon, iconName: str
         icon: BookOpen,
         iconName: 'book-open'
     },
-};
+    readingProgress: {
+        icon: Radar,
+        iconName: 'radar'
+    }
+};  
