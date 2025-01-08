@@ -190,6 +190,10 @@ export type Message = {
         readingProgress: {
             title: string;
             description: string;
+            return_button: {
+                return_to_cursor: string;
+                return_to_top: string;
+            }
         }
     }
 }

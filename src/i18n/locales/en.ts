@@ -189,7 +189,11 @@ export const en: Message = {
         },
         readingProgress: {
             title: "Reading Progress",
-            description: "Reading Progress"
+            description: "Reading Progress",
+            return_button: {
+                return_to_cursor: "Return to Cursor",
+                return_to_top: "Return to Top"
+            }
         }
     }
 }

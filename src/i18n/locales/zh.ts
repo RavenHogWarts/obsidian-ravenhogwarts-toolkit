@@ -187,7 +187,11 @@ export const zh: Message = {
         },
         readingProgress: {
             title: "阅读进度",
-            description: "阅读进度"
+            description: "阅读进度",
+            return_button: {
+                return_to_cursor: "返回光标位置",
+                return_to_top: "返回顶部"
+            }
         }
     }
 }

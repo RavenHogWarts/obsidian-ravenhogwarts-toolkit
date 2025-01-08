@@ -2,7 +2,8 @@ import * as React from 'react';
 import { HeadingCache } from 'obsidian';
 import './ReadingProgress.css';
 import { ProgressRing } from '@/src/components/base/ProgresssRing/ProgressRing';
-import { ArrowUpFromLine, ArrowUpToLine } from 'lucide-react';
+import { ArrowUpFromDot, ArrowUpToLine } from 'lucide-react';
+import { t } from '@/src/i18n/i18n';
 
 interface ReadingProgressProps {
     headings: HeadingCache[];
@@ -108,9 +109,9 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
             <div 
                 className="rht-return-button"
                 onClick={onReturnClick}
-                aria-label={isEditing ? "返回光标位置" : "返回顶部"}
+                aria-label={isEditing ? t('toolkit.readingProgress.return_button.return_to_cursor') : t('toolkit.readingProgress.return_button.return_to_top')}
             >
-                {isEditing ? <ArrowUpFromLine size={16} /> : <ArrowUpToLine size={16} />}
+                {isEditing ? <ArrowUpFromDot size={16} /> : <ArrowUpToLine size={16} />}
             </div>
         </div>
     );
