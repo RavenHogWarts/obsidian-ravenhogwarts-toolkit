@@ -56,7 +56,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
     private async updateReadingTime(): Promise<void> {
         if (!this.currentView?.file) return;
         const content = await this.app.vault.read(this.currentView.file);
-        this.logger.info(`Reading time for file ${this.currentView.file.path}: ${content}`);
 
         this.readingTime = EstimatedReadingTime.calculate(content);
         this.renderComponent();
