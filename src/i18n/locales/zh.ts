@@ -191,6 +191,23 @@ export const zh: Message = {
             return_button: {
                 return_to_cursor: "返回光标位置",
                 return_to_top: "返回顶部"
+            },
+            progress_indicator: {
+                reading_time: "预计阅读时间 {0} 分钟"
+            },
+            settings: {
+                showTOC: {
+                    title: "目录",
+                    description: "显示悬浮目录"
+                },
+                showProgress: {
+                    title: "进度",
+                    description: "显示当前阅读进度"
+                },
+                showReadingTime: {
+                    title: "阅读时间",
+                    description: "显示预计的阅读时间，假定英文内容阅读速度为 200 字/分钟，中文内容阅读速度为 300 字/分钟，文件内容的统计排除了front matter"
+                }
             }
         }
     }

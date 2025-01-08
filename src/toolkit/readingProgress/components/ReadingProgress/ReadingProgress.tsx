@@ -1,11 +1,14 @@
 import * as React from 'react';
 import { HeadingCache } from 'obsidian';
-import './ReadingProgress.css';
 import { ProgressRing } from '@/src/components/base/ProgresssRing/ProgressRing';
 import { ArrowUpFromDot, ArrowUpToLine } from 'lucide-react';
 import { t } from '@/src/i18n/i18n';
+import { IReadingProgressConfig } from '@/src/toolkit/readingProgress/types/config';
+import './styles/ReadingProgress.css';
 
 interface ReadingProgressProps {
+    config: IReadingProgressConfig;
+    readingTime: number;
     headings: HeadingCache[];
     progress: number;
     onHeadingClick: (heading: HeadingCache) => void;
@@ -15,6 +18,8 @@ interface ReadingProgressProps {
 }
 
 export const ReadingProgress: React.FC<ReadingProgressProps> = ({
+    config,
+    readingTime,
     headings,
     progress,
     onHeadingClick,
@@ -62,6 +67,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                 className="rht-toc-group"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
+                style={{ display: config.showTOC ? 'flex' : 'none' }}
             >
                 <div className="rht-indicators">
                     {headings.map((_, index) => (
@@ -97,10 +103,14 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                     ))}
                 </div>
             </div>
-            <div className="rht-progress-indicator">
+            <div 
+                className="rht-progress-indicator" 
+                style={{ display: config.showProgress ? 'flex' : 'none' }}
+                aria-label={config.showReadingTime ? t('toolkit.readingProgress.progress_indicator.reading_time', [readingTime]) : undefined}
+            >
                 <ProgressRing 
                     progress={progress} 
-                    size={32} 
+                    size={28} 
                     strokeWidth={2}
                     showText={true}
                     text={`${Math.round(progress)}%`}
@@ -110,6 +120,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                 className="rht-return-button"
                 onClick={onReturnClick}
                 aria-label={isEditing ? t('toolkit.readingProgress.return_button.return_to_cursor') : t('toolkit.readingProgress.return_button.return_to_top')}
+                style={{ display: config.showProgress ? 'flex' : 'none' }}
             >
                 {isEditing ? <ArrowUpFromDot size={16} /> : <ArrowUpToLine size={16} />}
             </div>

@@ -1,10 +1,11 @@
+import * as React from 'react';
 import { BaseManager } from "@/src/core/services/BaseManager";
 import { HeadingCache, MarkdownView } from "obsidian";
 import { createRoot, Root } from 'react-dom/client';
-import { ReadingProgress } from '../components/ReadingProgress';
-import * as React from 'react';
-import { IReadingProgressConfig, IReadingProgressData } from "../types/config";
 import { IToolkitModule } from "@/src/core/interfaces/types";
+import { ReadingProgress } from '@/src/toolkit/readingProgress/components/ReadingProgress/ReadingProgress';
+import { IReadingProgressConfig, IReadingProgressData } from "@/src/toolkit/readingProgress/types/config";
+import { EstimatedReadingTime } from "@/src/toolkit/readingProgress/services/estimatedReadingTime";
 
 interface IReadingProgressModule extends IToolkitModule {
   config: IReadingProgressConfig;
@@ -20,6 +21,7 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
     private progress = 0;
     private headings: HeadingCache[] = [];
     private currentHeadingIndex = -1;
+    private readingTime = 0;
 
     protected async onModuleLoad(): Promise<void> {
         // 确保只初始化一次
@@ -27,16 +29,18 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
         this.initResizeObserver();
         this.initContainer();
         this.registerEventHandlers();
+        await this.updateReadingTime();
         this.logger.info('Reading progress manager loaded');
     }
 
-    protected onEnable(): void {
+    protected async onEnable(): Promise<void> {
         // 确保先调用父类方法
         super.onEnable();
 
         // 初始化
         this.initResizeObserver();
         this.registerEventHandlers();
+        await this.updateReadingTime();
 
         // 立即更新显示
         this.updateContainerPosition();
@@ -49,11 +53,22 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
         this.updateContainerPosition();
     }
 
+    private async updateReadingTime(): Promise<void> {
+        if (!this.currentView?.file) return;
+        const content = await this.app.vault.read(this.currentView.file);
+        this.logger.info(`Reading time for file ${this.currentView.file.path}: ${content}`);
+
+        this.readingTime = EstimatedReadingTime.calculate(content);
+        this.renderComponent();
+    }
+
     private renderComponent(): void {
         if (!this.root) return;
         
         this.root.render(
             React.createElement(ReadingProgress, {
+                config: this.config,
+                readingTime: this.readingTime,
                 headings: this.headings,
                 progress: this.progress,
                 onHeadingClick: (heading) => this.scrollToHeading(heading),
@@ -62,6 +77,13 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
                 onReturnClick: this.handleReturnClick
             })
         );
+    }
+
+    protected onConfigChange(): void {
+        // 配置变更时重新渲染组件
+        this.renderComponent();
+        // 更新容器位置
+        this.updateContainerPosition();
     }
 
     private handleReturnClick = (): void => {
@@ -194,8 +216,18 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
     private registerEventHandlers(): void {
         // 监听活动视图变化
         this.registerEvent(
-            this.app.workspace.on('active-leaf-change', () => {
+            this.app.workspace.on('active-leaf-change', async () => {
+                await this.updateReadingTime();
                 this.updateContainerPosition();
+            })
+        );
+
+        // 监听文件内容变化
+        this.registerEvent(
+            this.app.vault.on('modify', async (file) => {
+                if (this.currentView?.file === file) {
+                    await this.updateReadingTime();
+                }
             })
         );
 
@@ -289,7 +321,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
                 // 更新内容和渲染组件
                 this.updateTOC();
                 this.updateProgress();
-                this.applyStyles();
             }
         } else {
             this.cleanupCurrentView();
@@ -351,17 +382,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
             const level = parseInt(el.tagName.substring(1));
             return text === heading.heading && level === heading.level;
         }) as HTMLElement || null;
-    }
-
-    private applyStyles(): void {
-        if (!this.container) return;
-
-        const { position } = this.config;
-        
-        Object.assign(this.container.style, {
-            [position]: '0',
-            [position === 'right' ? 'left' : 'right']: 'auto'
-        });
     }
 
     private cleanupCurrentView(): void {

@@ -56,10 +56,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
             const currentData = this.settings.toolkit[this.moduleId].data;
             
             this.settings.toolkit[this.moduleId] = {
-                config: {
-                    ...defaultConfig,
-                    ...currentConfig  // 保留现有配置
-                },
+                config: this.cleanConfig(currentConfig, defaultConfig),
                 data: currentData    // 完全保留现有数据
             };
         }

@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { t } from '@/src/i18n/i18n';
+import { ToolkitId } from '@/src/core/interfaces/types';
+import { ArrowLeft } from 'lucide-react';
+import { App } from 'obsidian';
 import RavenHogwartsToolkitPlugin from '@/src/main';
 import { QuickPathSettings } from '@/src/toolkit/quickPath/components/settings/QuickPathSettings';
 import { FrontmatterSorterSettings } from '@/src/toolkit/frontmatterSorter/components/settings/FrontmatterSorterSettings';
 import { TableEnhancementsSettings } from '@/src/toolkit/tableEnhancements/components/settings/TableEnhancementsSettings';
-import { ToolkitId } from '@/src/core/interfaces/types';
-import { ArrowLeft } from 'lucide-react';
-import { App } from 'obsidian';
+import { ReadingProgressSettings } from '@/src/toolkit/readingProgress/components/settings/ReadingProgressSettings';
 
 interface ToolkitDetailSettingsProps {
   app: App;
@@ -29,8 +30,9 @@ export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
         return <TableEnhancementsSettings />;
       case 'frontmatterSorter':
         return <FrontmatterSorterSettings app={app} plugin={plugin} />;
-      case 'obReader':
       case 'readingProgress':
+        return <ReadingProgressSettings plugin={plugin} />;
+      case 'obReader':
       default:
         return null;
     }

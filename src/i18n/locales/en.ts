@@ -193,6 +193,23 @@ export const en: Message = {
             return_button: {
                 return_to_cursor: "Return to Cursor",
                 return_to_top: "Return to Top"
+            },
+            progress_indicator: {
+                reading_time: "Estimated reading time {0} minutes"
+            },
+            settings: {
+                showTOC: {
+                    title: "Show TOC",
+                    description: "Show  TOC"
+                },
+                showProgress: {
+                    title: "Show Progress",
+                    description: "Show Progress"
+                },
+                showReadingTime: {
+                    title: "Show Reading Time",
+                    description: "Show estimated reading time, assume English reading speed is 200 words/minute, Chinese reading speed is 300 words/minute, the statistics of file content excludes front matter"
+                }
             }
         }
     }

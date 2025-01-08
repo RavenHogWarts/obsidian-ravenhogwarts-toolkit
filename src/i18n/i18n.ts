@@ -193,6 +193,23 @@ export type Message = {
             return_button: {
                 return_to_cursor: string;
                 return_to_top: string;
+            },
+            progress_indicator: {
+                reading_time: string;
+            },
+            settings: {
+                showTOC: {
+                    title: string;
+                    description: string;
+                };
+                showProgress: {
+                    title: string;
+                    description: string;
+                };
+                showReadingTime: {
+                    title: string;
+                    description: string;
+                }
             }
         }
     }
