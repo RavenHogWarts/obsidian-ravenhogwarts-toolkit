@@ -6,6 +6,8 @@ interface ProgressRingProps {
   strokeWidth?: number;
   color?: string;
   backgroundColor?: string;
+  showText?: boolean;
+  text?: React.ReactNode;
 }
 
 export const ProgressRing: React.FC<ProgressRingProps> = ({
@@ -13,7 +15,9 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
   size = 24,
   strokeWidth = 2,
   color = 'var(--interactive-accent)',
-  backgroundColor = 'var(--background-modifier-border)'
+  backgroundColor = 'var(--background-modifier-border)',
+  showText = false,
+  text = null,
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -53,6 +57,9 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
           style={{ transition: 'stroke-dashoffset 0.3s ease' }}
         />
       </svg>
+      {showText && text && (
+        <span className="rht-progress-text">{text}</span>
+      )}
     </span>
   );
 };

@@ -70,7 +70,8 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
         
         if (this.config.sortOnSave) {
             this.modifyEventRef = this.registerEvent(
-                this.app.vault.on('modify', this.handleFileModify.bind(this))
+                // this.app.vault.on('modify', this.handleFileModify.bind(this))
+                this.app.metadataCache.on('changed', this.handleFileModify.bind(this))
             );
             this.logger.debug('Registered auto-sort on save handler');
         }
