@@ -9,66 +9,46 @@ export class EstimatedReadingTime {
    * @returns 预计阅读时间（分钟）
    */
   public static calculate(content: string): number {
-      if (!content) return 0;
+    if (!content) return 0;
 
-      // 清理内容
-      const cleanContent = this.cleanContent(content);
-      // 获取字数
-      const wordCount = this.getWordCount(cleanContent);
-      // 判断内容类型并计算时间
-      const wordsPerMinute = this.isChineseContent(cleanContent) 
-          ? this.CHINESE_WORDS_PER_MINUTE 
-          : this.ENGLISH_WORDS_PER_MINUTE;
+    // 清理内容
+    const cleanContent = this.cleanContent(content);
+    // 获取字数
+    const { chineseCount, englishCount } = this.getWordCounts(cleanContent);
 
-      return Math.ceil(wordCount / wordsPerMinute);
+    const chineseTime = chineseCount / this.CHINESE_WORDS_PER_MINUTE;
+    const englishTime = englishCount / this.ENGLISH_WORDS_PER_MINUTE;
+
+    return Math.ceil(chineseTime + englishTime);
   }
 
-  /**
-   * 清理文档内容，移除不需要计入阅读时间的部分
-   */
+
+  private static getWordCounts(content: string): { chineseCount: number, englishCount: number } {
+    // 提取所有中文字符
+    const chineseChars = content.match(/[\u4e00-\u9fff]/g) || [];
+    // 移除所有中文字符后，按空格分词计算英文单词
+    const englishContent = content
+    .replace(/[\u4e00-\u9fff]/g, '')  // 移除中文字符
+    .replace(/[\p{P}]/gu, ' ')        // 将标点替换为空格
+    .trim();
+
+    const englishWords = englishContent
+        .split(/\s+/)
+        .filter(Boolean);
+
+    return {
+        chineseCount: chineseChars.length,
+        englishCount: englishWords.length
+    };
+  }
+
   private static cleanContent(content: string): string {
       return content
-          // .replace(/```[\s\S]*?```/g, '')     // 移除代码块
-          .replace(/---[\s\S]*?---/, '')      // 移除 front matter
-          // .replace(/\[\[.*?\]\]/g, '')        // 移除 wiki 链接
-          // .replace(/!\[\[.*?\]\]/g, '')      // 移除图片链接
-          // .replace(/\[.*?\]\(.*?\)/g, '')     // 移除普通链接
-          .trim();
-  }
-
-  /**
-   * 获取内容的字数
-   */
-  private static getWordCount(content: string): number {
-      if (this.isChineseContent(content)) {
-          // 中文：计算字符数（排除空格和标点）
-          return content
-              .replace(/\s+/g, '')
-              .replace(/[\p{P}]/gu, '')
-              .length;
-      } else {
-          // 英文：按空格分词
-          return content
-              .split(/\s+/)
-              .filter(Boolean)
-              .length;
-      }
-  }
-
-  /**
-   * 判断是否为中文内容
-   */
-  private static isChineseContent(content: string): boolean {
-      const chineseChars = content.match(/[\u4e00-\u9fff]/g)?.length || 0;
-      const totalChars = content.replace(/\s+/g, '').length;
-      return chineseChars / totalChars > 0.5;
-  }
-
-  /**
-   * 格式化阅读时间显示
-   */
-  public static formatReadingTime(minutes: number): string {
-      if (minutes < 1) return '< 1 min';
-      return `${minutes} min read`;
+        // .replace(/```[\s\S]*?```/g, '')     // 移除代码块
+        .replace(/---[\s\S]*?---/, '')      // 移除 front matter
+        // .replace(/\[\[.*?\]\]/g, '')        // 移除 wiki 链接
+        // .replace(/!\[\[.*?\]\]/g, '')      // 移除图片链接
+        // .replace(/\[.*?\]\(.*?\)/g, '')     // 移除普通链接
+        .trim();
   }
 }
