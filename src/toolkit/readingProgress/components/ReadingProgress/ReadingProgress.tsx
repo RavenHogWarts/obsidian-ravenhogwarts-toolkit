@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { HeadingCache } from 'obsidian';
 import { ProgressRing } from '@/src/components/base/ProgresssRing/ProgressRing';
-import { ArrowUpFromDot, ArrowUpToLine } from 'lucide-react';
+import { ArrowUpToLine, CircleDot } from 'lucide-react';
 import { t } from '@/src/i18n/i18n';
 import { IReadingProgressConfig } from '@/src/toolkit/readingProgress/types/config';
 import './styles/ReadingProgress.css';
@@ -192,7 +192,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                 aria-label={isEditing ? t('toolkit.readingProgress.return_button.return_to_cursor') : t('toolkit.readingProgress.return_button.return_to_top')}
                 style={{ display: config.showProgress ? 'flex' : 'none' }}
             >
-                {isEditing ? <ArrowUpFromDot size={16} /> : <ArrowUpToLine size={16} />}
+                {isEditing ? <CircleDot size={16} /> : <ArrowUpToLine size={16} />}
             </div>
         </div>
     );

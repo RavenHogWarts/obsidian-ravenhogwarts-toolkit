@@ -95,7 +95,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
             if (editor) {
                 const currentPos = editor.getCursor();
                 editor.scrollIntoView({ from: currentPos, to: currentPos }, true);
-                editor.setCursor(currentPos);
                 editor.focus();
             }
         } else {
@@ -110,10 +109,11 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
                 if (progress < 1) {
                     // 使用 easeOutCubic 缓动函数
                     const easeProgress = 1 - Math.pow(1 - progress, 3);
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     this.scrollElement!.scrollTop = startPosition * (1 - easeProgress);
                     requestAnimationFrame(smoothScroll);
                 } else {
-                    // 确保最终位置为顶部
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     this.scrollElement!.scrollTop = 0;
                 }
             };
