@@ -306,9 +306,14 @@
     white-space: nowrap;
 }
 
-.rht-return-button {
+.rht-return {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.rht-return-btn {
     margin-top: 8px;
-    padding: 4px 8px;
     border: none;
     background-color: transparent;
     color: var(--text-muted);
@@ -317,7 +322,7 @@
     transition: all 0.2s ease;
 }
 
-.rht-return-button:hover {
+.rht-return-btn:hover {
     background-color: var(--background-modifier-hover);
     color: var(--text-normal);
 }

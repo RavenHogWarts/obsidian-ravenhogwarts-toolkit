@@ -193,6 +193,7 @@ export type Message = {
             return_button: {
                 return_to_cursor: string;
                 return_to_top: string;
+                return_to_bottom: string;
             },
             progress_indicator: {
                 reading_time: string;

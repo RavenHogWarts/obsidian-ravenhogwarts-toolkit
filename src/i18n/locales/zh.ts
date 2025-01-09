@@ -190,7 +190,8 @@ export const zh: Message = {
             description: "阅读进度",
             return_button: {
                 return_to_cursor: "返回光标位置",
-                return_to_top: "返回顶部"
+                return_to_top: "返回顶部",
+                return_to_bottom: "返回底部"
             },
             progress_indicator: {
                 reading_time: "预计阅读时间 {0} 分钟"

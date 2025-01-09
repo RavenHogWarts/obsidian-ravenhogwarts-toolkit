@@ -192,7 +192,8 @@ export const en: Message = {
             description: "Reading Progress",
             return_button: {
                 return_to_cursor: "Return to Cursor",
-                return_to_top: "Return to Top"
+                return_to_top: "Return to Top",
+                return_to_bottom: "Return to Bottom"
             },
             progress_indicator: {
                 reading_time: "Estimated reading time {0} minutes"

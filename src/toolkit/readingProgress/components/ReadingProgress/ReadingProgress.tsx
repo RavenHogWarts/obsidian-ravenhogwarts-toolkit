@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { HeadingCache } from 'obsidian';
 import { ProgressRing } from '@/src/components/base/ProgresssRing/ProgressRing';
-import { ArrowLeftRight, ArrowUpToLine, ChevronLeft, ChevronRight, CircleDot, Pin } from 'lucide-react';
+import { ArrowDownToLine, ArrowLeftRight, ArrowUpToLine, ChevronLeft, ChevronRight, CircleDot, Pin } from 'lucide-react';
 import { t } from '@/src/i18n/i18n';
 import { IReadingProgressConfig } from '@/src/toolkit/readingProgress/types/config';
 import './styles/ReadingProgress.css';
@@ -15,7 +15,7 @@ interface ReadingProgressProps {
     onHeadingClick: (heading: HeadingCache) => void;
     activeHeadingIndex?: number;
     isEditing: boolean;
-    onReturnClick: () => void;
+    onReturnClick: (target: 'cursor' | 'top' | 'bottom') => void;
 }
 
 export const ReadingProgress: React.FC<ReadingProgressProps> = ({
@@ -294,12 +294,36 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                 />
             </div>
             <div 
-                className="rht-return-button"
-                onClick={onReturnClick}
-                aria-label={isEditing ? t('toolkit.readingProgress.return_button.return_to_cursor') : t('toolkit.readingProgress.return_button.return_to_top')}
+                className="rht-return"
                 style={{ display: config.showProgress ? 'flex' : 'none' }}
             >
-                {isEditing ? <CircleDot size={16} /> : <ArrowUpToLine size={16} />}
+                {isEditing ?  
+                    <div 
+                        className="rht-return-btn"
+                        onClick={() => onReturnClick('cursor')}
+                        aria-label={t('toolkit.readingProgress.return_button.return_to_cursor')}
+                    >
+                        <CircleDot size={16} />
+                    </div>
+                :
+                    <>
+                        <div 
+                            className="rht-return-btn"
+                            onClick={() => onReturnClick('top')}
+                            aria-label={t('toolkit.readingProgress.return_button.return_to_top')}
+                        >
+                            <ArrowUpToLine size={16} />
+                        </div>
+                        <div 
+                            className="rht-return-btn"
+                            onClick={() => onReturnClick('bottom')}
+                            aria-label={t('toolkit.readingProgress.return_button.return_to_bottom')}
+                        >
+                            <ArrowDownToLine size={16} />
+                        </div>
+                    </>
+                    
+                }
             </div>
         </div>
     );

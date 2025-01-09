@@ -74,7 +74,7 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
                 onHeadingClick: (heading) => this.scrollToHeading(heading),
                 activeHeadingIndex: this.currentHeadingIndex,
                 isEditing: this.currentView?.getMode() === 'source',
-                onReturnClick: this.handleReturnClick
+                onReturnClick: (target) => this.handleReturnClick(target)
             })
         );
     }
@@ -86,22 +86,26 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
         this.updateContainerPosition();
     }
 
-    private handleReturnClick = (): void => {
+    private handleReturnClick = (target: 'cursor' | 'top' | 'bottom'): void => {
         if (!this.currentView || !this.scrollElement) return;
     
         const mode = this.currentView.getMode();
         
         if (mode === 'source') {
-            const editor = this.currentView.editor;
-            if (editor) {
-                const currentPos = editor.getCursor();
-                editor.scrollIntoView({ from: currentPos, to: currentPos }, true);
-                editor.focus();
+            if (target === 'cursor') {
+                const editor = this.currentView.editor;
+                if (editor) {
+                    const currentPos = editor.getCursor();
+                    editor.scrollIntoView({ from: currentPos, to: currentPos }, true);
+                    editor.focus();
+                }
             }
         } else {
             // 阅读模式：先尝试平滑滚动，如果超时则强制滚动
             const startTime = Date.now();
             const startPosition = this.scrollElement.scrollTop;
+            const targetPosition = target === 'top' ? 0 : this.scrollElement.scrollHeight - this.scrollElement.clientHeight;
+            const distance = targetPosition - startPosition;
             
             const smoothScroll = () => {
                 const elapsed = Date.now() - startTime;
@@ -111,11 +115,11 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
                     // 使用 easeOutCubic 缓动函数
                     const easeProgress = 1 - Math.pow(1 - progress, 3);
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    this.scrollElement!.scrollTop = startPosition * (1 - easeProgress);
+                    this.scrollElement!.scrollTop = startPosition + (distance * easeProgress);
                     requestAnimationFrame(smoothScroll);
                 } else {
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    this.scrollElement!.scrollTop = 0;
+                    this.scrollElement!.scrollTop = targetPosition;
                 }
             };
 
