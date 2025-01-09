@@ -18,7 +18,7 @@
 - 表格增强
 
 ### 功能介绍
-[RavenHogwarts's Toolkit]()
+[Wiki](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/wiki)
 
 ## 安装
 ### 手动安装

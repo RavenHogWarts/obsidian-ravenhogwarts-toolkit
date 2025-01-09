@@ -17,6 +17,9 @@ A personal toolkit plugin that integrates various Obsidian utilities, designed t
 - Reading Progress
 - Table Enhance
 
+## Wiki
+[Wiki](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/wiki)
+
 ## Installation
 ### Manual Installation
 
