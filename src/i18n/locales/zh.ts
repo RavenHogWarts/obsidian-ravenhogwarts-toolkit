@@ -195,6 +195,12 @@ export const zh: Message = {
             progress_indicator: {
                 reading_time: "预计阅读时间 {0} 分钟"
             },
+            toolbar: {
+                toggle_pin: "固定/取消固定",
+                toggle_position: "切换位置",
+                move_left: "向左移动1px",
+                move_right: "向右移动1px"
+            },
             settings: {
                 showTOC: {
                     title: "目录",

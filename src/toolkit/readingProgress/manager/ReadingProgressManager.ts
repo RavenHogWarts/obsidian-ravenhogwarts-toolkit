@@ -67,6 +67,7 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
         this.root.render(
             React.createElement(ReadingProgress, {
                 config: this.config,
+                onConfigChange: (config) => this.updateConfig(config),
                 readingTime: this.readingTime,
                 headings: this.headings,
                 progress: this.progress,

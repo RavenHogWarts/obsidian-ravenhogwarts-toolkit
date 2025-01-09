@@ -63,14 +63,19 @@
 
 .rht-toc-list {
     position: absolute;
-    top: 0;
+    top: 0;  
+    visibility: hidden;
+    opacity: 0;
+    min-width: 10vw; /* 基础保护 */
+    max-width: 80vw; /* 最大宽度限制 */
+    transition: all 0.2s ease;
+    padding: 8px 0;
+}
+
+.rht-toc-content {
     background: var(--background-primary);
     border-radius: 4px;
-    padding: 8px 0;
     box-shadow: var(--shadow-s);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.2s ease;
     max-height: 55vh;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -79,6 +84,66 @@
 .rht-toc-list.rht-expanded {
     opacity: 1;
     visibility: visible;
+}
+
+.rht-toc-resize-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    cursor: ew-resize;
+    background: transparent;
+    transition: background-color 150ms ease;
+    z-index: 1;
+}
+
+.rht-position-right .rht-toc-resize-handle {
+    left: 0;
+}
+
+.rht-position-left .rht-toc-resize-handle {
+    right: 0;
+}
+
+.rht-toc-resize-handle:hover {
+    background-color: var(--interactive-accent);
+}
+
+.rht-toc-toolbar {
+    position: absolute;
+    top: -30px;
+    display: flex;
+    gap: 4px;
+    padding: 8px;
+    justify-content: center;
+    background-color: var(--background-secondary);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    opacity: 0;
+    transition: opacity 150ms ease;
+}
+
+.rht-toc-list:hover .rht-toc-toolbar {
+    opacity: 1;
+}
+
+.rht-toc-toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background-color: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 150ms ease;
+}
+
+.rht-toc-toolbar-btn.active {
+    color: var(--interactive-accent);
 }
 
 .rht-toc-item {

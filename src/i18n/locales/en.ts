@@ -197,6 +197,12 @@ export const en: Message = {
             progress_indicator: {
                 reading_time: "Estimated reading time {0} minutes"
             },
+            toolbar: {
+                toggle_pin: "Toggle Pin",
+                toggle_position: "Toggle Position",
+                move_left: "Move Left 1px",
+                move_right: "Move Right 1px"
+            },
             settings: {
                 showTOC: {
                     title: "Show TOC",

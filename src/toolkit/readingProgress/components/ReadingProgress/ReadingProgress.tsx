@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { HeadingCache } from 'obsidian';
 import { ProgressRing } from '@/src/components/base/ProgresssRing/ProgressRing';
-import { ArrowUpToLine, CircleDot } from 'lucide-react';
+import { ArrowLeftRight, ArrowUpToLine, ChevronLeft, ChevronRight, CircleDot, Pin } from 'lucide-react';
 import { t } from '@/src/i18n/i18n';
 import { IReadingProgressConfig } from '@/src/toolkit/readingProgress/types/config';
 import './styles/ReadingProgress.css';
 
 interface ReadingProgressProps {
     config: IReadingProgressConfig;
+    onConfigChange: (config: Partial<IReadingProgressConfig>) => void;
     readingTime: number;
     headings: HeadingCache[];
     progress: number;
@@ -19,6 +20,7 @@ interface ReadingProgressProps {
 
 export const ReadingProgress: React.FC<ReadingProgressProps> = ({
     config,
+    onConfigChange,
     readingTime,
     headings,
     progress,
@@ -28,6 +30,9 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
     onReturnClick,
 }) => {
     const [isHovered, setIsHovered] = React.useState(false);
+    const [isDragging, setIsDragging] = React.useState(false);
+    const [startX, setStartX] = React.useState(0);
+    const [startWidth, setStartWidth] = React.useState(0);
     const tocListRef = React.useRef<HTMLDivElement>(null);
     const indicatorsRef = React.useRef<HTMLDivElement>(null);
 
@@ -94,12 +99,75 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
         }
     }, [headings]);
 
+    // 处理拖动开始
+    const handleDragStart = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setIsDragging(true);
+        setStartX(e.clientX);
+        setStartWidth(config.tocWidth);
+    }, [config.tocWidth]);
+
+    // 处理拖动过程
+    const handleDrag = React.useCallback((e: MouseEvent) => {
+        if (!isDragging || !tocListRef.current) return;
+
+        const delta = e.clientX - startX;
+        // 根据位置调整宽度变化方向
+        const widthDelta = config.position === 'right' ? -delta : delta;
+        const newWidth = startWidth + widthDelta;
+        
+        tocListRef.current.style.width = `${newWidth}px`;
+    }, [isDragging, startX, startWidth]);
+
+    // 处理拖动结束
+    const handleDragEnd = React.useCallback(() => {
+        if (!isDragging) return;
+
+        setIsDragging(false);
+        
+        if (tocListRef.current) {
+            const newWidth = tocListRef.current.offsetWidth;
+            onConfigChange?.({ tocWidth: newWidth });
+        }
+    }, [isDragging, onConfigChange]);
+
+    const handlePinClick = React.useCallback(() => {
+        onConfigChange?.({ tocAlwaysExpanded: !config.tocAlwaysExpanded });
+    }, [config.tocAlwaysExpanded, onConfigChange]);
+
+    const handlePositionFlip = React.useCallback(() => {
+        const newPosition = config.position === 'left' ? 'right' : 'left';
+        onConfigChange?.({ position: newPosition });
+    }, [config.position, onConfigChange]);
+
+    const handleOffsetChange = React.useCallback((direction: 'left' | 'right') => {
+        if (config.position === 'left') {
+            const newOffset = direction === 'left' ? config.offset - 1 : config.offset + 1;
+            onConfigChange?.({ offset: newOffset });
+        } else if (config.position === 'right') {
+            const newOffset = direction === 'right' ? config.offset - 1 : config.offset + 1;
+            onConfigChange?.({ offset: newOffset });
+        }
+    }, [config.offset, config.position, onConfigChange]);
+
+    // 添加和移除全局事件监听器
+    React.useEffect(() => {
+        if (isDragging) {
+            document.addEventListener('mousemove', handleDrag);
+            document.addEventListener('mouseup', handleDragEnd);
+        }
+
+        return () => {
+            document.removeEventListener('mousemove', handleDrag);
+            document.removeEventListener('mouseup', handleDragEnd);
+        };
+    }, [isDragging, handleDrag, handleDragEnd]);
 
     // 计算TOC列表样式
     const tocListStyle = React.useMemo(() => ({
-        minWidth: `${config.tocWidth}px`,
-        maxWidth: `${config.tocWidth + 80}px`, // 给一个合理的最大值
-    }), [config.tocWidth]);
+        width: `${config.tocWidth}px`,
+        cursor: isDragging ? 'ew-resize' : undefined,
+    }), [config.tocWidth, isDragging]);
 
     const containerStyle = React.useMemo(() => ({
         [config.position]: `${config.offset}px`
@@ -154,23 +222,62 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                     data-state={config.tocAlwaysExpanded || isHovered ? "open" : "closed"}
                     style={tocListStyle}
                 >
-                    {headings.map((heading, index) => (
-                        <div
-                            key={index}
-                            className="rht-toc-item"
-                            data-index={index}
-                            data-depth={heading.level}
-                            data-active={index === activeHeadingIndex}
-                            onClick={() => onHeadingClick(heading)}
+                    {/* 添加工具栏 */}
+                    <div className="rht-toc-toolbar">
+                        <button
+                            className={`rht-toc-toolbar-btn ${config.tocAlwaysExpanded ? 'active' : ''}`}
+                            onClick={handlePinClick}
+                            aria-label={t('toolkit.readingProgress.toolbar.toggle_pin')}
                         >
-                            <span className="rht-toc-item-text">
-                                {getCleanHeadingText(heading.heading)}
-                            </span>
-                            <span className="rht-toc-item-level">
-                                H{heading.level}
-                            </span>
-                        </div>
-                    ))}
+                            <Pin size={16} />
+                        </button>
+                        <button
+                            className="rht-toc-toolbar-btn"
+                            onClick={handlePositionFlip}
+                            aria-label={t('toolkit.readingProgress.toolbar.toggle_position')}
+                        >
+                            <ArrowLeftRight size={16} />
+                        </button>
+                        <button
+                            className="rht-toc-toolbar-btn"
+                            onClick={() => handleOffsetChange('left')}
+                            aria-label={t('toolkit.readingProgress.toolbar.move_left')}
+                        >
+                            <ChevronLeft size={16} />
+                        </button>
+                        <button
+                            className="rht-toc-toolbar-btn"
+                            onClick={() => handleOffsetChange('right')}
+                            aria-label={t('toolkit.readingProgress.toolbar.move_right')}
+                        >
+                            <ChevronRight size={16} />
+                        </button>
+                    </div>
+                    {/* 添加拖动手柄 */}
+                    <div 
+                        className="rht-toc-resize-handle"
+                        onMouseDown={handleDragStart}
+                    />
+                    {/* 目录内容容器 */}
+                    <div className="rht-toc-content">
+                        {headings.map((heading, index) => (
+                            <div
+                                key={index}
+                                className="rht-toc-item"
+                                data-index={index}
+                                data-depth={heading.level}
+                                data-active={index === activeHeadingIndex}
+                                onClick={() => onHeadingClick(heading)}
+                            >
+                                <span className="rht-toc-item-text">
+                                    {getCleanHeadingText(heading.heading)}
+                                </span>
+                                <span className="rht-toc-item-level">
+                                    H{heading.level}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
             <div 

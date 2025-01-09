@@ -197,6 +197,12 @@ export type Message = {
             progress_indicator: {
                 reading_time: string;
             },
+            toolbar: {
+                toggle_pin: string;
+                toggle_position: string;
+                move_left: string;
+                move_right: string;
+            },
             settings: {
                 showTOC: {
                     title: string;
