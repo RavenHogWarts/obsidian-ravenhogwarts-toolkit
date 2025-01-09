@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { HeadingCache } from 'obsidian';
 import { ProgressRing } from '@/src/components/base/ProgresssRing/ProgressRing';
-import { ArrowDownToLine, ArrowLeftRight, ArrowUpToLine, ChevronLeft, ChevronRight, CircleDot, Pin } from 'lucide-react';
+import { ArrowDownToLine, ArrowLeftRight, ArrowUpToLine, ChevronLeft, ChevronRight, CircleDot, ClipboardCopy, Pin } from 'lucide-react';
 import { t } from '@/src/i18n/i18n';
 import { IReadingProgressConfig } from '@/src/toolkit/readingProgress/types/config';
 import './styles/ReadingProgress.css';
@@ -150,6 +150,27 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
         }
     }, [config.offset, config.position, onConfigChange]);
 
+    // 添加复制功能的处理函数
+    const handleCopyTOC = React.useCallback(async () => {
+        // 生成目录内容，使用制表符保持层级结构
+        const tocContent = headings.map(heading => {
+            const indent = '\t'.repeat(heading.level - 1);  // 使用制表符缩进
+            return `${indent}${getCleanHeadingText(heading.heading)}`;
+        }).join('\n');
+
+        try {
+            await navigator.clipboard.writeText(tocContent);
+            // 可以添加一个临时的成功提示
+            const btn = document.querySelector('.rht-toc-toolbar-btn[data-action="copy"]');
+            if (btn) {
+                btn.classList.add('success');
+                setTimeout(() => btn.classList.remove('success'), 1000);
+            }
+        } catch (err) {
+            console.error('Failed to copy TOC:', err);
+        }
+    }, [headings, getCleanHeadingText]);
+
     // 添加和移除全局事件监听器
     React.useEffect(() => {
         if (isDragging) {
@@ -251,6 +272,14 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                             aria-label={t('toolkit.readingProgress.toolbar.move_right')}
                         >
                             <ChevronRight size={16} />
+                        </button>
+                        <button
+                            className="rht-toc-toolbar-btn"
+                            onClick={handleCopyTOC}
+                            data-action="copy"
+                            aria-label={t('toolkit.readingProgress.toolbar.copy_toc')}
+                        >
+                            <ClipboardCopy size={16} />
                         </button>
                     </div>
                     {/* 添加拖动手柄 */}

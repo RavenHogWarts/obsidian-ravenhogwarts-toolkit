@@ -142,7 +142,8 @@
     transition: all 150ms ease;
 }
 
-.rht-toc-toolbar-btn.active {
+.rht-toc-toolbar-btn.active,
+.rht-toc-toolbar-btn[data-action="copy"].success {
     color: var(--interactive-accent);
 }
 

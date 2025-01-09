@@ -203,6 +203,7 @@ export type Message = {
                 toggle_position: string;
                 move_left: string;
                 move_right: string;
+                copy_toc: string;
             },
             settings: {
                 showTOC: {

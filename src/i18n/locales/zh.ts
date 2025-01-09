@@ -200,7 +200,8 @@ export const zh: Message = {
                 toggle_pin: "固定/取消固定",
                 toggle_position: "切换位置",
                 move_left: "向左移动1px",
-                move_right: "向右移动1px"
+                move_right: "向右移动1px",
+                copy_toc: "复制目录"
             },
             settings: {
                 showTOC: {
