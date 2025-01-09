@@ -1,3 +1,4 @@
+[中文](README_ZH.md) | English
 # RavenHogwarts's Toolkit
 A personal toolkit plugin that integrates various Obsidian utilities, designed to enhance personal note-taking experience.
 
@@ -9,6 +10,12 @@ A personal toolkit plugin that integrates various Obsidian utilities, designed t
 [![GitHub License](https://img.shields.io/github/license/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=License)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/blob/master/LICENSE)
 [![GitHub Issues](https://img.shields.io/github/issues/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=Issues)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/issues)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=Last%20Commit)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commits/master)
+
+## Features
+- Front Matter Sort
+- Quick Path
+- Reading Progress
+- Table Enhance
 
 ## Installation
 ### Manual Installation
