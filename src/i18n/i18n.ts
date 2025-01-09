@@ -202,6 +202,10 @@ export type Message = {
                     title: string;
                     description: string;
                 };
+                tocAlwaysExpanded: {
+                    title: string;
+                    description: string;
+                };
                 showProgress: {
                     title: string;
                     description: string;
@@ -209,7 +213,21 @@ export type Message = {
                 showReadingTime: {
                     title: string;
                     description: string;
-                }
+                };
+                position: {
+                    title: string;
+                    description: string;
+                    left: string;
+                    right: string;
+                };
+                offset: {
+                    title: string;
+                    description: string;
+                };
+                tocWidth: {
+                    title: string;
+                    description: string;
+                };
             }
         }
     }

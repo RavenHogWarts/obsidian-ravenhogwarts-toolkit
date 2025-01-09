@@ -200,6 +200,10 @@ export const zh: Message = {
                     title: "目录",
                     description: "显示悬浮目录"
                 },
+                tocAlwaysExpanded: {
+                    title: "目录始终展开",
+                    description: "目录始终展开，不随鼠标悬浮状态变化"
+                },
                 showProgress: {
                     title: "进度",
                     description: "显示当前阅读进度"
@@ -207,6 +211,20 @@ export const zh: Message = {
                 showReadingTime: {
                     title: "阅读时间",
                     description: "显示预计的阅读时间，假定英文内容阅读速度为 200 字/分钟，中文内容阅读速度为 300 字/分钟，文件内容的统计排除了front matter"
+                },
+                position: {
+                    title: "位置",
+                    description: "阅读进度条的位置",
+                    left: "左侧",
+                    right: "右侧"
+                },
+                offset: {
+                    title: "偏移量",
+                    description: "阅读进度条的偏移量，单位为px，默认为12px"
+                },
+                tocWidth: {
+                    title: "目录宽度",
+                    description: "目录的宽度，单位为px，默认为240px"
                 }
             }
         }

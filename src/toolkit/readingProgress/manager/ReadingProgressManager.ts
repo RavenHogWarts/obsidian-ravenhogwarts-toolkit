@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { BaseManager } from "@/src/core/services/BaseManager";
-import { HeadingCache, MarkdownView } from "obsidian";
+import { debounce, HeadingCache, MarkdownView } from "obsidian";
 import { createRoot, Root } from 'react-dom/client';
 import { IToolkitModule } from "@/src/core/interfaces/types";
 import { ReadingProgress } from '@/src/toolkit/readingProgress/components/ReadingProgress/ReadingProgress';
@@ -340,9 +340,9 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
             : this.currentView.containerEl.querySelector('.markdown-preview-view');
     }
 
-    private handleScroll = (): void => {
+    private handleScroll = debounce((): void => {
         this.updateProgress();
-    };
+    }, 50); // 50ms 的节流时间
 
     private scrollToHeading(heading: HeadingCache): void {
         if (!this.currentView?.file) return;
@@ -417,4 +417,3 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
         this.logger.info('Reading progress manager unloaded');
     }
 }
-

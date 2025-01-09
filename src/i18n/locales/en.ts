@@ -202,6 +202,10 @@ export const en: Message = {
                     title: "Show TOC",
                     description: "Show  TOC"
                 },
+                tocAlwaysExpanded: {
+                    title: "TOC Always Expanded",
+                    description: "TOC always expanded, not affected by mouse hover state"
+                },
                 showProgress: {
                     title: "Show Progress",
                     description: "Show Progress"
@@ -209,6 +213,20 @@ export const en: Message = {
                 showReadingTime: {
                     title: "Show Reading Time",
                     description: "Show estimated reading time, assume English reading speed is 200 words/minute, Chinese reading speed is 300 words/minute, the statistics of file content excludes front matter"
+                },
+                position: {
+                    title: "Position",
+                    description: "Reading progress bar position",
+                    left: "Left",
+                    right: "Right"
+                },
+                offset: {
+                    title: "Offset",
+                    description: "Reading progress bar offset, unit is px, default is 12px"
+                },
+                tocWidth: {
+                    title: "TOC Width",
+                    description: "TOC width, unit is px, default is 240px"
                 }
             }
         }
