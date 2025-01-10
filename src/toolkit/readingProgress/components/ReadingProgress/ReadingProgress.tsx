@@ -190,6 +190,11 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
         cursor: isDragging ? 'ew-resize' : undefined,
     }), [config.tocWidth, isDragging]);
 
+    const tocGroupStyle = React.useMemo(() => ({
+        padding: config.position === 'left' ? '0 16px 0 0' : '0 0 0 16px',
+        margin: config.position === 'left' ? '0 -16px 0 0' : '0 0 0 -16px',
+    }), [config.position]);
+
     const containerStyle = React.useMemo(() => ({
         [config.position]: `${config.offset}px`
     }), [config.position, config.offset]);
@@ -219,6 +224,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
         >
             <div 
                 className={tocGroupClassName}
+                style={tocGroupStyle}
                 onMouseEnter={() => !config.tocAlwaysExpanded && setIsHovered(true)}
                 onMouseLeave={() => !config.tocAlwaysExpanded && setIsHovered(false)}
             >
@@ -351,7 +357,6 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                             <ArrowDownToLine size={16} />
                         </div>
                     </>
-                    
                 }
             </div>
         </div>

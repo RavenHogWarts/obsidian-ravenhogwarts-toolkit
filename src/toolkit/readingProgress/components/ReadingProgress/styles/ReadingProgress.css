@@ -21,10 +21,6 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    /* 添加水平方向的padding来扩大触发区域 */
-    padding: 0 16px;
-    /* 为了不影响实际内容的位置，需要抵消padding的影响 */
-    margin: 0 -16px;
 }
 
 .rht-toc-group.rht-hidden {
