@@ -157,7 +157,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
             if (editor) {
                 const currentLine = editor.getCursor().line;
                 
-                // 找到当前光标所在位置之前的最近标题
                 let activeIndex = -1;
                 for (let i = this.headings.length - 1; i >= 0; i--) {
                     if (this.headings[i].position.start.line <= currentLine) {
@@ -172,33 +171,90 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
                 }
             }
         } else {
-            // 阅读模式下使用 Intersection Observer
-            const observer = new IntersectionObserver(
-                (entries) => {
-                    const visibleHeading = entries.find(entry => entry.isIntersecting);
-                    if (visibleHeading) {
-                        const headingEl = visibleHeading.target;
-                        const headingText = headingEl.getAttribute('data-heading');
-                        const index = this.headings.findIndex(h => h.heading === headingText);
-                        
-                        if (this.currentHeadingIndex !== index) {
-                            this.currentHeadingIndex = index;
-                            this.renderComponent();
-                        }
-                    }
-                },
-                {
-                    root: this.scrollElement,
-                    threshold: 0.1
-                }
-            );
+            // 阅读模式下使用滚动位置来确定当前标题
+            if (!this.scrollElement) return;
 
-            // 观察所有标题元素
-            this.headings.forEach(heading => {
-                const el = this.findHeadingElement(heading);
-                if (el) observer.observe(el);
-            });
+            const viewportTop = this.scrollElement.scrollTop;
+            const viewportHeight = this.scrollElement.clientHeight;
+            const scrollHeight = this.scrollElement.scrollHeight;
+            const progress = (viewportTop / (scrollHeight - viewportHeight)) * 100;
+
+             // 根据滚动进度预估当前可能的标题范围
+            const estimatedIndex = Math.floor((progress / 100) * this.headings.length);
+            const searchRange = 5; // 向前后各搜索的标题数量
+
+            // 确定搜索范围
+            const startIndex = Math.max(0, estimatedIndex - searchRange);
+            const endIndex = Math.min(this.headings.length - 1, estimatedIndex + searchRange);
+            
+            // 获取这个范围内的所有标题
+            const candidateHeadings = this.headings.slice(startIndex, endIndex + 1);
+
+            // 尝试查找这些标题对应的元素
+            const foundHeadings = candidateHeadings.map((heading, idx) => {
+                const actualIndex = startIndex + idx;
+                const element = this.findHeadingElementByAllMethods(heading);
+                if (!element) return null;
+
+                const rect = element.getBoundingClientRect();
+                const offsetTop = viewportTop + rect.top;
+
+                return {
+                    index: actualIndex,
+                    heading,
+                    element,
+                    offsetTop
+                };
+            }).filter((item): item is NonNullable<typeof item> => item !== null);
+
+            if (!foundHeadings.length) {
+                // 如果没有找到任何可见标题，使用估算的索引
+                this.currentHeadingIndex = estimatedIndex;
+                this.renderComponent();
+                return;
+            }
+
+            // 使用视口上三分之一位置作为判断点
+            const viewportThreshold = viewportTop + (viewportHeight / 3);
+
+            // 找到最接近但不超过判断点的标题
+            let activeIndex = -1;
+            let minDistance = Infinity;
+
+            for (const heading of foundHeadings) {
+                const distance = viewportThreshold - heading.offsetTop;
+                if (distance >= 0 && distance < minDistance) {
+                    activeIndex = heading.index;
+                    minDistance = distance;
+                }
+            }
+
+            // 如果找到了合适的标题，更新索引
+            if (activeIndex !== -1 && this.currentHeadingIndex !== activeIndex) {
+                this.currentHeadingIndex = activeIndex;
+                this.renderComponent();
+            }
         }
+    }
+
+    private findHeadingElementByAllMethods(heading: HeadingCache): HTMLElement | null {
+        if (!this.currentView) return null;
+        const previewView = this.currentView.containerEl.querySelector('.markdown-preview-view');
+        if (!previewView) return null;
+    
+        // 1. 首先尝试使用 data-line 属性
+        const lineSelector = `[data-line="${heading.position.start.line}"]`;
+        const elementByLine = previewView.querySelector(lineSelector) as HTMLElement;
+        if (elementByLine) return elementByLine;
+    
+        // 2. 尝试使用 data-heading 属性
+        const headingSelector = `[data-heading="${heading.heading}"]`;
+        const elementByDataHeading = previewView.querySelector(headingSelector) as HTMLElement;
+        if (elementByDataHeading) return elementByDataHeading;
+    
+        // 3. 使用标签和文本内容匹配
+        const headingElements = Array.from(previewView.querySelectorAll(`h${heading.level}`));
+        return headingElements.find(el => el.textContent?.trim() === heading.heading) as HTMLElement || null;
     }
 
     private updateTOC(): void {
@@ -363,30 +419,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
         });
     }
 
-    private findHeadingElement(heading: HeadingCache): HTMLElement | null {
-        if (!this.currentView) return null;
-
-        const previewView = this.currentView.containerEl.querySelector('.markdown-preview-view');
-        if (!previewView) return null;
-
-        // 使用 Obsidian 的数据属性查找
-        const headingEl = previewView.querySelector(
-            `[data-heading="${heading.heading}"]`
-        ) as HTMLElement;
-        if (headingEl) return headingEl;
-
-        const allHeadings = Array.from(previewView.querySelectorAll('h1, h2, h3, h4, h5, h6'));
-        const targetIndex = this.headings.findIndex(h => h === heading);
-        if (targetIndex >= 0 && targetIndex < allHeadings.length) {
-            return allHeadings[targetIndex] as HTMLElement;
-        }
-
-        return allHeadings.find(el => {
-            const text = el.textContent?.trim();
-            const level = parseInt(el.tagName.substring(1));
-            return text === heading.heading && level === heading.level;
-        }) as HTMLElement || null;
-    }
 
     private cleanupCurrentView(): void {
         document.querySelectorAll('.rht-reading-progress').forEach(el => el.remove());

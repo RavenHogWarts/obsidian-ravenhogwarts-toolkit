@@ -244,7 +244,6 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                 </div>
 
                 <div 
-                    ref={tocListRef}
                     className={tocListClassName}
                     data-state={config.tocAlwaysExpanded || isHovered ? "open" : "closed"}
                     style={tocListStyle}
@@ -294,13 +293,17 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                         onMouseDown={handleDragStart}
                     />
                     {/* 目录内容容器 */}
-                    <div className="rht-toc-content">
+                    <div 
+                        ref={tocListRef}
+                        className="rht-toc-content"
+                    >
                         {headings.map((heading, index) => (
                             <div
                                 key={index}
                                 className="rht-toc-item"
                                 data-index={index}
                                 data-depth={heading.level}
+                                data-line={heading.position.start.line}
                                 data-active={index === activeHeadingIndex}
                                 onClick={() => onHeadingClick(heading)}
                             >
