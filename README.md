@@ -18,7 +18,7 @@ A personal toolkit plugin that integrates various Obsidian utilities, designed t
 - Table Enhance
 
 ## Wiki
-[Wiki](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/wiki)
+[Wiki](https://github.com/RavenHogWarts/docs/en/obsidian-ravenhogwarts-toolkit/)
 
 ## Installation
 ### Manual Installation
