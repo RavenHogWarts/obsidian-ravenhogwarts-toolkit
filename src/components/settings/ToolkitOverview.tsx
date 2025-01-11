@@ -8,6 +8,7 @@ import { Settings } from 'lucide-react';
 import { useDeveloperMode } from '@/src/core/hooks/useDeveloperMode';
 import { Logger } from '@/src/core/services/Log';
 import { ToolkitId } from '@/src/core/interfaces/types';
+import parse from 'html-react-parser';
 
 interface ToolkitOverviewProps {
   plugin: RavenHogwartsToolkitPlugin;
@@ -55,7 +56,7 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
       <div className="rht-toolkit-header">
         <div className="rht-toolkit-header-left">
           <h2>{t('common.overview.title')}</h2>
-          <p>{t('common.overview.description')}</p>
+          <p>{parse(t('common.overview.description'))}</p>
         </div>
         <div className="rht-toolkit-header-right">
           <span 

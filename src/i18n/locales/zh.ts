@@ -5,7 +5,7 @@ export const zh: Message = {
         settings: "设置",
         overview: {
             title: "工具包管理",
-            description: "启停工具包，管理具体配置"
+            description: "欢迎使用工具包，查看<a href='https://ravenhogwarts.github.io/docs/zh/obsidian-ravenhogwarts-toolkit' target='_blank'>wiki文档</a>了解更多功能"
         },
         developer: {
             title: "开发者设置",
@@ -27,7 +27,7 @@ export const zh: Message = {
     toolkit: {
         tableEnhancements: {
             title: "表格增强",
-            description: "增强表格编辑，支持计算和格式化",
+            description: "更好的利用markdown表格",
             editor_menu: {
                 table_enhancements: "表格增强编辑"
             },
@@ -82,7 +82,7 @@ export const zh: Message = {
         },
         frontmatterSorter: {
             title: "文档属性排序",
-            description: "使用自定义规则自动排序文档属性",
+            description: "自动整理和排序文档的文档属性内容",
             command: {
                 sortCurrentFile: "排序当前文件",
                 sortAllFiles: "排序所有文件"
@@ -143,7 +143,7 @@ export const zh: Message = {
         },
         quickPath: {
             title: "快速路径",
-            description: "快速复制文件夹或单(多)文件路径",
+            description: "快速获取指定文件/文件夹的路径",
             editor_menu: {
                 paste_filePath: "粘贴文件路径",
                 paste_folderPath: "粘贴文件夹路径",
@@ -187,7 +187,7 @@ export const zh: Message = {
         },
         readingProgress: {
             title: "阅读进度",
-            description: "阅读进度",
+            description: "悬浮显示当前文档的阅读进度，目录等",
             return_button: {
                 return_to_cursor: "返回光标位置",
                 return_to_top: "返回顶部",

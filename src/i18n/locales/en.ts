@@ -5,7 +5,7 @@ export const en: Message = {
         settings: "Settings",
         overview: {
             title: "Toolkit Management",
-            description: "Start/Stop Toolkit, Manage Specific Configurations"
+            description: `Welcome to the toolkit, view <a href="https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit" target="_blank">wiki documentation</a> for more features`
         },
         developer: {
             title: "Developer Settings",
@@ -27,7 +27,7 @@ export const en: Message = {
     toolkit: {
         tableEnhancements: {
             title: "Table Enhancements",
-            description: "Table Enhancements",
+            description: "Better utilization of markdown tables",
             editor_menu: {
                 table_enhancements: "Table Enhancements"
             },
@@ -82,7 +82,7 @@ export const en: Message = {
         },
         frontmatterSorter: {
             title: "Frontmatter Sorter",
-            description: "Auto sort frontmatter",
+            description: "Automatically organize and sort document front matter content",
             command: {
                 sortCurrentFile: "Sort frontmatter in current file",
                 sortAllFiles: "Sort frontmatter in all files"
@@ -145,7 +145,7 @@ export const en: Message = {
         },
         quickPath: {
             title: "Quick Path",
-            description: "Quickly copy folder or single(multiple) file path",
+            description: "Quickly get the path of specified files/folders",
             editor_menu: {
                 paste_filePath: "Paste File Path",
                 paste_folderPath: "Paste Folder Path",
@@ -189,7 +189,7 @@ export const en: Message = {
         },
         readingProgress: {
             title: "Reading Progress",
-            description: "Reading Progress",
+            description: "Display reading progress and table of contents in a floating window",
             return_button: {
                 return_to_cursor: "Return to Cursor",
                 return_to_top: "Return to Top",
