@@ -60,7 +60,6 @@ export const en: Message = {
                     MODE: "Calculate the mode value in selected columns",
                     STDDEV: "Calculate standard deviation of values",
                     VARIANCE: "Calculate variance of values",
-                    PERCENTAGE: "Calculate percentage of values",
                 },
                 time: {
                     TIME_EARLIEST: "Calculate the earliest date in selected columns",

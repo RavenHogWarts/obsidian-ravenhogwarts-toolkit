@@ -62,7 +62,6 @@ export type Message = {
                     MODE: string;
                     STDDEV: string;
                     VARIANCE: string;
-                    PERCENTAGE: string;
                 },
                 time: {
                     TIME_EARLIEST: string;

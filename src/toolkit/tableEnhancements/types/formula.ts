@@ -84,12 +84,6 @@ export const FUNCTION_HINTS: IFunctionHint[] = [
     example: "Variance([Score])"
   },
   {
-    function: FormulaFunction.PERCENTAGE,
-    description: t('toolkit.tableEnhancements.formula_editor.math.PERCENTAGE'),
-    syntax: "Percentage([columns])",
-    example: "Percentage([Score])"
-  },
-  {
     function: FormulaFunction.TIME_EARLIEST,
     description: t('toolkit.tableEnhancements.formula_editor.time.TIME_EARLIEST'),
     syntax: "TimeEarliest([columns], format?)",

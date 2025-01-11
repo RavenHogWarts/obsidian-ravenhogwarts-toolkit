@@ -22,7 +22,6 @@ export enum FormulaFunction {
     MODE = 'Mode',
     STDDEV = 'StdDev',
     VARIANCE = 'Variance',
-    PERCENTAGE = 'Percentage',
 
     // 时间相关
     TIME_EARLIEST = 'TimeEarliest',  // 最早时间

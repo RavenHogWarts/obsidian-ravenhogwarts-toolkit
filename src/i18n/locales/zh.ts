@@ -60,7 +60,6 @@ export const zh: Message = {
                     MODE: "计算选定列数值众数",
                     STDDEV: "计算选定列数值标准差",
                     VARIANCE: "计算选定列数值方差",
-                    PERCENTAGE: "计算选定列数值百分比",
                 },
                 time: {
                     TIME_EARLIEST: "计算选定列最早日期",

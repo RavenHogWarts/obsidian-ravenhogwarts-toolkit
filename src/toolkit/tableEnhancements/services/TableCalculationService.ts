@@ -64,11 +64,6 @@ export class TableCalculationService {
                 const numbers = this.getNumericValues(table, columns);
                 return this.variance(numbers);
             },
-            [FormulaFunction.PERCENTAGE]: (table, columns) => {
-                const numbers = this.getNumericValues(table, columns);
-                const sum = this.sum(numbers);
-                return numbers.map(n => (n / sum * 100).toFixed(2) + '%').join(', ');
-            },
 
             // 时间计算
             [FormulaFunction.TIME_EARLIEST]: (table, columns, modifier) => {
