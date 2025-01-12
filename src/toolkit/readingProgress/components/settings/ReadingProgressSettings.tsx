@@ -70,6 +70,16 @@ export const ReadingProgressSettings: React.FC<ReadingProgressSettingsProps> = (
           </SettingItem>
 
           <SettingItem
+            name={t('toolkit.readingProgress.settings.showToolbar.title')}
+            desc={t('toolkit.readingProgress.settings.showToolbar.description')}
+          >
+            <Toggle
+              checked={config.showToolbar}
+              onChange={(checked) => handleUpdateConfig({ showToolbar: checked })}
+            />
+          </SettingItem>
+
+          <SettingItem
             name={t('toolkit.readingProgress.settings.tocWidth.title')}
             desc={t('toolkit.readingProgress.settings.tocWidth.description')}
           >

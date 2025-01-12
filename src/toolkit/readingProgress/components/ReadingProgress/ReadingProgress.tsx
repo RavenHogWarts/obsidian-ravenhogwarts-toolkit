@@ -249,9 +249,10 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                     style={tocListStyle}
                 >
                     {/* 添加工具栏 */}
-                    <div className="rht-toc-toolbar">
-                        <button
-                            className={`rht-toc-toolbar-btn ${config.tocAlwaysExpanded ? 'active' : ''}`}
+                    {config.showToolbar && (
+                        <div className="rht-toc-toolbar">
+                            <button
+                                className={`rht-toc-toolbar-btn ${config.tocAlwaysExpanded ? 'active' : ''}`}
                             onClick={handlePinClick}
                             aria-label={t('toolkit.readingProgress.toolbar.toggle_pin')}
                         >
@@ -285,8 +286,9 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                             aria-label={t('toolkit.readingProgress.toolbar.copy_toc')}
                         >
                             <ClipboardCopy size={16} />
-                        </button>
-                    </div>
+                            </button>
+                        </div>
+                    )}
                     {/* 添加拖动手柄 */}
                     <div 
                         className="rht-toc-resize-handle"

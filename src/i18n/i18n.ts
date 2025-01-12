@@ -213,6 +213,10 @@ export type Message = {
                     title: string;
                     description: string;
                 };
+                showToolbar: {
+                    title: string;
+                    description: string;
+                };
                 showProgress: {
                     title: string;
                     description: string;

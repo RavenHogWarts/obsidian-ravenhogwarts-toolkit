@@ -3,10 +3,12 @@ export interface IReadingProgressConfig {
   showTOC: boolean;
   tocAlwaysExpanded: boolean;
   showProgress: boolean;
+  showToolbar: boolean;
   showReadingTime: boolean;
   position: 'left' | 'right';
   offset: number;
   tocWidth: number;
+  
 }
 
 export interface IReadingProgressData {
@@ -18,6 +20,7 @@ export const READING_PROGRESS_DEFAULT_CONFIG: IReadingProgressConfig = {
   showTOC: true,
   tocAlwaysExpanded: false,
   showProgress: true,
+  showToolbar: true,
   showReadingTime: true,
   position: 'right',
   offset: 12,

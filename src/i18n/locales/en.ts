@@ -213,23 +213,27 @@ export const en: Message = {
                     title: "TOC Always Expanded",
                     description: "TOC always expanded, not affected by mouse hover state"
                 },
+                showToolbar: {
+                    title: "Toolbar",
+                    description: "Use toolbar"
+                },
                 showProgress: {
-                    title: "Show Progress",
-                    description: "Show Progress"
+                    title: "Reading Progress Ring",
+                    description: "Show reading progress"
                 },
                 showReadingTime: {
                     title: "Show Reading Time",
-                    description: "Show estimated reading time, assume English reading speed is 200 words/minute, Chinese reading speed is 300 words/minute, the statistics of file content excludes front matter"
+                    description: "Show estimated reading time when hovering over the reading progress ring, assume English reading speed is 200 words/minute, Chinese reading speed is 300 words/minute, the statistics of file content excludes front matter"
                 },
                 position: {
                     title: "Position",
-                    description: "Reading progress bar position",
+                    description: "Reading progress ring position",
                     left: "Left",
                     right: "Right"
                 },
                 offset: {
                     title: "Offset",
-                    description: "Reading progress bar offset, unit is px, default is 12px"
+                    description: "Reading progress ring offset, unit is px, default is 12px"
                 },
                 tocWidth: {
                     title: "TOC Width",
