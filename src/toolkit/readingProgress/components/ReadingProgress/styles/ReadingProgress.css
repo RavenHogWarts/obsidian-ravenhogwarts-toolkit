@@ -47,6 +47,10 @@
     display: none;
 }
 
+.rht-toc-group:has(.rht-toc-list.rht-expanded) .rht-indicators {
+    visibility: hidden;
+}
+
 .rht-toc-item-indicator {
     width: 4px;
     height: 4px;
