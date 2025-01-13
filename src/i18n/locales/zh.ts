@@ -22,7 +22,8 @@ export const zh: Message = {
         back: "返回",
         toggle_toolkit: "启用/禁用工具包",
         confirm: "确认",
-        cancel: "取消"
+        cancel: "取消",
+        
     },
     toolkit: {
         tableEnhancements: {
@@ -102,6 +103,11 @@ export const zh: Message = {
                 }
             },
             settings: {
+                segment: {
+                    general: "常规设置",
+                    ignore_rules: "忽略规则",
+                    sort_rules: "排序规则"
+                },
                 sortOnSave: {
                     title: "保存时排序",
                     description: "保存文件时自动排序文档属性"
@@ -117,8 +123,6 @@ export const zh: Message = {
                     placeholder: "请输入忽略的文件"
                 },
                 rules: {
-                    title: "排序规则",
-                    description: "配置排序行为和顺序",
                     priority: {
                         title: "优先排序组",
                         description: "优先排序的文档属性组，组内按字母排序",
@@ -203,16 +207,21 @@ export const zh: Message = {
                 copy_toc: "复制目录"
             },
             settings: {
+                segment: {
+                    general: "常规设置",
+                    toc: "目录",
+                    progress: "进度"
+                },
                 showTOC: {
-                    title: "目录",
+                    title: "悬浮目录",
                     description: "显示悬浮目录"
                 },
                 tocAlwaysExpanded: {
-                    title: "目录始终展开",
-                    description: "目录始终展开，不随鼠标悬浮状态变化"
+                    title: "悬浮目录始终展开",
+                    description: "悬浮目录始终展开，不随鼠标悬浮状态变化"
                 },
                 showToolbar: {
-                    title: "工具栏",
+                    title: "悬浮工具栏",
                     description: "使用悬浮工具栏"
                 },
                 showProgress: {
@@ -225,13 +234,13 @@ export const zh: Message = {
                 },
                 position: {
                     title: "位置",
-                    description: "阅读进度环的位置",
+                    description: "阅读进度的位置",
                     left: "左侧",
                     right: "右侧"
                 },
                 offset: {
                     title: "偏移量",
-                    description: "阅读进度环的偏移量，单位为px，默认为12px"
+                    description: "阅读进度与侧边的偏移量，单位为px，默认为12px"
                 },
                 tocWidth: {
                     title: "目录宽度",

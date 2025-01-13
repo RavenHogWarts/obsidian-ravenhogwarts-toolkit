@@ -31,6 +31,7 @@ export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps>
 
   return (
     <div className="rht-toolkit-detail-settings">
+      <h3>{t('toolkit.frontmatterSorter.settings.segment.general')}</h3>
       <SettingItem
         name={t('toolkit.frontmatterSorter.settings.sortOnSave.title')}
         desc={t('toolkit.frontmatterSorter.settings.sortOnSave.description')}
@@ -41,6 +42,7 @@ export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps>
         />
       </SettingItem>
 
+      <h3>{t('toolkit.frontmatterSorter.settings.segment.ignore_rules')}</h3>
       <SettingItem
         name={t('toolkit.frontmatterSorter.settings.ignoreFolders.title')}
         desc={t('toolkit.frontmatterSorter.settings.ignoreFolders.description')}
@@ -69,7 +71,7 @@ export const FrontmatterSorterSettings: React.FC<FrontmatterSorterSettingsProps>
         />
       </SettingItem>
 
-      <h3>{t('toolkit.frontmatterSorter.settings.rules.title')}</h3>
+      <h3>{t('toolkit.frontmatterSorter.settings.segment.sort_rules')}</h3>
       <SettingItem
         name={t('toolkit.frontmatterSorter.settings.rules.arraySort.title')}
         desc={t('toolkit.frontmatterSorter.settings.rules.arraySort.description')}

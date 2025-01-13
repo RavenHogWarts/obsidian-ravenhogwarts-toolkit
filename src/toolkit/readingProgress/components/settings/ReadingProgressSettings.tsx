@@ -23,6 +23,7 @@ export const ReadingProgressSettings: React.FC<ReadingProgressSettingsProps> = (
 
   return(
     <div className="rht-toolkit-detail-settings">
+      <h3>{t('toolkit.readingProgress.settings.segment.general')}</h3>
       <SettingItem
         name={t('toolkit.readingProgress.settings.position.title')}
         desc={t('toolkit.readingProgress.settings.position.description')}
@@ -47,6 +48,7 @@ export const ReadingProgressSettings: React.FC<ReadingProgressSettingsProps> = (
         />
       </SettingItem>
 
+      <h3>{t('toolkit.readingProgress.settings.segment.toc')}</h3>
       <SettingItem
         name={t('toolkit.readingProgress.settings.showTOC.title')}
         desc={t('toolkit.readingProgress.settings.showTOC.description')}
@@ -92,6 +94,7 @@ export const ReadingProgressSettings: React.FC<ReadingProgressSettingsProps> = (
         </>
       )}
 
+      <h3>{t('toolkit.readingProgress.settings.segment.progress')}</h3>
       <SettingItem
         name={t('toolkit.readingProgress.settings.showProgress.title')}
         desc={t('toolkit.readingProgress.settings.showProgress.description')}

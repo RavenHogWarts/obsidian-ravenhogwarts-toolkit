@@ -103,6 +103,11 @@ export const en: Message = {
             },
 
             settings: {
+                segment: {
+                    general: "General Settings",
+                    ignore_rules: "Ignore Rules",
+                    sort_rules: "Sort Rules"
+                },
                 sortOnSave: {
                     title: "Sort on Save",
                     description: "Sort frontmatter on save"
@@ -118,8 +123,6 @@ export const en: Message = {
                     placeholder: "Please enter the files to ignore"
                 },
                 rules: {
-                    title: "Sorting Rules",
-                    description: "Custom sorting rules",
                     priority: {
                         title: "Priority Sorting Group",
                         description: "Priority sorting keys, sort within the group alphabetically",
@@ -205,6 +208,11 @@ export const en: Message = {
                 copy_toc: "Copy TOC"
             },
             settings: {
+                segment: {
+                    general: "General Settings",
+                    toc: "TOC",
+                    progress: "Progress"
+                },
                 showTOC: {
                     title: "Show TOC",
                     description: "Show  TOC"

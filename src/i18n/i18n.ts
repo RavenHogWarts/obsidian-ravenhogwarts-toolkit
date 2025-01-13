@@ -104,6 +104,11 @@ export type Message = {
                 }
             }
             settings: {
+                segment: {
+                    general: string;
+                    ignore_rules: string;
+                    sort_rules: string;
+                },
                 sortOnSave: {
                     title: string;
                     description: string;
@@ -119,8 +124,6 @@ export type Message = {
                     placeholder: string;
                 };
                 rules: {
-                    title: string;
-                    description: string;
                     priority: {
                         title: string;
                         description: string;
@@ -205,6 +208,11 @@ export type Message = {
                 copy_toc: string;
             },
             settings: {
+                segment: {
+                    general: string;
+                    toc: string;
+                    progress: string;
+                },
                 showTOC: {
                     title: string;
                     description: string;
