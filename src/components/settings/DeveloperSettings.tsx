@@ -12,32 +12,48 @@ interface DeveloperSettingsProps {
 
 export const DeveloperSettings: React.FC<DeveloperSettingsProps> = ({ plugin, logger }) => {
   const [loggerConfig, setLoggerConfig] = React.useState(plugin.settings.config.logger);
+  const [menuConfig, setMenuConfig] = React.useState(plugin.settings.config.menu);
 
   // 监听插件设置变化
   React.useEffect(() => {
     setLoggerConfig(plugin.settings.config.logger);
-  }, [plugin.settings.config.logger]);
+    setMenuConfig(plugin.settings.config.menu);
+  }, [plugin.settings.config.logger, plugin.settings.config.menu]);
   
   const handleSettingChange = async (
-    key: keyof typeof loggerConfig,
+    section: 'logger' | 'menu',
+    key: string,
     value: any
   ) => {
-    // 创建新的配置对象
-    const newConfig = {
-      ...loggerConfig,
-      [key]: value
-    };
     try {
-      setLoggerConfig(newConfig);
-      await plugin.updateSettings({
-        config: {
-          ...plugin.settings.config,
-          logger: newConfig
-        }
-      });
-      Logger.initRootLogger(newConfig);
+      if (section === 'logger') {
+        const newLoggerConfig = {
+          ...loggerConfig,
+          [key]: value
+        };
+        setLoggerConfig(newLoggerConfig);
+        await plugin.updateSettings({
+          config: {
+            ...plugin.settings.config,
+            logger: newLoggerConfig
+          }
+        });
+        Logger.initRootLogger(newLoggerConfig);
+      } else if (section === 'menu') {
+        const newMenuConfig = {
+          ...menuConfig,
+          [key]: value
+        };
+        setMenuConfig(newMenuConfig);
+        await plugin.updateSettings({
+          config: {
+            ...plugin.settings.config,
+            menu: newMenuConfig
+          }
+        });
+      }
     } catch (error) {
-      logger.error('Failed to update logger settings:', error);
+      logger.error('Failed to update settings:', error);
     }
   };
 
@@ -50,11 +66,19 @@ export const DeveloperSettings: React.FC<DeveloperSettingsProps> = ({ plugin, lo
       <div className="rht-toolkit-developer-settings-content">
         <div className='rht-toolkit-developer-settings'>
           <SettingItem 
+            name={t('common.developer.menu.useSubMenu')}
+          >
+            <Toggle
+              checked={menuConfig.useSubMenu}
+              onChange={(checked: boolean) => handleSettingChange('menu', 'useSubMenu', checked)}
+            />
+          </SettingItem>
+          <SettingItem 
             name={t('common.developer.logger.level')}
           >
             <select
               value={loggerConfig.level}
-              onChange={(e) => handleSettingChange('level', Number(e.target.value) as LogLevel)}
+              onChange={(e) => handleSettingChange('logger', 'level', Number(e.target.value) as LogLevel)}
             >
               {Object.entries(LogLevel)
                 .filter(([key, value]) => typeof value === 'number')
@@ -70,7 +94,7 @@ export const DeveloperSettings: React.FC<DeveloperSettingsProps> = ({ plugin, lo
           >
             <Toggle
               checked={loggerConfig.showTimestamp}
-              onChange={(checked: boolean) => handleSettingChange('showTimestamp', checked)}
+              onChange={(checked: boolean) => handleSettingChange('logger', 'showTimestamp', checked)}
             />
           </SettingItem>
           <SettingItem 
@@ -78,7 +102,7 @@ export const DeveloperSettings: React.FC<DeveloperSettingsProps> = ({ plugin, lo
           >
             <Toggle
               checked={loggerConfig.showLevel}
-              onChange={(checked: boolean) => handleSettingChange('showLevel', checked)}
+              onChange={(checked: boolean) => handleSettingChange('logger', 'showLevel', checked)}
             />
           </SettingItem>
           <SettingItem 
@@ -86,7 +110,7 @@ export const DeveloperSettings: React.FC<DeveloperSettingsProps> = ({ plugin, lo
           >
             <Toggle
               checked={loggerConfig.console}
-              onChange={(checked: boolean) => handleSettingChange('console', checked)}
+              onChange={(checked: boolean) => handleSettingChange('logger', 'console', checked)}
             />
           </SettingItem>
           <SettingItem 
@@ -94,13 +118,13 @@ export const DeveloperSettings: React.FC<DeveloperSettingsProps> = ({ plugin, lo
           >
             <Toggle
               checked={loggerConfig.showNotifications}
-              onChange={(checked: boolean) => handleSettingChange('showNotifications', checked)}
+              onChange={(checked: boolean) => handleSettingChange('logger', 'showNotifications', checked)}
             />
           </SettingItem>
           <SettingItem 
             name={t('common.developer.logger.noticeTimeout')}
           >
-            <input type="number" value={loggerConfig.noticeTimeout} onChange={(e) => handleSettingChange('noticeTimeout', Number(e.target.value))} />
+            <input type="number" value={loggerConfig.noticeTimeout} onChange={(e) => handleSettingChange('logger', 'noticeTimeout', Number(e.target.value))} />
           </SettingItem>
         </div>
         

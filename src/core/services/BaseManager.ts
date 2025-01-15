@@ -248,13 +248,13 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
         const menuItems = Array.isArray(items) ? items : [items];
         const sortedItems = menuItems.sort((a, b) => (a.order || 0) - (b.order || 0));
 
-        // 获取统一的工具包菜单
-        const toolkitMenu = (this.plugin as RavenHogwartsToolkitPlugin)
+        // 获取目标菜单（可能是父菜单或工具包子菜单）
+        const targetMenu = (this.plugin as RavenHogwartsToolkitPlugin)
             .pluginManager.getToolkitMenu(menu);
 
         // 直接添加菜单项到工具包菜单
         sortedItems.forEach((item) => {
-            toolkitMenu.addItem((menuItem) => {
+            targetMenu.addItem((menuItem) => {
                 menuItem.setTitle(`${this.moduleId}: ${item.title}`);
                 if (item.icon) menuItem.setIcon(item.icon);
                 if (item.callback) menuItem.onClick(item.callback);
@@ -263,7 +263,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
 
         // 添加分隔符
         if (showSeparator) {
-            toolkitMenu.addSeparator();
+            targetMenu.addSeparator();
         }
     }
 

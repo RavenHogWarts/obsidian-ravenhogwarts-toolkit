@@ -34,6 +34,10 @@ export class PluginManager {
                         developer: {
                             ...DEFAULT_CONFIG.config.developer,
                             ...(loadedData.config?.developer || {})
+                        },
+                        menu: {
+                            ...DEFAULT_CONFIG.config.menu,
+                            ...(loadedData.config?.menu || {})
                         }
                     },
                     toolkit: {
@@ -88,6 +92,10 @@ export class PluginManager {
     }
 
     getToolkitMenu(parentMenu: Menu): Menu {
+        if (!this.settings.config.menu.useSubMenu) {
+            return parentMenu;
+        }
+
         this.toolkitMenu = null;
         
         // 检查是否已经存在菜单项

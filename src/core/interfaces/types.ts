@@ -11,6 +11,9 @@ export interface IRavenHogwartsToolkitConfig {
             lastEnabled?: string;
             enableCount: number;
         };
+        menu: {
+            useSubMenu: boolean;
+        }
     };
     toolkit: {
         [key: string]: IToolkitModule;
@@ -41,6 +44,9 @@ export const DEFAULT_CONFIG: IRavenHogwartsToolkitConfig = {
         developer: {
             enabled: false,
             enableCount: 0
+        },
+        menu: {
+            useSubMenu: true
         }
     },
     toolkit: {}

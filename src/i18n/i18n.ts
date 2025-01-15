@@ -23,6 +23,9 @@ export type Message = {
                 console: string;
                 showNotifications: string;
                 noticeTimeout: string;
+            },
+            menu: {
+                useSubMenu: string;
             }
         }
     },

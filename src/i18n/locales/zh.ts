@@ -17,6 +17,9 @@ export const zh: Message = {
                 console: "日志输出到控制台",
                 showNotifications: "显示通知",
                 noticeTimeout: "通知消失时间(ms)"
+            },
+            menu: {
+                useSubMenu: "使用子菜单"
             }
         },
         back: "返回",

@@ -17,6 +17,9 @@ export const en: Message = {
                 console: "Log to Console",
                 showNotifications: "Show Notifications",
                 noticeTimeout: "Notice Timeout (ms)"
+            },
+            menu: {
+                useSubMenu: "Use Sub Menu"
             }
         },
         back: "Back",
