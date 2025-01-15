@@ -63,11 +63,11 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
             className="rht-version-text"
             onClick={handleVersionClick}
           >
-            Version: {plugin.settings.config.version}
+            Version: {plugin.manifest.version}
           </span>
           {showHint && (
-            <small style={{ marginLeft: '8px', opacity: 0.7 }}>
-              Keep clicking...
+            <small className="rht-version-hint">
+              {t('common.overview.version_hint')}
             </small>
           )}
         </div>

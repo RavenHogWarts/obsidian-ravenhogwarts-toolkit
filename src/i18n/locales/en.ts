@@ -5,7 +5,8 @@ export const en: Message = {
         settings: "Settings",
         overview: {
             title: "Toolkit Management",
-            description: `Welcome to the toolkit, view <a href="https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit" target="_blank">wiki documentation</a> for more features`
+            description: `Welcome to the toolkit, view <a href="https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit" target="_blank">wiki documentation</a> for more features`,
+            version_hint: "Keep clicking..."
         },
         developer: {
             title: "Developer Settings",

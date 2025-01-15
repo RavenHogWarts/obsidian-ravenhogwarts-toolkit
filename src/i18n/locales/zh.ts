@@ -5,7 +5,8 @@ export const zh: Message = {
         settings: "设置",
         overview: {
             title: "工具包管理",
-            description: "欢迎使用工具包，查看<a href='https://ravenhogwarts.github.io/docs/zh/obsidian-ravenhogwarts-toolkit' target='_blank'>wiki文档</a>了解更多功能"
+            description: "欢迎使用工具包，查看<a href='https://ravenhogwarts.github.io/docs/zh/obsidian-ravenhogwarts-toolkit' target='_blank'>wiki文档</a>了解更多功能",
+            version_hint: "继续点击..."
         },
         developer: {
             title: "开发者设置",

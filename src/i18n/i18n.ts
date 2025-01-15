@@ -12,6 +12,7 @@ export type Message = {
         overview: {
             title: string;
             description: string;
+            version_hint: string;
         }
         developer: {
             title: string;
