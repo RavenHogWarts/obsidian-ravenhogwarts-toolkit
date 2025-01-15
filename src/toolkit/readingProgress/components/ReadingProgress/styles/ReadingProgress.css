@@ -127,6 +127,11 @@
     transition: opacity 150ms ease;
 }
 
+/* 解决primary主题按钮图标消失问题 */
+.rht-toc-toolbar button {
+    padding: unset !important;
+}
+
 .rht-toc-list:hover .rht-toc-toolbar {
     opacity: 1;
 }
