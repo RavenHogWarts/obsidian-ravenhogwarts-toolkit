@@ -184,16 +184,16 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
         };
     }, [isDragging, handleDrag, handleDragEnd]);
 
+    const tocGroupStyle = React.useMemo(() => ({
+        padding: config.position === 'left' ? '0 16px 0 0' : '0 0 0 16px',
+        margin: config.position === 'left' ? '0 -16px 0 0' : '0 0 0 -16px',
+    }), [config.position]);
+
     // 计算TOC列表样式
     const tocListStyle = React.useMemo(() => ({
         width: `${config.tocWidth}px`,
         cursor: isDragging ? 'ew-resize' : undefined,
     }), [config.tocWidth, isDragging]);
-
-    const tocGroupStyle = React.useMemo(() => ({
-        padding: config.position === 'left' ? '0 16px 0 0' : '0 0 0 16px',
-        margin: config.position === 'left' ? '0 -16px 0 0' : '0 0 0 -16px',
-    }), [config.position]);
 
     const containerStyle = React.useMemo(() => ({
         [config.position]: `${config.offset}px`
@@ -246,7 +246,6 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                 <div 
                     className={tocListClassName}
                     data-state={config.tocAlwaysExpanded || isHovered ? "open" : "closed"}
-                    style={tocListStyle}
                 >
                     {/* 添加工具栏 */}
                     {config.showToolbar && (
@@ -298,6 +297,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                     <div 
                         ref={tocListRef}
                         className="rht-toc-content"
+                        style={tocListStyle}
                     >
                         {headings.map((heading, index) => (
                             <div
