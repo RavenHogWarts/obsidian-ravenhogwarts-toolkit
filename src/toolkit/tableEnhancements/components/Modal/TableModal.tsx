@@ -7,8 +7,6 @@ import { TableGrid } from "../Table/TableGrid";
 import { TableEnhancementsManager } from "../../manager/TableEnhancementsManager";
 import { TableCalculation } from "../Calculation/TableCalculation";
 import { t } from "@/src/i18n/i18n";
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-balham.css';
 import './styles/tableEnhancementsModal.css';
 
 const TableModal: FC = () => {

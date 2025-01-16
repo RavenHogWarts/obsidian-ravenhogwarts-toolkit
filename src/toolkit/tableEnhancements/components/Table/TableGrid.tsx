@@ -2,6 +2,8 @@ import { AgGridReact } from 'ag-grid-react';
 import { CellValueChangedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { ITableGridData } from '../../types/table';
+import './styles/ag-grid.min.css';
+import './styles/ag-theme-balham.min.css';
 import './styles/TableGrid.css';
 
 interface TableGridProps {
@@ -103,7 +105,7 @@ export const TableGrid: FC<TableGridProps> = ({
         //     className="tableEnhancements-grid"
         // >
             <div 
-                className="tableEnhancements-grid-wrapper ag-theme-balham"
+                className="tableEnhancements-grid-wrapper"
                 style={{ 
                     height: '400px', 
                     width: '100%',
@@ -114,6 +116,8 @@ export const TableGrid: FC<TableGridProps> = ({
                 }}
             >
                 <AgGridReact
+                    className='ag-theme-balham'
+
                     rowData={rowData}
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}

@@ -1,5 +1,5 @@
 import { ITableGridData } from './table';
-import { IFormulaConfig, OutputType } from './operations';
+import { IFormulaConfig  } from './operations';
 
 /** 事件类型枚举 */
 export enum TableEventType {

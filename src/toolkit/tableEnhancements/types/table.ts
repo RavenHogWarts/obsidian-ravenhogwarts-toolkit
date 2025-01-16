@@ -1,5 +1,3 @@
-import { ColDef } from 'ag-grid-community';
-
 /** 表格单元格对齐方式 */
 export type TableCellAlignment = 'left' | 'center' | 'right';
 
