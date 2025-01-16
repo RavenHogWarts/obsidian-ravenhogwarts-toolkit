@@ -5,8 +5,7 @@ import { FrontMatterParser } from "../services/FrontMatterParser";
 import { FrontMatterSorter } from "../services/FrontMatterSorter";
 import { FrontMatterWriter } from "../services/FrontMatterWriter";
 import minimatch from "minimatch";
-import { TFile } from "obsidian";
-import { Modal } from "obsidian";
+import { Modal, TFile } from "obsidian";
 
 interface IFrontMatterSorterModule extends IToolkitModule {
     config: IFrontmatterSorterConfig;
@@ -18,15 +17,31 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
     private sorter: FrontMatterSorter;
     private writer: FrontMatterWriter;
     private processing = false;
-    private modifyEventRef: any = null;
+
+    protected getDefaultConfig(): IFrontmatterSorterConfig {
+        return FRONTMATTER_SORTER_DEFAULT_CONFIG;
+    }
 
     protected async onModuleLoad(): Promise<void> {
+        this.logger.info("Loading frontmatter sorter manager");
         this.validateConfig();
-        
         this.initializeServices();
-        
         this.registerCommands();
         this.registerEventHandlers();
+    }
+
+    protected onModuleUnload(): void {
+        this.logger.info("Unloading frontmatter sorter manager");
+    }
+
+    protected onModuleCleanup(): void {
+        this.eventRefs.forEach(ref => ref());
+        this.eventRefs = [];
+        this.processing = false;
+    }
+
+    protected onDisable(): void {
+        this.unregisterEvents();
     }
 
     private initializeServices(): void {
@@ -60,32 +75,30 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
         });
     }
 
-    private registerEventHandlers(): void {
-        this.unregisterEventHandlers();
-        
-        this.logger.debug('Current config when registering events:', {
-            sortOnSave: this.config.sortOnSave,
-            fullConfig: this.config
-        });
-        
+    protected registerEventHandlers(): void {
+        this.unregisterEvents();
+
+        if (!this.isPluginEnabled() || !this.isEnabled()) {
+            return;
+        }
+
         if (this.config.sortOnSave) {
-            this.modifyEventRef = this.registerEvent(
-                // this.app.vault.on('modify', this.handleFileModify.bind(this))
-                this.app.metadataCache.on('changed', this.handleFileModify.bind(this))
+            this.eventRefs.push(
+                this.registerEvent(
+                    // this.app.vault.on('modify', this.handleFileModify.bind(this))
+                    this.app.metadataCache.on('changed', this.handleFileModify.bind(this))
+                )
             );
             this.logger.debug('Registered auto-sort on save handler');
         }
     }
 
-    private unregisterEventHandlers(): void {
-        if (this.modifyEventRef) {
-            this.modifyEventRef();
-            this.modifyEventRef = null;
-            this.logger.debug('Unregistered auto-sort on save handler');
-        }
-    }
-
     private async handleFileModify(file: TFile): Promise<void> {
+        if (!this.isPluginEnabled() || !this.isEnabled()) {
+            this.unregisterEvents();
+            return;
+        }
+
         if (!this.config.sortOnSave) {
             this.logger.debug('Sort on save is disabled, ignoring file modification');
             return;
@@ -147,9 +160,7 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
             modal.open();
         });
 
-        if (!confirmed) {
-            return;
-        }
+        if (!confirmed) return;
 
         const files = this.app.vault.getMarkdownFiles();
         const batchSize = 5;
@@ -158,9 +169,7 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
         let skippedCount = 0;
         const skippedFiles: string[] = [];
 
-        if (this.processing) {
-            return;
-        }
+        if (this.processing) return;
 
         try {
             this.processing = true;
@@ -261,12 +270,12 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
     private shouldProcessFile(file: TFile): boolean {
         if (!file || file.extension !== 'md') return false;
 
-        const isIgnoredFolder = this.config.ignoreFolders.some(folder =>{
+        const isIgnoredFolder = this.config.ignoreFolders.some(folder => {
             const normalizedFolder = folder.endsWith('/') ? folder : folder + '/';
             return file.path.startsWith(normalizedFolder);
-        } );
+        });
         
-        const isIgnoredFile = this.config.ignoreFiles.some(pattern =>{ 
+        const isIgnoredFile = this.config.ignoreFiles.some(pattern => { 
             try {
                 return minimatch(file.path, pattern, { matchBase: true });
             } catch (error) {
@@ -279,36 +288,19 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
     }
 
     protected onConfigChange(): void {
-        this.logger.debug('Config changed, current config:', {
+        this.logger.debug('Config changed:', {
             sortOnSave: this.config.sortOnSave,
             rules: this.config.rules,
             fullConfig: this.config
         });
         
-        // 更新 sorter 和 writer 实例以使用新的规则
+        // 更新服务实例以使用新的规则
         this.sorter = new FrontMatterSorter(this.config.rules);
         this.writer = new FrontMatterWriter(this.config.rules, this.logger);
         
-        // 处理 sortOnSave 相关的事件处理器
-        this.unregisterEventHandlers();
-        if (this.config.sortOnSave) {
-            this.registerEventHandlers();
-        }
-
-        this.logger.debug('Updated sorter and writer with new rules');
-    }
-
-    protected cleanupModule(): void {
-        // 1. 调用父类的清理方法
-        super.cleanupModule();
-        
-        this.unregisterEventHandlers();
-        this.processing = false;
-    }
-
-    protected onModuleUnload(): void {
-        this.logger.info("Unloading frontmatter sorter manager");
-        this.unregisterEventHandlers();
-        this.processing = false;
+        // 重新注册事件处理器
+        this.eventRefs.forEach(ref => ref());
+        this.eventRefs = [];
+        this.registerEventHandlers();
     }
 }

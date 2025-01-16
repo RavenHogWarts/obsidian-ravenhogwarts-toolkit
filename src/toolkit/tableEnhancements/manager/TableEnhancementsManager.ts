@@ -7,7 +7,7 @@ import { IToolkitModule } from '@/src/core/interfaces/types';
 import RavenHogwartsToolkitPlugin from '@/src/main';
 import { BaseModal } from '@/src/components/base/Modal/BaseModal';
 import { TableCalculationService } from '../services/TableCalculationService';
-import { ITableEnhancementsConfig, ITableEnhancementsData } from '../types/config';
+import { ITableEnhancementsConfig, ITableEnhancementsData, TABLE_ENHANCEMENTS_DEFAULT_CONFIG } from '../types/config';
 import { getStandardTime } from '@/src/lib/date';
 import { UUIDGenerator } from '@/src/lib/uuid';
 import { replaceFrontMatterKey, updateFrontMatter } from '@/src/lib/frontMatter';
@@ -26,6 +26,10 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
     private modal: BaseModal | null = null;
     private calculationService: TableCalculationService;
     private savedCalculations: Map<string, ISavedCalculation[]> = new Map();
+
+    protected getDefaultConfig(): ITableEnhancementsConfig {
+        return TABLE_ENHANCEMENTS_DEFAULT_CONFIG;
+    }
 
     constructor(
         plugin: RavenHogwartsToolkitPlugin,
@@ -47,33 +51,40 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
     protected async onModuleLoad(): Promise<void> {
         this.logger.info('Loading table enhancements manager');
         await this.loadSavedCalculations();
-
-        this.registerEvent(
-            this.app.workspace.on("editor-menu", (menu: Menu, editor: Editor) => {
-                if (this.isEnabled()) {
-                    this.addMenuItem(menu, {
-                        title: this.t('toolkit.tableEnhancements.editor_menu.table_enhancements'),
-                        icon: 'wand',
-                        order: 1,
-                        callback: () => {
-                            this.showTableEditor();
-                        }
-                    }, {showSeparator: true});
-                }
-            })
-        )
+        this.registerEventHandlers();
     }
 
     protected onModuleUnload(): void {
-        super.onModuleUnload();
-        // 清理模态框
+        this.logger.info('Unloading table enhancements manager');
+    }
+
+    protected onModuleCleanup(): void {
         if (this.modal) {
             this.modal.close();
             this.modal = null;
         }
-        // 清理其他资源
         this.tables = [];
         this.savedCalculations.clear();
+    }
+
+    protected registerEventHandlers(): void {
+        // 编辑器菜单事件
+        this.registerEvent(
+            this.app.workspace.on("editor-menu", this.handleEditorMenu.bind(this))
+        );
+    }
+
+    private handleEditorMenu(menu: Menu, editor: Editor): void {
+        if (!this.isEnabled()) return;
+
+        this.addMenuItem(menu, {
+            title: this.t('toolkit.tableEnhancements.editor_menu.table_enhancements'),
+            icon: 'wand',
+            order: 1,
+            callback: () => {
+                this.showTableEditor();
+            }
+        }, { showSeparator: true });
     }
 
     /**
@@ -165,6 +176,9 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
         }
     }
 
+    /**
+     * 替换 frontmatter 属性
+     */
     public async replaceFrontMatterProperty(oldKey: string, newKey: string): Promise<void> {
         try {
             const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
@@ -209,8 +223,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
                     this.logger.throwError(new Error('No active markdown view'));
                 }
 
-                const file = view.file;
-                updateFrontMatter(file, (frontmatter) => {
+                updateFrontMatter(view.file, (frontmatter) => {
                     frontmatter[calculation.config.output.value] = result;
                 });
 
@@ -321,8 +334,6 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
 
             // 更新每个表格
             let offset = 0; // 用于追踪由于插入空行导致的行号偏移
-            const processedTables: IMarkdownTable[] = [];
-
             for (let i = 0; i < updatedTables.length; i++) {
                 const table = updatedTables[i];
                 const originalTable = this.tables[i];
@@ -403,15 +414,6 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
             
             // 重新解析表格
             await this.parseCurrentTables();
-            
-            
-            // // 关闭modal
-            // if (this.modal) {
-            //     this.modal.close();
-            //     this.modal = null;
-            // }
-
-            // this.showTableEditor();
 
             this.logger.debug('Tables saved successfully');
         } catch (error) {
@@ -489,5 +491,10 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
         } catch (error) {
             this.logger.throwError(new Error('Failed to execute and save calculation'), error);
         }
+    }
+
+    protected onConfigChange(): void {
+        // 配置变更时的处理
+        this.registerEventHandlers();
     }
 }

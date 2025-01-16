@@ -7,14 +7,13 @@ export class PluginManager {
     private managers: Map<string, BaseManager<any>> = new Map();
     private settings: IRavenHogwartsToolkitConfig;
     private toolkitMenu: Menu | null = null;
+    private menuRegistrations: Map<string, Set<string>> = new Map();
 
     constructor(private plugin: Plugin) {
-        // 初始化默认设置
         this.settings = { ...DEFAULT_CONFIG };
     }
 
     async initialize() {
-        // 加载设置
         await this.loadSettings();
         rootLogger.debug('Plugin manager initialized with settings:', this.settings);
     }
@@ -23,35 +22,11 @@ export class PluginManager {
         try {
             const loadedData = await this.plugin.loadData();
             if (loadedData) {
-                // 递归合并设置，保持现有数据
-                this.settings = {
-                    config: {
-                        version: loadedData.config?.version || DEFAULT_CONFIG.config.version,
-                        logger: {
-                            ...DEFAULT_CONFIG.config.logger,
-                            ...(loadedData.config?.logger || {})
-                        },
-                        developer: {
-                            ...DEFAULT_CONFIG.config.developer,
-                            ...(loadedData.config?.developer || {})
-                        },
-                        menu: {
-                            ...DEFAULT_CONFIG.config.menu,
-                            ...(loadedData.config?.menu || {})
-                        }
-                    },
-                    toolkit: {
-                        ...DEFAULT_CONFIG.toolkit,
-                        ...(loadedData.toolkit || {})
-                    }
-                };
-
-                // 初始化 logger 配置
+                this.settings = this.mergeSettings(loadedData);
                 if (this.settings.config?.logger) {
                     Logger.initRootLogger(this.settings.config.logger);
                 }
             } else {
-                // 如果没有加载到数据，使用默认设置并保存
                 this.settings = { ...DEFAULT_CONFIG };
                 await this.saveSettings();
             }
@@ -60,6 +35,30 @@ export class PluginManager {
             this.settings = { ...DEFAULT_CONFIG };
             await this.saveSettings();
         }
+    }
+
+    private mergeSettings(loadedData: any): IRavenHogwartsToolkitConfig {
+        return {
+            config: {
+                version: loadedData.config?.version || DEFAULT_CONFIG.config.version,
+                logger: {
+                    ...DEFAULT_CONFIG.config.logger,
+                    ...(loadedData.config?.logger || {})
+                },
+                developer: {
+                    ...DEFAULT_CONFIG.config.developer,
+                    ...(loadedData.config?.developer || {})
+                },
+                menu: {
+                    ...DEFAULT_CONFIG.config.menu,
+                    ...(loadedData.config?.menu || {})
+                }
+            },
+            toolkit: {
+                ...DEFAULT_CONFIG.toolkit,
+                ...(loadedData.toolkit || {})
+            }
+        };
     }
 
     async saveSettings() {
@@ -71,6 +70,10 @@ export class PluginManager {
         }
     }
 
+    public getSettings() {
+        return this.settings;
+    }
+
     registerManagers(managers: {[moduleId: string]: new (...args: any[]) => BaseManager<any>}) {
         Object.entries(managers).forEach(([moduleId, managerClass]) => {
             if (this.managers.has(moduleId)) {
@@ -78,27 +81,33 @@ export class PluginManager {
                 return;
             }
 
-            const manager = new managerClass(this.plugin, moduleId, this.settings);
-            this.managers.set(moduleId, manager);
-            manager.onload().catch(error => {
-                rootLogger.error(`Failed to load manager: ${moduleId}`, error);
-            });
+            try {
+                const manager = new managerClass(this.plugin, moduleId, this.settings);
+                this.managers.set(moduleId, manager);
+                manager.onload().catch(error => {
+                    rootLogger.error(`Failed to load manager: ${moduleId}`, error);
+                });
+            } catch (error) {
+                rootLogger.error(`Failed to create manager: ${moduleId}`, error);
+            }
         });
-        rootLogger.info(`Registered manager: ${Object.keys(managers)}`);
+        rootLogger.info(`Registered managers: ${Object.keys(managers)}`);
     }
 
     getManager<T extends BaseManager<any>>(moduleId: string): T | undefined {
         return this.managers.get(moduleId) as T;
     }
 
-    getToolkitMenu(parentMenu: Menu): Menu {
+    getToolkitMenu(parentMenu: Menu, moduleId: string): Menu {
+        const manager = this.managers.get(moduleId);
+        if (!manager?.isEnabled()) {
+            return parentMenu;
+        }
+
         if (!this.settings.config.menu.useSubMenu) {
             return parentMenu;
         }
 
-        this.toolkitMenu = null;
-        
-        // 检查是否已经存在菜单项
         const existingItem = (parentMenu as any).items?.find((item: any) => 
             item.titleEl?.textContent === 'RavenHogwartsToolkit'
         );
@@ -113,9 +122,33 @@ export class PluginManager {
                 this.toolkitMenu = menuItem.setSubmenu();
             });
         }
-        
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this.toolkitMenu!;
+    }
+
+    clearMenuItems(moduleId?: string) {
+        try {
+            if (moduleId) {
+                // 清除指定模块的菜单项
+                this.menuRegistrations.delete(moduleId);
+                if (this.toolkitMenu) {
+                    const items = (this.toolkitMenu as any).items || [];
+                    (this.toolkitMenu as any).items = items.filter((item: any) => {
+                        const title = item.titleEl?.textContent || '';
+                        return !title.includes(moduleId);
+                    });
+                }
+            } else {
+                // 清除所有菜单项
+                this.menuRegistrations.clear();
+                if (this.toolkitMenu) {
+                    (this.toolkitMenu as any).items = [];
+                    this.toolkitMenu = null;
+                }
+            }
+        } catch (error) {
+            rootLogger.error('Error clearing menu items:', error);
+        }
     }
 
     async updateSettings(newSettings: Partial<IRavenHogwartsToolkitConfig>) {
@@ -134,16 +167,26 @@ export class PluginManager {
     }
 
     unload() {
-        this.toolkitMenu = null;
-        this.managers.forEach((manager, moduleId) => {
-            try {
-                manager.onunload?.();
-                rootLogger.debug(`Unloaded manager: ${moduleId}`);
-            } catch (error) {
-                rootLogger.error(`Error unloading manager: ${moduleId}`, error);
-            }
-        });
-        this.managers.clear();
+        try {
+            this.clearMenuItems();
+            this.toolkitMenu = null;
+
+            // 3. 卸载所有管理器
+            this.managers.forEach((manager, moduleId) => {
+                try {
+                    manager.onunload?.();
+                    rootLogger.debug(`Unloaded manager: ${moduleId}`);
+                } catch (error) {
+                    rootLogger.error(`Error unloading manager: ${moduleId}`, error);
+                }
+            });
+
+            // 4. 清理集合
+            this.managers.clear();
+            this.menuRegistrations.clear();
+        } catch (error) {
+            rootLogger.error('Error during plugin unload:', error);
+        }
     }
 
     get pluginSettings(): IRavenHogwartsToolkitConfig {

@@ -4,10 +4,7 @@ import RavenHogwartsToolkitPlugin from '@/src/main';
 import { Logger } from '@/src/core/services/Log';
 import { getStandardTime } from '@/src/lib/date';
 import { t, TranslationKeys } from '@/src/i18n/i18n';
-import { QUICK_PATH_DEFAULT_CONFIG } from '@/src/toolkit/quickPath/types/config';
-import { TABLE_ENHANCEMENTS_DEFAULT_CONFIG } from '@/src/toolkit/tableEnhancements/types/config';
-import { FRONTMATTER_SORTER_DEFAULT_CONFIG } from '@/src/toolkit/frontmatterSorter/types/config';
-import { READING_PROGRESS_DEFAULT_CONFIG } from '@/src/toolkit/readingProgress/types/config';
+import { rootLogger } from './Log';
 
 interface MenuItemConfig {
     title: string;
@@ -25,6 +22,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
     protected logger: Logger;
     protected app: App;
     protected registeredCommands: string[] = [];
+    protected eventRefs: any[] = [];
     
     constructor(
         protected plugin: RavenHogwartsToolkitPlugin,
@@ -33,16 +31,12 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
     ) {
         super();
         this.app = this.plugin.app;
-        // 使用模块级别的 logger
         this.logger = Logger.getLogger(this.moduleId);
-
-        // 初始化模块（异步）
         this.initPromise = this.initializeModule();
     }
 
     private async initializeModule() {
         if (!this.settings.toolkit[this.moduleId]) {
-            // 如果模块完全不存在，才初始化默认设置
             this.settings.toolkit[this.moduleId] = {
                 config: this.getDefaultConfig(),
                 data: {
@@ -50,18 +44,16 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
                 }
             };
         } else {
-            // 如果模块存在，只合并缺失的默认配置，保留现有数据
             const defaultConfig = this.getDefaultConfig();
             const currentConfig = this.settings.toolkit[this.moduleId].config;
             const currentData = this.settings.toolkit[this.moduleId].data;
             
             this.settings.toolkit[this.moduleId] = {
                 config: this.cleanConfig(currentConfig, defaultConfig),
-                data: currentData    // 完全保留现有数据
+                data: currentData
             };
         }
         
-        // 保存设置到 data.json
         await this.plugin.saveData(this.settings);
         this.logger.debug('Module settings initialized:', this.moduleId);
         
@@ -69,140 +61,59 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
         this.data = this.settings.toolkit[this.moduleId].data;
     }
 
+    protected abstract getDefaultConfig(): T['config'];
+
     private cleanConfig(currentConfig: any, defaultConfig: any): any {
-        // 如果是基本类型或数组，直接返回当前值，如果当前值不存在则返回默认值
         if (typeof defaultConfig !== 'object' || Array.isArray(defaultConfig) || defaultConfig === null) {
             return currentConfig ?? defaultConfig;
         }
 
         const cleanedConfig: any = {};
-
-        // 遍历默认配置的所有字段
         for (const key in defaultConfig) {
             if (key in currentConfig) {
-                // 递归清理嵌套对象
                 cleanedConfig[key] = this.cleanConfig(currentConfig[key], defaultConfig[key]);
             } else {
-                // 如果字段不存在，使用默认值
                 cleanedConfig[key] = defaultConfig[key];
             }
         }
-
         return cleanedConfig;
     }
 
-    protected getDefaultConfig(): T['config'] {
-        switch (this.moduleId) {
-            case 'quickPath':
-                return QUICK_PATH_DEFAULT_CONFIG;
-            case 'tableEnhancements':
-                return TABLE_ENHANCEMENTS_DEFAULT_CONFIG;
-            case 'frontmatterSorter':
-                return FRONTMATTER_SORTER_DEFAULT_CONFIG;
-            case 'readingProgress':
-                return READING_PROGRESS_DEFAULT_CONFIG;
-            default:
-                this.logger.throwError(new Error(`Unknown module ID: ${this.moduleId}`));
-        }
-    }
-
-    protected async waitForInitialization(): Promise<void> {
-        await this.initPromise;
-    }
-
+    // 生命周期方法
     public async onload(): Promise<void> {
         await this.waitForInitialization();
-        // 调用子类的加载方法
-        await this.onModuleLoad();
+        if (this.isEnabled()) {
+            await this.onModuleLoad();
+        }
     }
-    protected abstract onModuleLoad(): Promise<void>;
+
     public async onunload(): Promise<void> {
-       // 确保在卸载时清理资源
-       this.onModuleUnload();
-   }
-    protected onModuleUnload(): void {
-       // 默认实现，子类可以重写
-       this.logger.debug('Module unloaded:', this.moduleId);
-   }
-
-    protected async saveSettings(): Promise<void> {
-        try {
-            this.settings.toolkit[this.moduleId] = {
-                config: this.config,
-                data: this.data
-            };
-            await this.plugin.saveData(this.settings);
-            this.logger.debug('Settings saved for module:', this.moduleId);
-        } catch (error) {
-            this.logger.throwError(new Error(`Error saving settings for module: ${this.moduleId}`), error);
-        }
+        this.cleanupModule();
+        this.onModuleUnload();
     }
 
-    protected async updateConfig(newConfig: Partial<T['config']>): Promise<void> {
-        try {
-            this.logger.debug('Updating config for module:', this.moduleId, newConfig);
-            const oldConfig = { ...this.config };  // 保存旧配置
-            this.config = { ...this.config, ...newConfig };
-            this.data.lastModified = getStandardTime();
-            await this.saveSettings();
-            
-            // 如果配置确实发生了变化，调用 onConfigChange
-            if (JSON.stringify(oldConfig) !== JSON.stringify(this.config)) {
-                this.onConfigChange?.();
-            }
-        } catch (error) {
-            this.logger.throwError(new Error(`Error updating config for module: ${this.moduleId}`), error);
-        }
-    }
+    protected abstract onModuleLoad(): Promise<void>;
+    protected abstract onModuleUnload(): void;
+    protected abstract onModuleCleanup(): void;
 
-    public async setConfig(newConfig: T['config']): Promise<void> {
-        try {
-            const oldConfig = { ...this.config };  // 保存旧配置
-            this.config = newConfig;
-            this.data.lastModified = getStandardTime();
-            await this.saveSettings();
-            
-            // 如果配置确实发生了变化，调用 onConfigChange
-            if (JSON.stringify(oldConfig) !== JSON.stringify(this.config)) {
-                this.onConfigChange?.();
-            }
-        } catch (error) {
-            this.logger.throwError(new Error(`Error setting config for module: ${this.moduleId}`), error);
-        }
-    }
-
-    protected async updateData(newData: Partial<T['data']>): Promise<void> {
-        try {
-            this.logger.debug('Updating data for module:', this.moduleId, newData);
-            this.data = { ...this.data, ...newData };
-            this.data.lastModified = getStandardTime();
-            await this.saveSettings();
-        } catch (error) {
-            this.logger.throwError(new Error(`Error updating data for module: ${this.moduleId}`), error);
-        }
-    }
-
-    protected t(key: TranslationKeys, params?: any): string {
-        return t(key, params);
-    }
-
-    protected get pluginInstance(): RavenHogwartsToolkitPlugin {
-        return this.plugin;
-    }
-
-    // 重写 Component 的 registerEvent 以添加启用状态检查
+    // 事件注册
     public registerEvent(eventRef: any): void {
         if (this.isEnabled()) {
             super.registerEvent(eventRef);
+            if (typeof eventRef === 'function') {
+                this.eventRefs.push(eventRef);
+            }
         }
     }
 
     protected unregisterEvents(): void {
-        ((this as any).events || []).forEach(eventRef => eventRef());
-        (this as any).events = [];
+        this.eventRefs
+            .filter(ref => typeof ref === 'function')
+            .forEach(ref => ref());
+        this.eventRefs = [];
     }
 
-    // 为常用的命令注册提供便捷方法
+    // 命令管理
     protected addCommand(command: Command): void {
         const enhancedCommand = {
             ...command,
@@ -234,47 +145,107 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
         this.registeredCommands = [];
     }
 
-    // 为菜单项添加提供便捷方法
+    // 菜单管理
     protected addMenuItem(
         menu: Menu,
         items: MenuItemConfig | MenuItemConfig[],
-        options: {
-            showSeparator?: boolean;
-        } = {}
+        options: { showSeparator?: boolean } = {}
     ): void {
+        if (!this.isPluginEnabled()) return;
         if (!this.isEnabled()) return;
+
+        const pluginManager = (this.plugin as RavenHogwartsToolkitPlugin).pluginManager;
+        const useSubMenu = pluginManager.getSettings().config.menu.useSubMenu;
+
+        const existingToolkitMenu = (menu as any).items?.find((item: any) => 
+            item.titleEl?.textContent === 'RavenHogwartsToolkit'
+        );
+
+        if (useSubMenu) {
+            const mainItems = (menu as any).items || [];
+            const moduleItemIndexes = mainItems
+                .map((item: any, index: number) => item.titleEl?.textContent?.includes(this.moduleId) ? index : -1)
+                .filter((index: number) => index !== -1)
+                .reverse(); // 从后往前删除，避免索引变化
+
+            moduleItemIndexes.forEach((index: number) => {
+                mainItems.splice(index, 1);
+            });
+
+            if (existingToolkitMenu?.submenu) {
+                const existingSubItems = (existingToolkitMenu.submenu as any).items?.filter((item: any) => 
+                    item.titleEl?.textContent?.includes(this.moduleId)
+                );
+                if (existingSubItems?.length > 0) {
+                    return;
+                }
+            }
+        } else {
+            const existingItems = (menu as any).items?.filter((item: any) => 
+                item.titleEl?.textContent?.includes(this.moduleId)
+            );
+            if (existingItems?.length > 0) {
+                return;
+            }
+        }
 
         const { showSeparator = false } = options;
         const menuItems = Array.isArray(items) ? items : [items];
         const sortedItems = menuItems.sort((a, b) => (a.order || 0) - (b.order || 0));
 
-        // 获取目标菜单（可能是父菜单或工具包子菜单）
         const targetMenu = (this.plugin as RavenHogwartsToolkitPlugin)
-            .pluginManager.getToolkitMenu(menu);
+            .pluginManager.getToolkitMenu(menu, this.moduleId);
 
-        // 直接添加菜单项到工具包菜单
         sortedItems.forEach((item) => {
             targetMenu.addItem((menuItem) => {
                 menuItem.setTitle(`${this.moduleId}: ${item.title}`);
                 if (item.icon) menuItem.setIcon(item.icon);
-                if (item.callback) menuItem.onClick(item.callback);
+                if (item.callback) {
+                    menuItem.onClick(item.callback);
+                }
             });
         });
 
-        // 添加分隔符
         if (showSeparator) {
             targetMenu.addSeparator();
         }
     }
 
-    public getConfig(): T['config'] {
-        return this.config;
+    // 设置管理
+    protected async waitForInitialization(): Promise<void> {
+        await this.initPromise;
     }
 
-    public getData(): T['data'] {
-        return this.data;
+    protected async saveSettings(): Promise<void> {
+        try {
+            this.settings.toolkit[this.moduleId] = {
+                config: this.config,
+                data: this.data
+            };
+            await this.plugin.saveData(this.settings);
+            this.logger.debug('Settings saved for module:', this.moduleId);
+        } catch (error) {
+            this.logger.throwError(new Error(`Error saving settings for module: ${this.moduleId}`), error);
+        }
     }
 
+    protected async updateConfig(newConfig: Partial<T['config']>): Promise<void> {
+        try {
+            this.logger.debug('Updating config for module:', this.moduleId, newConfig);
+            const oldConfig = { ...this.config };
+            this.config = { ...this.config, ...newConfig };
+            this.data.lastModified = new Date().toISOString();
+            await this.saveSettings();
+            
+            if (JSON.stringify(oldConfig) !== JSON.stringify(this.config)) {
+                this.onConfigChange?.();
+            }
+        } catch (error) {
+            this.logger.throwError(new Error(`Error updating config for module: ${this.moduleId}`), error);
+        }
+    }
+
+    // 启用/禁用管理
     public isEnabled(): boolean {
         return this.config.enabled;
     }
@@ -282,12 +253,14 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
     public async enable(): Promise<void> {
         if (!this.isEnabled()) {
             await this.updateConfig({ enabled: true } as Partial<T['config']>);
+            await this.onModuleLoad();
             this.onEnable();
         }
     }
 
     public async disable(): Promise<void> {
         if (this.isEnabled()) {
+            this.cleanupModule();
             await this.updateConfig({ enabled: false } as Partial<T['config']>);
             this.onDisable();
         }
@@ -298,29 +271,83 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
     }
 
     protected onDisable(): void {
-        this.cleanupModule();
         this.logger.info('Module disabled:', this.moduleId);
     }
 
+    // 清理方法
     protected cleanupModule(): void {
-        // 1. 卸载所有命令
         this.unregisterAllCommands();
-        
-        // 2. 卸载所有事件
         this.unregisterEvents();
-        
-        // 3. 记录日志
+        (this.plugin as RavenHogwartsToolkitPlugin)
+            .pluginManager.clearMenuItems(this.moduleId);
+        this.onModuleCleanup?.();
         this.logger.debug(`Cleaned up module: ${this.moduleId}`);
     }
 
-    // 添加 protected onConfigChange 方法声明
+    // 工具方法
+    protected t(key: TranslationKeys, params?: any): string {
+        return t(key, params);
+    }
+
     protected onConfigChange?(): void;
 
-    public getApp(): App {
+    /**
+     * 获取模块数据
+     */
+    protected async getData(): Promise<T['data']> {
+        await this.waitForInitialization();
+        return this.data;
+    }
+
+    /**
+     * 更新模块数据
+     */
+    protected async updateData(newData: Partial<T['data']>): Promise<void> {
+        try {
+            this.logger.debug('Updating data for module:', this.moduleId, newData);
+            this.data = { ...this.data, ...newData };
+            this.data.lastModified = new Date().toISOString();
+            await this.saveSettings();
+        } catch (error) {
+            this.logger.throwError(new Error(`Error updating data for module: ${this.moduleId}`), error);
+        }
+    }
+
+    /**
+     * 获取当前配置
+     */
+    public getConfig(): T['config'] {
+        return this.config;
+    }
+
+    /**
+     * 更新配置
+     */
+    public async setConfig(newConfig: Partial<T['config']>): Promise<void> {
+        await this.updateConfig(newConfig);
+    }
+
+    /**
+     * 获取 App 实例
+     */
+    public getApp() {
         return this.app;
     }
 
-    public getPlugin(): RavenHogwartsToolkitPlugin {
+    /**
+     * 获取 Plugin 实例
+     */
+    public getPlugin() {
         return this.plugin;
+    }
+
+    protected registerEventHandlers(): void {
+        // 子类实现具体事件注册
+        if (!this.isEnabled()) return;
+    }
+
+    protected isPluginEnabled(): boolean {
+        rootLogger.debug('isPluginEnabled', (this.plugin.app as any).plugins.enabledPlugins.has(this.plugin.manifest.id));
+        return (this.plugin.app as any).plugins.enabledPlugins.has(this.plugin.manifest.id);
     }
 }
