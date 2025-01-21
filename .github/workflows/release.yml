@@ -25,6 +25,13 @@ jobs:
         with:
           node-version: "16.x"
 
+      - name: Prepare manifest
+        id: prepare_manifest
+        run: |
+          if [[ ${{ github.ref }} == *"beta"* ]]; then
+            cp manifest-beta.json manifest.json
+          fi
+
       - name: Build
         id: build
         run: |
