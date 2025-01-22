@@ -9,7 +9,6 @@ import './styles/ReadingProgress.css';
 interface ReadingProgressProps {
     config: IReadingProgressConfig;
     onConfigChange: (config: Partial<IReadingProgressConfig>) => void;
-    readingTime: number;
     headings: HeadingCache[];
     progress: number;
     onHeadingClick: (heading: HeadingCache) => void;
@@ -21,7 +20,6 @@ interface ReadingProgressProps {
 export const ReadingProgress: React.FC<ReadingProgressProps> = ({
     config,
     onConfigChange,
-    readingTime,
     headings,
     progress,
     onHeadingClick,
@@ -223,6 +221,50 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
             style={containerStyle}
         >
             <div 
+                className="rht-progress-indicator" 
+                style={{ display: config.showProgress ? 'flex' : 'none' }}
+            >
+                <ProgressRing 
+                    progress={progress} 
+                    size={28} 
+                    strokeWidth={2}
+                    showText={true}
+                    text={`${Math.round(progress)}`}
+                />
+            </div>
+            <div 
+                className="rht-return"
+                style={{ display: config.showProgress ? 'flex' : 'none' }}
+            >
+                {isEditing ?  
+                    <div 
+                        className="rht-return-btn"
+                        onClick={() => onReturnClick('cursor')}
+                        aria-label={t('toolkit.readingProgress.return_button.return_to_cursor')}
+                    >
+                        <CircleDot size={16} />
+                    </div>
+                :
+                    <>
+                        <div 
+                            className="rht-return-btn"
+                            onClick={() => onReturnClick('top')}
+                            aria-label={t('toolkit.readingProgress.return_button.return_to_top')}
+                        >
+                            <ArrowUpToLine size={16} />
+                        </div>
+                        <div 
+                            className="rht-return-btn"
+                            onClick={() => onReturnClick('bottom')}
+                            aria-label={t('toolkit.readingProgress.return_button.return_to_bottom')}
+                        >
+                            <ArrowDownToLine size={16} />
+                        </div>
+                    </>
+                }
+            </div>
+
+            <div 
                 className={tocGroupClassName}
                 style={tocGroupStyle}
                 onMouseEnter={() => !config.tocAlwaysExpanded && setIsHovered(true)}
@@ -299,6 +341,14 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                         className="rht-toc-content"
                         style={tocListStyle}
                     >
+                        <div
+                            className='rht-toc-progress-bar'
+                            style={{
+                                width: `${progress}%`,
+                            }}
+                        >
+
+                        </div>
                         {headings.map((heading, index) => (
                             <div
                                 key={index}
@@ -320,50 +370,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
                     </div>
                 </div>
             </div>
-            <div 
-                className="rht-progress-indicator" 
-                style={{ display: config.showProgress ? 'flex' : 'none' }}
-                aria-label={config.showReadingTime ? t('toolkit.readingProgress.progress_indicator.reading_time', [readingTime]) : undefined}
-            >
-                <ProgressRing 
-                    progress={progress} 
-                    size={28} 
-                    strokeWidth={2}
-                    showText={true}
-                    text={`${Math.round(progress)}%`}
-                />
-            </div>
-            <div 
-                className="rht-return"
-                style={{ display: config.showProgress ? 'flex' : 'none' }}
-            >
-                {isEditing ?  
-                    <div 
-                        className="rht-return-btn"
-                        onClick={() => onReturnClick('cursor')}
-                        aria-label={t('toolkit.readingProgress.return_button.return_to_cursor')}
-                    >
-                        <CircleDot size={16} />
-                    </div>
-                :
-                    <>
-                        <div 
-                            className="rht-return-btn"
-                            onClick={() => onReturnClick('top')}
-                            aria-label={t('toolkit.readingProgress.return_button.return_to_top')}
-                        >
-                            <ArrowUpToLine size={16} />
-                        </div>
-                        <div 
-                            className="rht-return-btn"
-                            onClick={() => onReturnClick('bottom')}
-                            aria-label={t('toolkit.readingProgress.return_button.return_to_bottom')}
-                        >
-                            <ArrowDownToLine size={16} />
-                        </div>
-                    </>
-                }
-            </div>
+            
         </div>
     );
 };

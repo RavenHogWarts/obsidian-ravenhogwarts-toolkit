@@ -200,9 +200,6 @@ export const zh: Message = {
                 return_to_top: "返回顶部",
                 return_to_bottom: "返回底部"
             },
-            progress_indicator: {
-                reading_time: "预计阅读时间 {0} 分钟"
-            },
             toolbar: {
                 toggle_pin: "固定/取消固定",
                 toggle_position: "切换位置",
@@ -232,10 +229,6 @@ export const zh: Message = {
                     title: "阅读进度环",
                     description: "显示当前阅读进度"
                 },
-                showReadingTime: {
-                    title: "阅读时间",
-                    description: "鼠标悬浮在阅读进度环上时显示预计的阅读时间，，假定英文内容阅读速度为 200 字/分钟，中文内容阅读速度为 300 字/分钟，文件内容的统计排除了front matter"
-                },
                 position: {
                     title: "位置",
                     description: "阅读进度的位置",
@@ -249,6 +242,21 @@ export const zh: Message = {
                 tocWidth: {
                     title: "目录宽度",
                     description: "目录的宽度，单位为px，默认为240px"
+                }
+            },
+            estimatedReadingTime: {
+                template: "预计阅读时间：{{time}}",
+                wordCount: "总字数：{0}",
+                chineseCount: "中文字数：{0}",
+                englishCount: "英文字数：{0}",
+                error: {
+                    title: "计算阅读时间时出错",
+                    message: "配置格式错误，请检查语法"
+                },
+                formatReadingTime: {
+                    lessThanOneMinute: "小于 1 分钟",
+                    lessThanOneHour: "约 {0} 分钟",
+                    moreThanOneHour: "约 {0} 小时 {1} 分钟"
                 }
             }
         }

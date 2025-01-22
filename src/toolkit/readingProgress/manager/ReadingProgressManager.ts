@@ -5,7 +5,7 @@ import { createRoot, Root } from 'react-dom/client';
 import { IToolkitModule } from "@/src/core/interfaces/types";
 import { ReadingProgress } from '@/src/toolkit/readingProgress/components/ReadingProgress/ReadingProgress';
 import { IReadingProgressConfig, IReadingProgressData, READING_PROGRESS_DEFAULT_CONFIG } from "@/src/toolkit/readingProgress/types/config";
-import { EstimatedReadingTime } from "@/src/toolkit/readingProgress/services/estimatedReadingTime";
+import { EstimatedReadingTime, ReadingTimeConfig } from '../services/estimatedReadingTime';
 
 interface IReadingProgressModule extends IToolkitModule {
     config: IReadingProgressConfig;
@@ -21,7 +21,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
     private progress = 0;
     private headings: HeadingCache[] = [];
     private currentHeadingIndex = -1;
-    private readingTime = 0;
 
     protected getDefaultConfig(): IReadingProgressConfig {
         return READING_PROGRESS_DEFAULT_CONFIG;
@@ -31,8 +30,10 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
         this.logger.info('Loading reading progress manager');
         this.initResizeObserver();
         this.registerEventHandlers();
-        await this.updateReadingTime();
         this.updateContainerPosition();
+
+        EstimatedReadingTime.setApp(this.app);
+        EstimatedReadingTime.registerPostProcessor();
     }
 
     protected onModuleUnload(): void {
@@ -41,6 +42,8 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 
     protected onModuleCleanup(): void {
         this.cleanupCurrentView();
+        // @ts-ignore
+        window.calculateReadingTime = undefined;
         if (this.resizeObserver) {
             this.resizeObserver.disconnect();
             this.resizeObserver = null;
@@ -51,17 +54,7 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
         // 监听活动视图变化
         this.registerEvent(
             this.app.workspace.on('active-leaf-change', async () => {
-                await this.updateReadingTime();
                 this.updateContainerPosition();
-            })
-        );
-
-        // 监听文件内容变化
-        this.registerEvent(
-            this.app.vault.on('modify', async (file) => {
-                if (this.currentView?.file === file) {
-                    await this.updateReadingTime();
-                }
             })
         );
 
@@ -90,14 +83,11 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
                 }
             })
         );
-    }
 
-    private async updateReadingTime(): Promise<void> {
-        if (!this.currentView?.file) return;
-        const content = await this.app.vault.read(this.currentView.file);
-
-        this.readingTime = EstimatedReadingTime.calculate(content);
-        this.renderComponent();
+        // @ts-ignore
+        window.calculateReadingTime = (container: HTMLElement, config?: ReadingTimeConfig) => {
+            return EstimatedReadingTime.calculateReadingTime(container, config);
+        };
     }
 
     private renderComponent(): void {
@@ -107,7 +97,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
             React.createElement(ReadingProgress, {
                 config: this.config,
                 onConfigChange: (config) => this.updateConfig(config),
-                readingTime: this.readingTime,
                 headings: this.headings,
                 progress: this.progress,
                 onHeadingClick: (heading) => this.scrollToHeading(heading),

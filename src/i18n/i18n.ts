@@ -201,9 +201,6 @@ export type Message = {
                 return_to_top: string;
                 return_to_bottom: string;
             },
-            progress_indicator: {
-                reading_time: string;
-            },
             toolbar: {
                 toggle_pin: string;
                 toggle_position: string;
@@ -233,10 +230,6 @@ export type Message = {
                     title: string;
                     description: string;
                 };
-                showReadingTime: {
-                    title: string;
-                    description: string;
-                };
                 position: {
                     title: string;
                     description: string;
@@ -251,6 +244,21 @@ export type Message = {
                     title: string;
                     description: string;
                 };
+            },
+            estimatedReadingTime: {
+                template: string;
+                wordCount: string;
+                chineseCount: string;
+                englishCount: string;
+                error: {
+                    title: string;
+                    message: string;
+                },
+                formatReadingTime: {
+                    lessThanOneMinute: string;
+                    lessThanOneHour: string;
+                    moreThanOneHour: string;
+                }
             }
         }
     }

@@ -201,9 +201,6 @@ export const en: Message = {
                 return_to_top: "Return to Top",
                 return_to_bottom: "Return to Bottom"
             },
-            progress_indicator: {
-                reading_time: "Estimated reading time {0} minutes"
-            },
             toolbar: {
                 toggle_pin: "Toggle Pin",
                 toggle_position: "Toggle Position",
@@ -233,10 +230,6 @@ export const en: Message = {
                     title: "Reading Progress Ring",
                     description: "Show reading progress"
                 },
-                showReadingTime: {
-                    title: "Show Reading Time",
-                    description: "Show estimated reading time when hovering over the reading progress ring, assume English reading speed is 200 words/minute, Chinese reading speed is 300 words/minute, the statistics of file content excludes front matter"
-                },
                 position: {
                     title: "Position",
                     description: "Reading progress ring position",
@@ -250,6 +243,21 @@ export const en: Message = {
                 tocWidth: {
                     title: "TOC Width",
                     description: "TOC width, unit is px, default is 240px"
+                }
+            },
+            estimatedReadingTime: {
+                template: "Estimated reading time: {{time}}",
+                wordCount: "Total words: {0}",
+                chineseCount: "Chinese words: {0}",
+                englishCount: "English words: {0}",
+                error: {
+                    title: "Error calculating reading time",
+                    message: "Configuration format error, please check syntax"
+                },
+                formatReadingTime: {
+                    lessThanOneMinute: "Less than 1 minute",
+                    lessThanOneHour: "About {0} minutes",
+                    moreThanOneHour: "About {0} hours {1} minutes"
                 }
             }
         }

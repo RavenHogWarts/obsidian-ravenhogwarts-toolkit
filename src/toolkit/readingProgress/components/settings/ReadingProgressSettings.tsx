@@ -105,15 +105,6 @@ export const ReadingProgressSettings: React.FC<ReadingProgressSettingsProps> = (
         />
       </SettingItem>
 
-      <SettingItem
-        name={t('toolkit.readingProgress.settings.showReadingTime.title')}
-        desc={t('toolkit.readingProgress.settings.showReadingTime.description')}
-      >
-        <Toggle
-          checked={config.showReadingTime}
-          onChange={(checked) => handleUpdateConfig({ showReadingTime: checked })}
-        />
-      </SettingItem>
     </div>
   );
 
