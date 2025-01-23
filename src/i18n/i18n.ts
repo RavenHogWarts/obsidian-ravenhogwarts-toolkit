@@ -226,9 +226,13 @@ export type Message = {
 					title: string;
 					description: string;
 				};
-				showProgress: {
+				progressStyle: {
 					title: string;
 					description: string;
+					bar: string;
+					ring: string;
+					none: string;
+					both: string;
 				};
 				position: {
 					title: string;

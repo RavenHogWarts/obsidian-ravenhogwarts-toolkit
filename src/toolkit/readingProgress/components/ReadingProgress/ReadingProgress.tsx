@@ -37,7 +37,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 	onReturnClick,
 }) => {
 	const [isHovered, setIsHovered] = React.useState(false);
-	const [isDragging, setIsDragging] = React.useState(false);
+	const [isMouseDragging, setIsMouseDragging] = React.useState(false);
 	const [startX, setStartX] = React.useState(0);
 	const [startWidth, setStartWidth] = React.useState(0);
 	const tocListRef = React.useRef<HTMLDivElement>(null);
@@ -114,21 +114,19 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 		}
 	}, [headings]);
 
-	// 处理拖动开始
-	const handleDragStart = React.useCallback(
+	// 处理鼠标拖动
+	const handleMouseDragStart = React.useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
 			e.preventDefault();
-			setIsDragging(true);
+			setIsMouseDragging(true);
 			setStartX(e.clientX);
 			setStartWidth(config.tocWidth);
 		},
 		[config.tocWidth]
 	);
-
-	// 处理拖动过程
-	const handleDrag = React.useCallback(
+	const handleMouseDrag = React.useCallback(
 		(e: MouseEvent) => {
-			if (!isDragging || !tocListRef.current) return;
+			if (!isMouseDragging || !tocListRef.current) return;
 
 			const delta = e.clientX - startX;
 			// 根据位置调整宽度变化方向
@@ -137,20 +135,18 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 
 			tocListRef.current.style.width = `${newWidth}px`;
 		},
-		[isDragging, startX, startWidth]
+		[isMouseDragging, startX, startWidth]
 	);
+	const handleMouseDragEnd = React.useCallback(() => {
+		if (!isMouseDragging) return;
 
-	// 处理拖动结束
-	const handleDragEnd = React.useCallback(() => {
-		if (!isDragging) return;
-
-		setIsDragging(false);
+		setIsMouseDragging(false);
 
 		if (tocListRef.current) {
 			const newWidth = tocListRef.current.offsetWidth;
 			onConfigChange?.({ tocWidth: newWidth });
 		}
-	}, [isDragging, onConfigChange]);
+	}, [isMouseDragging, onConfigChange]);
 
 	const handlePinClick = React.useCallback(() => {
 		onConfigChange?.({ tocAlwaysExpanded: !config.tocAlwaysExpanded });
@@ -207,16 +203,21 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 
 	// 添加和移除全局事件监听器
 	React.useEffect(() => {
-		if (isDragging) {
-			document.addEventListener("mousemove", handleDrag);
-			document.addEventListener("mouseup", handleDragEnd);
+		if (isMouseDragging) {
+			document.addEventListener("mousemove", handleMouseDrag);
+			document.addEventListener("mouseup", handleMouseDragEnd);
 		}
 
 		return () => {
-			document.removeEventListener("mousemove", handleDrag);
-			document.removeEventListener("mouseup", handleDragEnd);
+			document.removeEventListener("mousemove", handleMouseDrag);
+			document.removeEventListener("mouseup", handleMouseDragEnd);
 		};
-	}, [isDragging, handleDrag, handleDragEnd]);
+	}, [isMouseDragging, handleMouseDrag, handleMouseDragEnd]);
+
+	const getMinHeadingLevel = React.useMemo(() => {
+		if (!headings.length) return 1;
+		return Math.min(...headings.map((h) => h.level));
+	}, [headings]);
 
 	const tocGroupStyle = React.useMemo(
 		() => ({
@@ -230,9 +231,9 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 	const tocListStyle = React.useMemo(
 		() => ({
 			width: `${config.tocWidth}px`,
-			cursor: isDragging ? "ew-resize" : undefined,
+			cursor: isMouseDragging ? "ew-resize" : undefined,
 		}),
-		[config.tocWidth, isDragging]
+		[config.tocWidth, isMouseDragging]
 	);
 
 	const containerStyle = React.useMemo(
@@ -264,7 +265,13 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 		<div className={containerClassName} style={containerStyle}>
 			<div
 				className="rht-progress-indicator"
-				style={{ display: config.showProgress ? "flex" : "none" }}
+				style={{
+					display:
+						config.progressStyle === "ring" ||
+						config.progressStyle === "both"
+							? "flex"
+							: "none",
+				}}
 			>
 				<ProgressRing
 					progress={progress}
@@ -274,10 +281,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 					text={`${Math.round(progress)}`}
 				/>
 			</div>
-			<div
-				className="rht-return"
-				style={{ display: config.showProgress ? "flex" : "none" }}
-			>
+			<div className="rht-return">
 				{isEditing ? (
 					<div
 						className="rht-return-btn"
@@ -398,7 +402,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 					{/* 添加拖动手柄 */}
 					<div
 						className="rht-toc-resize-handle"
-						onMouseDown={handleDragStart}
+						onMouseDown={handleMouseDragStart}
 					/>
 					{/* 目录内容容器 */}
 					<div
@@ -406,30 +410,41 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 						className="rht-toc-content"
 						style={tocListStyle}
 					>
-						<div
-							className="rht-toc-progress-bar"
-							style={{
-								width: `${progress}%`,
-							}}
-						></div>
-						{headings.map((heading, index) => (
+						{(config.progressStyle === "bar" ||
+							config.progressStyle === "both") && (
 							<div
-								key={index}
-								className="rht-toc-item"
-								data-index={index}
-								data-depth={heading.level}
-								data-line={heading.position.start.line}
-								data-active={index === activeHeadingIndex}
-								onClick={() => onHeadingClick(heading)}
-							>
-								<span className="rht-toc-item-text">
-									{getCleanHeadingText(heading.heading)}
-								</span>
-								<span className="rht-toc-item-level">
-									H{heading.level}
-								</span>
-							</div>
-						))}
+								className="rht-toc-progress-bar"
+								style={
+									{
+										"--progress-width": `${progress}%`,
+									} as React.CSSProperties
+								}
+							></div>
+						)}
+						{headings.map((heading, index) => {
+							const relativeDepth =
+								heading.level - getMinHeadingLevel;
+
+							return (
+								<div
+									key={index}
+									className="rht-toc-item"
+									data-index={index}
+									data-depth={heading.level}
+									data-relative-depth={relativeDepth}
+									data-line={heading.position.start.line}
+									data-active={index === activeHeadingIndex}
+									onClick={() => onHeadingClick(heading)}
+								>
+									<span className="rht-toc-item-text">
+										{getCleanHeadingText(heading.heading)}
+									</span>
+									<span className="rht-toc-item-level">
+										H{heading.level}
+									</span>
+								</div>
+							);
+						})}
 					</div>
 				</div>
 			</div>

@@ -230,9 +230,14 @@ export const zh: Message = {
 					title: "悬浮工具栏",
 					description: "使用悬浮工具栏",
 				},
-				showProgress: {
-					title: "阅读进度环",
-					description: "显示当前阅读进度",
+				progressStyle: {
+					title: "阅读进度样式",
+					description:
+						"阅读进度样式，进度条显示在目录内部，进度环显示在目录上方",
+					bar: "进度条",
+					ring: "进度环",
+					none: "不显示",
+					both: "都显示",
 				},
 				position: {
 					title: "位置",

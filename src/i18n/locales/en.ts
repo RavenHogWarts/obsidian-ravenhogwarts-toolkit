@@ -242,9 +242,14 @@ export const en: Message = {
 					title: "Toolbar",
 					description: "Use toolbar",
 				},
-				showProgress: {
-					title: "Reading Progress Ring",
-					description: "Show reading progress",
+				progressStyle: {
+					title: "Reading Progress Style",
+					description:
+						"Reading progress style, progress bar inside the TOC, progress ring above the TOC",
+					bar: "Progress Bar",
+					ring: "Progress Ring",
+					none: "None",
+					both: "Both",
 				},
 				position: {
 					title: "Position",

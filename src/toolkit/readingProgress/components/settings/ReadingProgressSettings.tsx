@@ -139,17 +139,44 @@ export const ReadingProgressSettings: React.FC<
 
 			<h3>{t("toolkit.readingProgress.settings.segment.progress")}</h3>
 			<SettingItem
-				name={t("toolkit.readingProgress.settings.showProgress.title")}
+				name={t("toolkit.readingProgress.settings.progressStyle.title")}
 				desc={t(
-					"toolkit.readingProgress.settings.showProgress.description"
+					"toolkit.readingProgress.settings.progressStyle.description"
 				)}
 			>
-				<Toggle
-					checked={config.showProgress}
-					onChange={(checked) =>
-						handleUpdateConfig({ showProgress: checked })
+				<select
+					value={config.progressStyle}
+					onChange={(e) =>
+						handleUpdateConfig({
+							progressStyle: e.target.value as
+								| "bar"
+								| "ring"
+								| "none"
+								| "both",
+						})
 					}
-				/>
+				>
+					<option value="bar">
+						{t(
+							"toolkit.readingProgress.settings.progressStyle.bar"
+						)}
+					</option>
+					<option value="ring">
+						{t(
+							"toolkit.readingProgress.settings.progressStyle.ring"
+						)}
+					</option>
+					<option value="none">
+						{t(
+							"toolkit.readingProgress.settings.progressStyle.none"
+						)}
+					</option>
+					<option value="both">
+						{t(
+							"toolkit.readingProgress.settings.progressStyle.both"
+						)}
+					</option>
+				</select>
 			</SettingItem>
 		</div>
 	);

@@ -2,7 +2,7 @@ export interface IReadingProgressConfig {
 	enabled: boolean;
 	showTOC: boolean;
 	tocAlwaysExpanded: boolean;
-	showProgress: boolean;
+	progressStyle: "bar" | "ring" | "none" | "both";
 	showToolbar: boolean;
 	position: "left" | "right";
 	offset: number;
@@ -17,7 +17,7 @@ export const READING_PROGRESS_DEFAULT_CONFIG: IReadingProgressConfig = {
 	enabled: true,
 	showTOC: true,
 	tocAlwaysExpanded: false,
-	showProgress: true,
+	progressStyle: "both",
 	showToolbar: true,
 	position: "right",
 	offset: 12,
