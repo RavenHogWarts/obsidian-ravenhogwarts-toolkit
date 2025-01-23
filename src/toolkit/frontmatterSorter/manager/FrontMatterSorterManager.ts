@@ -1,5 +1,9 @@
 import { IToolkitModule } from "@/src/core/interfaces/types";
-import { FRONTMATTER_SORTER_DEFAULT_CONFIG, IFrontmatterSorterConfig, IFrontmatterSorterData } from "../types/config";
+import {
+	FRONTMATTER_SORTER_DEFAULT_CONFIG,
+	IFrontmatterSorterConfig,
+	IFrontmatterSorterData,
+} from "../types/config";
 import { BaseManager } from "@/src/core/services/BaseManager";
 import { FrontMatterParser } from "../services/FrontMatterParser";
 import { FrontMatterSorter } from "../services/FrontMatterSorter";
@@ -8,299 +12,349 @@ import minimatch from "minimatch";
 import { Modal, TFile } from "obsidian";
 
 interface IFrontMatterSorterModule extends IToolkitModule {
-    config: IFrontmatterSorterConfig;
-    data: IFrontmatterSorterData;
+	config: IFrontmatterSorterConfig;
+	data: IFrontmatterSorterData;
 }
 
 export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModule> {
-    private parser: FrontMatterParser;
-    private sorter: FrontMatterSorter;
-    private writer: FrontMatterWriter;
-    private processing = false;
+	private parser: FrontMatterParser;
+	private sorter: FrontMatterSorter;
+	private writer: FrontMatterWriter;
+	private processing = false;
 
-    protected getDefaultConfig(): IFrontmatterSorterConfig {
-        return FRONTMATTER_SORTER_DEFAULT_CONFIG;
-    }
+	protected getDefaultConfig(): IFrontmatterSorterConfig {
+		return FRONTMATTER_SORTER_DEFAULT_CONFIG;
+	}
 
-    protected async onModuleLoad(): Promise<void> {
-        this.logger.info("Loading frontmatter sorter manager");
-        this.validateConfig();
-        this.initializeServices();
-        this.registerCommands();
-        this.registerEventHandlers();
-    }
+	protected async onModuleLoad(): Promise<void> {
+		this.logger.info("Loading frontmatter sorter manager");
+		this.validateConfig();
+		this.initializeServices();
+		this.registerCommands();
+		this.registerEventHandlers();
+	}
 
-    protected onModuleUnload(): void {
-        this.logger.info("Unloading frontmatter sorter manager");
-    }
+	protected onModuleUnload(): void {
+		this.logger.info("Unloading frontmatter sorter manager");
+	}
 
-    protected onModuleCleanup(): void {
-        this.eventRefs.forEach(ref => ref());
-        this.eventRefs = [];
-        this.processing = false;
-    }
+	protected onModuleCleanup(): void {
+		this.eventRefs.forEach((ref) => ref());
+		this.eventRefs = [];
+		this.processing = false;
+	}
 
-    protected onDisable(): void {
-        this.unregisterEvents();
-    }
+	protected onDisable(): void {
+		this.unregisterEvents();
+	}
 
-    private initializeServices(): void {
-        this.parser = new FrontMatterParser(this.logger);
-        this.sorter = new FrontMatterSorter(this.config.rules);
-        this.writer = new FrontMatterWriter(this.config.rules, this.logger);
-    }
+	private initializeServices(): void {
+		this.parser = new FrontMatterParser(this.logger);
+		this.sorter = new FrontMatterSorter(this.config.rules);
+		this.writer = new FrontMatterWriter(this.config.rules, this.logger);
+	}
 
-    private validateConfig(): void {
-        if (!this.config) {
-            this.logger.throwError(new Error('Configuration is missing'));
-        }
-        
-        this.config.ignoreFolders = Array.isArray(this.config.ignoreFolders) ? this.config.ignoreFolders : [];
-        this.config.ignoreFiles = Array.isArray(this.config.ignoreFiles) ? this.config.ignoreFiles : [];
-        this.config.rules = this.config.rules || FRONTMATTER_SORTER_DEFAULT_CONFIG.rules;
-    }
+	private validateConfig(): void {
+		if (!this.config) {
+			this.logger.throwError(new Error("Configuration is missing"));
+		}
 
-    private registerCommands(): void {
-        this.addCommand({
-            id: 'sort-frontmatter',
-            name: this.t('toolkit.frontmatterSorter.command.sortCurrentFile'),
-            callback: () => this.sortCurrentFileFrontmatter(),
-            // hotkeys: [{ modifiers: ['Ctrl', 'Shift'], key: 'S' }]
-        });
+		this.config.ignoreFolders = Array.isArray(this.config.ignoreFolders)
+			? this.config.ignoreFolders
+			: [];
+		this.config.ignoreFiles = Array.isArray(this.config.ignoreFiles)
+			? this.config.ignoreFiles
+			: [];
+		this.config.rules =
+			this.config.rules || FRONTMATTER_SORTER_DEFAULT_CONFIG.rules;
+	}
 
-        this.addCommand({
-            id: 'sort-all-frontmatter',
-            name: this.t('toolkit.frontmatterSorter.command.sortAllFiles'),
-            callback: () => this.sortAllFrontmatter()
-        });
-    }
+	private registerCommands(): void {
+		this.addCommand({
+			id: "sort-frontmatter",
+			name: this.t("toolkit.frontmatterSorter.command.sortCurrentFile"),
+			callback: () => this.sortCurrentFileFrontmatter(),
+			// hotkeys: [{ modifiers: ['Ctrl', 'Shift'], key: 'S' }]
+		});
 
-    protected registerEventHandlers(): void {
-        this.unregisterEvents();
+		this.addCommand({
+			id: "sort-all-frontmatter",
+			name: this.t("toolkit.frontmatterSorter.command.sortAllFiles"),
+			callback: () => this.sortAllFrontmatter(),
+		});
+	}
 
-        if (!this.isPluginEnabled() || !this.isEnabled()) {
-            return;
-        }
+	protected registerEventHandlers(): void {
+		this.unregisterEvents();
 
-        if (this.config.sortOnSave) {
-            this.eventRefs.push(
-                this.registerEvent(
-                    // this.app.vault.on('modify', this.handleFileModify.bind(this))
-                    this.app.metadataCache.on('changed', this.handleFileModify.bind(this))
-                )
-            );
-            this.logger.debug('Registered auto-sort on save handler');
-        }
-    }
+		if (!this.isPluginEnabled() || !this.isEnabled()) {
+			return;
+		}
 
-    private async handleFileModify(file: TFile): Promise<void> {
-        if (!this.isPluginEnabled() || !this.isEnabled()) {
-            this.unregisterEvents();
-            return;
-        }
+		if (this.config.sortOnSave) {
+			this.eventRefs.push(
+				this.registerEvent(
+					// this.app.vault.on('modify', this.handleFileModify.bind(this))
+					this.app.metadataCache.on(
+						"changed",
+						this.handleFileModify.bind(this)
+					)
+				)
+			);
+			this.logger.debug("Registered auto-sort on save handler");
+		}
+	}
 
-        if (!this.config.sortOnSave) {
-            this.logger.debug('Sort on save is disabled, ignoring file modification');
-            return;
-        }
+	private async handleFileModify(file: TFile): Promise<void> {
+		if (!this.isPluginEnabled() || !this.isEnabled()) {
+			this.unregisterEvents();
+			return;
+		}
 
-        if (this.processing) return;
-        if (!(file instanceof TFile)) return;
-        
-        const activeFile = this.app.workspace.getActiveFile();
-        if (!activeFile || activeFile.path !== file.path) return;
-        
-        if (!this.shouldProcessFile(file)) {
-            this.logger.debug(`File ${file.path} ${this.getIgnoreReason(file)}, skipped auto-sorting`);
-            return;
-        }
+		if (!this.config.sortOnSave) {
+			this.logger.debug(
+				"Sort on save is disabled, ignoring file modification"
+			);
+			return;
+		}
 
-        await this.sortFile(file);
-    }
+		if (this.processing) return;
+		if (!(file instanceof TFile)) return;
 
-    private async sortCurrentFileFrontmatter(): Promise<void> {
-        const activeFile = this.app.workspace.getActiveFile();
-        if (!activeFile) return;
+		const activeFile = this.app.workspace.getActiveFile();
+		if (!activeFile || activeFile.path !== file.path) return;
 
-        if (!this.shouldProcessFile(activeFile)) {
-            this.logger.notice(
-                this.t('toolkit.frontmatterSorter.notice.file_ignored', [
-                    activeFile.path,
-                    this.getIgnoreReason(activeFile)
-                ])
-            );
-            return;
-        }
+		if (!this.shouldProcessFile(file)) {
+			this.logger.debug(
+				`File ${file.path} ${this.getIgnoreReason(
+					file
+				)}, skipped auto-sorting`
+			);
+			return;
+		}
 
-        await this.sortFile(activeFile);
-    }
+		await this.sortFile(file);
+	}
 
-    private async sortAllFrontmatter(): Promise<void> {
-        const confirmed = await new Promise<boolean>(resolve => {
-            const modal = new Modal(this.app);
-            modal.titleEl.setText(this.t('toolkit.frontmatterSorter.notice.confirm_sort_all.title'));
-            modal.contentEl.setText(this.t('toolkit.frontmatterSorter.notice.confirm_sort_all.message'));
-            
-            modal.contentEl.createDiv({ cls: "modal-button-container" }, (buttonContainer) => {
-                buttonContainer
-                    .createEl("button", { text: this.t('common.confirm') })
-                    .addEventListener("click", () => {
-                        modal.close();
-                        resolve(true);
-                    });
-                
-                buttonContainer
-                    .createEl("button", { text: this.t('common.cancel') })
-                    .addEventListener("click", () => {
-                        modal.close();
-                        resolve(false);
-                    });
-            });
+	private async sortCurrentFileFrontmatter(): Promise<void> {
+		const activeFile = this.app.workspace.getActiveFile();
+		if (!activeFile) return;
 
-            modal.open();
-        });
+		if (!this.shouldProcessFile(activeFile)) {
+			this.logger.notice(
+				this.t("toolkit.frontmatterSorter.notice.file_ignored", [
+					activeFile.path,
+					this.getIgnoreReason(activeFile),
+				])
+			);
+			return;
+		}
 
-        if (!confirmed) return;
+		await this.sortFile(activeFile);
+	}
 
-        const files = this.app.vault.getMarkdownFiles();
-        const batchSize = 5;
-        
-        let sortedCount = 0;
-        let skippedCount = 0;
-        const skippedFiles: string[] = [];
+	private async sortAllFrontmatter(): Promise<void> {
+		const confirmed = await new Promise<boolean>((resolve) => {
+			const modal = new Modal(this.app);
+			modal.titleEl.setText(
+				this.t(
+					"toolkit.frontmatterSorter.notice.confirm_sort_all.title"
+				)
+			);
+			modal.contentEl.setText(
+				this.t(
+					"toolkit.frontmatterSorter.notice.confirm_sort_all.message"
+				)
+			);
 
-        if (this.processing) return;
+			modal.contentEl.createDiv(
+				{ cls: "modal-button-container" },
+				(buttonContainer) => {
+					buttonContainer
+						.createEl("button", { text: this.t("common.confirm") })
+						.addEventListener("click", () => {
+							modal.close();
+							resolve(true);
+						});
 
-        try {
-            this.processing = true;
-            
-            for (let i = 0; i < files.length; i += batchSize) {
-                const batch = files.slice(i, i + batchSize);
-                const results = await Promise.all(
-                    batch.map(async file => {
-                        if (!this.shouldProcessFile(file)) {
-                            skippedFiles.push(`${file.path} (${this.getIgnoreReason(file)})`);
-                            return false;
-                        }
-                        return this.sortFile(file, true);
-                    })
-                );
-                
-                sortedCount += results.filter(Boolean).length;
-                skippedCount += results.filter(r => r === false).length;
-            }
+					buttonContainer
+						.createEl("button", { text: this.t("common.cancel") })
+						.addEventListener("click", () => {
+							modal.close();
+							resolve(false);
+						});
+				}
+			);
 
-            this.logger.notice(
-                `${this.t('toolkit.frontmatterSorter.notice.sort_complete', [sortedCount, skippedCount])}\n` +
-                this.t('toolkit.frontmatterSorter.notice.check_console')
-            );
+			modal.open();
+		});
 
-            if (skippedFiles.length > 0) {
-                this.logger.info(
-                    this.t('toolkit.frontmatterSorter.notice.sort_details', [
-                        sortedCount,
-                        skippedCount,
-                        skippedFiles.join('\n  ')
-                    ])
-                );
-            }
-        } finally {
-            this.processing = false;
-        }
-    }
+		if (!confirmed) return;
 
-    private getIgnoreReason(file: TFile): string {
-        const ignoredFolder = this.config.ignoreFolders.find(folder => {
-            const normalizedFolder = folder.endsWith('/') ? folder : folder + '/';
-            return file.path.startsWith(normalizedFolder);
-        });
-        if (ignoredFolder) {
-            return this.t('toolkit.frontmatterSorter.notice.ignore_folder', [ignoredFolder]);
-        }
+		const files = this.app.vault.getMarkdownFiles();
+		const batchSize = 5;
 
-        const ignoredPattern = this.config.ignoreFiles.find(pattern => {
-            try {
-                return minimatch(file.path, pattern, { matchBase: true });
-            } catch (error) {
-                return false;
-            }
-        });
-        if (ignoredPattern) {
-            return this.t('toolkit.frontmatterSorter.notice.ignore_pattern', [ignoredPattern]);
-        }
-        return this.t('toolkit.frontmatterSorter.notice.ignore_unknown');
-    }
+		let sortedCount = 0;
+		let skippedCount = 0;
+		const skippedFiles: string[] = [];
 
-    private async sortFile(file: TFile, skipProcessingCheck = false): Promise<boolean> {
-        if (!skipProcessingCheck && this.processing) return false;
+		if (this.processing) return;
 
-        try {
-            if (!skipProcessingCheck) {
-                this.processing = true;
-            }
-            
-            const content = await this.app.vault.read(file);
-            const parsed = this.parser.parse(content);
-            this.logger.debug('Parsed frontmatter:', parsed);
-            if (!parsed) return false;
+		try {
+			this.processing = true;
 
-            const sorted = this.sorter.sort(parsed.entries);
-            this.logger.debug('sorted frontmatter:', sorted);
-            const newContent = this.writer.generateContent(sorted, parsed, content);
-            this.logger.debug('newContent:\n', newContent);
+			for (let i = 0; i < files.length; i += batchSize) {
+				const batch = files.slice(i, i + batchSize);
+				const results = await Promise.all(
+					batch.map(async (file) => {
+						if (!this.shouldProcessFile(file)) {
+							skippedFiles.push(
+								`${file.path} (${this.getIgnoreReason(file)})`
+							);
+							return false;
+						}
+						return this.sortFile(file, true);
+					})
+				);
 
-            if (content !== newContent) {
-                await this.app.vault.modify(file, newContent);
-                this.logger.notice(
-                    this.t('toolkit.frontmatterSorter.notice.file_sorted', [file.path])
-                );
-                return true;
-            }
-            return false;
-        } catch (error) {
-            this.logger.error(`Error sorting frontmatter in ${file.path}:`, error);
-            return false;
-        } finally {
-            if (!skipProcessingCheck) {
-                this.processing = false;
-            }
-        }
-    }
+				sortedCount += results.filter(Boolean).length;
+				skippedCount += results.filter((r) => r === false).length;
+			}
 
-    private shouldProcessFile(file: TFile): boolean {
-        if (!file || file.extension !== 'md') return false;
+			this.logger.notice(
+				`${this.t("toolkit.frontmatterSorter.notice.sort_complete", [
+					sortedCount,
+					skippedCount,
+				])}\n` +
+					this.t("toolkit.frontmatterSorter.notice.check_console")
+			);
 
-        const isIgnoredFolder = this.config.ignoreFolders.some(folder => {
-            const normalizedFolder = folder.endsWith('/') ? folder : folder + '/';
-            return file.path.startsWith(normalizedFolder);
-        });
-        
-        const isIgnoredFile = this.config.ignoreFiles.some(pattern => { 
-            try {
-                return minimatch(file.path, pattern, { matchBase: true });
-            } catch (error) {
-                this.logger.error(`Invalid ignore pattern: ${pattern}`, error);
-                return false;
-            }
-        });
+			if (skippedFiles.length > 0) {
+				this.logger.info(
+					this.t("toolkit.frontmatterSorter.notice.sort_details", [
+						sortedCount,
+						skippedCount,
+						skippedFiles.join("\n  "),
+					])
+				);
+			}
+		} finally {
+			this.processing = false;
+		}
+	}
 
-        return !isIgnoredFolder && !isIgnoredFile;
-    }
+	private getIgnoreReason(file: TFile): string {
+		const ignoredFolder = this.config.ignoreFolders.find((folder) => {
+			const normalizedFolder = folder.endsWith("/")
+				? folder
+				: folder + "/";
+			return file.path.startsWith(normalizedFolder);
+		});
+		if (ignoredFolder) {
+			return this.t("toolkit.frontmatterSorter.notice.ignore_folder", [
+				ignoredFolder,
+			]);
+		}
 
-    protected onConfigChange(): void {
-        this.logger.debug('Config changed:', {
-            sortOnSave: this.config.sortOnSave,
-            rules: this.config.rules,
-            fullConfig: this.config
-        });
-        
-        // 更新服务实例以使用新的规则
-        this.sorter = new FrontMatterSorter(this.config.rules);
-        this.writer = new FrontMatterWriter(this.config.rules, this.logger);
-        
-        // 重新注册事件处理器
-        this.eventRefs.forEach(ref => ref());
-        this.eventRefs = [];
-        this.registerEventHandlers();
-    }
+		const ignoredPattern = this.config.ignoreFiles.find((pattern) => {
+			try {
+				return minimatch(file.path, pattern, { matchBase: true });
+			} catch (error) {
+				return false;
+			}
+		});
+		if (ignoredPattern) {
+			return this.t("toolkit.frontmatterSorter.notice.ignore_pattern", [
+				ignoredPattern,
+			]);
+		}
+		return this.t("toolkit.frontmatterSorter.notice.ignore_unknown");
+	}
+
+	private async sortFile(
+		file: TFile,
+		skipProcessingCheck = false
+	): Promise<boolean> {
+		if (!skipProcessingCheck && this.processing) return false;
+
+		try {
+			if (!skipProcessingCheck) {
+				this.processing = true;
+			}
+
+			const content = await this.app.vault.read(file);
+			const parsed = this.parser.parse(content);
+			this.logger.debug("Parsed frontmatter:", parsed);
+			if (!parsed) return false;
+
+			const sorted = this.sorter.sort(parsed.entries);
+			this.logger.debug("sorted frontmatter:", sorted);
+			const newContent = this.writer.generateContent(
+				sorted,
+				parsed,
+				content
+			);
+			this.logger.debug("newContent:\n", newContent);
+
+			if (content !== newContent) {
+				await this.app.vault.modify(file, newContent);
+				this.logger.notice(
+					this.t("toolkit.frontmatterSorter.notice.file_sorted", [
+						file.path,
+					])
+				);
+				return true;
+			}
+			return false;
+		} catch (error) {
+			this.logger.error(
+				`Error sorting frontmatter in ${file.path}:`,
+				error
+			);
+			return false;
+		} finally {
+			if (!skipProcessingCheck) {
+				this.processing = false;
+			}
+		}
+	}
+
+	private shouldProcessFile(file: TFile): boolean {
+		if (!file || file.extension !== "md") return false;
+
+		const isIgnoredFolder = this.config.ignoreFolders.some((folder) => {
+			const normalizedFolder = folder.endsWith("/")
+				? folder
+				: folder + "/";
+			return file.path.startsWith(normalizedFolder);
+		});
+
+		const isIgnoredFile = this.config.ignoreFiles.some((pattern) => {
+			try {
+				return minimatch(file.path, pattern, { matchBase: true });
+			} catch (error) {
+				this.logger.error(`Invalid ignore pattern: ${pattern}`, error);
+				return false;
+			}
+		});
+
+		return !isIgnoredFolder && !isIgnoredFile;
+	}
+
+	protected onConfigChange(): void {
+		this.logger.debug("Config changed:", {
+			sortOnSave: this.config.sortOnSave,
+			rules: this.config.rules,
+			fullConfig: this.config,
+		});
+
+		// 更新服务实例以使用新的规则
+		this.sorter = new FrontMatterSorter(this.config.rules);
+		this.writer = new FrontMatterWriter(this.config.rules, this.logger);
+
+		// 重新注册事件处理器
+		this.eventRefs.forEach((ref) => ref());
+		this.eventRefs = [];
+		this.registerEventHandlers();
+	}
 }

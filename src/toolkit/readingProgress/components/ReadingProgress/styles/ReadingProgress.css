@@ -1,393 +1,334 @@
 .rht-reading-progress-container {
-    position: fixed;
-    top: 20%;
-    height: auto;
-    max-height: 60vh;
-    display: flex;
-    flex-direction: column;
-    z-index: var(--layer-popover);
+	position: fixed;
+	top: 20%;
+	height: auto;
+	max-height: 60vh;
+	display: flex;
+	flex-direction: column;
+	z-index: var(--layer-popover);
 }
 
 .rht-reading-progress-container.rht-position-right {
-    left: auto;
+	left: auto;
 }
 
 .rht-reading-progress-container.rht-position-left {
-    right: auto;
+	right: auto;
 }
 
 .rht-toc-group {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
 }
 
 .rht-toc-group.rht-hidden {
-    display: none !important;
+	display: none !important;
 }
 
 .rht-indicators {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 4px 14px;
-    background: transparent;
-    border-radius: 4px;
-    height: var(--toc-height);
-    max-height: 55vh;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 4px 14px;
+	background: transparent;
+	border-radius: 4px;
+	height: var(--toc-height);
+	max-height: 55vh;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
 }
 
 .rht-indicators::-webkit-scrollbar {
-    display: none;
+	display: none;
 }
 
 .rht-toc-group:has(.rht-toc-list.rht-expanded) .rht-indicators {
-    visibility: hidden;
+	visibility: hidden;
 }
 
 .rht-toc-item-indicator {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--background-modifier-border);
-    transition: background-color 0.2s ease;
-    margin: 8px 0;
-    flex-shrink: 0;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: var(--background-modifier-border);
+	transition: background-color 0.2s ease;
+	margin: 8px 0;
+	flex-shrink: 0;
 }
 
 .rht-toc-item-indicator[data-active="true"] {
-    background: var(--interactive-accent);
+	background: var(--interactive-accent);
 }
 
 .rht-toc-list {
-    position: absolute;
-    top: 0;  
-    visibility: hidden;
-    opacity: 0;
-    min-width: 10vw; /* 基础保护 */
-    max-width: 80vw; /* 最大宽度限制 */
-    transition: all 0.2s ease;
-    padding: 8px 0;
+	position: absolute;
+	top: 0;
+	visibility: hidden;
+	opacity: 0;
+	min-width: 10vw; /* 基础保护 */
+	max-width: 80vw; /* 最大宽度限制 */
+	transition: all 0.2s ease;
+	padding: 8px 0;
 }
 
 .rht-toc-content {
-    background: var(--background-primary);
-    border-radius: 4px;
-    box-shadow: var(--shadow-s);
-    max-height: 55vh;
-    overflow-y: auto;
-    overscroll-behavior: contain;
+	background: var(--background-primary);
+	border-radius: 4px;
+	box-shadow: var(--shadow-s);
+	max-height: 55vh;
+	overflow-y: auto;
+	overscroll-behavior: contain;
 }
 
 .rht-toc-progress-bar {
-    position: sticky;
-    height: 2px;
-    background-color: var(--interactive-accent);
-    top: 0;
-    transition: width 0.3s ease-out;
-    border-radius: 4px;
+	position: sticky;
+	height: 4px;
+	background-color: var(--interactive-accent);
+	top: 0;
+	transition: width 0.3s ease-out;
+	border-radius: 4px;
 }
 
 .rht-toc-list.rht-expanded {
-    opacity: 1;
-    visibility: visible;
+	opacity: 1;
+	visibility: visible;
 }
 
 .rht-toc-resize-handle {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    cursor: ew-resize;
-    background: transparent;
-    transition: background-color 150ms ease;
-    z-index: 1;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 4px;
+	cursor: ew-resize;
+	background: transparent;
+	transition: background-color 150ms ease;
+	z-index: 1;
 }
 
 .rht-position-right .rht-toc-resize-handle {
-    left: 0;
+	left: 0;
 }
 
 .rht-position-left .rht-toc-resize-handle {
-    right: 0;
+	right: 0;
 }
 
 .rht-toc-resize-handle:hover {
-    background-color: var(--interactive-accent);
+	background-color: var(--interactive-accent);
 }
 
 .rht-toc-toolbar {
-    position: absolute;
-    top: -30px;
-    display: flex;
-    gap: 4px;
-    padding: 8px;
-    justify-content: center;
-    background-color: var(--background-secondary);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    opacity: 0;
-    transition: opacity 150ms ease;
+	position: absolute;
+	top: -30px;
+	display: flex;
+	gap: 4px;
+	padding: 8px;
+	justify-content: center;
+	background-color: var(--background-secondary);
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	opacity: 0;
+	transition: opacity 150ms ease;
 }
 
 /* 解决primary主题按钮图标消失问题 */
 .rht-toc-toolbar button {
-    padding: unset !important;
+	padding: unset !important;
 }
 
 .rht-toc-list:hover .rht-toc-toolbar {
-    opacity: 1;
+	opacity: 1;
 }
 
 .rht-toc-toolbar-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border: none;
-    border-radius: 4px;
-    background-color: transparent;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 150ms ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	border: none;
+	border-radius: 4px;
+	background-color: transparent;
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: all 150ms ease;
 }
 
 .rht-toc-toolbar-btn.active,
 .rht-toc-toolbar-btn[data-action="copy"].success {
-    color: var(--interactive-accent);
+	color: var(--interactive-accent);
 }
 
 .rht-position-right .rht-toc-list {
-    right: 0;
-    left: auto;
-    margin-right: 8px;
-    transform: translateX(8px);
+	right: 0;
+	left: auto;
+	margin-right: 8px;
+	transform: translateX(8px);
 }
 
 .rht-position-left .rht-toc-list {
-    left: 0;
-    right: auto;
-    margin-left: 8px;
-    transform: translateX(-8px);
+	left: 0;
+	right: auto;
+	margin-left: 8px;
+	transform: translateX(-8px);
 }
 
 .rht-toc-list::-webkit-scrollbar {
-    width: 6px;
+	width: 6px;
 }
 
 .rht-toc-list::-webkit-scrollbar-track {
-    background: transparent;
+	background: transparent;
 }
 
 .rht-toc-list::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb-bg);
-    border-radius: 3px;
+	background-color: var(--scrollbar-thumb-bg);
+	border-radius: 3px;
 }
 
 .rht-toc-list[data-state="open"] {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(0);
+	opacity: 1;
+	visibility: visible;
+	transform: translateX(0);
 }
 
 .rht-toc-item {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 8px 16px;
-    font-size: 13px;
-    color: var(--text-normal);
-    cursor: pointer;
-    line-height: 1.4;
-    min-height: 28px;
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 8px 16px;
+	font-size: 13px;
+	color: var(--text-normal);
+	cursor: pointer;
+	line-height: 1.4;
+	min-height: 28px;
 }
 
 .rht-toc-item[data-depth="1"] {
-    padding-left: 16px;
-    font-weight: 600;
+	padding-left: 16px;
+	font-weight: 600;
 }
 
 .rht-toc-item[data-depth="2"] {
-    padding-left: 24px;
-    font-weight: 500;
+	padding-left: 24px;
+	font-weight: 500;
 }
 
 .rht-toc-item[data-depth="3"] {
-    padding-left: 32px;
-    font-weight: 400;
+	padding-left: 32px;
+	font-weight: 400;
 }
 
 .rht-toc-item[data-depth="4"] {
-    padding-left: 40px;
-    font-weight: 400;
-    font-size: 12px;
+	padding-left: 40px;
+	font-weight: 400;
+	font-size: 12px;
 }
 
 .rht-toc-item[data-depth="5"] {
-    padding-left: 48px;
-    font-weight: 400;
-    font-size: 12px;
+	padding-left: 48px;
+	font-weight: 400;
+	font-size: 12px;
 }
 
 .rht-toc-item[data-depth="6"] {
-    padding-left: 56px;
-    font-weight: 400;
-    font-size: 12px;
+	padding-left: 56px;
+	font-weight: 400;
+	font-size: 12px;
 }
 
 .rht-toc-item-level {
-    flex-shrink: 0;
-    color: var(--text-muted);
-    font-size: 11px;
-    font-weight: 500;
-    padding: 2px 4px;
-    border-radius: 4px;
-    background: var(--background-modifier-hover);
+	flex-shrink: 0;
+	color: var(--text-muted);
+	font-size: 11px;
+	font-weight: 500;
+	padding: 2px 4px;
+	border-radius: 4px;
+	background: var(--background-modifier-hover);
 }
 
 .rht-toc-item-text {
-    flex: 1;
-    overflow-wrap: break-word;
-    word-break: break-word;
-    white-space: normal;
-    text-align: left;
-    margin-right: 8px;
-    max-width: calc(100% - 40px);
+	flex: 1;
+	overflow-wrap: break-word;
+	word-break: break-word;
+	white-space: normal;
+	text-align: left;
+	margin-right: 8px;
+	max-width: calc(100% - 40px);
 }
 
 .rht-toc-item:hover {
-    background: var(--background-modifier-hover);
+	background: var(--background-modifier-hover);
 }
 
 .rht-toc-item[data-active="true"] {
-    color: var(--interactive-accent);
-    background: var(--background-modifier-hover);
+	color: var(--interactive-accent);
+	background: var(--background-modifier-hover);
 }
 
 .rht-toc-item[data-active="true"] .rht-toc-item-level {
-    background: var(--interactive-accent);
-    color: var(--text-on-accent);
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
 }
 
 .rht-progress-indicator {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border-radius: 4px;
-    margin-top: 8px;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border-radius: 4px;
+	margin-top: 8px;
 }
 
 .rht-progress-ring-container {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .rht-progress-ring {
-    display: block;
+	display: block;
 }
 
 .rht-progress-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 11px;
-    color: var(--text-muted);
-    font-weight: 500;
-    user-select: none;
-    line-height: 1;
-    white-space: nowrap;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 11px;
+	color: var(--text-muted);
+	font-weight: 500;
+	user-select: none;
+	line-height: 1;
+	white-space: nowrap;
 }
 
 .rht-return {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
 
 .rht-return-btn {
-    margin-top: 8px;
-    border: none;
-    background-color: transparent;
-    color: var(--text-muted);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+	margin-top: 8px;
+	border: none;
+	background-color: transparent;
+	color: var(--text-muted);
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.2s ease;
 }
 
 .rht-return-btn:hover {
-    background-color: var(--background-modifier-hover);
-    color: var(--text-normal);
-}
-
-/* 阅读时间卡片主题样式 */
-.rht-reading-time-card {
-    position: relative;
-    transition: all 0.2s ease;
-    margin: 1em 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.rht-reading-time-text-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.rht-reading-time-icon {
-    display: inline-flex;
-    align-items: center;
-    color: var(--text-muted);
-}
-.rht-reading-time-icon svg {
-    width: 16px;
-    height: 16px;
-}
-
-/* 统计信息样式 */
-.rht-reading-time-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid var(--background-modifier-border);
-    font-size: 0.85em;
-    color: var(--text-muted);
-}
-.rht-reading-time-stat-item {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-/* 响应式设计 */
-@media screen and (max-width: 768px) {
-    .rht-reading-time-card {
-      margin: 0.5em 0;
-    }
-    
-    .rht-reading-time-content {
-      padding: 8px 12px;
-    }
-    
-    .rht-reading-time-stats {
-      flex-direction: column;
-      align-items: flex-start;
-    }
+	background-color: var(--background-modifier-hover);
+	color: var(--text-normal);
 }

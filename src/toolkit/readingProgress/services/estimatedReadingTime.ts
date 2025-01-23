@@ -1,295 +1,363 @@
 import { t } from "@/src/i18n/i18n";
-import { App, MarkdownPostProcessorContext, MarkdownPreviewRenderer } from "obsidian";
+import {
+	App,
+	MarkdownPostProcessorContext,
+	MarkdownPreviewRenderer,
+} from "obsidian";
+import "./ReadingTime.css";
 
 export interface ReadingTimeConfig {
-  // 基础配置
-  chineseWordsPerMinute?: number;
-  englishWordsPerMinute?: number;
-  removeCodeBlocks?: boolean;
-  removeWikiLinks?: boolean;
-  removeImageLinks?: boolean;
-  removeNormalLinks?: boolean;
+	// 基础配置
+	chineseWordsPerMinute?: number;
+	englishWordsPerMinute?: number;
+	removeCodeBlocks?: boolean;
+	removeWikiLinks?: boolean;
+	removeImageLinks?: boolean;
+	removeNormalLinks?: boolean;
 
-  // 显示配置
-  template?: string;
-  showWordCount?: boolean;
-  showIcon?: boolean;
-  showRange?: boolean;
-  
-  // 样式配置
-  style?: {
-    color?: string;
-    backgroundColor?: string;
-    borderRadius?: string;
-    padding?: string;
-    fontSize?: string;
-    fontWeight?: string;
-    boxShadow?: string;
-    border?: string;
-    width?: string;
-    maxWidth?: string;
-    margin?: string;
-  };
+	// 显示配置
+	template?: string;
+	showWordCount?: boolean;
+	showIcon?: boolean;
+	showRange?: boolean;
+
+	// 样式配置
+	style?: {
+		color?: string;
+		backgroundColor?: string;
+		borderRadius?: string;
+		padding?: string;
+		fontSize?: string;
+		fontWeight?: string;
+		boxShadow?: string;
+		border?: string;
+		width?: string;
+		maxWidth?: string;
+		margin?: string;
+	};
 }
 
 export class EstimatedReadingTime {
-  private static app: App;
-  
-  // 默认配置
-  private static readonly DEFAULT_CONFIG: ReadingTimeConfig = {
-    chineseWordsPerMinute: 300,    // 中文阅读速度：每分钟300字
-    englishWordsPerMinute: 200,    // 英文阅读速度：每分钟200词
-    removeCodeBlocks: true,        // 默认移除代码块
-    removeWikiLinks: false,        // 默认保留Wiki链接
-    removeImageLinks: true,        // 默认移除图片链接
-    removeNormalLinks: false,       // 默认保留普通链接
+	private static app: App;
 
-    template: `${t("toolkit.readingProgress.estimatedReadingTime.template")}`,
-    showWordCount: true,
-    showIcon: true,
-    showRange: false,
+	// 默认配置
+	private static readonly DEFAULT_CONFIG: ReadingTimeConfig = {
+		chineseWordsPerMinute: 300, // 中文阅读速度：每分钟300字
+		englishWordsPerMinute: 200, // 英文阅读速度：每分钟200词
+		removeCodeBlocks: true, // 默认移除代码块
+		removeWikiLinks: false, // 默认保留Wiki链接
+		removeImageLinks: true, // 默认移除图片链接
+		removeNormalLinks: false, // 默认保留普通链接
 
-    style: {
-      color: "var(--text-normal)",
-      backgroundColor: "var(--background-secondary)",
-      borderRadius: "8px",
-      padding: "12px 16px",
-      fontSize: '0.95em',
-      fontWeight: 'normal',
-      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-      border: "1px solid var(--background-modifier-border)",
-      width: 'auto',
-      maxWidth: '100%',
-      margin: '1em 0',
-    },
-  };
+		template: `${t(
+			"toolkit.readingProgress.estimatedReadingTime.template"
+		)}`,
+		showWordCount: true,
+		showIcon: true,
+		showRange: false,
 
-  public static setApp(app: App) {
-    this.app = app;
-  }
+		style: {
+			color: "var(--text-normal)",
+			backgroundColor: "var(--background-secondary)",
+			borderRadius: "8px",
+			padding: "12px 16px",
+			fontSize: "0.95em",
+			fontWeight: "normal",
+			boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+			border: "1px solid var(--background-modifier-border)",
+			width: "auto",
+			maxWidth: "100%",
+			margin: "1em 0",
+		},
+	};
 
-  /**
-   * 注册 Markdown Post Processor 处理器
-   */
-  public static registerPostProcessor(): void {
-    MarkdownPreviewRenderer.registerPostProcessor(
-      MarkdownPreviewRenderer.createCodeBlockPostProcessor(
-        "rht-reading-time",
-        async (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-          try {
-            // 清理源代码
-            const cleanSource = source.trim();
-            let config = {};
-            
-            if (cleanSource) {
-              // 使用 Function 构造器来解析 JavaScript 对象字面量
-              // 这样可以支持不带引号的属性名和尾随逗号
-              try {
-                config = new Function(`return (${cleanSource})`)();
-              } catch (parseError) {
-                // 如果对象字面量解析失败，尝试 JSON.parse 作为后备
-                try {
-                  config = JSON.parse(cleanSource);
-                } catch (jsonError) {
-                  throw new Error(t("toolkit.readingProgress.estimatedReadingTime.error.message"));
-                }
-              }
-            }
-            
-            const container = el.createEl("div");
-            await EstimatedReadingTime.calculateReadingTime(container, config);
-          } catch (error) {
-            el.setText(t("toolkit.readingProgress.estimatedReadingTime.error.message"));
-          }
-        }
-      )
-    );
-  }
+	public static setApp(app: App) {
+		this.app = app;
+	}
 
-  /**
-   * 获取中英文单词数
-   */
-  private static getWordCounts(content: string): { chineseCount: number, englishCount: number } {
-    // 提取所有中文字符
-    const chineseChars = content.match(/[\u4e00-\u9fff]/g) || [];
-    // 移除所有中文字符后，按空格分词计算英文单词
-    const englishContent = content
-      .replace(/[\u4e00-\u9fff]/g, '')  // 移除中文字符
-      .replace(/[\p{P}]/gu, ' ')        // 将标点替换为空格
-      .trim();
+	/**
+	 * 注册 Markdown Post Processor 处理器
+	 */
+	public static registerPostProcessor(): void {
+		MarkdownPreviewRenderer.registerPostProcessor(
+			MarkdownPreviewRenderer.createCodeBlockPostProcessor(
+				"rht-reading-time",
+				async (
+					source: string,
+					el: HTMLElement,
+					ctx: MarkdownPostProcessorContext
+				) => {
+					try {
+						// 清理源代码
+						const cleanSource = source.trim();
+						let config = {};
 
-    const englishWords = englishContent
-      .split(/\s+/)
-      .filter(Boolean);
+						if (cleanSource) {
+							// 使用 Function 构造器来解析 JavaScript 对象字面量
+							// 这样可以支持不带引号的属性名和尾随逗号
+							try {
+								config = new Function(
+									`return (${cleanSource})`
+								)();
+							} catch (parseError) {
+								// 如果对象字面量解析失败，尝试 JSON.parse 作为后备
+								try {
+									config = JSON.parse(cleanSource);
+								} catch (jsonError) {
+									throw new Error(
+										t(
+											"toolkit.readingProgress.estimatedReadingTime.error.message"
+										)
+									);
+								}
+							}
+						}
 
-    return {
-      chineseCount: chineseChars.length,
-      englishCount: englishWords.length
-    };
-  }
+						const container = el.createEl("div");
+						await EstimatedReadingTime.calculateReadingTime(
+							container,
+							config
+						);
+					} catch (error) {
+						el.setText(
+							t(
+								"toolkit.readingProgress.estimatedReadingTime.error.message"
+							)
+						);
+					}
+				}
+			)
+		);
+	}
 
-  /**
-   * 根据配置清理内容
-   */
-  private static cleanContentWithConfig(content: string, config?: ReadingTimeConfig): string {
-    let cleanedContent = content
-      .replace(/---[\s\S]*?---/, '')      // 移除 front matter
-      .trim();
+	/**
+	 * 获取中英文单词数
+	 */
+	private static getWordCounts(content: string): {
+		chineseCount: number;
+		englishCount: number;
+	} {
+		// 提取所有中文字符
+		const chineseChars = content.match(/[\u4e00-\u9fff]/g) || [];
+		// 移除所有中文字符后，按空格分词计算英文单词
+		const englishContent = content
+			.replace(/[\u4e00-\u9fff]/g, "") // 移除中文字符
+			.replace(/[\p{P}]/gu, " ") // 将标点替换为空格
+			.trim();
 
-    if (config?.removeCodeBlocks) {
-      cleanedContent = cleanedContent.replace(/```[\s\S]*?```/g, '');
-    }
-    if (config?.removeWikiLinks) {
-      cleanedContent = cleanedContent.replace(/\[\[.*?\]\]/g, '');
-    }
-    if (config?.removeImageLinks) {
-      cleanedContent = cleanedContent.replace(/!\[\[.*?\]\]/g, '');
-    }
-    if (config?.removeNormalLinks) {
-      cleanedContent = cleanedContent.replace(/\[.*?\]\(.*?\)/g, '');
-    }
+		const englishWords = englishContent.split(/\s+/).filter(Boolean);
 
-    return cleanedContent;
-  }
+		return {
+			chineseCount: chineseChars.length,
+			englishCount: englishWords.length,
+		};
+	}
 
-  /**
-   * 美化显示阅读时间
-   */
-  private static formatReadingTime(minutes: number): string {
-    if (minutes < 1) {
-      return t("toolkit.readingProgress.estimatedReadingTime.formatReadingTime.lessThanOneMinute");
-    } else if (minutes < 60) {
-      return t("toolkit.readingProgress.estimatedReadingTime.formatReadingTime.lessThanOneHour", [Math.ceil(minutes)]);
-    } else {
-      const hours = Math.floor(minutes / 60);
-      const remainingMinutes = Math.ceil(minutes % 60);
-      return t("toolkit.readingProgress.estimatedReadingTime.formatReadingTime.moreThanOneHour", [hours, remainingMinutes]);
-    }
-  }
+	/**
+	 * 根据配置清理内容
+	 */
+	private static cleanContentWithConfig(
+		content: string,
+		config?: ReadingTimeConfig
+	): string {
+		let cleanedContent = content
+			.replace(/---[\s\S]*?---/, "") // 移除 front matter
+			.trim();
 
-  private static applyStyles(element: HTMLElement, config: ReadingTimeConfig): void {
-    element.addClass('rht-reading-time-card');
-    
-    if (config.style) {
-        const styles: Record<string, string> = {};
-        
-        // 基础样式
-        if (config.style.color) styles.color = config.style.color;
-        if (config.style.backgroundColor) styles.backgroundColor = config.style.backgroundColor;
-        if (config.style.borderRadius) styles.borderRadius = config.style.borderRadius;
-        if (config.style.padding) styles.padding = config.style.padding;
-        if (config.style.width) styles.width = config.style.width;
-        if (config.style.maxWidth) styles.maxWidth = config.style.maxWidth;
-        if (config.style.margin) styles.margin = config.style.margin;
-        
-        // 文字样式
-        if (config.style.fontSize) styles.fontSize = config.style.fontSize;
-        if (config.style.fontWeight) styles.fontWeight = config.style.fontWeight;
-                
-        // 视觉效果
-        if (config.style.boxShadow) styles.boxShadow = config.style.boxShadow;
-        if (config.style.border) styles.border = config.style.border;
-        
-        element.setCssStyles(styles);
-    }
-  }
+		if (config?.removeCodeBlocks) {
+			cleanedContent = cleanedContent.replace(/```[\s\S]*?```/g, "");
+		}
+		if (config?.removeWikiLinks) {
+			cleanedContent = cleanedContent.replace(/\[\[.*?\]\]/g, "");
+		}
+		if (config?.removeImageLinks) {
+			cleanedContent = cleanedContent.replace(/!\[\[.*?\]\]/g, "");
+		}
+		if (config?.removeNormalLinks) {
+			cleanedContent = cleanedContent.replace(/\[.*?\]\(.*?\)/g, "");
+		}
 
-  private static formatContent(
-    time: number, 
-    wordCounts: { chineseCount: number; englishCount: number }, 
-    config: ReadingTimeConfig
-  ): DocumentFragment {
-    const fragment = document.createDocumentFragment();
-    
-    // 创建内容容器，应用主题和动画
-    const contentEl = fragment;
+		return cleanedContent;
+	}
 
-    // 渲染基本内容
-    const textContainer = contentEl.createEl('div', { cls: 'rht-reading-time-text-container' });
+	/**
+	 * 美化显示阅读时间
+	 */
+	private static formatReadingTime(minutes: number): string {
+		if (minutes < 1) {
+			return t(
+				"toolkit.readingProgress.estimatedReadingTime.formatReadingTime.lessThanOneMinute"
+			);
+		} else if (minutes < 60) {
+			return t(
+				"toolkit.readingProgress.estimatedReadingTime.formatReadingTime.lessThanOneHour",
+				[Math.ceil(minutes)]
+			);
+		} else {
+			const hours = Math.floor(minutes / 60);
+			const remainingMinutes = Math.ceil(minutes % 60);
+			return t(
+				"toolkit.readingProgress.estimatedReadingTime.formatReadingTime.moreThanOneHour",
+				[hours, remainingMinutes]
+			);
+		}
+	}
 
-    // 添加图标
-    if (config.showIcon) {
-      const iconEl = textContainer.createEl('span', { cls: 'rht-reading-time-icon' });
-      iconEl.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
-  }
-    
-    // 处理时间范围显示
-    let timeDisplay = '';
-    if (config.showRange) {
-        const fastTime = this.formatReadingTime(time * 0.8);  // 快速阅读时间
-        const slowTime = this.formatReadingTime(time * 1.2);  // 慢速阅读时间
-        timeDisplay = `${fastTime} - ${slowTime}`;
-    } else {
-        timeDisplay = this.formatReadingTime(time);
-    }
+	private static applyStyles(
+		element: HTMLElement,
+		config: ReadingTimeConfig
+	): void {
+		element.addClass("rht-reading-time-card");
 
-    const content = (config.template || this.DEFAULT_CONFIG.template!)
-        .replace('{{time}}', timeDisplay);
+		if (config.style) {
+			const styles: Record<string, string> = {};
 
-    textContainer.createEl('div', { 
-        cls: 'rht-reading-time-text',
-        text: content 
-    });
+			// 基础样式
+			if (config.style.color) styles.color = config.style.color;
+			if (config.style.backgroundColor)
+				styles.backgroundColor = config.style.backgroundColor;
+			if (config.style.borderRadius)
+				styles.borderRadius = config.style.borderRadius;
+			if (config.style.padding) styles.padding = config.style.padding;
+			if (config.style.width) styles.width = config.style.width;
+			if (config.style.maxWidth) styles.maxWidth = config.style.maxWidth;
+			if (config.style.margin) styles.margin = config.style.margin;
 
-    // 如果需要显示字数统计
-    if (config.showWordCount) {
-        const statsEl = contentEl.createEl('div', { cls: 'rht-reading-time-stats' });
-        const totalWords = wordCounts.chineseCount + wordCounts.englishCount;
-        
-        // 创建总字数统计
-        statsEl.createEl('div', { 
-            cls: 'rht-reading-time-stat-item',
-            text: t("toolkit.readingProgress.estimatedReadingTime.wordCount", [totalWords])
-        });
+			// 文字样式
+			if (config.style.fontSize) styles.fontSize = config.style.fontSize;
+			if (config.style.fontWeight)
+				styles.fontWeight = config.style.fontWeight;
 
-        // 创建中文字数统计
-        if (wordCounts.chineseCount > 0) {
-            statsEl.createEl('div', { 
-                cls: 'rht-reading-time-stat-item',
-                text: t("toolkit.readingProgress.estimatedReadingTime.chineseCount", [wordCounts.chineseCount])
-            });
-        }
+			// 视觉效果
+			if (config.style.boxShadow)
+				styles.boxShadow = config.style.boxShadow;
+			if (config.style.border) styles.border = config.style.border;
 
-        // 创建英文字数统计
-        if (wordCounts.englishCount > 0) {
-            statsEl.createEl('div', { 
-                cls: 'rht-reading-time-stat-item',
-                text: t("toolkit.readingProgress.estimatedReadingTime.englishCount", [wordCounts.englishCount])
-            });
-        }
-    }
-    return fragment;
-  }
+			element.setCssStyles(styles);
+		}
+	}
 
-  public static async calculateReadingTime(container: HTMLElement, config?: ReadingTimeConfig): Promise<void> {
-    try {
-        if (!this.app) {
-            throw new Error('App instance not initialized');
-        }
+	private static formatContent(
+		time: number,
+		wordCounts: { chineseCount: number; englishCount: number },
+		config: ReadingTimeConfig
+	): DocumentFragment {
+		const fragment = document.createDocumentFragment();
 
-        const activeFile = this.app.workspace.getActiveFile();
-        if (!activeFile) {
-            throw new Error('No active file found');
-        }
+		// 创建内容容器，应用主题和动画
+		const contentEl = fragment;
 
-        const content = await this.app.vault.read(activeFile);
-        const mergedConfig = { ...this.DEFAULT_CONFIG, ...config };
-        const cleanedContent = this.cleanContentWithConfig(content, mergedConfig);
-        const wordCounts = this.getWordCounts(cleanedContent);
+		// 渲染基本内容
+		const textContainer = contentEl.createEl("div", {
+			cls: "rht-reading-time-text-container",
+		});
 
-        // 计算时间
-        const chineseTime = wordCounts.chineseCount / mergedConfig.chineseWordsPerMinute!;
-        const englishTime = wordCounts.englishCount / mergedConfig.englishWordsPerMinute!;
-        const totalTime = chineseTime + englishTime;
+		// 添加图标
+		if (config.showIcon) {
+			const iconEl = textContainer.createEl("span", {
+				cls: "rht-reading-time-icon",
+			});
+			iconEl.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+		}
 
-        // 应用样式和渲染内容
-        this.applyStyles(container, mergedConfig);
-        container.appendChild(
-            this.formatContent(totalTime, wordCounts, mergedConfig)
-        );
-    } catch (error) {
-        console.error('Error calculating reading time:', error);
-        throw error;
-    }
-  }
+		// 处理时间范围显示
+		let timeDisplay = "";
+		if (config.showRange) {
+			const fastTime = this.formatReadingTime(time * 0.8); // 快速阅读时间
+			const slowTime = this.formatReadingTime(time * 1.2); // 慢速阅读时间
+			timeDisplay = `${fastTime} - ${slowTime}`;
+		} else {
+			timeDisplay = this.formatReadingTime(time);
+		}
+
+		const content = (
+			config.template || this.DEFAULT_CONFIG.template!
+		).replace("{{time}}", timeDisplay);
+
+		textContainer.createEl("div", {
+			cls: "rht-reading-time-text",
+			text: content,
+		});
+
+		// 如果需要显示字数统计
+		if (config.showWordCount) {
+			const statsEl = contentEl.createEl("div", {
+				cls: "rht-reading-time-stats",
+			});
+			const totalWords =
+				wordCounts.chineseCount + wordCounts.englishCount;
+
+			// 创建总字数统计
+			statsEl.createEl("div", {
+				cls: "rht-reading-time-stat-item",
+				text: t(
+					"toolkit.readingProgress.estimatedReadingTime.wordCount",
+					[totalWords]
+				),
+			});
+
+			// 创建中文字数统计
+			if (wordCounts.chineseCount > 0) {
+				statsEl.createEl("div", {
+					cls: "rht-reading-time-stat-item",
+					text: t(
+						"toolkit.readingProgress.estimatedReadingTime.chineseCount",
+						[wordCounts.chineseCount]
+					),
+				});
+			}
+
+			// 创建英文字数统计
+			if (wordCounts.englishCount > 0) {
+				statsEl.createEl("div", {
+					cls: "rht-reading-time-stat-item",
+					text: t(
+						"toolkit.readingProgress.estimatedReadingTime.englishCount",
+						[wordCounts.englishCount]
+					),
+				});
+			}
+		}
+		return fragment;
+	}
+
+	public static async calculateReadingTime(
+		container: HTMLElement,
+		config?: ReadingTimeConfig
+	): Promise<void> {
+		try {
+			if (!this.app) {
+				throw new Error("App instance not initialized");
+			}
+
+			const activeFile = this.app.workspace.getActiveFile();
+			if (!activeFile) {
+				throw new Error("No active file found");
+			}
+
+			const content = await this.app.vault.read(activeFile);
+			const mergedConfig = { ...this.DEFAULT_CONFIG, ...config };
+			const cleanedContent = this.cleanContentWithConfig(
+				content,
+				mergedConfig
+			);
+			const wordCounts = this.getWordCounts(cleanedContent);
+
+			// 计算时间
+			const chineseTime =
+				wordCounts.chineseCount / mergedConfig.chineseWordsPerMinute!;
+			const englishTime =
+				wordCounts.englishCount / mergedConfig.englishWordsPerMinute!;
+			const totalTime = chineseTime + englishTime;
+
+			// 应用样式和渲染内容
+			this.applyStyles(container, mergedConfig);
+			container.appendChild(
+				this.formatContent(totalTime, wordCounts, mergedConfig)
+			);
+		} catch (error) {
+			console.error("Error calculating reading time:", error);
+			throw error;
+		}
+	}
 }

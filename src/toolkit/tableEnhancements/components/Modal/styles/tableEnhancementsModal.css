@@ -1,86 +1,86 @@
 /* Table Enhancements Modal */
 .tableEnhancements-modal {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  padding: 16px;
-  gap: 16px;
-  background-color: var(--background-primary);
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+	padding: 16px;
+	gap: 16px;
+	background-color: var(--background-primary);
 }
 
 /* Header */
 .tableEnhancements-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px;
-  background-color: var(--background-secondary);
-  border-radius: 8px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px;
+	background-color: var(--background-secondary);
+	border-radius: 8px;
 }
 
 .tableEnhancements-header-left,
 .tableEnhancements-header-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 /* Common Components */
 .tableEnhancements-select {
-  min-width: 120px;
-  height: 32px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--background-modifier-border);
-  background-color: var(--background-primary);
-  color: var(--text-normal);
+	min-width: 120px;
+	height: 32px;
+	padding: 4px 8px;
+	border-radius: 4px;
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-primary);
+	color: var(--text-normal);
 }
 
 .tableEnhancements-input {
-  height: 32px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--background-modifier-border);
-  background-color: var(--background-primary);
-  color: var(--text-normal);
+	height: 32px;
+	padding: 4px 8px;
+	border-radius: 4px;
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-primary);
+	color: var(--text-normal);
 }
 
 .tableEnhancements-btn {
-  display: inline-flex;
-  align-items: center;
-  height: 32px;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 4px;
-  background-color: var(--interactive-normal);
-  color: var(--text-normal);
-  font-size: 12px;
-  cursor: pointer;
-  border: 1px solid var(--background-modifier-border);
-  transition: all 0.2s ease;
+	display: inline-flex;
+	align-items: center;
+	height: 32px;
+	gap: 6px;
+	padding: 6px 12px;
+	border-radius: 4px;
+	background-color: var(--interactive-normal);
+	color: var(--text-normal);
+	font-size: 12px;
+	cursor: pointer;
+	border: 1px solid var(--background-modifier-border);
+	transition: all 0.2s ease;
 }
 
 .tableEnhancements-btn.primary {
-  background-color: var(--interactive-accent);
-  color: var(--text-on-accent);
-  border: none;
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border: none;
 }
 
 .tableEnhancements-btn.secondary {
-  background-color: var(--background-secondary);
+	background-color: var(--background-secondary);
 }
 
 .tableEnhancements-btn.active {
-  background-color: var(--interactive-accent);
-  color: var(--text-on-accent);
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
 }
 
 .tableEnhancements-btn.icon {
-  padding: 4px;
-  height: 24px;
-  width: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	padding: 4px;
+	height: 24px;
+	width: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }

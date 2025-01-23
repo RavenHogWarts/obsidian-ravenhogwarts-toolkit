@@ -1,176 +1,176 @@
 name: Release Obsidian plugin
 
 on:
-  push:
-    tags:
-      - "[0-9]+.[0-9]+.[0-9]+*"  # 匹配类似 1.0.0 或 1.0.0-beta.1 的格式
+    push:
+        tags:
+            - "[0-9]+.[0-9]+.[0-9]+*" # 匹配类似 1.0.0 或 1.0.0-beta.1 的格式
 
 permissions:
-  contents: write
+    contents: write
 
 env:
-  PLUGIN_NAME: obsidian-ravenhogwarts-toolkit
+    PLUGIN_NAME: obsidian-ravenhogwarts-toolkit
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04
+    build:
+        runs-on: ubuntu-22.04
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # 获取完整的git历史
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # 获取完整的git历史
 
-      - name: Use Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: "16.x"
+            - name: Use Node.js
+              uses: actions/setup-node@v1
+              with:
+                  node-version: "16.x"
 
-      - name: Prepare manifest
-        id: prepare_manifest
-        run: |
-          if [[ ${{ github.ref }} == *"beta"* ]]; then
-            cp manifest-beta.json manifest.json
-          fi
+            - name: Prepare manifest
+              id: prepare_manifest
+              run: |
+                  if [[ ${{ github.ref }} == *"beta"* ]]; then
+                    cp manifest-beta.json manifest.json
+                  fi
 
-      - name: Build
-        id: build
-        run: |
-          npm install -g yarn
-          yarn
-          yarn run build --if-present
-          mkdir ${{ env.PLUGIN_NAME }}
-          cp main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}
-          zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
-          ls
-          echo "tag_name=$(git tag --sort version:refname | tail -n 1)" >> $GITHUB_OUTPUT
+            - name: Build
+              id: build
+              run: |
+                  npm install -g yarn
+                  yarn
+                  yarn run build --if-present
+                  mkdir ${{ env.PLUGIN_NAME }}
+                  cp main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}
+                  zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
+                  ls
+                  echo "tag_name=$(git tag --sort version:refname | tail -n 1)" >> $GITHUB_OUTPUT
 
-      - name: Generate Changelog
-        id: changelog
-        run: |
-          # 检查是否存在任何tag
-          if ! git describe --tags > /dev/null 2>&1; then
-            # 如果没有任何tag，使用初始commit作为起点
-            echo "## 🎉 First Release" > temp_changelog.md
-            COMMITS=$(git log --pretty=format:"- %s" --reverse)
-          else
-            # 获取最近的两个tag
-            LATEST_TAG=$(git describe --tags --abbrev=0)
-            
-            # 尝试获取前一个tag，如果不存在则使用第一个commit
-            if git describe --tags --abbrev=0 `git rev-list --tags --skip=1 --max-count=1` > /dev/null 2>&1; then
-              PREVIOUS_TAG=$(git describe --tags --abbrev=0 `git rev-list --tags --skip=1 --max-count=1`)
-              COMMITS=$(git log ${PREVIOUS_TAG}..${LATEST_TAG} --no-merges --pretty=format:"- %s" --reverse)
-            else
-              FIRST_COMMIT=$(git rev-list --max-parents=0 HEAD)
-              COMMITS=$(git log ${FIRST_COMMIT}..${LATEST_TAG} --no-merges --pretty=format:"- %s" --reverse)
-            fi
-            
-            echo -e "## Changes\n" > temp_changelog.md
-          fi
-          
-          # 定义要处理的commit类型
-          TYPES=("feat" "fix" "perf" "refactor" "style" "docs" "test" "chore")
-          
-          for TYPE in "${TYPES[@]}"; do
-            # 从所有commits中过滤出特定类型的commits
-            TYPE_COMMITS=$(echo "$COMMITS" | grep "^- ${TYPE}(" || true)
-            
-            if [ ! -z "$TYPE_COMMITS" ]; then
-              # 转换commit类型为可读文本
-              case $TYPE in
-                "feat") TITLE="✨ New Features";;
-                "fix") TITLE="🐛 Bug Fixes";;
-                "perf") TITLE="⚡ Performance";;
-                "refactor") TITLE="♻️ Refactors";;
-                "style") TITLE="💄 Styles";;
-                "docs") TITLE="📝 Documentation";;
-                "test") TITLE="✅ Tests";;
-                "chore") TITLE="🔧 Chores";;
-                *) TITLE="Other";;
-              esac
-              
-              # 添加分类标题
-              echo -e "\n### ${TITLE}\n" >> temp_changelog.md
-              
-              # 处理每个commit消息，提取scope和描述
-              while IFS= read -r COMMIT; do
-                if [[ $COMMIT =~ ^-\ ${TYPE}\((.*?)\):\ (.*)$ ]]; then
-                  SCOPE="${BASH_REMATCH[1]}"
-                  DESC="${BASH_REMATCH[2]}"
-                  echo "- **${SCOPE}**: ${DESC}" >> temp_changelog.md
-                fi
-              done <<< "$TYPE_COMMITS"
-            fi
-          done
-          
-          # 将处理后的changelog保存到GITHUB_OUTPUT
-          echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          cat temp_changelog.md >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+            - name: Generate Changelog
+              id: changelog
+              run: |
+                  # 检查是否存在任何tag
+                  if ! git describe --tags > /dev/null 2>&1; then
+                    # 如果没有任何tag，使用初始commit作为起点
+                    echo "## 🎉 First Release" > temp_changelog.md
+                    COMMITS=$(git log --pretty=format:"- %s" --reverse)
+                  else
+                    # 获取最近的两个tag
+                    LATEST_TAG=$(git describe --tags --abbrev=0)
+                    
+                    # 尝试获取前一个tag，如果不存在则使用第一个commit
+                    if git describe --tags --abbrev=0 `git rev-list --tags --skip=1 --max-count=1` > /dev/null 2>&1; then
+                      PREVIOUS_TAG=$(git describe --tags --abbrev=0 `git rev-list --tags --skip=1 --max-count=1`)
+                      COMMITS=$(git log ${PREVIOUS_TAG}..${LATEST_TAG} --no-merges --pretty=format:"- %s" --reverse)
+                    else
+                      FIRST_COMMIT=$(git rev-list --max-parents=0 HEAD)
+                      COMMITS=$(git log ${FIRST_COMMIT}..${LATEST_TAG} --no-merges --pretty=format:"- %s" --reverse)
+                    fi
+                    
+                    echo -e "## Changes\n" > temp_changelog.md
+                  fi
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: false
-          prerelease: ${{ contains(github.ref, 'beta') }}
-          body: |
-            ${{ contains(github.ref, 'beta') && '🚧 This is a beta release' || '🎉 This is a stable release' }}
-            
-            **Version:** ${{ github.ref_name }}
-            
-            ${{ steps.changelog.outputs.changelog }}
-            
-            ## Installation
-            1. Download the files from the Assets section below
-            2. Copy them to your vault's plugins folder: `<vault>/.obsidian/plugins/obsidian-ravenhogwarts-toolkit/`
-            3. Reload Obsidian
-            4. Enable plugin in settings
+                  # 定义要处理的commit类型
+                  TYPES=("feat" "fix" "perf" "refactor" "style" "docs" "test" "chore")
 
-      - name: Upload zip file
-        id: upload-zip
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ env.PLUGIN_NAME }}.zip
-          asset_name: ${{ env.PLUGIN_NAME }}.zip
-          asset_content_type: application/zip
+                  for TYPE in "${TYPES[@]}"; do
+                    # 从所有commits中过滤出特定类型的commits
+                    TYPE_COMMITS=$(echo "$COMMITS" | grep "^- ${TYPE}(" || true)
+                    
+                    if [ ! -z "$TYPE_COMMITS" ]; then
+                      # 转换commit类型为可读文本
+                      case $TYPE in
+                        "feat") TITLE="✨ New Features";;
+                        "fix") TITLE="🐛 Bug Fixes";;
+                        "perf") TITLE="⚡ Performance";;
+                        "refactor") TITLE="♻️ Refactors";;
+                        "style") TITLE="💄 Styles";;
+                        "docs") TITLE="📝 Documentation";;
+                        "test") TITLE="✅ Tests";;
+                        "chore") TITLE="🔧 Chores";;
+                        *) TITLE="Other";;
+                      esac
+                      
+                      # 添加分类标题
+                      echo -e "\n### ${TITLE}\n" >> temp_changelog.md
+                      
+                      # 处理每个commit消息，提取scope和描述
+                      while IFS= read -r COMMIT; do
+                        if [[ $COMMIT =~ ^-\ ${TYPE}\((.*?)\):\ (.*)$ ]]; then
+                          SCOPE="${BASH_REMATCH[1]}"
+                          DESC="${BASH_REMATCH[2]}"
+                          echo "- **${SCOPE}**: ${DESC}" >> temp_changelog.md
+                        fi
+                      done <<< "$TYPE_COMMITS"
+                    fi
+                  done
 
-      - name: Upload main.js
-        id: upload-main
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./main.js
-          asset_name: main.js
-          asset_content_type: text/javascript
+                  # 将处理后的changelog保存到GITHUB_OUTPUT
+                  echo "changelog<<EOF" >> $GITHUB_OUTPUT
+                  cat temp_changelog.md >> $GITHUB_OUTPUT
+                  echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Upload manifest.json
-        id: upload-manifest
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./manifest.json
-          asset_name: manifest.json
-          asset_content_type: application/json
+            - name: Create Release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ github.ref }}
+                  release_name: ${{ github.ref }}
+                  draft: false
+                  prerelease: ${{ contains(github.ref, 'beta') }}
+                  body: |
+                      ${{ contains(github.ref, 'beta') && '🚧 This is a beta release' || '🎉 This is a stable release' }}
 
-      - name: Upload styles.css
-        id: upload-styles
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./styles.css
-          asset_name: styles.css
-          asset_content_type: text/css
+                      **Version:** ${{ github.ref_name }}
+
+                      ${{ steps.changelog.outputs.changelog }}
+
+                      ## Installation
+                      1. Download the files from the Assets section below
+                      2. Copy them to your vault's plugins folder: `<vault>/.obsidian/plugins/obsidian-ravenhogwarts-toolkit/`
+                      3. Reload Obsidian
+                      4. Enable plugin in settings
+
+            - name: Upload zip file
+              id: upload-zip
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./${{ env.PLUGIN_NAME }}.zip
+                  asset_name: ${{ env.PLUGIN_NAME }}.zip
+                  asset_content_type: application/zip
+
+            - name: Upload main.js
+              id: upload-main
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./main.js
+                  asset_name: main.js
+                  asset_content_type: text/javascript
+
+            - name: Upload manifest.json
+              id: upload-manifest
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./manifest.json
+                  asset_name: manifest.json
+                  asset_content_type: application/json
+
+            - name: Upload styles.css
+              id: upload-styles
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./styles.css
+                  asset_name: styles.css
+                  asset_content_type: text/css

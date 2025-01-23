@@ -1,91 +1,99 @@
-import { useCallback, useEffect, useState } from 'react';
-import RavenHogwartsToolkitPlugin from '@/src/main';
-import { t } from '@/src/i18n/i18n';
-import { LucideIcon } from 'lucide-react';
-import { TOOLKIT_CONFIG, ToolkitId } from '@/src/core/interfaces/types';
+import { useCallback, useEffect, useState } from "react";
+import RavenHogwartsToolkitPlugin from "@/src/main";
+import { t } from "@/src/i18n/i18n";
+import { LucideIcon } from "lucide-react";
+import { TOOLKIT_CONFIG, ToolkitId } from "@/src/core/interfaces/types";
 
 export interface ToolkitInfo {
-  id: ToolkitId;
-  icon: LucideIcon;
-  enabled: boolean;
-  title: string;
-  description: string;
-  openSettings: () => void;
+	id: ToolkitId;
+	icon: LucideIcon;
+	enabled: boolean;
+	title: string;
+	description: string;
+	openSettings: () => void;
 }
 
 interface UseToolkitSettingsReturn {
-  toolkits: ToolkitInfo[];
-  updateToolkit: (id: ToolkitId, enabled: boolean) => Promise<void>;
-  loading: boolean;
-  error: Error | null;
-  refreshToolkits: () => void;
+	toolkits: ToolkitInfo[];
+	updateToolkit: (id: ToolkitId, enabled: boolean) => Promise<void>;
+	loading: boolean;
+	error: Error | null;
+	refreshToolkits: () => void;
 }
 
 export const useToolkitSettings = ({
-  plugin,
-  onNavigateToDetail
+	plugin,
+	onNavigateToDetail,
 }: {
-  plugin: RavenHogwartsToolkitPlugin,
-  onNavigateToDetail: (moduleId: ToolkitId) => void;
+	plugin: RavenHogwartsToolkitPlugin;
+	onNavigateToDetail: (moduleId: ToolkitId) => void;
 }): UseToolkitSettingsReturn => {
-  const [toolkits, setToolkits] = useState<ToolkitInfo[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+	const [toolkits, setToolkits] = useState<ToolkitInfo[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<Error | null>(null);
 
-  // 初始化工具包列表
-  const initializeToolkits = useCallback(() => {
-    try {
-      const toolkitList = Object.entries(TOOLKIT_CONFIG)
-        .map(([id, config]) => {
-          const toolkitId = id as ToolkitId;
-          const manager = plugin.getManager(toolkitId);
-          return {
-            id: toolkitId,
-            icon: config.icon,
-            enabled: manager?.isEnabled() ?? false,
-            title: t(`toolkit.${toolkitId}.title`),
-            description: t(`toolkit.${toolkitId}.description`),
-            openSettings: () => onNavigateToDetail(toolkitId)
-          };
-        })
-        .sort((a, b) => a.id.localeCompare(b.id));
-      setToolkits(toolkitList);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to initialize toolkits'));
-    } finally {
-      setLoading(false);
-    }
-  }, [plugin]);
+	// 初始化工具包列表
+	const initializeToolkits = useCallback(() => {
+		try {
+			const toolkitList = Object.entries(TOOLKIT_CONFIG)
+				.map(([id, config]) => {
+					const toolkitId = id as ToolkitId;
+					const manager = plugin.getManager(toolkitId);
+					return {
+						id: toolkitId,
+						icon: config.icon,
+						enabled: manager?.isEnabled() ?? false,
+						title: t(`toolkit.${toolkitId}.title`),
+						description: t(`toolkit.${toolkitId}.description`),
+						openSettings: () => onNavigateToDetail(toolkitId),
+					};
+				})
+				.sort((a, b) => a.id.localeCompare(b.id));
+			setToolkits(toolkitList);
+			setError(null);
+		} catch (err) {
+			setError(
+				err instanceof Error
+					? err
+					: new Error("Failed to initialize toolkits")
+			);
+		} finally {
+			setLoading(false);
+		}
+	}, [plugin]);
 
-  useEffect(() => {
-    initializeToolkits();
-  }, [initializeToolkits]);
-    
+	useEffect(() => {
+		initializeToolkits();
+	}, [initializeToolkits]);
 
-  const updateToolkit = useCallback(async (id: ToolkitId, enabled: boolean) => {
-    try {
-      const manager = plugin.getManager(id);
-      if (manager) {
-        if (enabled) {
-          await manager.enable();
-        } else {
-          await manager.disable();
-        }
-        setToolkits(prev => 
-          prev.map(t => 
-            t.id === id ? { ...t, enabled } : t
-          )
-        );
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to update toolkit'));
-    }
-  }, [plugin]);
+	const updateToolkit = useCallback(
+		async (id: ToolkitId, enabled: boolean) => {
+			try {
+				const manager = plugin.getManager(id);
+				if (manager) {
+					if (enabled) {
+						await manager.enable();
+					} else {
+						await manager.disable();
+					}
+					setToolkits((prev) =>
+						prev.map((t) => (t.id === id ? { ...t, enabled } : t))
+					);
+				}
+			} catch (err) {
+				setError(
+					err instanceof Error
+						? err
+						: new Error("Failed to update toolkit")
+				);
+			}
+		},
+		[plugin]
+	);
 
-  const refreshToolkits = useCallback(() => {
-    initializeToolkits();
-  }, [initializeToolkits]);
+	const refreshToolkits = useCallback(() => {
+		initializeToolkits();
+	}, [initializeToolkits]);
 
-  return { toolkits, updateToolkit, loading, error, refreshToolkits };
-}; 
+	return { toolkits, updateToolkit, loading, error, refreshToolkits };
+};

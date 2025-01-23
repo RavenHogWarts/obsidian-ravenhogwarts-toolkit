@@ -1,119 +1,119 @@
 /* Base Modal Styles */
 .rht-toolkit-modal {
-    max-width: 90vw;
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 20px;
-    margin: 0 auto;
-    background-color: var(--background-primary);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px var(--background-modifier-box-shadow);
-    position: relative;
-    border: 1px solid var(--color-accent);
+	max-width: 90vw;
+	max-height: 90vh;
+	overflow-y: auto;
+	padding: 20px;
+	margin: 0 auto;
+	background-color: var(--background-primary);
+	border-radius: 8px;
+	box-shadow: 0 2px 8px var(--background-modifier-box-shadow);
+	position: relative;
+	border: 1px solid var(--color-accent);
 }
 
 .rht-toolkit-modal.modal-size-large {
-    width: 90vw;
-    height: 90vh;
+	width: 90vw;
+	height: 90vh;
 }
 
 .rht-toolkit-modal.modal-size-medium {
-    width: 60vw;
-    height: 60vh;
+	width: 60vw;
+	height: 60vh;
 }
 
 .rht-toolkit-modal.modal-size-small {
-    width: 40vw;
-    height: 40vh;
+	width: 40vw;
+	height: 40vh;
 }
 
 /* Close Button Styles */
 .rht-toolkit-modal-close {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.2s ease;
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	width: 24px;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: all 0.2s ease;
 }
 
 .rht-toolkit-modal-close:hover {
-    background-color: var(--background-modifier-hover);
-    color: var(--text-normal);
+	background-color: var(--background-modifier-hover);
+	color: var(--text-normal);
 }
 
 .rht-toolkit-modal-close svg {
-    width: 18px;
-    height: 18px;
+	width: 18px;
+	height: 18px;
 }
 
 /* Loading State */
 .rht-toolkit-modal-loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100px;
-    color: var(--text-muted);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100px;
+	color: var(--text-muted);
 }
 
 /* Scrollbar Styles */
 .rht-toolkit-modal::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+	width: 8px;
+	height: 8px;
 }
 
 .rht-toolkit-modal::-webkit-scrollbar-track {
-    background: var(--background-secondary);
-    border-radius: 4px;
+	background: var(--background-secondary);
+	border-radius: 4px;
 }
 
 .rht-toolkit-modal::-webkit-scrollbar-thumb {
-    background: var(--background-modifier-border);
-    border-radius: 4px;
+	background: var(--background-modifier-border);
+	border-radius: 4px;
 }
 
 .rht-toolkit-modal::-webkit-scrollbar-thumb:hover {
-    background: var(--interactive-accent);
+	background: var(--interactive-accent);
 }
 
 /* Responsive Design */
 @media screen and (max-width: 768px) {
-    .rht-toolkit-modal {
-        max-width: 95vw;
-        padding: 16px;
-        font-size: 0.9rem;
-    }
+	.rht-toolkit-modal {
+		max-width: 95vw;
+		padding: 16px;
+		font-size: 0.9rem;
+	}
 
-    /* 优化滚动条在触摸设备上的体验 */
-    .rht-toolkit-modal {
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-    }
+	/* 优化滚动条在触摸设备上的体验 */
+	.rht-toolkit-modal {
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+	}
 }
 
 @media screen and (max-width: 480px) {
-    .rht-toolkit-modal {
-        max-width: 100vw;
-        max-height: 100vh;
-        padding: 12px;
-        border-radius: 0; /* 在超窄屏幕上移除圆角 */
-        font-size: 0.85rem;
-    }
+	.rht-toolkit-modal {
+		max-width: 100vw;
+		max-height: 100vh;
+		padding: 12px;
+		border-radius: 0; /* 在超窄屏幕上移除圆角 */
+		font-size: 0.85rem;
+	}
 
-    /* 在超窄屏幕上隐藏自定义滚动条 */
-    .rht-toolkit-modal::-webkit-scrollbar {
-        width: 4px;
-        height: 4px;
-    }
+	/* 在超窄屏幕上隐藏自定义滚动条 */
+	.rht-toolkit-modal::-webkit-scrollbar {
+		width: 4px;
+		height: 4px;
+	}
 }
 
 /* Dark Mode Optimization */
 .theme-dark .rht-toolkit-modal {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }

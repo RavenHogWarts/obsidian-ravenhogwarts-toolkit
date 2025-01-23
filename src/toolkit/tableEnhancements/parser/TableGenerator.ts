@@ -1,217 +1,227 @@
 import { Logger } from "@/src/core/services/Log";
 import { ColDef, ColumnApi, GridApi } from "ag-grid-community";
-import { IMarkdownTable, ITableCell, ITableHeader, ITablePosition, TableCellAlignment } from "../types/table";
+import {
+	IMarkdownTable,
+	ITableCell,
+	ITableHeader,
+	ITablePosition,
+	TableCellAlignment,
+} from "../types/table";
 import { IParserConfig } from "../types/parser";
 
 export class TableGenerator {
-    private logger: Logger;
-    private config: IParserConfig;
+	private logger: Logger;
+	private config: IParserConfig;
 
-    constructor(logger: Logger, config?: IParserConfig) {
-        this.logger = logger;
-        this.config = {
-            preserveFormat: false,
-            parseInlineStyles: true,
-            parseCaption: false,
-            delimiter: '|',
-            ...config
-        };
-    }
+	constructor(logger: Logger, config?: IParserConfig) {
+		this.logger = logger;
+		this.config = {
+			preserveFormat: false,
+			parseInlineStyles: true,
+			parseCaption: false,
+			delimiter: "|",
+			...config,
+		};
+	}
 
-    /**
-     * 从AG Grid生成Markdown表格
-     */
-    public generateFromAgGrid(
-        gridApi: GridApi,
-        columnApi: ColumnApi,
-        position: ITablePosition,
-        referenceId?: string
-    ): IMarkdownTable {
-        try {
-            // 获取列定义和数据
-            const columns = columnApi.getAllDisplayedColumns();
-            const colDefs = columns.map(col => col.getColDef());
-            
-            // 生成表头
-            const headers = this.generateHeaders(colDefs);
+	/**
+	 * 从AG Grid生成Markdown表格
+	 */
+	public generateFromAgGrid(
+		gridApi: GridApi,
+		columnApi: ColumnApi,
+		position: ITablePosition,
+		referenceId?: string
+	): IMarkdownTable {
+		try {
+			// 获取列定义和数据
+			const columns = columnApi.getAllDisplayedColumns();
+			const colDefs = columns.map((col) => col.getColDef());
 
-            // 获取数据行
-            const cells: ITableCell[][] = [];
-            gridApi.forEachNode(node => {
-                if (node.data) {
-                    cells.push(this.generateCells(node.data, colDefs));
-                }
-            });
+			// 生成表头
+			const headers = this.generateHeaders(colDefs);
 
-            // 构建表格对象
-            const table: IMarkdownTable = {
-                headers,
-                cells,
-                position,
-                referenceId
-            };
+			// 获取数据行
+			const cells: ITableCell[][] = [];
+			gridApi.forEachNode((node) => {
+				if (node.data) {
+					cells.push(this.generateCells(node.data, colDefs));
+				}
+			});
 
-            // 验证表格
-            if (!this.validateTable(table)) {
-                this.logger.throwError(new Error('Invalid table structure'));
-            }
+			// 构建表格对象
+			const table: IMarkdownTable = {
+				headers,
+				cells,
+				position,
+				referenceId,
+			};
 
-            return table;
-        } catch (error) {
-            this.logger.throwError(new Error('Generate from AG Grid error'), error);
-        }
-    }
+			// 验证表格
+			if (!this.validateTable(table)) {
+				this.logger.throwError(new Error("Invalid table structure"));
+			}
 
-    /**
-     * 生成表格文本
-     */
-    public generateTableText(table: IMarkdownTable): string {
-        try {
-            const headerRow = this.generateHeaderRow(table.headers);
-            const alignmentRow = this.generateAlignmentRow(table.headers);
-            const dataRows = table.cells.map(row => this.generateDataRow(row));
-            
-            const lines = [
-                headerRow,
-                alignmentRow,
-                ...dataRows
-            ];
+			return table;
+		} catch (error) {
+			this.logger.throwError(
+				new Error("Generate from AG Grid error"),
+				error
+			);
+		}
+	}
 
-            if(table.referenceId) {
-                lines.push(`^${table.referenceId}`);
-            }
+	/**
+	 * 生成表格文本
+	 */
+	public generateTableText(table: IMarkdownTable): string {
+		try {
+			const headerRow = this.generateHeaderRow(table.headers);
+			const alignmentRow = this.generateAlignmentRow(table.headers);
+			const dataRows = table.cells.map((row) =>
+				this.generateDataRow(row)
+			);
 
-            return lines.join('\n');
-        } catch (error) {
-            this.logger.throwError(new Error('Generate table text error'), error);
-        }
-    }
+			const lines = [headerRow, alignmentRow, ...dataRows];
 
-    /**
-     * 生成表头
-     */
-    private generateHeaders(colDefs: ColDef[]): ITableHeader[] {
-        return colDefs.map(col => ({
-            field: col.field || '',
-            content: (col.headerName || col.field || '').trim(),
-            alignment: this.getColumnAlignment(col)
-        }));
-    }
+			if (table.referenceId) {
+				lines.push(`^${table.referenceId}`);
+			}
 
-    /**
-     * 生成单元格数据
-     */
-    private generateCells(rowData: any, colDefs: ColDef[]): ITableCell[] {
-        return colDefs.map(col => ({
-            content: this.formatCellValue(rowData[col.field || ''], col),
-            alignment: this.getColumnAlignment(col)
-        }));
-    }
+			return lines.join("\n");
+		} catch (error) {
+			this.logger.throwError(
+				new Error("Generate table text error"),
+				error
+			);
+		}
+	}
 
-    /**
-     * 生成表头行
-     */
-    private generateHeaderRow(headers: ITableHeader[]): string {
-        const delimiter = this.config.delimiter || '|';
-        const cells = headers.map(header => ` ${header.content} `);
-        return `${delimiter}${cells.join(delimiter)}${delimiter}`;
-    }
+	/**
+	 * 生成表头
+	 */
+	private generateHeaders(colDefs: ColDef[]): ITableHeader[] {
+		return colDefs.map((col) => ({
+			field: col.field || "",
+			content: (col.headerName || col.field || "").trim(),
+			alignment: this.getColumnAlignment(col),
+		}));
+	}
 
-    /**
-     * 生成对齐行
-     */
-    private generateAlignmentRow(headers: ITableHeader[]): string {
-        const delimiter = this.config.delimiter || '|';
-        const alignments = headers.map(header => {
-            const minLength = 3;
-            const contentLength = header.content.length;
-            const length = Math.max(minLength, contentLength);
+	/**
+	 * 生成单元格数据
+	 */
+	private generateCells(rowData: any, colDefs: ColDef[]): ITableCell[] {
+		return colDefs.map((col) => ({
+			content: this.formatCellValue(rowData[col.field || ""], col),
+			alignment: this.getColumnAlignment(col),
+		}));
+	}
 
-            switch (header.alignment) {
-                case 'center':
-                    return `:${'-'.repeat(length - 2)}:`;
-                case 'right':
-                    return `${'-'.repeat(length - 1)}:`;
-                default: // 'left'
-                    return `${'-'.repeat(length)}`;
-            }
-        });
+	/**
+	 * 生成表头行
+	 */
+	private generateHeaderRow(headers: ITableHeader[]): string {
+		const delimiter = this.config.delimiter || "|";
+		const cells = headers.map((header) => ` ${header.content} `);
+		return `${delimiter}${cells.join(delimiter)}${delimiter}`;
+	}
 
-        return `${delimiter} ${alignments.join(` ${delimiter} `)} ${delimiter}`;
-    }
+	/**
+	 * 生成对齐行
+	 */
+	private generateAlignmentRow(headers: ITableHeader[]): string {
+		const delimiter = this.config.delimiter || "|";
+		const alignments = headers.map((header) => {
+			const minLength = 3;
+			const contentLength = header.content.length;
+			const length = Math.max(minLength, contentLength);
 
-    /**
-     * 生成数据行
-     */
-    private generateDataRow(cells: ITableCell[]): string {
-        const delimiter = this.config.delimiter || '|';
-        const cellContents = cells.map(cell => ` ${cell.content} `);
-        return `${delimiter}${cellContents.join(delimiter)}${delimiter}`;
-    }
+			switch (header.alignment) {
+				case "center":
+					return `:${"-".repeat(length - 2)}:`;
+				case "right":
+					return `${"-".repeat(length - 1)}:`;
+				default: // 'left'
+					return `${"-".repeat(length)}`;
+			}
+		});
 
-    /**
-     * 获取列对齐方式
-     */
-    private getColumnAlignment(colDef: ColDef): TableCellAlignment {
-        if (!colDef.type) return 'left';
+		return `${delimiter} ${alignments.join(` ${delimiter} `)} ${delimiter}`;
+	}
 
-        const type = Array.isArray(colDef.type) ? colDef.type[0] : colDef.type;
-        
-        if (!type) return 'left';
+	/**
+	 * 生成数据行
+	 */
+	private generateDataRow(cells: ITableCell[]): string {
+		const delimiter = this.config.delimiter || "|";
+		const cellContents = cells.map((cell) => ` ${cell.content} `);
+		return `${delimiter}${cellContents.join(delimiter)}${delimiter}`;
+	}
 
-        switch (type.toLowerCase()) {
-            case 'numericcolumn':
-            case 'number':
-                return 'right';
-            case 'centeraligned':
-                return 'center';
-            default:
-                return 'left';
-        }
-    }
+	/**
+	 * 获取列对齐方式
+	 */
+	private getColumnAlignment(colDef: ColDef): TableCellAlignment {
+		if (!colDef.type) return "left";
 
-    /**
-     * 格式化单元格值
-     */
-    private formatCellValue(value: any, colDef: ColDef): string {
-        if (value === null || value === undefined) {
-            return '';
-        }
+		const type = Array.isArray(colDef.type) ? colDef.type[0] : colDef.type;
 
-        // 默认格式化
-        if (typeof value === 'number') {
-            return value.toString();
-        }
+		if (!type) return "left";
 
-        if (typeof value === 'boolean') {
-            return value ? 'true' : 'false';
-        }
+		switch (type.toLowerCase()) {
+			case "numericcolumn":
+			case "number":
+				return "right";
+			case "centeraligned":
+				return "center";
+			default:
+				return "left";
+		}
+	}
 
-        if (value instanceof Date) {
-            return value.toISOString();
-        }
+	/**
+	 * 格式化单元格值
+	 */
+	private formatCellValue(value: any, colDef: ColDef): string {
+		if (value === null || value === undefined) {
+			return "";
+		}
 
-        return value.toString();
-    }
+		// 默认格式化
+		if (typeof value === "number") {
+			return value.toString();
+		}
 
-    /**
-     * 验证表格结构
-     */
-    private validateTable(table: IMarkdownTable): boolean {
-        try {
-            if (!table.headers || !table.cells) {
-                return false;
-            }
+		if (typeof value === "boolean") {
+			return value ? "true" : "false";
+		}
 
-            if (table.headers.length === 0) {
-                return false;
-            }
+		if (value instanceof Date) {
+			return value.toISOString();
+		}
 
-            const columnCount = table.headers.length;
-            return table.cells.every(row => row.length === columnCount);
-        } catch (error) {
-            this.logger.error('Validate table error:', error);
-            return false;
-        }
-    }
+		return value.toString();
+	}
+
+	/**
+	 * 验证表格结构
+	 */
+	private validateTable(table: IMarkdownTable): boolean {
+		try {
+			if (!table.headers || !table.cells) {
+				return false;
+			}
+
+			if (table.headers.length === 0) {
+				return false;
+			}
+
+			const columnCount = table.headers.length;
+			return table.cells.every((row) => row.length === columnCount);
+		} catch (error) {
+			this.logger.error("Validate table error:", error);
+			return false;
+		}
+	}
 }
