@@ -3,6 +3,7 @@ import { IToolkitModuleConfig } from "@/src/core/interfaces/types";
 export interface IReadingProgressConfig extends IToolkitModuleConfig {
 	showTOC: boolean;
 	tocAlwaysExpanded: boolean;
+	useHeadingNumber: boolean;
 	progressStyle: "bar" | "ring" | "none" | "both";
 	showToolbar: boolean;
 	position: "left" | "right";
@@ -18,6 +19,7 @@ export const READING_PROGRESS_DEFAULT_CONFIG: IReadingProgressConfig = {
 	enabled: true,
 	showTOC: true,
 	tocAlwaysExpanded: false,
+	useHeadingNumber: false,
 	progressStyle: "both",
 	showToolbar: true,
 	position: "right",

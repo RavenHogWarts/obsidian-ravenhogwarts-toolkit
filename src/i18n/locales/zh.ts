@@ -231,6 +231,10 @@ export const zh: Message = {
 					title: "悬浮目录始终展开",
 					description: "悬浮目录始终展开，不随鼠标悬浮状态变化",
 				},
+				useHeadingNumber: {
+					title: "使用标题编号",
+					description: "层级编号，根据相对深度计算",
+				},
 				showToolbar: {
 					title: "悬浮工具栏",
 					description: "使用悬浮工具栏",

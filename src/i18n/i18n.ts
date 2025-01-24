@@ -226,6 +226,10 @@ export type Message = {
 					title: string;
 					description: string;
 				};
+				useHeadingNumber: {
+					title: string;
+					description: string;
+				};
 				showToolbar: {
 					title: string;
 					description: string;

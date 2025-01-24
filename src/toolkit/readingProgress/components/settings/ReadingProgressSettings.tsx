@@ -102,6 +102,24 @@ export const ReadingProgressSettings: React.FC<
 
 					<SettingItem
 						name={t(
+							"toolkit.readingProgress.settings.useHeadingNumber.title"
+						)}
+						desc={t(
+							"toolkit.readingProgress.settings.useHeadingNumber.description"
+						)}
+					>
+						<Toggle
+							checked={config.useHeadingNumber}
+							onChange={(checked) =>
+								handleUpdateConfig({
+									useHeadingNumber: checked,
+								})
+							}
+						/>
+					</SettingItem>
+
+					<SettingItem
+						name={t(
 							"toolkit.readingProgress.settings.showToolbar.title"
 						)}
 						desc={t(

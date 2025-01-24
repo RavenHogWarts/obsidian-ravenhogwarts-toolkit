@@ -219,6 +219,78 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 		return Math.min(...headings.map((h) => h.level));
 	}, [headings]);
 
+	const generateHeadingNumber = React.useCallback(
+		(index: number): string => {
+			const stack: number[] = [];
+			const levels: number[] = [];
+			const currentHeading = headings[index];
+
+			// 从头开始遍历，构建正确的层级关系
+			for (let i = 0; i <= index; i++) {
+				const heading = headings[i];
+
+				while (
+					levels.length > 0 &&
+					levels[levels.length - 1] >= heading.level
+				) {
+					levels.pop();
+					stack.pop();
+				}
+
+				if (
+					levels.length === 0 ||
+					heading.level > levels[levels.length - 1]
+				) {
+					// 新的层级
+					let count = 1;
+					// 向前查找同级标题
+					for (let j = i - 1; j >= 0; j--) {
+						if (
+							headings[j].level === heading.level &&
+							isUnderSameParent(j, i, headings)
+						) {
+							count++;
+						}
+					}
+					levels.push(heading.level);
+					stack.push(count);
+				}
+			}
+
+			return stack.join(".") + ".";
+		},
+		[headings]
+	);
+
+	// 辅助函数：检查两个标题是否在同一个父标题下
+	const isUnderSameParent = (
+		index1: number,
+		index2: number,
+		headings: HeadingCache[]
+	): boolean => {
+		const level = headings[index1].level;
+
+		// 向前查找最近的上级标题
+		let parent1 = -1;
+		let parent2 = -1;
+
+		for (let i = index1; i >= 0; i--) {
+			if (headings[i].level < level) {
+				parent1 = i;
+				break;
+			}
+		}
+
+		for (let i = index2; i >= 0; i--) {
+			if (headings[i].level < level) {
+				parent2 = i;
+				break;
+			}
+		}
+
+		return parent1 === parent2;
+	};
+
 	const tocGroupStyle = React.useMemo(
 		() => ({
 			padding: config.position === "left" ? "0 16px 0 0" : "0 0 0 16px",
@@ -424,6 +496,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 						{headings.map((heading, index) => {
 							const relativeDepth =
 								heading.level - getMinHeadingLevel;
+							const headingNumber = generateHeadingNumber(index);
 
 							return (
 								<div
@@ -437,6 +510,11 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 									onClick={() => onHeadingClick(heading)}
 								>
 									<span className="rht-toc-item-text">
+										{config.useHeadingNumber && (
+											<span className="rht-toc-item-number">
+												{headingNumber}
+											</span>
+										)}
 										{getCleanHeadingText(heading.heading)}
 									</span>
 									<span className="rht-toc-item-level">

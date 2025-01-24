@@ -271,6 +271,17 @@
 	background: var(--background-modifier-hover);
 }
 
+.rht-toc-item-number {
+	color: var(--text-muted);
+	margin-right: 4px;
+	font-weight: 500;
+	font-size: 0.9em;
+}
+
+.rht-toc-item[data-active="true"] .rht-toc-item-number {
+	color: var(--interactive-accent);
+}
+
 .rht-toc-item-text {
 	flex: 1;
 	overflow-wrap: break-word;

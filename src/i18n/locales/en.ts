@@ -243,6 +243,11 @@ export const en: Message = {
 					description:
 						"TOC always expanded, not affected by mouse hover state",
 				},
+				useHeadingNumber: {
+					title: "Use Heading Number",
+					description:
+						"Heading number, calculated based on relative depth",
+				},
 				showToolbar: {
 					title: "Toolbar",
 					description: "Use toolbar",
