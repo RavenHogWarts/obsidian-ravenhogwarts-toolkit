@@ -352,6 +352,14 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 		});
 	}, [headings, hasChildren]);
 
+	const shouldShowProgressBar = React.useMemo(() => {
+		const hasHeadings = headings.length > 0;
+		const isProgressBarEnabled =
+			config.progressStyle === "bar" || config.progressStyle === "both";
+		const shouldShowInTOC = hasHeadings && config.showTOC;
+		return isProgressBarEnabled && shouldShowInTOC;
+	}, [headings.length, config.progressStyle, config.showTOC]);
+
 	const tocGroupStyle = React.useMemo(
 		() => ({
 			padding: config.position === "left" ? "0 16px 0 0" : "0 0 0 16px",
@@ -558,8 +566,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 						className="rht-toc-content"
 						style={tocListStyle}
 					>
-						{(config.progressStyle === "bar" ||
-							config.progressStyle === "both") && (
+						{shouldShowProgressBar && (
 							<div
 								className="rht-toc-progress-bar"
 								style={
