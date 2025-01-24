@@ -227,6 +227,8 @@ export const en: Message = {
 				move_left: "Move Left 1px",
 				move_right: "Move Right 1px",
 				copy_toc: "Copy TOC",
+				expand_all: "Expand All",
+				collapse_all: "Collapse All",
 			},
 			settings: {
 				segment: {

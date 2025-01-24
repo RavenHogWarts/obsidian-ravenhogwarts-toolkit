@@ -7,6 +7,8 @@ import {
 	ArrowUpToLine,
 	ChevronLeft,
 	ChevronRight,
+	ChevronsDownUp,
+	ChevronsUpDown,
 	CircleDot,
 	ClipboardCopy,
 	Pin,
@@ -40,6 +42,10 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 	const [isMouseDragging, setIsMouseDragging] = React.useState(false);
 	const [startX, setStartX] = React.useState(0);
 	const [startWidth, setStartWidth] = React.useState(0);
+	const [collapsedItems, setCollapsedItems] = React.useState<Set<number>>(
+		new Set()
+	);
+	const [allCollapsed, setAllCollapsed] = React.useState(false);
 	const tocListRef = React.useRef<HTMLDivElement>(null);
 	const indicatorsRef = React.useRef<HTMLDivElement>(null);
 
@@ -291,6 +297,61 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 		return parent1 === parent2;
 	};
 
+	// 判断标题是否有子标题
+	const hasChildren = React.useCallback(
+		(index: number) => {
+			if (index >= headings.length - 1) return false;
+			return headings[index + 1].level > headings[index].level;
+		},
+		[headings]
+	);
+
+	// 获取标题的所有子标题索引
+	const getChildIndices = React.useCallback(
+		(index: number) => {
+			const indices: number[] = [];
+			const parentLevel = headings[index].level;
+
+			for (let i = index + 1; i < headings.length; i++) {
+				if (headings[i].level <= parentLevel) break;
+				indices.push(i);
+			}
+
+			return indices;
+		},
+		[headings]
+	);
+
+	// 处理折叠/展开
+	const handleCollapse = React.useCallback((index: number) => {
+		setCollapsedItems((prev) => {
+			const next = new Set(prev);
+			if (next.has(index)) {
+				next.delete(index);
+			} else {
+				next.add(index);
+			}
+			return next;
+		});
+	}, []);
+
+	// 处理全部折叠/展开
+	const handleToggleAll = React.useCallback(() => {
+		setAllCollapsed((prev) => {
+			if (prev) {
+				setCollapsedItems(new Set());
+			} else {
+				const allParents = new Set(
+					headings
+						.map((_, index) => index)
+						.filter((index) => hasChildren(index))
+				);
+				setCollapsedItems(allParents);
+			}
+			return !prev;
+		});
+	}, [headings, hasChildren]);
+
 	const tocGroupStyle = React.useMemo(
 		() => ({
 			padding: config.position === "left" ? "0 16px 0 0" : "0 0 0 16px",
@@ -443,6 +504,21 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 							</button>
 							<button
 								className="rht-toc-toolbar-btn"
+								onClick={handleToggleAll}
+								aria-label={t(
+									`toolkit.readingProgress.toolbar.${
+										allCollapsed ? "expand" : "collapse"
+									}_all`
+								)}
+							>
+								{allCollapsed ? (
+									<ChevronsUpDown size={16} />
+								) : (
+									<ChevronsDownUp size={16} />
+								)}
+							</button>
+							<button
+								className="rht-toc-toolbar-btn"
 								onClick={() => handleOffsetChange("left")}
 								aria-label={t(
 									"toolkit.readingProgress.toolbar.move_left"
@@ -497,6 +573,16 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 							const relativeDepth =
 								heading.level - getMinHeadingLevel;
 							const headingNumber = generateHeadingNumber(index);
+							const showChildren = hasChildren(index);
+							const isCollapsed = collapsedItems.has(index);
+							const shouldHide = headings
+								.slice(0, index)
+								.some(
+									(h, i) =>
+										collapsedItems.has(i) &&
+										getChildIndices(i).includes(index)
+								);
+							if (shouldHide) return null;
 
 							return (
 								<div
@@ -509,14 +595,36 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 									data-active={index === activeHeadingIndex}
 									onClick={() => onHeadingClick(heading)}
 								>
-									<span className="rht-toc-item-text">
-										{config.useHeadingNumber && (
-											<span className="rht-toc-item-number">
-												{headingNumber}
-											</span>
+									<div className="rht-toc-item-content">
+										{showChildren && (
+											<button
+												className="rht-toc-collapse-btn clickable-icon"
+												onClick={(e) => {
+													e.stopPropagation();
+													handleCollapse(index);
+												}}
+											>
+												<ChevronRight
+													size={14}
+													className={`rht-toc-collapse-icon ${
+														isCollapsed
+															? ""
+															: "expanded"
+													}`}
+												/>
+											</button>
 										)}
-										{getCleanHeadingText(heading.heading)}
-									</span>
+										<span className="rht-toc-item-text">
+											{config.useHeadingNumber && (
+												<span className="rht-toc-item-number">
+													{headingNumber}
+												</span>
+											)}
+											{getCleanHeadingText(
+												heading.heading
+											)}
+										</span>
+									</div>
 									<span className="rht-toc-item-level">
 										H{heading.level}
 									</span>

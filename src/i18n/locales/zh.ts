@@ -216,6 +216,8 @@ export const zh: Message = {
 				move_left: "向左移动1px",
 				move_right: "向右移动1px",
 				copy_toc: "复制目录",
+				expand_all: "展开所有",
+				collapse_all: "折叠所有",
 			},
 			settings: {
 				segment: {

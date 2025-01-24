@@ -211,6 +211,8 @@ export type Message = {
 				move_left: string;
 				move_right: string;
 				copy_toc: string;
+				expand_all: string;
+				collapse_all: string;
 			};
 			settings: {
 				segment: {
