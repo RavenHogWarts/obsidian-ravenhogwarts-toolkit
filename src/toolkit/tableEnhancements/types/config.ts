@@ -1,7 +1,8 @@
+import { IToolkitModuleConfig } from "@/src/core/interfaces/types";
 import { ISavedCalculation } from "./operations";
 
 /** 表格增强配置接口 */
-export interface ITableEnhancementsConfig {
+export interface ITableEnhancementsConfig extends IToolkitModuleConfig {
 	/** 是否启用 */
 	enabled: boolean;
 }

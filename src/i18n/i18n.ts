@@ -175,6 +175,10 @@ export type Message = {
 					title: string;
 					description: string;
 				};
+				addFileMenu: {
+					title: string;
+					description: string;
+				};
 				absolutePath: {
 					title: string;
 					description: string;

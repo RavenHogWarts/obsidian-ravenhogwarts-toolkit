@@ -188,6 +188,11 @@ export const en: Message = {
 					description:
 						"Add an option to paste the current file path in the editor menu",
 				},
+				addFileMenu: {
+					title: "Add File List Menu",
+					description:
+						"Add an option to copy the file/folder path in the file list menu.",
+				},
 				absolutePath: {
 					title: "Absolute Path",
 					description:

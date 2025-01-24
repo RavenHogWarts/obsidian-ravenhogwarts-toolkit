@@ -179,6 +179,11 @@ export const zh: Message = {
 					title: "添加编辑器菜单",
 					description: "在编辑器菜单中添加粘贴当前文件路径的选项",
 				},
+				addFileMenu: {
+					title: "添加文件列表菜单",
+					description:
+						"在文件列表菜单中添加复制文件/文件夹路径的选项",
+				},
 				absolutePath: {
 					title: "绝对路径",
 					description: "使用绝对路径，即从操作系统根目录开始的路径",

@@ -41,6 +41,18 @@ export const QuickPathSettings: React.FC<QuickPathSettingsProps> = ({
 			</SettingItem>
 
 			<SettingItem
+				name={t("toolkit.quickPath.settings.addFileMenu.title")}
+				desc={t("toolkit.quickPath.settings.addFileMenu.description")}
+			>
+				<Toggle
+					checked={config.addFileMenu}
+					onChange={(checked) =>
+						handleUpdateConfig({ addFileMenu: checked })
+					}
+				/>
+			</SettingItem>
+
+			<SettingItem
 				name={t("toolkit.quickPath.settings.absolutePath.title")}
 				desc={t("toolkit.quickPath.settings.absolutePath.description")}
 			>

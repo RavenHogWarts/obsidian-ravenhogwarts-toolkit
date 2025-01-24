@@ -8,6 +8,10 @@ export interface IQuickPathConfig extends IToolkitModuleConfig {
 	useAbsolutePath: boolean;
 	// 多文件路径分隔符
 	pathSeparator: string;
+	// 是否添加到编辑器菜单
+	addEditorMenu: boolean;
+	// 是否添加到文件菜单
+	addFileMenu: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -20,4 +24,5 @@ export const QUICK_PATH_DEFAULT_CONFIG: IQuickPathConfig = {
 	useAbsolutePath: false,
 	pathSeparator: "\n",
 	addEditorMenu: true,
+	addFileMenu: true,
 };

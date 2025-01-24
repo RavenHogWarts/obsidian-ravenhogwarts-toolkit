@@ -1,3 +1,5 @@
+import { IToolkitModuleConfig } from "@/src/core/interfaces/types";
+
 export interface IFrontMatterEntry {
 	key: string;
 	value: any;
@@ -19,8 +21,7 @@ export interface ISortingRules {
 	caseSensitive: boolean; // 是否区分大小写
 }
 
-export interface IFrontmatterSorterConfig {
-	enabled: boolean;
+export interface IFrontmatterSorterConfig extends IToolkitModuleConfig {
 	sortOnSave: boolean;
 	ignoreFolders: string[];
 	ignoreFiles: string[];

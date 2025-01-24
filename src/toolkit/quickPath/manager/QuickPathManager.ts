@@ -69,18 +69,28 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
 	}
 
 	protected registerEventHandlers(): void {
-		// 文件菜单（单个文件/文件夹）
-		this.registerEvent(
-			this.app.workspace.on("file-menu", this.handleFileMenu.bind(this))
-		);
+		if (!this.isEnabled()) return;
 
-		// 文件菜单（多个文件）
-		this.registerEvent(
-			this.app.workspace.on("files-menu", this.handleFilesMenu.bind(this))
-		);
+		if (this.config.addFileMenu) {
+			// 文件菜单（单个文件/文件夹）
+			this.registerEvent(
+				this.app.workspace.on(
+					"file-menu",
+					this.handleFileMenu.bind(this)
+				)
+			);
 
-		// 编辑器菜单
+			// 文件菜单（多个文件）
+			this.registerEvent(
+				this.app.workspace.on(
+					"files-menu",
+					this.handleFilesMenu.bind(this)
+				)
+			);
+		}
+
 		if (this.config.addEditorMenu) {
+			// 编辑器菜单
 			this.registerEvent(
 				this.app.workspace.on(
 					"editor-menu",
@@ -92,6 +102,7 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
 
 	private handleFileMenu(menu: Menu, file: TFile | TFolder): void {
 		if (!this.isEnabled()) return;
+		if (!this.config.addFileMenu) return;
 
 		if (file instanceof TFolder) {
 			this.addMenuItem(menu, {
@@ -131,6 +142,7 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
 
 	private handleEditorMenu(menu: Menu, editor: Editor): void {
 		if (!this.isEnabled()) return;
+		if (!this.config.addEditorMenu) return;
 
 		this.addMenuItem(
 			menu,

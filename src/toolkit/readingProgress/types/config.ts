@@ -1,5 +1,6 @@
-export interface IReadingProgressConfig {
-	enabled: boolean;
+import { IToolkitModuleConfig } from "@/src/core/interfaces/types";
+
+export interface IReadingProgressConfig extends IToolkitModuleConfig {
 	showTOC: boolean;
 	tocAlwaysExpanded: boolean;
 	progressStyle: "bar" | "ring" | "none" | "both";
