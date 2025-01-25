@@ -227,13 +227,22 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 
 	const generateHeadingNumber = React.useCallback(
 		(index: number): string => {
+			// 如果当前标题是 h1 且配置了跳过 h1，则不显示编号
+			if (config.skipH1Numbering && headings[index].level === 1) {
+				return "";
+			}
+
 			const stack: number[] = [];
 			const levels: number[] = [];
-			const currentHeading = headings[index];
 
 			// 从头开始遍历，构建正确的层级关系
 			for (let i = 0; i <= index; i++) {
 				const heading = headings[i];
+
+				// 如果配置了跳过 h1 且当前是 h1，则跳过
+				if (config.skipH1Numbering && heading.level === 1) {
+					continue;
+				}
 
 				while (
 					levels.length > 0 &&
@@ -251,9 +260,17 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 					let count = 1;
 					// 向前查找同级标题
 					for (let j = i - 1; j >= 0; j--) {
+						if (config.skipH1Numbering && headings[j].level === 1) {
+							continue;
+						}
 						if (
 							headings[j].level === heading.level &&
-							isUnderSameParent(j, i, headings)
+							isUnderSameParent(
+								j,
+								i,
+								headings,
+								config.skipH1Numbering
+							)
 						) {
 							count++;
 						}
@@ -272,7 +289,8 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 	const isUnderSameParent = (
 		index1: number,
 		index2: number,
-		headings: HeadingCache[]
+		headings: HeadingCache[],
+		skipH1: boolean
 	): boolean => {
 		const level = headings[index1].level;
 
@@ -281,6 +299,10 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 		let parent2 = -1;
 
 		for (let i = index1; i >= 0; i--) {
+			// 如果配置了跳过 h1，则忽略 h1 标题
+			if (skipH1 && headings[i].level === 1) {
+				continue;
+			}
 			if (headings[i].level < level) {
 				parent1 = i;
 				break;
@@ -288,6 +310,10 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 		}
 
 		for (let i = index2; i >= 0; i--) {
+			// 如果配置了跳过 h1，则忽略 h1 标题
+			if (skipH1 && headings[i].level === 1) {
+				continue;
+			}
 			if (headings[i].level < level) {
 				parent2 = i;
 				break;
