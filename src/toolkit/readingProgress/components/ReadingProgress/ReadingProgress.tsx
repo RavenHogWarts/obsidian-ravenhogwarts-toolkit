@@ -622,11 +622,17 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 											</button>
 										)}
 										<span className="rht-toc-item-text">
-											{config.useHeadingNumber && (
-												<span className="rht-toc-item-number">
-													{headingNumber}
-												</span>
-											)}
+											<span
+												className="rht-toc-item-number"
+												style={{
+													display:
+														config.useHeadingNumber
+															? "inline"
+															: "none",
+												}}
+											>
+												{headingNumber}
+											</span>
 											{getCleanHeadingText(
 												heading.heading
 											)}
