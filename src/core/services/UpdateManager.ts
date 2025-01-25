@@ -54,11 +54,11 @@ export class UpdateManager {
 				0;
 
 			rootLogger.notice(
-				`${t("notice.version_check", {
+				t("notice.version_check", {
 					currentVersion,
 					latestVersion,
 					hasUpdate,
-				})}`
+				})
 			);
 
 			if (hasUpdate) {
@@ -115,10 +115,10 @@ export class UpdateManager {
 			}
 
 			rootLogger.notice(
-				`${t("notice.update_success", {
+				t("notice.update_success", {
 					pluginId: this.PLUGIN_ID,
 					version: release.tag_name,
-				})}`
+				})
 			);
 		} catch (error) {
 			rootLogger.error("Update failed:", error);
