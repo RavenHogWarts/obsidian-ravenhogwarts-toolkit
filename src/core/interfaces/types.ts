@@ -21,6 +21,10 @@ export interface IRavenHogwartsToolkitConfig {
 		menu: {
 			useSubMenu: boolean;
 		};
+		updater: {
+			autoUpdate: boolean;
+			checkBeta: boolean;
+		};
 	};
 	toolkit: {
 		[key: string]: IToolkitModule;
@@ -54,6 +58,10 @@ export const DEFAULT_CONFIG: IRavenHogwartsToolkitConfig = {
 		},
 		menu: {
 			useSubMenu: true,
+		},
+		updater: {
+			autoUpdate: false,
+			checkBeta: false,
 		},
 	},
 	toolkit: {},
@@ -91,3 +99,10 @@ export const TOOLKIT_CONFIG: Record<
 		iconName: "radar",
 	},
 };
+
+export interface ProxySource {
+	url: string;
+	name: string;
+	timeout: number;
+	enabled: boolean;
+}

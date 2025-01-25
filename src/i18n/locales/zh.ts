@@ -8,6 +8,9 @@ export const zh: Message = {
 			description:
 				"欢迎使用工具包，查看<a href='https://ravenhogwarts.github.io/docs/zh/obsidian-ravenhogwarts-toolkit' target='_blank'>wiki文档</a>了解更多功能",
 			version_hint: "继续点击...",
+			auto_update: "自动更新",
+			check_beta: "接收Beta",
+			check_update: "检查更新",
 		},
 		developer: {
 			title: "开发者设置",
@@ -28,6 +31,10 @@ export const zh: Message = {
 		toggle_toolkit: "启用/禁用工具包",
 		confirm: "确认",
 		cancel: "取消",
+	},
+	notice: {
+		version_check: "版本检查: 当前版本={0}, 最新版本={1}, 可更新={2}",
+		update_success: "插件 {0} 更新到 {1} 版本，请重启 Obsidian",
 	},
 	toolkit: {
 		tableEnhancements: {
@@ -236,6 +243,10 @@ export const zh: Message = {
 				useHeadingNumber: {
 					title: "使用标题编号",
 					description: "层级编号，根据相对深度计算",
+				},
+				skipH1Numbering: {
+					title: "跳过 h1 编号",
+					description: "跳过 h1 编号，不显示 h1 编号",
 				},
 				showToolbar: {
 					title: "悬浮工具栏",

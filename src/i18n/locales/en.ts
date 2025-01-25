@@ -7,6 +7,9 @@ export const en: Message = {
 			title: "Toolkit Management",
 			description: `Welcome to the toolkit, view <a href="https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit" target="_blank">wiki documentation</a> for more features`,
 			version_hint: "Keep clicking...",
+			auto_update: "Auto Update",
+			check_beta: "Receive Beta",
+			check_update: "Check Update",
 		},
 		developer: {
 			title: "Developer Settings",
@@ -28,6 +31,11 @@ export const en: Message = {
 		toggle_toolkit: "Toggle Toolkit",
 		confirm: "Confirm",
 		cancel: "Cancel",
+	},
+	notice: {
+		version_check: "Version check: current={0}, latest={1}, hasUpdate={2}",
+		update_success:
+			"Plugin {0} updated to {1} version, please restart Obsidian",
 	},
 	toolkit: {
 		tableEnhancements: {
@@ -249,6 +257,11 @@ export const en: Message = {
 					title: "Use Heading Number",
 					description:
 						"Heading number, calculated based on relative depth",
+				},
+				skipH1Numbering: {
+					title: "Skip H1 Numbering",
+					description:
+						"Skip H1 Numbering, do not display H1 Numbering",
 				},
 				showToolbar: {
 					title: "Toolbar",

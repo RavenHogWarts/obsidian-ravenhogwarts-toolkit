@@ -13,6 +13,9 @@ export type Message = {
 			title: string;
 			description: string;
 			version_hint: string;
+			auto_update: string;
+			check_beta: string;
+			check_update: string;
 		};
 		developer: {
 			title: string;
@@ -29,6 +32,10 @@ export type Message = {
 				useSubMenu: string;
 			};
 		};
+	};
+	notice: {
+		version_check: string;
+		update_success: string;
 	};
 	toolkit: {
 		tableEnhancements: {
@@ -229,6 +236,10 @@ export type Message = {
 					description: string;
 				};
 				useHeadingNumber: {
+					title: string;
+					description: string;
+				};
+				skipH1Numbering: {
 					title: string;
 					description: string;
 				};
