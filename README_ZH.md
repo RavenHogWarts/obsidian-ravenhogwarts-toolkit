@@ -1,5 +1,7 @@
 [English](README.md) | 中文
 # RavenHogwarts's Toolkit
+> 别名 **OTK** (Obsidian Toolkit)
+
 个人工具箱插件，集成了各种Obsidian实用工具，旨在增强个人笔记体验。
 
 [![GitHub stars](https://img.shields.io/github/stars/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=星标)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/stargazers)

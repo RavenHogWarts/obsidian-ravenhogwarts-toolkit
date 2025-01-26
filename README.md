@@ -1,6 +1,8 @@
 [中文](README_ZH.md) | English
 # RavenHogwarts's Toolkit
-A personal toolkit plugin that integrates various Obsidian utilities, designed to enhance personal note-taking experience.
+> Also known as **OTK** (Obsidian Toolkit)
+
+A personal toolkit plugin (OTK) that integrates various Obsidian utilities, designed to enhance personal note-taking experience.
 
 [![GitHub stars](https://img.shields.io/github/stars/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=Stars)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/stargazers)
 [![Total Downloads](https://img.shields.io/github/downloads/RavenHogWarts/obsidian-ravenhogwarts-toolkit/total?style=flat&label=Total%20Downloads)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/releases)

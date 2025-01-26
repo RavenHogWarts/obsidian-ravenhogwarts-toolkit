@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-sample-plugin",
+	"name": "obsidian-ravenhogwarts-toolkit",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "A personal toolkit plugin (OTK) that integrates various Obsidian utilities, designed to enhance personal note-taking experience.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node scripts/esbuild.config.mjs",
@@ -10,7 +10,11 @@
 		"lint": "eslint . --ext .ts,.tsx",
 		"lint:fix": "eslint . --ext .ts,.tsx --fix"
 	},
-	"keywords": [],
+	"keywords": [
+		"OTK",
+		"Obsidian Toolkit",
+		"Obsidian RavenHogWarts Toolkit"
+	],
 	"author": "",
 	"license": "MIT",
 	"devDependencies": {
