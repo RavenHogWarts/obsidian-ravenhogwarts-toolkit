@@ -155,51 +155,88 @@ export class UpdateManager {
 	}): Promise<string | null> {
 		try {
 			rootLogger.debug(`Downloading file from:`, asset);
+			const proxySource = this.plugin.settings.config.updater.proxySource;
 
-			const response = await requestUrl({
-				url: asset.browser_download_url,
-				method: "GET",
-				headers: {
-					Accept: "application/octet-stream",
-					"User-Agent":
-						"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)",
-					Referer: "https://github.com/",
-				},
-			});
+			for (const proxy of proxySource) {
+				if (!proxy.enabled) continue;
 
-			if (response.status === 200) {
-				const content = response.text;
-				rootLogger.debug(`Content preview: ${content.slice(0, 200)}`);
-				if (content && content.length > 0) {
-					rootLogger.info(
-						`Successfully downloaded file ${asset.name} from ${asset.browser_download_url}`
+				const URL = asset.browser_download_url.replace(
+					"https://github.com/",
+					proxy.url
+				);
+
+				try {
+					const response = await requestUrl({
+						url: URL,
+						method: "GET",
+						headers: {
+							Accept: "application/octet-stream",
+							"User-Agent":
+								"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)",
+							Referer: "https://github.com/",
+						},
+						throw: true,
+					});
+
+					if (response.status === 200) {
+						const content = response.text;
+						rootLogger.debug(
+							`Content preview: ${content.slice(0, 200)}`
+						);
+						if (content && content.length > 0) {
+							rootLogger.info(
+								`Successfully downloaded file ${asset.name} from ${URL}`
+							);
+							return content;
+						}
+						rootLogger.debug(`Empty content from ${URL}`);
+					}
+				} catch (proxyError) {
+					rootLogger.debug(
+						`Failed to download from ${URL}: ${proxyError.message}`
 					);
-					return content;
+					continue;
 				}
 			}
-
-			throw new Error(`Download failed with status ${response.status}`);
+			throw new Error("All proxy attempts failed");
 		} catch (error) {
-			rootLogger.debug(
-				`Failed from ${asset.browser_download_url}:`,
-				error
-			);
+			rootLogger.error(`Download failed for ${asset.name}:`, error);
 			return null;
 		}
 	}
 
 	private parseVersion(version: string): Version {
-		// 分离版本号和 beta 信息
-		const [versionPart, betaPart] = version.split("-beta.");
-		const [major, minor, patch] = versionPart.split(".").map(Number);
+		try {
+			// 验证版本号格式
+			if (!version.match(/^\d+\.\d+\.\d+(-beta\.\d+)?$/)) {
+				throw new Error(`Invalid version format: ${version}`);
+			}
 
-		return {
-			major: major || 1,
-			minor: minor || 0,
-			patch: patch || 0,
-			isBeta: !!betaPart,
-			betaVersion: betaPart ? parseInt(betaPart) : undefined,
-		};
+			const [versionPart, betaPart] = version.split("-beta.");
+			const [majorStr, minorStr, patchStr] = versionPart.split(".");
+
+			// 明确的数字转换
+			const major = Number(majorStr);
+			const minor = Number(minorStr);
+			const patch = Number(patchStr);
+
+			// 验证数字有效性
+			if ([major, minor, patch].some((num) => isNaN(num))) {
+				throw new Error(`Invalid version numbers: ${version}`);
+			}
+
+			return {
+				major,
+				minor,
+				patch,
+				isBeta: !!betaPart,
+				betaVersion: betaPart ? Number(betaPart) : undefined,
+			};
+		} catch (error) {
+			rootLogger.error(`Version parsing error: ${error.message}`);
+			// 返回一个安全的默认值或抛出错误
+			throw error;
+		}
 	}
 
 	private compareVersions(
@@ -207,35 +244,49 @@ export class UpdateManager {
 		v2: string,
 		checkBeta: boolean
 	): number {
-		const ver1 = this.parseVersion(v1);
-		const ver2 = this.parseVersion(v2);
+		try {
+			const ver1 = this.parseVersion(v1);
+			const ver2 = this.parseVersion(v2);
 
-		// 如果大版本号不同，直接比较大版本号
-		if (ver1.major !== ver2.major) {
-			return ver1.major - ver2.major;
-		}
-
-		// 在相同大版本下：
-		// checkBeta为true时，beta版本优先
-		// checkBeta为false时，正式版优先
-		if (ver1.isBeta !== ver2.isBeta) {
-			if (checkBeta) {
-				return ver1.isBeta ? 1 : -1; // beta 优先
-			} else {
-				return ver1.isBeta ? -1 : 1; // 正式版优先
+			// 主版本号比较
+			if (ver1.major !== ver2.major) {
+				return ver1.major - ver2.major;
 			}
+
+			// 次版本号比较
+			if (ver1.minor !== ver2.minor) {
+				return ver1.minor - ver2.minor;
+			}
+
+			// 修订版本号比较
+			if (ver1.patch !== ver2.patch) {
+				return ver1.patch - ver2.patch;
+			}
+
+			// Beta 版本处理
+			if (ver1.isBeta !== ver2.isBeta) {
+				return checkBeta
+					? ver1.isBeta
+						? 1
+						: -1 // beta 优先
+					: ver1.isBeta
+					? -1
+					: 1; // 正式版优先
+			}
+
+			// 都是 beta 版本时比较 beta 版本号
+			if (ver1.isBeta && ver2.isBeta) {
+				const beta1 = ver1.betaVersion ?? 0;
+				const beta2 = ver2.betaVersion ?? 0;
+				return beta1 - beta2;
+			}
+
+			return 0;
+		} catch (error) {
+			rootLogger.error(`Version comparison error: ${error.message}`);
+			// 在版本比较出错时返回保守的结果
+			return 0;
 		}
-
-		// 版本类型相同时（都是beta或都是正式版），继续比较其他版本号
-		if (ver1.minor !== ver2.minor) return ver1.minor - ver2.minor;
-		if (ver1.patch !== ver2.patch) return ver1.patch - ver2.patch;
-
-		// 如果都是 beta 版本，比较 beta 版本号
-		if (ver1.isBeta && ver2.isBeta) {
-			return (ver1.betaVersion || 0) - (ver2.betaVersion || 0);
-		}
-
-		return 0;
 	}
 
 	private async ensurePluginDir(

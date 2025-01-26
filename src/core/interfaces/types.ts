@@ -24,6 +24,8 @@ export interface IRavenHogwartsToolkitConfig {
 		updater: {
 			autoUpdate: boolean;
 			checkBeta: boolean;
+			proxySource: ProxySource[];
+			lastProxyOptimizeTime?: string;
 		};
 	};
 	toolkit: {
@@ -47,6 +49,45 @@ export interface IToolkitModule {
 	data: IToolkitModuleData;
 }
 
+export const PROXY_SOURCE_DEFAULT: ProxySource[] = [
+	{
+		url: "https://github.com/",
+		name: "Direct",
+		timeout: 5000,
+		enabled: true,
+	},
+	{
+		url: "https://ghproxy.cn/https://github.com/",
+		name: "GHProxy-CN",
+		timeout: 5000,
+		enabled: true,
+	},
+	{
+		url: "https://hub.gitmirror.com/https://github.com/",
+		name: "GitMirror",
+		timeout: 5000,
+		enabled: true,
+	},
+	{
+		url: "https://slink.ltd/https://github.com/",
+		name: "Slink",
+		timeout: 5000,
+		enabled: true,
+	},
+	{
+		url: "https://gh-proxy.ygxz.in/https://github.com/",
+		name: "GHProxy-YGXZ",
+		timeout: 5000,
+		enabled: true,
+	},
+	{
+		url: "https://down.sciproxy.com/github.com//https://github.com/",
+		name: "SciProxy",
+		timeout: 5000,
+		enabled: true,
+	},
+];
+
 // 默认配置
 export const DEFAULT_CONFIG: IRavenHogwartsToolkitConfig = {
 	config: {
@@ -62,6 +103,8 @@ export const DEFAULT_CONFIG: IRavenHogwartsToolkitConfig = {
 		updater: {
 			autoUpdate: false,
 			checkBeta: false,
+			proxySource: PROXY_SOURCE_DEFAULT,
+			lastProxyOptimizeTime: undefined,
 		},
 	},
 	toolkit: {},
