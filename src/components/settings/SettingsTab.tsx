@@ -7,6 +7,7 @@ import { ToolkitDetailSettings } from "./ToolkitDetailSettings";
 import { ToolkitId } from "@/src/core/interfaces/types";
 import { DeveloperSettings } from "./DeveloperSettings";
 import { Logger } from "@/src/core/services/Log";
+import "./styles/SettingsTab.css";
 
 export default class RavenHogwartsToolkitSettingTab extends PluginSettingTab {
 	plugin: RavenHogwartsToolkitPlugin;

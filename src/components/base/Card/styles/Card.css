@@ -1,0 +1,70 @@
+/* rht-card */
+.rht-card {
+	background: var(--background-secondary);
+	border-radius: 12px;
+	padding: 1.25rem;
+	border: 1px solid var(--background-modifier-border);
+	transition: all 0.2s ease;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.rht-card:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	transform: translateY(-2px);
+	border-color: var(--interactive-accent);
+}
+
+.rht-card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 1rem;
+	gap: 1rem;
+}
+
+.rht-card-title {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	flex: 1;
+	min-width: 0;
+}
+
+.rht-card-icon {
+	flex-shrink: 0;
+	color: var(--interactive-accent);
+}
+
+.rht-card-title-text {
+	margin: 0;
+	font-size: 1.1rem;
+	font-weight: 600;
+	color: var(--text-normal);
+	line-height: 1.4;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rht-card-description {
+	color: var(--text-muted);
+	font-size: 0.95rem;
+	margin: 0 0 1.25rem;
+	line-height: 1.5;
+	flex-grow: 1;
+}
+
+.rht-card-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	flex-shrink: 0;
+}
+
+@media screen and (max-width: 768px) {
+	.rht-card {
+		padding: 1rem;
+	}
+}

@@ -10,6 +10,7 @@ export const en: Message = {
 			auto_update: "Auto Update",
 			check_beta: "Receive Beta",
 			check_update: "Check Update",
+			update_available: "Update Available: {0}",
 		},
 		developer: {
 			title: "Developer Settings",

@@ -28,6 +28,8 @@ export class UpdateManager {
 		"styles.css",
 	];
 	private readonly PLUGIN_ID = "obsidian-ravenhogwarts-toolkit";
+	private latestRelease: ReleaseInfo | null = null;
+	private hasNewVersion = false;
 
 	constructor(private plugin: RavenHogwartsToolkitPlugin) {}
 
@@ -36,20 +38,20 @@ export class UpdateManager {
 		const checkBeta = this.plugin.settings.config.updater.checkBeta;
 
 		try {
-			const latestRelease = await this.getLatestRelease(
+			this.latestRelease = await this.getLatestRelease(
 				this.REPO,
 				checkBeta
 			);
 
-			if (!latestRelease) {
+			if (!this.latestRelease) {
 				rootLogger.info("No valid release found");
 				return false;
 			}
 
-			rootLogger.debug("Latest release:", latestRelease);
+			rootLogger.debug("Latest release:", this.latestRelease);
 
-			const latestVersion = latestRelease.tag_name;
-			const hasUpdate =
+			const latestVersion = this.latestRelease.tag_name;
+			this.hasNewVersion =
 				this.compareVersions(latestVersion, currentVersion, checkBeta) >
 				0;
 
@@ -57,15 +59,15 @@ export class UpdateManager {
 				t("notice.version_check", [
 					currentVersion,
 					latestVersion,
-					hasUpdate,
+					this.hasNewVersion,
 				])
 			);
 
-			if (hasUpdate) {
-				await this.performUpdate(latestRelease);
+			if (this.hasNewVersion) {
+				await this.performUpdate(this.latestRelease);
 			}
 
-			return hasUpdate;
+			return this.hasNewVersion;
 		} catch (error) {
 			rootLogger.error("Update check failed:", error);
 			return false;

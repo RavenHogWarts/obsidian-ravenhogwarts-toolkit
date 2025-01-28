@@ -13,6 +13,7 @@ import {
 } from "@/src/core/interfaces/types";
 import parse from "html-react-parser";
 import { ContextMenu } from "@/src/components/base/Menu/ContextMenu";
+import "./styles/ToolkitOverview.css";
 
 interface ToolkitOverviewProps {
 	plugin: RavenHogwartsToolkitPlugin;

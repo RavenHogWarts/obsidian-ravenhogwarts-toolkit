@@ -16,6 +16,7 @@ export type Message = {
 			auto_update: string;
 			check_beta: string;
 			check_update: string;
+			update_available: string;
 		};
 		developer: {
 			title: string;

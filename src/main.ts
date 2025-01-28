@@ -8,8 +8,6 @@ import { TableEnhancementsManager } from "./toolkit/tableEnhancements/manager/Ta
 import { FrontMatterSorterManager } from "./toolkit/frontmatterSorter/manager/FrontMatterSorterManager";
 import { QuickPathManager } from "./toolkit/quickPath/manager/QuickPathManager";
 import { ReadingProgressManager } from "./toolkit/readingProgress/manager/ReadingProgressManager";
-import "@/style/styles.css";
-import "@/style/settings.css";
 
 export default class RavenHogwartsToolkitPlugin extends Plugin {
 	public pluginManager: PluginManager;

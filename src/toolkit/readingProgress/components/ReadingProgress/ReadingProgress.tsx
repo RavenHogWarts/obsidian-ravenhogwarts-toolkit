@@ -1,6 +1,6 @@
 import * as React from "react";
 import { HeadingCache } from "obsidian";
-import { ProgressRing } from "@/src/components/base/ProgresssRing/ProgressRing";
+import { ProgressRing } from "@/src/components/base/ProgressRing/ProgressRing";
 import {
 	ArrowDownToLine,
 	ArrowLeftRight,

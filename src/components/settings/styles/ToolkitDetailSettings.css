@@ -1,0 +1,64 @@
+/* rht-toolkit-detail */
+.rht-toolkit-detail {
+	padding: 1rem;
+	max-width: 800px;
+	margin: 0 auto;
+	animation: slideIn 0.3s ease-out;
+}
+
+.rht-toolkit-detail-header {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 2rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.rht-toolkit-detail-header h2 {
+	margin: 0;
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.rht-back-button {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	background: transparent;
+	border: none;
+	padding: 0.5rem;
+	border-radius: 4px;
+	cursor: pointer;
+	color: var(--text-muted);
+	font-size: 0.9rem;
+	transition: all 0.2s ease;
+}
+
+.rht-back-button:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.rht-back-icon {
+	font-size: 1.2rem;
+}
+
+.rht-toolkit-detail-content {
+	background: var(--background-secondary);
+	border-radius: 8px;
+	padding: 1.5rem;
+	border: 1px solid var(--background-modifier-border);
+}
+
+@keyframes slideIn {
+	from {
+		opacity: 0;
+		transform: translateX(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}

@@ -4,6 +4,7 @@ import { ToolkitId } from "@/src/core/interfaces/types";
 import { ArrowLeft } from "lucide-react";
 import { App } from "obsidian";
 import RavenHogwartsToolkitPlugin from "@/src/main";
+import "./styles/ToolkitDetailSettings.css";
 import { QuickPathSettings } from "@/src/toolkit/quickPath/components/settings/QuickPathSettings";
 import { FrontmatterSorterSettings } from "@/src/toolkit/frontmatterSorter/components/settings/FrontmatterSorterSettings";
 import { TableEnhancementsSettings } from "@/src/toolkit/tableEnhancements/components/settings/TableEnhancementsSettings";

@@ -14,10 +14,12 @@ export class PluginManager {
 	private toolkitMenu: Menu | null = null;
 	private menuRegistrations: Map<string, Set<string>> = new Map();
 	private plugin: RavenHogwartsToolkitPlugin;
+	private updateManager: UpdateManager;
 
 	constructor(plugin: RavenHogwartsToolkitPlugin) {
 		this.plugin = plugin;
 		this.settings = { ...DEFAULT_CONFIG };
+		this.updateManager = new UpdateManager(plugin);
 	}
 
 	async initialize() {
@@ -230,8 +232,7 @@ export class PluginManager {
 		return this.settings;
 	}
 
-	async checkForUpdates() {
-		const updateManager = new UpdateManager(this.plugin);
-		return await updateManager.checkForUpdates();
+	async checkForUpdates(): Promise<boolean> {
+		return await this.updateManager.checkForUpdates();
 	}
 }

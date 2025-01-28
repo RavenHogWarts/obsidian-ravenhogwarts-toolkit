@@ -350,30 +350,6 @@
 	margin-top: 8px;
 }
 
-.rht-progress-ring-container {
-	position: relative;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.rht-progress-ring {
-	display: block;
-}
-
-.rht-progress-text {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	font-size: 11px;
-	color: var(--text-muted);
-	font-weight: 500;
-	user-select: none;
-	line-height: 1;
-	white-space: nowrap;
-}
-
 .rht-return {
 	flex-direction: column;
 	align-items: center;

@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import * as React from "react";
+import "./styles/TagInput.css";
 
 interface TagInputProps {
 	values: string[];

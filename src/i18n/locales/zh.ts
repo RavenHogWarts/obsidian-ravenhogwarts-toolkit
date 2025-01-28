@@ -11,6 +11,7 @@ export const zh: Message = {
 			auto_update: "自动更新",
 			check_beta: "接收Beta",
 			check_update: "检查更新",
+			update_available: "更新可用: {0}",
 		},
 		developer: {
 			title: "开发者设置",

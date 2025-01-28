@@ -1,5 +1,6 @@
 import * as React from "react";
 import { LucideIcon } from "lucide-react";
+import "./styles/Card.css";
 
 interface CardProps {
 	title: string;

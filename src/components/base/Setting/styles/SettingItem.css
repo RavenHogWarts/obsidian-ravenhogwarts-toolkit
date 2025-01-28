@@ -1,0 +1,64 @@
+.rht-setting-item {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	padding: 1.25rem 0;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.rht-setting-item.is-collapsible {
+	flex-direction: column;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.rht-setting-item-info {
+	flex: 1;
+	margin-right: 1.5rem;
+	padding: 0.25rem 0;
+}
+
+.rht-setting-item.is-collapsible .rht-setting-item-info {
+	margin-right: 0;
+	margin-bottom: 0.75rem;
+	width: 100%;
+}
+
+.rht-setting-item-heading {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin-bottom: 0.5rem;
+}
+
+.rht-setting-item-icon {
+	color: var(--interactive-accent);
+	display: flex;
+	align-items: center;
+}
+
+.rht-setting-item-name {
+	font-weight: 600;
+	color: var(--text-normal);
+	font-size: 1rem;
+}
+
+.rht-setting-item-description {
+	font-size: 0.9rem;
+	color: var(--text-muted);
+	line-height: 1.5;
+}
+
+.rht-setting-item.is-collapsible .rht-setting-item-control {
+	width: 100%;
+	min-width: 0;
+}
+
+.rht-setting-item-collapse-icon {
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-muted);
+	transition: color 0.2s ease;
+}

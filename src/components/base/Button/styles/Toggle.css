@@ -1,0 +1,44 @@
+/* rht-toggle */
+.rht-toggle {
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+	width: 40px;
+	height: 24px;
+}
+
+.rht-toggle.is-disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.rht-toggle-slider {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: var(--text-muted);
+	border-radius: 34px;
+	transition: 0.2s;
+}
+
+.rht-toggle-slider::before {
+	position: absolute;
+	content: "";
+	height: 16px;
+	width: 16px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	border-radius: 50%;
+	transition: 0.2s;
+}
+
+.rht-toggle.is-enabled .rht-toggle-slider {
+	background-color: var(--interactive-accent);
+}
+
+.rht-toggle.is-enabled .rht-toggle-slider::before {
+	transform: translateX(16px);
+}

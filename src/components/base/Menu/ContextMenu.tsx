@@ -2,7 +2,7 @@ import * as React from "react";
 import "./styles/ContextMenu.css";
 import { Circle, CircleCheck } from "lucide-react";
 
-interface MenuOption {
+export interface MenuOption {
 	label: string;
 	icon?: React.ReactNode;
 	type: "button" | "toggle";

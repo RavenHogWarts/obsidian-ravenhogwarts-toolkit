@@ -1,4 +1,5 @@
 import * as React from "react";
+import "./styles/ProgressRing.css";
 
 interface ProgressRingProps {
 	progress: number;
