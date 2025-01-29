@@ -604,89 +604,94 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 						onMouseDown={handleMouseDragStart}
 					/>
 					{/* 目录内容容器 */}
-					<div
-						ref={tocListRef}
-						className="rht-toc-content"
-						style={tocListStyle}
-					>
-						{shouldShowProgressBar && (
-							<div
-								className="rht-toc-progress-bar"
-								style={
-									{
-										"--progress-width": `${progress}%`,
-									} as React.CSSProperties
-								}
-							></div>
-						)}
-						{headings.map((heading, index) => {
-							const actualDepth = calculateActualDepth(index);
-							const headingNumber = generateHeadingNumber(index);
-							const showChildren = hasChildren(index);
-							const isCollapsed = collapsedItems.has(index);
-							const shouldHide = headings
-								.slice(0, index)
-								.some(
-									(h, i) =>
-										collapsedItems.has(i) &&
-										getChildIndices(i).includes(index)
-								);
-							if (shouldHide) return null;
-
-							return (
+					{headings.length > 0 && (
+						<div
+							ref={tocListRef}
+							className="rht-toc-content"
+							style={tocListStyle}
+						>
+							{shouldShowProgressBar && (
 								<div
-									key={index}
-									className="rht-toc-item"
-									data-index={index}
-									data-depth={heading.level}
-									data-relative-depth={actualDepth}
-									data-line={heading.position.start.line}
-									data-active={index === activeHeadingIndex}
-									onClick={() => onHeadingClick(heading)}
-								>
-									<div className="rht-toc-item-content">
-										{showChildren && (
-											<button
-												className="rht-toc-collapse-btn clickable-icon"
-												onClick={(e) => {
-													e.stopPropagation();
-													handleCollapse(index);
-												}}
-											>
-												<ChevronRight
-													size={14}
-													className={`rht-toc-collapse-icon ${
-														isCollapsed
-															? ""
-															: "expanded"
-													}`}
-												/>
-											</button>
-										)}
-										<span className="rht-toc-item-text">
-											<span
-												className="rht-toc-item-number"
-												style={{
-													display:
-														config.useHeadingNumber
-															? "inline"
-															: "none",
-												}}
-											>
-												{headingNumber}
-											</span>
-											{getCleanHeadingText(
-												heading.heading
+									className="rht-toc-progress-bar"
+									style={
+										{
+											"--progress-width": `${progress}%`,
+										} as React.CSSProperties
+									}
+								></div>
+							)}
+							{headings.map((heading, index) => {
+								const actualDepth = calculateActualDepth(index);
+								const headingNumber =
+									generateHeadingNumber(index);
+								const showChildren = hasChildren(index);
+								const isCollapsed = collapsedItems.has(index);
+								const shouldHide = headings
+									.slice(0, index)
+									.some(
+										(h, i) =>
+											collapsedItems.has(i) &&
+											getChildIndices(i).includes(index)
+									);
+								if (shouldHide) return null;
+
+								return (
+									<div
+										key={index}
+										className="rht-toc-item"
+										data-index={index}
+										data-depth={heading.level}
+										data-relative-depth={actualDepth}
+										data-line={heading.position.start.line}
+										data-active={
+											index === activeHeadingIndex
+										}
+										onClick={() => onHeadingClick(heading)}
+									>
+										<div className="rht-toc-item-content">
+											{showChildren && (
+												<button
+													className="rht-toc-collapse-btn clickable-icon"
+													onClick={(e) => {
+														e.stopPropagation();
+														handleCollapse(index);
+													}}
+												>
+													<ChevronRight
+														size={14}
+														className={`rht-toc-collapse-icon ${
+															isCollapsed
+																? ""
+																: "expanded"
+														}`}
+													/>
+												</button>
 											)}
+											<span className="rht-toc-item-text">
+												<span
+													className="rht-toc-item-number"
+													style={{
+														display:
+															config.useHeadingNumber
+																? "inline"
+																: "none",
+													}}
+												>
+													{headingNumber}
+												</span>
+												{getCleanHeadingText(
+													heading.heading
+												)}
+											</span>
+										</div>
+										<span className="rht-toc-item-level">
+											H{heading.level}
 										</span>
 									</div>
-									<span className="rht-toc-item-level">
-										H{heading.level}
-									</span>
-								</div>
-							);
-						})}
-					</div>
+								);
+							})}
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
