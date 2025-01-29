@@ -220,11 +220,6 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 		};
 	}, [isMouseDragging, handleMouseDrag, handleMouseDragEnd]);
 
-	const getMinHeadingLevel = React.useMemo(() => {
-		if (!headings.length) return 1;
-		return Math.min(...headings.map((h) => h.level));
-	}, [headings]);
-
 	const generateHeadingNumber = React.useCallback(
 		(index: number): string => {
 			// 如果当前标题是 h1 且配置了跳过 h1，则不显示编号
@@ -299,7 +294,6 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 		let parent2 = -1;
 
 		for (let i = index1; i >= 0; i--) {
-			// 如果配置了跳过 h1，则忽略 h1 标题
 			if (skipH1 && headings[i].level === 1) {
 				continue;
 			}
@@ -310,7 +304,6 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 		}
 
 		for (let i = index2; i >= 0; i--) {
-			// 如果配置了跳过 h1，则忽略 h1 标题
 			if (skipH1 && headings[i].level === 1) {
 				continue;
 			}
@@ -344,6 +337,30 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 			}
 
 			return indices;
+		},
+		[headings]
+	);
+
+	const calculateActualDepth = React.useCallback(
+		(index: number): number => {
+			const currentHeading = headings[index];
+			let depth = 0;
+			let minLevel = currentHeading.level;
+
+			// 向前遍历寻找父级标题
+			for (let i = index - 1; i >= 0; i--) {
+				const prevHeading = headings[i];
+				// 只关注比当前标题级别小的标题
+				if (prevHeading.level < currentHeading.level) {
+					// 如果找到新的最小级别，增加深度
+					if (prevHeading.level < minLevel) {
+						depth++;
+						minLevel = prevHeading.level;
+					}
+				}
+			}
+
+			return depth;
 		},
 		[headings]
 	);
@@ -603,8 +620,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 							></div>
 						)}
 						{headings.map((heading, index) => {
-							const relativeDepth =
-								heading.level - getMinHeadingLevel;
+							const actualDepth = calculateActualDepth(index);
 							const headingNumber = generateHeadingNumber(index);
 							const showChildren = hasChildren(index);
 							const isCollapsed = collapsedItems.has(index);
@@ -623,7 +639,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 									className="rht-toc-item"
 									data-index={index}
 									data-depth={heading.level}
-									data-relative-depth={relativeDepth}
+									data-relative-depth={actualDepth}
 									data-line={heading.position.start.line}
 									data-active={index === activeHeadingIndex}
 									onClick={() => onHeadingClick(heading)}
