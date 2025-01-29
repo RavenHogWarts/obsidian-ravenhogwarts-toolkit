@@ -33,7 +33,6 @@ export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
 				return <FrontmatterSorterSettings app={app} plugin={plugin} />;
 			case "readingProgress":
 				return <ReadingProgressSettings plugin={plugin} />;
-			case "obReader":
 			default:
 				return null;
 		}

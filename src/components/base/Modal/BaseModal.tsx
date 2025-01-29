@@ -3,6 +3,7 @@ import RavenHogwartsToolkitPlugin from "@/src/main";
 import { createRoot, Root } from "react-dom/client";
 import * as React from "react";
 import { X } from "lucide-react";
+import "./styles/BaseModal.css";
 
 interface IBaseModalProps {
 	app: App;
