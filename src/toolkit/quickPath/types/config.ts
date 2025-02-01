@@ -14,10 +14,7 @@ export interface IQuickPathConfig extends IToolkitModuleConfig {
 	addFileMenu: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IQuickPathData extends IToolkitModuleData {
-	// 可以添加其他数据字段
-}
+export interface IQuickPathData extends IToolkitModuleData {}
 
 export const QUICK_PATH_DEFAULT_CONFIG: IQuickPathConfig = {
 	enabled: true,

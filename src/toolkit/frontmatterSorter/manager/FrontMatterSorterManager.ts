@@ -92,15 +92,18 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 		}
 
 		if (this.config.sortOnSave) {
-			this.eventRefs.push(
-				this.registerEvent(
-					// this.app.vault.on('modify', this.handleFileModify.bind(this))
-					this.app.metadataCache.on(
-						"changed",
-						this.handleFileModify.bind(this)
-					)
-				)
+			const eventRef = this.app.metadataCache.on(
+				"changed",
+				this.handleFileModify.bind(this)
 			);
+
+			const unsubscribe = () => {
+				if (eventRef) {
+					this.app.metadataCache.offref(eventRef);
+				}
+			};
+
+			this.eventRefs.push(unsubscribe);
 			this.logger.debug("Registered auto-sort on save handler");
 		}
 	}
@@ -342,19 +345,12 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 	}
 
 	protected onConfigChange(): void {
-		this.logger.debug("Config changed:", {
-			sortOnSave: this.config.sortOnSave,
-			rules: this.config.rules,
-			fullConfig: this.config,
-		});
-
 		// 更新服务实例以使用新的规则
 		this.sorter = new FrontMatterSorter(this.config.rules);
 		this.writer = new FrontMatterWriter(this.config.rules, this.logger);
 
 		// 重新注册事件处理器
-		this.eventRefs.forEach((ref) => ref());
-		this.eventRefs = [];
+		this.unregisterEvents();
 		this.registerEventHandlers();
 	}
 }
