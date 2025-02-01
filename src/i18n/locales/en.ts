@@ -309,5 +309,77 @@ export const en: Message = {
 				},
 			},
 		},
+		codeEditor: {
+			title: "Code Editor",
+			description: "Code Editor",
+			command: {
+				createCodeFile: "Create Code File",
+			},
+			file_menu: {
+				openInCodeEditor: "Open in Code Editor",
+				createCodeFile: "Create Code File",
+			},
+			modal: {
+				header: "Create Code File",
+				file_type: "File Type",
+				file_type_placeholder: "Please select file type",
+				file_name: "File Name",
+				file_name_placeholder: "Please enter file name",
+				file_name_with_extension: "File Name (with Extension)",
+				file_name_with_extension_placeholder:
+					"Please enter file name (with extension)",
+				preview: "Preview",
+				open_file_after_creation: "Open file after creation",
+				create: "Create",
+				cancel: "Cancel",
+			},
+			notice: {
+				file_name_validate: "Please enter file name",
+				file_name_with_extension_validate:
+					"Custom filename must include file extension",
+				file_already_exists: "File already exists",
+				create_file_success: "File created successfully {0}",
+				create_file_failed: "Create file failed {0}",
+			},
+			settings: {
+				supportExtensions: {
+					title: "Support Extensions",
+					description:
+						"Register file extensions, click the file to open it directly in the code editor, and restart Obsidian after modification",
+				},
+				theme: {
+					title: "Theme",
+					description: "Code editor theme",
+				},
+				lineNumbers: {
+					title: "Line Numbers",
+					description: "Show line numbers",
+				},
+				minimap: {
+					title: "Minimap",
+					description: "Show code minimap",
+				},
+				fontSize: {
+					title: "Font Size",
+					description: "Code editor font size",
+				},
+				fontFamily: {
+					title: "Font",
+					description: "Code editor font",
+				},
+				tabSize: {
+					title: "Tab Size",
+					description: "Tab size",
+				},
+				lineHeight: {
+					title: "Line Height",
+					description: "Code editor line height",
+				},
+				letterSpacing: {
+					title: "Letter Spacing",
+					description: "Code editor letter spacing",
+				},
+			},
+		},
 	},
 };

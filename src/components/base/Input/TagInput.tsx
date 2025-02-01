@@ -30,32 +30,36 @@ export const TagInput: React.FC<TagInputProps> = ({
 
 	const addValue = (value: string) => {
 		if (value && !values.includes(value)) {
-			onChange([...values, value]);
+			onChange([...values, value.trim()]);
 			setInputValue("");
 			setShowSuggestions(false);
+			setSelectedIndex(-1);
 		}
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (filteredSuggestions.length === 0) return;
 		switch (e.key) {
 			case "ArrowDown":
 				e.preventDefault();
-				setShowSuggestions(true);
-				setSelectedIndex((prev) =>
-					prev < filteredSuggestions.length - 1 ? prev + 1 : prev
-				);
+				if (filteredSuggestions.length > 0) {
+					setShowSuggestions(true);
+					setSelectedIndex((prev) =>
+						prev < filteredSuggestions.length - 1 ? prev + 1 : prev
+					);
+				}
 				break;
 			case "ArrowUp":
 				e.preventDefault();
-				setShowSuggestions(true);
-				setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+				if (filteredSuggestions.length > 0) {
+					setShowSuggestions(true);
+					setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+				}
 				break;
 			case "Enter":
 				e.preventDefault();
-				if (selectedIndex >= 0) {
+				if (selectedIndex >= 0 && filteredSuggestions.length > 0) {
 					addValue(filteredSuggestions[selectedIndex]);
-				} else if (inputValue) {
+				} else if (inputValue.trim()) {
 					addValue(inputValue);
 				}
 				break;
@@ -63,20 +67,39 @@ export const TagInput: React.FC<TagInputProps> = ({
 				setShowSuggestions(false);
 				setSelectedIndex(-1);
 				break;
+			case ",":
+			case ";":
+				e.preventDefault();
+				if (inputValue.trim()) {
+					addValue(inputValue);
+				}
+				break;
 		}
 	};
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const newValue = e.target.value;
 		setInputValue(newValue);
-		if (
-			suggestions.filter(
+
+		if (newValue.includes(",") || newValue.includes(";")) {
+			const tags = newValue
+				.split(/[,;]/)
+				.map((tag) => tag.trim())
+				.filter(Boolean);
+			tags.forEach((tag) => addValue(tag));
+			return;
+		}
+
+		if (suggestions.length > 0) {
+			const hasSuggestions = suggestions.some(
 				(s) =>
 					s.toLowerCase().includes(newValue.toLowerCase()) &&
 					!values.includes(s)
-			).length > 0
-		) {
-			setShowSuggestions(true);
+			);
+			setShowSuggestions(hasSuggestions);
+			if (hasSuggestions) {
+				setSelectedIndex(-1);
+			}
 		}
 	};
 

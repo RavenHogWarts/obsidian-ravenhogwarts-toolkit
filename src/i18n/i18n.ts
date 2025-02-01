@@ -287,6 +287,75 @@ export type Message = {
 				};
 			};
 		};
+		codeEditor: {
+			title: string;
+			description: string;
+			command: {
+				createCodeFile: string;
+			};
+			file_menu: {
+				openInCodeEditor: string;
+				createCodeFile: string;
+			};
+			modal: {
+				header: string;
+				file_type: string;
+				file_type_placeholder: string;
+				file_name: string;
+				file_name_placeholder: string;
+				file_name_with_extension: string;
+				file_name_with_extension_placeholder: string;
+				preview: string;
+				open_file_after_creation: string;
+				create: string;
+				cancel: string;
+			};
+			notice: {
+				file_name_validate: string;
+				file_name_with_extension_validate: string;
+				file_already_exists: string;
+				create_file_success: string;
+				create_file_failed: string;
+			};
+			settings: {
+				supportExtensions: {
+					title: string;
+					description: string;
+				};
+				theme: {
+					title: string;
+					description: string;
+				};
+				lineNumbers: {
+					title: string;
+					description: string;
+				};
+				minimap: {
+					title: string;
+					description: string;
+				};
+				fontSize: {
+					title: string;
+					description: string;
+				};
+				fontFamily: {
+					title: string;
+					description: string;
+				};
+				tabSize: {
+					title: string;
+					description: string;
+				};
+				lineHeight: {
+					title: string;
+					description: string;
+				};
+				letterSpacing: {
+					title: string;
+					description: string;
+				};
+			};
+		};
 	};
 };
 

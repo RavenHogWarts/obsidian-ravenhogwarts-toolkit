@@ -293,5 +293,76 @@ export const zh: Message = {
 				},
 			},
 		},
+		codeEditor: {
+			title: "代码编辑器",
+			description: "代码编辑器",
+			command: {
+				createCodeFile: "创建代码文件",
+			},
+			file_menu: {
+				openInCodeEditor: "在代码编辑器中打开",
+				createCodeFile: "创建代码文件",
+			},
+			modal: {
+				header: "创建代码文件",
+				file_type: "文件类型",
+				file_type_placeholder: "请选择文件类型",
+				file_name: "文件名",
+				file_name_placeholder: "请输入文件名",
+				file_name_with_extension: "文件名(带扩展名)",
+				file_name_with_extension_placeholder: "请输入文件名(带扩展名)",
+				preview: "预览",
+				open_file_after_creation: "创建后打开文件",
+				create: "创建",
+				cancel: "取消",
+			},
+			notice: {
+				file_name_validate: "请输入文件名",
+				file_name_with_extension_validate:
+					"自定义文件名必须包含文件扩展名",
+				file_already_exists: "文件已存在",
+				create_file_success: "文件创建成功 {0}",
+				create_file_failed: "创建文件失败 {0}",
+			},
+			settings: {
+				supportExtensions: {
+					title: "注册文件扩展名",
+					description:
+						"注册后，点击文件将直接在代码编辑器中打开，修改后需重启obsidian",
+				},
+				theme: {
+					title: "主题",
+					description: "代码编辑器的主题",
+				},
+				lineNumbers: {
+					title: "行号",
+					description: "显示行号",
+				},
+				minimap: {
+					title: "代码缩略图",
+					description: "显示代码缩略图",
+				},
+				fontSize: {
+					title: "字体大小",
+					description: "代码编辑器的字体大小",
+				},
+				fontFamily: {
+					title: "字体",
+					description: "代码编辑器的字体",
+				},
+				tabSize: {
+					title: "缩进字符",
+					description: "tab键的宽度",
+				},
+				lineHeight: {
+					title: "行高",
+					description: "代码编辑器的行高",
+				},
+				letterSpacing: {
+					title: "字间距",
+					description: "代码编辑器的字间距",
+				},
+			},
+		},
 	},
 };

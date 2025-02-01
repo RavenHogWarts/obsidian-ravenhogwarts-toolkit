@@ -9,6 +9,7 @@ import { QuickPathSettings } from "@/src/toolkit/quickPath/components/settings/Q
 import { FrontmatterSorterSettings } from "@/src/toolkit/frontmatterSorter/components/settings/FrontmatterSorterSettings";
 import { TableEnhancementsSettings } from "@/src/toolkit/tableEnhancements/components/settings/TableEnhancementsSettings";
 import { ReadingProgressSettings } from "@/src/toolkit/readingProgress/components/settings/ReadingProgressSettings";
+import { CodeEditorSettings } from "@/src/toolkit/codeEditor/components/settings/CodeEditorSettings";
 
 interface ToolkitDetailSettingsProps {
 	app: App;
@@ -33,6 +34,8 @@ export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
 				return <FrontmatterSorterSettings app={app} plugin={plugin} />;
 			case "readingProgress":
 				return <ReadingProgressSettings plugin={plugin} />;
+			case "codeEditor":
+				return <CodeEditorSettings plugin={plugin} />;
 			default:
 				return null;
 		}

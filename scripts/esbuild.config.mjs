@@ -1,7 +1,9 @@
 import esbuild from "esbuild";
 import process from "process";
+import postcss from "postcss";
+import postcssNesting from "postcss-nesting";
 import builtins from "builtin-modules";
-import fs from "fs";
+import fs from "fs-extra";
 import path from "path";
 
 const banner = `/*
@@ -18,8 +20,8 @@ const renamePlugin = () => ({
 		build.onEnd(async (result) => {
 			const file = build.initialOptions.outfile;
 			const parent = path.dirname(file);
-			const cssFileName = parent + "/main.css";
-			const newCssFileName = parent + "/styles.css";
+			const cssFileName = path.join(parent, "main.css");
+			const newCssFileName = path.join(parent, "styles.css");
 			try {
 				fs.renameSync(cssFileName, newCssFileName);
 			} catch (e) {
@@ -29,19 +31,18 @@ const renamePlugin = () => ({
 	},
 });
 
-const monacoLoaderPlugin = () => ({
-	name: "monaco-loader-plugin",
-	// 处理 Monaco Editor 的 CSS 文件
+const cssReBuild = () => ({
+	name: "css-rebuild",
 	setup(build) {
-		// 处理 Monaco Editor 的 CSS 文件
 		build.onLoad({ filter: /\.css$/ }, async (args) => {
-			if (args.path.includes("monaco-editor")) {
-				return {
-					contents: "",
-					loader: "css",
-				};
-			}
-			return null;
+			const css = await fs.promises.readFile(args.path, "utf8");
+			const result = await postcss([postcssNesting]).process(css, {
+				from: args.path,
+			});
+			return {
+				contents: result.css,
+				loader: "css",
+			};
 		});
 	},
 });
@@ -52,7 +53,7 @@ const context = await esbuild.context({
 	},
 	entryPoints: ["src/main.ts"],
 	bundle: true,
-	plugins: [renamePlugin(), monacoLoaderPlugin()],
+	plugins: [renamePlugin(), cssReBuild()],
 	external: [
 		"obsidian",
 		"electron",
