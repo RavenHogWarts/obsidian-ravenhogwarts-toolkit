@@ -24,7 +24,6 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: "18.x"
-                  cache: "yarn"
 
             - name: Prepare manifest
               id: prepare_manifest
@@ -38,7 +37,6 @@ jobs:
               run: |
                   npm install -g yarn
                   yarn
-                  yarn install --frozen-lockfile
                   yarn run build --if-present
                   mkdir ${{ env.PLUGIN_NAME }}
                   cp main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}
