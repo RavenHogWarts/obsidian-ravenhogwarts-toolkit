@@ -5,6 +5,8 @@ import { useModuleConfig } from "@/src/core/hooks/useModuleConfig";
 import { SettingItem } from "@/src/components/base/Setting/SettingItem";
 import { Toggle } from "@/src/components/base/Button/Toggle";
 import { t } from "@/src/i18n/i18n";
+import { Select } from "@/src/components/base/Select/Select";
+import { Input } from "@/src/components/base/Input/Input";
 
 interface ReadingProgressSettingsProps {
 	plugin: RavenHogwartsToolkitPlugin;
@@ -37,32 +39,39 @@ export const ReadingProgressSettings: React.FC<
 					"toolkit.readingProgress.settings.position.description"
 				)}
 			>
-				<select
+				<Select
 					value={config.position}
-					onChange={(e) =>
+					onValueChange={(value) =>
 						handleUpdateConfig({
-							position: e.target.value as "left" | "right",
+							position: value as "left" | "right",
 						})
 					}
-				>
-					<option value="left">
-						{t("toolkit.readingProgress.settings.position.left")}
-					</option>
-					<option value="right">
-						{t("toolkit.readingProgress.settings.position.right")}
-					</option>
-				</select>
+					options={[
+						{
+							label: t(
+								"toolkit.readingProgress.settings.position.left"
+							),
+							value: "left",
+						},
+						{
+							label: t(
+								"toolkit.readingProgress.settings.position.right"
+							),
+							value: "right",
+						},
+					]}
+				></Select>
 			</SettingItem>
 
 			<SettingItem
 				name={t("toolkit.readingProgress.settings.offset.title")}
 				desc={t("toolkit.readingProgress.settings.offset.description")}
 			>
-				<input
+				<Input
 					type="number"
 					value={config.offset}
-					onChange={(e) =>
-						handleUpdateConfig({ offset: parseInt(e.target.value) })
+					onChange={(value) =>
+						handleUpdateConfig({ offset: parseInt(value) })
 					}
 				/>
 			</SettingItem>
@@ -162,12 +171,12 @@ export const ReadingProgressSettings: React.FC<
 							"toolkit.readingProgress.settings.tocWidth.description"
 						)}
 					>
-						<input
+						<Input
 							type="number"
 							value={config.tocWidth}
-							onChange={(e) =>
+							onChange={(value) =>
 								handleUpdateConfig({
-									tocWidth: parseInt(e.target.value),
+									tocWidth: parseInt(value),
 								})
 							}
 						/>
@@ -182,39 +191,44 @@ export const ReadingProgressSettings: React.FC<
 					"toolkit.readingProgress.settings.progressStyle.description"
 				)}
 			>
-				<select
+				<Select
 					value={config.progressStyle}
-					onChange={(e) =>
+					onValueChange={(value) =>
 						handleUpdateConfig({
-							progressStyle: e.target.value as
+							progressStyle: value as
 								| "bar"
 								| "ring"
 								| "none"
 								| "both",
 						})
 					}
-				>
-					<option value="bar">
-						{t(
-							"toolkit.readingProgress.settings.progressStyle.bar"
-						)}
-					</option>
-					<option value="ring">
-						{t(
-							"toolkit.readingProgress.settings.progressStyle.ring"
-						)}
-					</option>
-					<option value="none">
-						{t(
-							"toolkit.readingProgress.settings.progressStyle.none"
-						)}
-					</option>
-					<option value="both">
-						{t(
-							"toolkit.readingProgress.settings.progressStyle.both"
-						)}
-					</option>
-				</select>
+					options={[
+						{
+							label: t(
+								"toolkit.readingProgress.settings.progressStyle.bar"
+							),
+							value: "bar",
+						},
+						{
+							label: t(
+								"toolkit.readingProgress.settings.progressStyle.ring"
+							),
+							value: "ring",
+						},
+						{
+							label: t(
+								"toolkit.readingProgress.settings.progressStyle.none"
+							),
+							value: "none",
+						},
+						{
+							label: t(
+								"toolkit.readingProgress.settings.progressStyle.both"
+							),
+							value: "both",
+						},
+					]}
+				></Select>
 			</SettingItem>
 		</div>
 	);

@@ -5,6 +5,7 @@ import { IQuickPathConfig } from "@/src/toolkit/quickPath/types/config";
 import RavenHogwartsToolkitPlugin from "@/src/main";
 import { useModuleConfig } from "@/src/core/hooks/useModuleConfig";
 import { Toggle } from "@/src/components/base/Button/Toggle";
+import { Select } from "@/src/components/base/Select/Select";
 
 interface QuickPathSettingsProps {
 	plugin: RavenHogwartsToolkitPlugin;
@@ -68,25 +69,32 @@ export const QuickPathSettings: React.FC<QuickPathSettingsProps> = ({
 				name={t("toolkit.quickPath.settings.separator.title")}
 				desc={t("toolkit.quickPath.settings.separator.description")}
 			>
-				<select
+				<Select
 					value={config.pathSeparator}
-					onChange={(e) =>
-						handleUpdateConfig({ pathSeparator: e.target.value })
+					onValueChange={(value) =>
+						handleUpdateConfig({ pathSeparator: value })
 					}
-				>
-					<option value="\n">
-						{t("toolkit.quickPath.settings.separator.newline")}
-					</option>
-					<option value=", ">
-						{t("toolkit.quickPath.settings.separator.comma")}
-					</option>
-					<option value="; ">
-						{t("toolkit.quickPath.settings.separator.semicolon")}
-					</option>
-					<option value=" ">
-						{t("toolkit.quickPath.settings.separator.space")}
-					</option>
-				</select>
+					options={[
+						{
+							label: t(
+								"toolkit.quickPath.settings.separator.newline"
+							),
+							value: "\n",
+						},
+						{
+							label: t(
+								"toolkit.quickPath.settings.separator.comma"
+							),
+							value: ", ",
+						},
+						{
+							label: t(
+								"toolkit.quickPath.settings.separator.semicolon"
+							),
+							value: "; ",
+						},
+					]}
+				></Select>
 			</SettingItem>
 		</div>
 	);
