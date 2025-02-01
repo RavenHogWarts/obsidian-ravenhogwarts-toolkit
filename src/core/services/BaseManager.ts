@@ -18,6 +18,8 @@ interface MenuItemConfig {
 	items?: MenuItemConfig[];
 }
 
+type EventRef = () => void;
+
 export abstract class BaseManager<T extends IToolkitModule> extends Component {
 	private initPromise: Promise<void>;
 	protected config: T["config"];
@@ -25,7 +27,7 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
 	protected logger: Logger;
 	protected app: App;
 	protected registeredCommands: string[] = [];
-	protected eventRefs: any[] = [];
+	protected eventRefs: EventRef[] = [];
 
 	constructor(
 		protected plugin: RavenHogwartsToolkitPlugin,
@@ -320,8 +322,8 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
 	}
 
 	// 工具方法
-	protected t(key: TranslationKeys, params?: any): string {
-		return t(key, params);
+	protected t(key: TranslationKeys, ...args: any[]): string {
+		return t(key, ...args);
 	}
 
 	protected onConfigChange?(): void;
@@ -389,12 +391,12 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
 	}
 
 	protected isPluginEnabled(): boolean {
-		rootLogger.debug(
-			"isPluginEnabled",
-			(this.plugin.app as any).plugins.enabledPlugins.has(
-				this.plugin.manifest.id
-			)
-		);
+		// rootLogger.debug(
+		// 	"isPluginEnabled",
+		// 	(this.plugin.app as any).plugins.enabledPlugins.has(
+		// 		this.plugin.manifest.id
+		// 	)
+		// );
 		return (this.plugin.app as any).plugins.enabledPlugins.has(
 			this.plugin.manifest.id
 		);

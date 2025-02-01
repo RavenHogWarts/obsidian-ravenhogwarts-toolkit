@@ -1,6 +1,6 @@
 .rht-setting-item {
 	display: flex;
-	align-items: flex-start;
+	/* align-items: flex-start; */
 	justify-content: space-between;
 	padding: 1.25rem 0;
 	border-bottom: 1px solid var(--background-modifier-border);
@@ -22,6 +22,7 @@
 	margin-right: 0;
 	margin-bottom: 0.75rem;
 	width: 100%;
+	min-width: 0;
 }
 
 .rht-setting-item-heading {
@@ -35,6 +36,7 @@
 	color: var(--interactive-accent);
 	display: flex;
 	align-items: center;
+	flex-shrink: 0;
 }
 
 .rht-setting-item-name {
@@ -61,4 +63,20 @@
 	justify-content: center;
 	color: var(--text-muted);
 	transition: color 0.2s ease;
+	margin-left: auto;
+}
+
+.rht-setting-item-control {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-shrink: 0;
+}
+
+.rht-setting-item-control .rht-select-wrapper {
+	width: auto;
+}
+
+.rht-setting-item.is-collapsible .rht-setting-item-control {
+	width: 100%;
 }

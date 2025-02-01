@@ -1,0 +1,61 @@
+.rht-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.rht-button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+/* Variants */
+.rht-button-default {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border: 1px solid var(--interactive-accent);
+}
+
+.rht-button-default:hover:not(:disabled) {
+	background-color: var(--interactive-accent-hover);
+}
+
+.rht-button-outline {
+	background-color: transparent;
+	color: var(--text-normal);
+	border: 1px solid var(--background-modifier-border);
+}
+
+.rht-button-outline:hover:not(:disabled) {
+	background-color: var(--background-modifier-hover);
+}
+
+.rht-button-ghost {
+	background-color: transparent;
+	color: var(--text-normal);
+	border: none;
+}
+
+.rht-button-ghost:hover:not(:disabled) {
+	background-color: var(--background-modifier-hover);
+}
+
+/* Sizes */
+.rht-button-small {
+	padding: 0.25rem 0.5rem;
+	font-size: 0.875rem;
+}
+
+.rht-button-medium {
+	padding: 0.5rem 1rem;
+	font-size: 1rem;
+}
+
+.rht-button-large {
+	padding: 0.75rem 1.5rem;
+	font-size: 1.125rem;
+}

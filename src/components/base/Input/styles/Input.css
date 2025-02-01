@@ -1,0 +1,31 @@
+.rht-input-wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.rht-input {
+	padding: 0.5rem;
+	border-radius: 4px;
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-primary);
+	color: var(--text-normal);
+	font-size: 1rem;
+	width: 100%;
+	transition: all 0.2s;
+}
+
+.rht-input:focus {
+	outline: none;
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.1);
+}
+
+.rht-input-error {
+	border-color: var(--text-error);
+}
+
+.rht-input-error-message {
+	color: var(--text-error);
+	font-size: 0.875rem;
+}

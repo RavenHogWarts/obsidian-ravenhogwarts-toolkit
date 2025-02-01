@@ -4,6 +4,7 @@ import {
 	Link,
 	LucideIcon,
 	Radar,
+	SquareCode,
 	Table,
 } from "lucide-react";
 import { DEFAULT_LOGGER_CONFIG, ILoggerConfig } from "@/src/core/services/Log";
@@ -115,7 +116,8 @@ export type ToolkitId =
 	| "quickPath"
 	| "frontmatterSorter"
 	| "obReader"
-	| "readingProgress";
+	| "readingProgress"
+	| "codeEditor";
 
 export const TOOLKIT_CONFIG: Record<
 	ToolkitId,
@@ -140,6 +142,10 @@ export const TOOLKIT_CONFIG: Record<
 	readingProgress: {
 		icon: Radar,
 		iconName: "radar",
+	},
+	codeEditor: {
+		icon: SquareCode,
+		iconName: "square-code",
 	},
 };
 
