@@ -1,24 +1,18 @@
 // This code is adapted from https://github.com/sunxvming/obsidian-vscode-editor
 // Original code licensed under MIT License
 
-import { IconName, TextFileView, TFile, WorkspaceLeaf } from "obsidian";
+import {
+	IconName,
+	Modifier,
+	Scope,
+	TextFileView,
+	TFile,
+	WorkspaceLeaf,
+} from "obsidian";
 import * as monaco from "monaco-editor";
 import { CODE_EDITOR_VIEW_TYPE, ICodeEditorConfig } from "../types/config";
 import { Logger } from "@/src/core/services/Log";
 import { MonacoLanguageService } from "../services/MonacoLanguageService";
-
-// window.MonacoEnvironment = {
-// 	getWorkerUrl: function (_moduleId: string, _label: string) {
-// 		return (
-// 			"data:text/javascript;charset=utf-8," +
-// 			encodeURIComponent(`
-//             self.MonacoEnvironment = {
-//                 baseUrl: ''
-//             };
-//         `)
-// 		);
-// 	},
-// };
 
 export class CodeEditorView extends TextFileView {
 	timer: NodeJS.Timeout | null;
@@ -26,6 +20,7 @@ export class CodeEditorView extends TextFileView {
 	logger: Logger;
 	value = "";
 	monacoEditor: monaco.editor.IStandaloneCodeEditor;
+	editorScope: Scope;
 
 	constructor(
 		leaf: WorkspaceLeaf,
@@ -35,6 +30,7 @@ export class CodeEditorView extends TextFileView {
 		super(leaf);
 		this.config = config;
 		this.logger = logger;
+		this.editorScope = new Scope();
 	}
 
 	/*
@@ -42,6 +38,7 @@ export class CodeEditorView extends TextFileView {
 	*/
 	async onOpen() {
 		await super.onOpen();
+		this.registerMonacoKeybindings();
 	}
 
 	async onLoadFile(file: TFile) {
@@ -55,6 +52,14 @@ export class CodeEditorView extends TextFileView {
 
 		this.monacoEditor.onDidChangeModelContent(() => {
 			this.requestSave();
+		});
+
+		this.monacoEditor.onDidFocusEditorText(() => {
+			this.app.keymap.pushScope(this.editorScope);
+		});
+
+		this.monacoEditor.onDidBlurEditorText(() => {
+			this.app.keymap.popScope(this.editorScope);
 		});
 
 		await super.onLoadFile(file);
@@ -112,6 +117,28 @@ export class CodeEditorView extends TextFileView {
 				)
 			);
 		}
+	}
+
+	// 注册额外的快捷键
+	private registerMonacoKeybindings() {
+		const registerKeybinding = (
+			modifiers: Modifier[],
+			key: string,
+			callback: () => void
+		) => {
+			this.editorScope.register(modifiers, key, () => {
+				if (this.monacoEditor.hasTextFocus()) {
+					callback();
+					return false;
+				}
+				return true;
+			});
+		};
+
+		// 撤销
+		// registerKeybinding(["Mod"], "z", () => {
+		// 	this.monacoEditor.trigger("keyboard", "undo", null);
+		// });
 	}
 }
 
