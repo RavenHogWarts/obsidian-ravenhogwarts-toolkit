@@ -39,6 +39,17 @@ export class CodeEditorView extends TextFileView {
 	async onOpen() {
 		await super.onOpen();
 		this.registerMonacoKeybindings();
+
+		this.registerEvent(
+			this.app.workspace.on("css-change", () => {
+				if (this.config.theme === "auto") {
+					const isDarkTheme =
+						document.body.classList.contains("theme-dark");
+					const theme = isDarkTheme ? "vs-dark" : "vs";
+					monaco.editor.setTheme(theme);
+				}
+			})
+		);
 	}
 
 	async onLoadFile(file: TFile) {
