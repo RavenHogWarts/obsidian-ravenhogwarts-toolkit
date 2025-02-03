@@ -50,12 +50,14 @@ export const CreateCodeFileModal: React.FC<CreateCodeFileModalProps> = ({
 	};
 
 	const getFullPath = () => {
+		const normalizedFolderPath = folderPath.endsWith("/")
+			? folderPath.slice(0, -1)
+			: folderPath;
+
 		if (isCustomFilename) {
-			// 如果是自定义文件名，直接使用完整的文件名
-			return `${folderPath}/${fileName}`;
+			return `${normalizedFolderPath}/${fileName}`;
 		}
-		// 否则添加选择的扩展名
-		return `${folderPath}/${fileName}.${fileExtension}`;
+		return `${normalizedFolderPath}/${fileName}.${fileExtension}`;
 	};
 
 	const validateFileName = () => {
