@@ -379,3 +379,8 @@
 	background-color: var(--background-modifier-hover);
 	color: var(--text-normal);
 }
+
+/* https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit/advanced/styling#fix-reading-progress-position-in-modal-windows 的尝试修复 */
+.workspace-leaf-content:has(.rht-reading-progress) {
+	container-type: inline-size;
+}
