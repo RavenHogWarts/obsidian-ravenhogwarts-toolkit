@@ -147,6 +147,8 @@
 .rht-toc-toolbar {
 	position: absolute;
 	top: -30px;
+	left: 50%;
+	transform: translateX(-50%);
 	display: flex;
 	gap: 4px;
 	padding: 8px;

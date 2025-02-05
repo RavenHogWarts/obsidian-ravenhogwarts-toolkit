@@ -240,7 +240,7 @@ export type Message = {
 					title: string;
 					description: string;
 				};
-				skipH1Numbering: {
+				skipH1: {
 					title: string;
 					description: string;
 				};

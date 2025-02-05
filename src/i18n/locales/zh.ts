@@ -245,9 +245,9 @@ export const zh: Message = {
 					title: "使用标题编号",
 					description: "层级编号，根据相对深度计算",
 				},
-				skipH1Numbering: {
-					title: "跳过 h1 编号",
-					description: "跳过 h1 编号，不显示 h1 编号",
+				skipH1: {
+					title: "忽略h1",
+					description: "开启后，不对h1编号，且只存在h1时不显示目录",
 				},
 				showToolbar: {
 					title: "悬浮工具栏",

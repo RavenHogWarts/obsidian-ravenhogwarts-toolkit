@@ -111,6 +111,24 @@ export const ReadingProgressSettings: React.FC<
 
 					<SettingItem
 						name={t(
+							"toolkit.readingProgress.settings.skipH1.title"
+						)}
+						desc={t(
+							"toolkit.readingProgress.settings.skipH1.description"
+						)}
+					>
+						<Toggle
+							checked={config.skipH1}
+							onChange={(checked) =>
+								handleUpdateConfig({
+									skipH1: checked,
+								})
+							}
+						/>
+					</SettingItem>
+
+					<SettingItem
+						name={t(
 							"toolkit.readingProgress.settings.useHeadingNumber.title"
 						)}
 						desc={t(
@@ -126,26 +144,6 @@ export const ReadingProgressSettings: React.FC<
 							}
 						/>
 					</SettingItem>
-
-					{config.useHeadingNumber && (
-						<SettingItem
-							name={t(
-								"toolkit.readingProgress.settings.skipH1Numbering.title"
-							)}
-							desc={t(
-								"toolkit.readingProgress.settings.skipH1Numbering.description"
-							)}
-						>
-							<Toggle
-								checked={config.skipH1Numbering}
-								onChange={(checked) =>
-									handleUpdateConfig({
-										skipH1Numbering: checked,
-									})
-								}
-							/>
-						</SettingItem>
-					)}
 
 					<SettingItem
 						name={t(

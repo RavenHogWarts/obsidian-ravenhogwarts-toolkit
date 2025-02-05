@@ -223,7 +223,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 	const generateHeadingNumber = React.useCallback(
 		(index: number): string => {
 			// 如果当前标题是 h1 且配置了跳过 h1，则不显示编号
-			if (config.skipH1Numbering && headings[index].level === 1) {
+			if (config.skipH1 && headings[index].level === 1) {
 				return "";
 			}
 
@@ -235,7 +235,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 				const heading = headings[i];
 
 				// 如果配置了跳过 h1 且当前是 h1，则跳过
-				if (config.skipH1Numbering && heading.level === 1) {
+				if (config.skipH1 && heading.level === 1) {
 					continue;
 				}
 
@@ -255,17 +255,12 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 					let count = 1;
 					// 向前查找同级标题
 					for (let j = i - 1; j >= 0; j--) {
-						if (config.skipH1Numbering && headings[j].level === 1) {
+						if (config.skipH1 && headings[j].level === 1) {
 							continue;
 						}
 						if (
 							headings[j].level === heading.level &&
-							isUnderSameParent(
-								j,
-								i,
-								headings,
-								config.skipH1Numbering
-							)
+							isUnderSameParent(j, i, headings, config.skipH1)
 						) {
 							count++;
 						}
@@ -394,6 +389,20 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 			return !prev;
 		});
 	}, [headings, hasChildren]);
+
+	const shouldShowTOC = React.useMemo(() => {
+		if (headings.length === 0) return false;
+
+		if (config.skipH1) {
+			// 检查是否所有标题都是一级标题
+			const hasOnlyH1 = headings.every((heading) => heading.level === 1);
+			// 如果只有一级标题，返回false；否则返回true
+			return !hasOnlyH1;
+		}
+
+		// 如果不跳过一级标题，只要有标题就显示
+		return headings.length > 0;
+	}, [headings, config.skipH1]);
 
 	const shouldShowProgressBar = React.useMemo(() => {
 		const hasHeadings = headings.length > 0;
@@ -604,7 +613,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 						onMouseDown={handleMouseDragStart}
 					/>
 					{/* 目录内容容器 */}
-					{headings.length > 0 && (
+					{shouldShowTOC && (
 						<div
 							ref={tocListRef}
 							className="rht-toc-content"

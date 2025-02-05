@@ -259,11 +259,12 @@ export const en: Message = {
 					description:
 						"Heading number, calculated based on relative depth",
 				},
-				skipH1Numbering: {
-					title: "Skip H1 Numbering",
+				skipH1: {
+					title: "Ignore H1",
 					description:
-						"Skip H1 Numbering, do not display H1 Numbering",
+						"After opening, do not number h1, and do not display the table of contents when only h1 exists",
 				},
+
 				showToolbar: {
 					title: "Toolbar",
 					description: "Use toolbar",
