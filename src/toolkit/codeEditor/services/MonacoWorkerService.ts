@@ -12,7 +12,7 @@ export class MonacoWorkerService {
 		if (this.initialized) return;
 
 		this.logger = logger;
-		this.logger.info("[MonacoWorkerService] Initializing...");
+		this.logger.debug("[MonacoWorkerService] Initializing...");
 
 		try {
 			// 配置 Monaco 环境
@@ -169,7 +169,7 @@ export class MonacoWorkerService {
 			this.configureLanguageServices();
 
 			this.initialized = true;
-			this.logger.info("[MonacoWorkerService] Initialized successfully");
+			this.logger.debug("[MonacoWorkerService] Initialized successfully");
 		} catch (error) {
 			this.logger.error(
 				"[MonacoWorkerService] Initialization failed:",

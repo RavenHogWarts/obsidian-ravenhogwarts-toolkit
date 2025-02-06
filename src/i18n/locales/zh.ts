@@ -211,7 +211,7 @@ export const zh: Message = {
 			description: "OBReader",
 		},
 		readingProgress: {
-			title: "阅读进度",
+			title: "目录导航",
 			description: "悬浮显示当前文档的阅读进度，目录等",
 			return_button: {
 				return_to_cursor: "返回光标位置",
@@ -235,7 +235,8 @@ export const zh: Message = {
 				},
 				showTOC: {
 					title: "悬浮目录",
-					description: "显示悬浮目录",
+					description:
+						"显示悬浮目录；cssclasses使用show-rht-toc或hide-rht-toc可以单独控制页面的目录显示",
 				},
 				tocAlwaysExpanded: {
 					title: "悬浮目录始终展开",
@@ -243,7 +244,8 @@ export const zh: Message = {
 				},
 				useHeadingNumber: {
 					title: "使用标题编号",
-					description: "层级编号，根据相对深度计算",
+					description:
+						"层级编号，根据相对深度计算；cssclasses使用show-rht-heading-number或hide-rht-heading-number可以单独控制页面的目录中标题编号显示",
 				},
 				skipH1: {
 					title: "忽略h1",
@@ -295,7 +297,7 @@ export const zh: Message = {
 		},
 		codeEditor: {
 			title: "代码编辑器",
-			description: "代码编辑器",
+			description: "在obsidian中进行代码文件的编辑",
 			command: {
 				createCodeFile: "创建代码文件",
 			},

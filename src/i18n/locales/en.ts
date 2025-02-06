@@ -222,7 +222,7 @@ export const en: Message = {
 			description: "OBReader",
 		},
 		readingProgress: {
-			title: "Reading Progress",
+			title: "Table of Contents Navigation",
 			description:
 				"Display reading progress and table of contents in a floating window",
 			return_button: {
@@ -312,10 +312,11 @@ export const en: Message = {
 		},
 		codeEditor: {
 			title: "Code Editor",
-			description: "Code Editor",
+			description: "Edit code files in Obsidian",
 			command: {
 				createCodeFile: "Create Code File",
 			},
+
 			file_menu: {
 				openInCodeEditor: "Open in Code Editor",
 				createCodeFile: "Create Code File",

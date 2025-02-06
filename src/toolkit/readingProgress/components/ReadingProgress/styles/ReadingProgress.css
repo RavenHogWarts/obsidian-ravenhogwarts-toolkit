@@ -384,3 +384,30 @@
 .workspace-leaf-content:has(.rht-reading-progress) {
 	container-type: inline-size;
 }
+
+.mod-left-split .rht-reading-progress,
+.mod-right-split .rht-reading-progress {
+	display: none;
+}
+
+.show-rht-toc ~ .rht-reading-progress .rht-toc-list {
+	opacity: 1 !important;
+	visibility: visible !important;
+}
+.hide-rht-toc ~ .rht-reading-progress .rht-toc-list {
+	opacity: 0 !important;
+	visibility: hidden !important;
+}
+
+.view-content:has(> .markdown-source-view.show-rht-heading-number)
+	.rht-toc-item-number,
+.view-content:has(> div:not([style*="display: none"]).show-rht-heading-number)
+	.rht-toc-item-number {
+	display: inline !important;
+}
+.view-content:has(> .markdown-source-view.hide-rht-heading-number)
+	.rht-toc-item-number,
+.view-content:has(> div:not([style*="display: none"]).hide-rht-heading-number)
+	.rht-toc-item-number {
+	display: none !important;
+}
