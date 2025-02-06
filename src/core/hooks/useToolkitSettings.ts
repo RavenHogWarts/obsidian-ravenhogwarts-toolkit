@@ -36,6 +36,7 @@ export const useToolkitSettings = ({
 	const initializeToolkits = useCallback(() => {
 		try {
 			const toolkitList = Object.entries(TOOLKIT_CONFIG)
+				.filter(([id]) => id !== "obReader")
 				.map(([id, config]) => {
 					const toolkitId = id as ToolkitId;
 					const manager = plugin.getManager(toolkitId);
