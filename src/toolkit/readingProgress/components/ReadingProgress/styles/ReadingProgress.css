@@ -83,7 +83,8 @@
 	border-radius: 4px;
 	box-shadow: var(--shadow-s);
 	max-height: 75vh;
-	min-height: 55vh;
+	/* min-height: 55vh; */
+	min-height: max(100px, 10vh);
 	overflow-y: auto;
 	overscroll-behavior: contain;
 }
