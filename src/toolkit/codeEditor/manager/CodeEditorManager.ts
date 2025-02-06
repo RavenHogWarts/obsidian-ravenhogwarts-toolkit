@@ -111,13 +111,26 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		}
 
 		if (file instanceof TFile) {
-			this.addMenuItem(menu, {
-				title: this.t("toolkit.codeEditor.file_menu.openInCodeEditor"),
-				icon: "code-xml",
-				callback: async () => {
-					await this.openInCodeEditor(file.path, true);
+			this.addMenuItem(menu, [
+				{
+					title: this.t(
+						"toolkit.codeEditor.file_menu.createCodeFile"
+					),
+					icon: "code-xml",
+					callback: () => {
+						this.createCodeFile(file.parent?.path || "");
+					},
 				},
-			});
+				{
+					title: this.t(
+						"toolkit.codeEditor.file_menu.openInCodeEditor"
+					),
+					icon: "code-xml",
+					callback: async () => {
+						await this.openInCodeEditor(file.path, true);
+					},
+				},
+			]);
 		}
 	}
 
