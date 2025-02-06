@@ -395,7 +395,11 @@ export class I18n {
 
 	constructor() {
 		// 获取系统语言，默认为英文
-		const lang = window.localStorage.getItem("language") || "en";
+		let lang = window.localStorage.getItem("language") || "en";
+
+		if (lang === "zh-TW") {
+			lang = "zh";
+		}
 		this.currentLocale = lang;
 		this.flattenTranslations();
 	}
@@ -446,6 +450,10 @@ export class I18n {
 	}
 
 	public setLocale(locale: string): void {
+		if (locale === "zh-TW") {
+			locale = "zh";
+		}
+
 		if (this.translations[locale]) {
 			this.currentLocale = locale;
 			window.localStorage.setItem("language", locale);

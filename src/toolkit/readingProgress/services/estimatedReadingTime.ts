@@ -40,36 +40,39 @@ export interface ReadingTimeConfig {
 export class EstimatedReadingTime {
 	private static app: App;
 
-	// 默认配置
-	private static readonly DEFAULT_CONFIG: ReadingTimeConfig = {
-		chineseWordsPerMinute: 300, // 中文阅读速度：每分钟300字
-		englishWordsPerMinute: 200, // 英文阅读速度：每分钟200词
-		removeCodeBlocks: true, // 默认移除代码块
-		removeWikiLinks: false, // 默认保留Wiki链接
-		removeImageLinks: true, // 默认移除图片链接
-		removeNormalLinks: false, // 默认保留普通链接
+	// 将 DEFAULT_CONFIG 改为 getter
+	private static get DEFAULT_CONFIG(): ReadingTimeConfig {
+		return {
+			chineseWordsPerMinute: 300,
+			englishWordsPerMinute: 200,
+			removeCodeBlocks: true,
+			removeWikiLinks: false,
+			removeImageLinks: true,
+			removeNormalLinks: false,
 
-		template: `${t(
-			"toolkit.readingProgress.estimatedReadingTime.template"
-		)}`,
-		showWordCount: true,
-		showIcon: true,
-		showRange: false,
+			// 现在 t() 函数会在实际需要时才被调用
+			template: t(
+				"toolkit.readingProgress.estimatedReadingTime.template"
+			),
+			showWordCount: true,
+			showIcon: true,
+			showRange: false,
 
-		style: {
-			color: "var(--text-normal)",
-			backgroundColor: "var(--background-secondary)",
-			borderRadius: "8px",
-			padding: "12px 16px",
-			fontSize: "0.95em",
-			fontWeight: "normal",
-			boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-			border: "1px solid var(--background-modifier-border)",
-			width: "auto",
-			maxWidth: "100%",
-			margin: "1em 0",
-		},
-	};
+			style: {
+				color: "var(--text-normal)",
+				backgroundColor: "var(--background-secondary)",
+				borderRadius: "8px",
+				padding: "12px 16px",
+				fontSize: "0.95em",
+				fontWeight: "normal",
+				boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+				border: "1px solid var(--background-modifier-border)",
+				width: "auto",
+				maxWidth: "100%",
+				margin: "1em 0",
+			},
+		};
+	}
 
 	public static setApp(app: App) {
 		this.app = app;
