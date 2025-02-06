@@ -31,3 +31,9 @@ export const CODE_EDITOR_DEFAULT_CONFIG: ICodeEditorConfig = {
 };
 
 export const CODE_EDITOR_VIEW_TYPE = "rht-code-editor";
+
+export interface ICodeBlock {
+	language: string;
+	code: string;
+	range: { start: number; end: number };
+}

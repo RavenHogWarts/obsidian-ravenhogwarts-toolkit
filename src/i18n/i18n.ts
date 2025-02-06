@@ -297,18 +297,24 @@ export type Message = {
 				openInCodeEditor: string;
 				createCodeFile: string;
 			};
+			editor_menu: {
+				editCodeBlock: string;
+			};
 			modal: {
 				header: string;
 				file_type: string;
 				file_type_placeholder: string;
 				file_name: string;
 				file_name_placeholder: string;
+
 				file_name_with_extension: string;
 				file_name_with_extension_placeholder: string;
 				preview: string;
 				open_file_after_creation: string;
 				create: string;
 				cancel: string;
+				edit_code_block: string;
+				save: string;
 			};
 			notice: {
 				file_name_validate: string;
@@ -316,6 +322,7 @@ export type Message = {
 				file_already_exists: string;
 				create_file_success: string;
 				create_file_failed: string;
+				no_code_block: string;
 			};
 			settings: {
 				supportExtensions: {

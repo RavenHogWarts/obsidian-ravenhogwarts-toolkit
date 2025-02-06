@@ -154,17 +154,9 @@ export class CodeEditorView extends TextFileView {
 }
 
 export function getMonacoSettings(language: string, config: ICodeEditorConfig) {
-	const isDarkTheme = document.body.classList.contains("theme-dark");
-	const theme =
-		config.theme === "auto"
-			? isDarkTheme
-				? "vs-dark"
-				: "vs"
-			: config.theme;
-
 	return {
 		language: language,
-		theme: theme,
+		theme: getMonacoTheme(config),
 		lineNumbers: config.lineNumbers ? "on" : "off",
 		minimap: { enabled: config.minimap },
 		fontSize: config.fontSize,
@@ -198,6 +190,15 @@ export function getMonacoSettings(language: string, config: ICodeEditorConfig) {
 		multiCursorPaste: "full", // 多光标粘贴模式
 		dragAndDrop: true, // 拖放编辑
 	} as monaco.editor.IStandaloneEditorConstructionOptions;
+}
+
+export function getMonacoTheme(config: ICodeEditorConfig) {
+	const isDarkTheme = document.body.classList.contains("theme-dark");
+	return config.theme === "auto"
+		? isDarkTheme
+			? "vs-dark"
+			: "vs"
+		: config.theme;
 }
 
 export function getLanguage(extension: string) {

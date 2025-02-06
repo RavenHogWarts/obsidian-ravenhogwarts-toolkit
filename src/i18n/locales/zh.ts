@@ -305,18 +305,24 @@ export const zh: Message = {
 				openInCodeEditor: "在代码编辑器中打开",
 				createCodeFile: "创建代码文件",
 			},
+			editor_menu: {
+				editCodeBlock: "编辑代码块",
+			},
 			modal: {
 				header: "创建代码文件",
 				file_type: "文件类型",
 				file_type_placeholder: "请选择文件类型",
 				file_name: "文件名",
 				file_name_placeholder: "请输入文件名",
+
 				file_name_with_extension: "文件名(带扩展名)",
 				file_name_with_extension_placeholder: "请输入文件名(带扩展名)",
 				preview: "预览",
 				open_file_after_creation: "创建后打开文件",
 				create: "创建",
 				cancel: "取消",
+				edit_code_block: "编辑代码块",
+				save: "保存",
 			},
 			notice: {
 				file_name_validate: "请输入文件名",
@@ -325,6 +331,7 @@ export const zh: Message = {
 				file_already_exists: "文件已存在",
 				create_file_success: "文件创建成功 {0}",
 				create_file_failed: "创建文件失败 {0}",
+				no_code_block: "没有找到代码块",
 			},
 			settings: {
 				supportExtensions: {

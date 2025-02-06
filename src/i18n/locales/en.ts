@@ -316,10 +316,12 @@ export const en: Message = {
 			command: {
 				createCodeFile: "Create Code File",
 			},
-
 			file_menu: {
 				openInCodeEditor: "Open in Code Editor",
 				createCodeFile: "Create Code File",
+			},
+			editor_menu: {
+				editCodeBlock: "Edit Code Block",
 			},
 			modal: {
 				header: "Create Code File",
@@ -327,6 +329,7 @@ export const en: Message = {
 				file_type_placeholder: "Please select file type",
 				file_name: "File Name",
 				file_name_placeholder: "Please enter file name",
+
 				file_name_with_extension: "File Name (with Extension)",
 				file_name_with_extension_placeholder:
 					"Please enter file name (with extension)",
@@ -334,6 +337,8 @@ export const en: Message = {
 				open_file_after_creation: "Open file after creation",
 				create: "Create",
 				cancel: "Cancel",
+				edit_code_block: "Edit Code Block",
+				save: "Save",
 			},
 			notice: {
 				file_name_validate: "Please enter file name",
@@ -342,6 +347,7 @@ export const en: Message = {
 				file_already_exists: "File already exists",
 				create_file_success: "File created successfully {0}",
 				create_file_failed: "Create file failed {0}",
+				no_code_block: "No code block found",
 			},
 			settings: {
 				supportExtensions: {

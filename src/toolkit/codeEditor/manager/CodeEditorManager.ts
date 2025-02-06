@@ -2,12 +2,13 @@ import { IToolkitModule } from "@/src/core/interfaces/types";
 import {
 	CODE_EDITOR_DEFAULT_CONFIG,
 	CODE_EDITOR_VIEW_TYPE,
+	ICodeBlock,
 	ICodeEditorConfig,
 	ICodeEditorData,
 } from "../types/config";
 import { BaseManager } from "@/src/core/services/BaseManager";
-import { Menu, TFile, TFolder } from "obsidian";
-import { CodeEditorView } from "../components/CodeEditorView";
+import { Editor, EditorPosition, Menu, TFile, TFolder } from "obsidian";
+import { CodeEditorView, getLanguage } from "../components/CodeEditorView";
 import { MonacoWorkerService } from "../services/MonacoWorkerService";
 import { BaseModal } from "@/src/components/base/Modal/BaseModal";
 
@@ -87,6 +88,13 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		this.registerEvent(
 			this.app.workspace.on("file-menu", this.handleFileMenu.bind(this))
 		);
+
+		this.registerEvent(
+			this.app.workspace.on(
+				"editor-menu",
+				this.handleEditorMenu.bind(this)
+			)
+		);
 	}
 
 	private handleFileMenu(menu: Menu, file: TFile | TFolder): void {
@@ -138,6 +146,109 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 			},
 			"modal-size-small"
 		).open();
+	}
+
+	private handleEditorMenu(menu: Menu, editor: Editor): void {
+		if (!this.isEnabled()) return;
+
+		this.addMenuItem(menu, {
+			title: this.t("toolkit.codeEditor.editor_menu.editCodeBlock"),
+			icon: "code-xml",
+			callback: () => {
+				const cursor = editor.getCursor();
+				const codeBlock = this.getCodeBlockAtCursor(editor, cursor);
+				if (codeBlock) {
+					this.openCodeBlockEditor(codeBlock);
+				} else {
+					this.logger.notice(
+						this.t("toolkit.codeEditor.notice.no_code_block")
+					);
+				}
+			},
+		});
+	}
+
+	private getCodeBlockAtCursor(
+		editor: Editor,
+		cursor: EditorPosition
+	): ICodeBlock | null {
+		const line = cursor.line;
+		const content = editor.getValue();
+		const lines = content.split("\n");
+
+		// 向上查找代码块开始
+		let startLine = line;
+		while (startLine >= 0) {
+			if (lines[startLine].startsWith("```")) {
+				break;
+			}
+			startLine--;
+		}
+
+		// 向下查找代码块结束
+		let endLine = line;
+		while (endLine < lines.length) {
+			if (endLine > startLine && lines[endLine].startsWith("```")) {
+				break;
+			}
+			endLine++;
+		}
+
+		// 如果找到完整的代码块
+		if (startLine >= 0 && endLine < lines.length) {
+			const blockLanguage = lines[startLine].slice(3).trim();
+			const language = getLanguage(blockLanguage);
+			const code = lines.slice(startLine + 1, endLine).join("\n");
+			return {
+				language,
+				code,
+				range: {
+					start: startLine,
+					end: endLine,
+				},
+			};
+		}
+
+		return null;
+	}
+
+	async openCodeBlockEditor(codeBlock: ICodeBlock): Promise<void> {
+		new BaseModal(
+			this.app,
+			this.plugin,
+			() => import("../components/Modal/EditCodeBlockModal"),
+			{
+				codeBlock,
+				logger: this.logger,
+				config: this.config,
+				onSave: (newCode: string) =>
+					this.updateCodeBlock(codeBlock.range, newCode),
+			},
+			"modal-size-large"
+		).open();
+	}
+
+	private async updateCodeBlock(
+		range: { start: number; end: number },
+		newCode: string
+	) {
+		const editor = this.app.workspace.activeEditor?.editor;
+		if (!editor) return;
+
+		const content = editor.getValue();
+		const lines = content.split("\n");
+		const codeBlockHeader = lines[range.start];
+		const codeBlockFooter = lines[range.end];
+
+		const newContent = [
+			...lines.slice(0, range.start),
+			codeBlockHeader,
+			newCode,
+			codeBlockFooter,
+			...lines.slice(range.end + 1),
+		].join("\n");
+
+		editor.setValue(newContent);
 	}
 
 	protected onConfigChange(): void {
