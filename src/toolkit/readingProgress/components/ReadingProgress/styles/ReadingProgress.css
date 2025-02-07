@@ -50,6 +50,7 @@
 
 .rht-toc-group:has(.rht-toc-list.rht-expanded) .rht-indicators {
 	visibility: hidden;
+	transition: visibility 0.2s ease;
 }
 
 .rht-toc-item-indicator {
@@ -71,8 +72,8 @@
 	top: 0;
 	visibility: hidden;
 	opacity: 0;
-	min-width: 10vw; /* 基础保护 */
-	max-width: 80vw; /* 最大宽度限制 */
+	min-width: 15vw;
+	max-width: 80vw;
 	transition: all 0.2s ease;
 	padding: 8px 0;
 }
@@ -82,8 +83,9 @@
 	/* background: color-mix(in srgb, var(--background-primary) 90%, transparent); */
 	border-radius: 4px;
 	box-shadow: var(--shadow-s);
+	min-width: 15vw;
+	max-width: 80vw;
 	max-height: 75vh;
-	/* min-height: 55vh; */
 	min-height: max(100px, 10vh);
 	overflow-y: auto;
 	overscroll-behavior: contain;
