@@ -7,7 +7,16 @@ import {
 	ICodeEditorData,
 } from "../types/config";
 import { BaseManager } from "@/src/core/services/BaseManager";
-import { Editor, EditorPosition, Menu, TFile, TFolder } from "obsidian";
+import {
+	Editor,
+	EditorPosition,
+	MarkdownPostProcessor,
+	MarkdownView,
+	Menu,
+	setIcon,
+	TFile,
+	TFolder,
+} from "obsidian";
 import { CodeEditorView, getLanguage } from "../components/CodeEditorView";
 import { MonacoWorkerService } from "../services/MonacoWorkerService";
 import { BaseModal } from "@/src/components/base/Modal/BaseModal";
@@ -18,6 +27,8 @@ interface ICodeEditorModule extends IToolkitModule {
 }
 
 export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
+	private markdownPostProcessor: MarkdownPostProcessor | null = null;
+
 	protected getDefaultConfig(): ICodeEditorConfig {
 		return CODE_EDITOR_DEFAULT_CONFIG;
 	}
@@ -33,11 +44,22 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		this.registerFileExtensions();
 		this.registerEventHandlers();
 		this.registerCommands();
+		this.registerMarkdownPostProcessor();
+
+		this.plugin.registerHoverLinkSource(CODE_EDITOR_VIEW_TYPE, {
+			display: CODE_EDITOR_VIEW_TYPE,
+			defaultMod: true,
+		});
 	}
 
 	protected onModuleUnload(): void {
 		this.logger.info("Unloading code editor manager");
+		// @ts-ignore
+		this.plugin.unregisterHoverLinkSource(CODE_EDITOR_VIEW_TYPE);
+	}
 
+	protected onModuleCleanup(): void {
+		this.logger.info("Cleaning up code editor manager");
 		MonacoWorkerService.dispose();
 
 		const leaves = this.app.workspace.getLeavesOfType(
@@ -55,10 +77,8 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		});
 
 		this.app.workspace.detachLeavesOfType(CODE_EDITOR_VIEW_TYPE);
-	}
 
-	protected onModuleCleanup(): void {
-		this.logger.info("Cleaning up code editor manager");
+		this.unregisterMarkdownPostProcessor();
 	}
 
 	private registerFileExtensions(): void {
@@ -80,6 +100,80 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 				await this.createCodeFile(folderPath);
 			},
 		});
+	}
+
+	private registerMarkdownPostProcessor(): void {
+		// 为所有代码块注册处理器
+		this.markdownPostProcessor = this.plugin.registerMarkdownPostProcessor(
+			(el, ctx) => {
+				// 只处理代码块元素
+				const preElements = el.querySelectorAll("pre > code");
+				if (!preElements.length) return;
+
+				preElements.forEach((codeEl) => {
+					const pre = codeEl.parentElement;
+					if (!pre) return;
+
+					const buttonContainer = pre.createDiv({
+						cls: "rht-code-block-buttons",
+					});
+					const editButton = buttonContainer.createEl("button", {
+						cls: "rht-edit-code-button",
+					});
+					setIcon(editButton, "edit");
+
+					const language = getLanguage(
+						codeEl.className.replace("language-", "") || ""
+					);
+					const source = codeEl.textContent || "";
+
+					// 绑定编辑按钮点击事件
+					editButton.addEventListener("click", (e) => {
+						e.stopPropagation();
+						const sectionInfo = ctx.getSectionInfo(el);
+						const codeBlock: ICodeBlock = {
+							language,
+							code: source,
+							range: {
+								start: sectionInfo?.lineStart || 0,
+								end: sectionInfo?.lineEnd || 0,
+							},
+						};
+						this.openCodeBlockEditor(codeBlock);
+					});
+
+					// 将复制按钮移动到按钮容器中
+					const copyButton = pre.querySelector(".copy-code-button");
+					if (copyButton) {
+						copyButton.detach();
+						buttonContainer.appendChild(copyButton);
+					}
+				});
+			}
+		);
+	}
+
+	private unregisterMarkdownPostProcessor(): void {
+		if (!this.markdownPostProcessor) return;
+
+		this.markdownPostProcessor = null;
+		document
+			.querySelectorAll(".rht-code-block-buttons")
+			.forEach((buttonContainer) => {
+				const pre = buttonContainer.closest("pre");
+				if (pre) {
+					// 将复制按钮移回原位置
+					const copyButton =
+						buttonContainer.querySelector(".copy-code-button");
+					if (copyButton) {
+						copyButton.detach();
+						pre.appendChild(copyButton);
+					}
+
+					// 移除编辑按钮和按钮容器
+					buttonContainer.remove();
+				}
+			});
 	}
 
 	protected registerEventHandlers(): void {
@@ -245,14 +339,18 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		range: { start: number; end: number },
 		newCode: string
 	) {
-		const editor = this.app.workspace.activeEditor?.editor;
-		if (!editor) return;
+		const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+		if (!activeView) return;
 
-		const content = editor.getValue();
+		const file = activeView.file;
+		if (!file) return;
+
+		const content = await this.app.vault.read(file);
 		const lines = content.split("\n");
 		const codeBlockHeader = lines[range.start];
 		const codeBlockFooter = lines[range.end];
 
+		// 构建新内容
 		const newContent = [
 			...lines.slice(0, range.start),
 			codeBlockHeader,
@@ -261,7 +359,8 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 			...lines.slice(range.end + 1),
 		].join("\n");
 
-		editor.setValue(newContent);
+		// 保存文件
+		await this.app.vault.modify(file, newContent);
 	}
 
 	protected onConfigChange(): void {
