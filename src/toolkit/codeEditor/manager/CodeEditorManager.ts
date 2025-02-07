@@ -350,6 +350,8 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		const codeBlockHeader = lines[range.start];
 		const codeBlockFooter = lines[range.end];
 
+		newCode = newCode.replace(/\n$/, "");
+
 		// 构建新内容
 		const newContent = [
 			...lines.slice(0, range.start),

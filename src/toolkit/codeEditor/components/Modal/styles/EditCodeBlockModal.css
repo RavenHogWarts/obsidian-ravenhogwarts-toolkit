@@ -1,8 +1,8 @@
 .rht-edit-code-block-modal {
 	display: flex;
 	flex-direction: column;
-	/* height: 80vh;
-	width: 80vw; */
+	height: 80vh;
+	width: 80vw;
 }
 
 .rht-edit-code-block-modal .rht-code-editor-modal-header {
