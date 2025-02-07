@@ -9,9 +9,9 @@ import {
 	ChevronRight,
 	ChevronsDownUp,
 	ChevronsUpDown,
-	CircleDot,
 	ClipboardCopy,
 	Pin,
+	TextCursorInput,
 } from "lucide-react";
 import { t } from "@/src/i18n/i18n";
 import { IReadingProgressConfig } from "@/src/toolkit/readingProgress/types/config";
@@ -483,7 +483,7 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 							"toolkit.readingProgress.return_button.return_to_cursor"
 						)}
 					>
-						<CircleDot size={16} />
+						<TextCursorInput size={16} />
 					</div>
 				) : (
 					<>
