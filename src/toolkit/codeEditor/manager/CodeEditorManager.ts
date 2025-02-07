@@ -37,11 +37,16 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		this.logger.info("Loading code editor manager");
 		MonacoWorkerService.initialize(this.logger);
 
-		this.plugin.registerView(CODE_EDITOR_VIEW_TYPE, (leaf) => {
-			return new CodeEditorView(leaf, this.config, this.logger);
-		});
+		try {
+			this.plugin.registerView(CODE_EDITOR_VIEW_TYPE, (leaf) => {
+				return new CodeEditorView(leaf, this.config, this.logger);
+			});
+			this.registerFileExtensions();
+		} catch (e) {
+			this.logger.debug("Failed to register code editor view", e);
+			return;
+		}
 
-		this.registerFileExtensions();
 		this.registerEventHandlers();
 		this.registerCommands();
 		this.registerMarkdownPostProcessor();
@@ -77,6 +82,8 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		});
 
 		this.app.workspace.detachLeavesOfType(CODE_EDITOR_VIEW_TYPE);
+		// @ts-ignore - 使用内部API
+		this.app.viewRegistry.unregisterView(CODE_EDITOR_VIEW_TYPE);
 
 		this.unregisterMarkdownPostProcessor();
 	}
