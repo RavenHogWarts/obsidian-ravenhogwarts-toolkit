@@ -18,7 +18,13 @@ A personal toolkit plugin (OTK) that integrates various Obsidian utilities, desi
 - Front Matter Sort
 - Quick Path
 - Reading Progress
+![Reading Progress](./assets/reading-progress.png)
+
 - Table Enhance
+![Table Enhance](./assets/table-enhance.png)
+
+- Code Editor
+![Code Editor](./assets/code-editor.png)
 
 ## Wiki
 [Wiki](https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit/)

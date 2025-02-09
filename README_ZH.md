@@ -18,7 +18,13 @@
 - 文档属性排序
 - 快速路径
 - 阅读进度
+![阅读进度](./assets/reading-progress.png)
+
 - 表格增强
+![表格增强](./assets/table-enhance.png)
+
+- 代码编辑器
+![代码编辑器](./assets/code-editor.png)
 
 ### 功能介绍
 [Wiki](https://ravenhogwarts.github.io/docs/zh/obsidian-ravenhogwarts-toolkit/)
