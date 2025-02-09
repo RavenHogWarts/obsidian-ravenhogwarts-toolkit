@@ -250,7 +250,8 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 		if (elementByLine) return elementByLine;
 
 		// 2. 尝试使用 data-heading 属性
-		const headingSelector = `[data-heading="${heading.heading}"]`;
+		const escapedHeading = CSS.escape(heading.heading);
+		const headingSelector = `[data-heading="${escapedHeading}"]`;
 		const elementByDataHeading = previewView.querySelector(
 			headingSelector
 		) as HTMLElement;
