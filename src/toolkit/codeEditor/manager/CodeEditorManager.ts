@@ -59,8 +59,6 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 
 	protected onModuleUnload(): void {
 		this.logger.info("Unloading code editor manager");
-		// @ts-ignore
-		this.plugin.unregisterHoverLinkSource(CODE_EDITOR_VIEW_TYPE);
 	}
 
 	protected onModuleCleanup(): void {
