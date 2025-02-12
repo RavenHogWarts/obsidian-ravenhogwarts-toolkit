@@ -76,9 +76,7 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 		this.registerEvent(
 			this.app.workspace.on("editor-change", (editor) => {
 				if (this.currentView?.editor === editor) {
-					this.updateActiveHeading(
-						this.scrollElement?.scrollTop || 0
-					);
+					this.updateActiveHeading();
 					this.updateTOC();
 				}
 			})
@@ -177,95 +175,42 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 				? Math.min(100, Math.max(0, (scrollTop / maxScroll) * 100))
 				: 0;
 
-		this.updateActiveHeading(scrollTop);
+		this.updateActiveHeading();
 		this.renderComponent();
 	}
 
-	private updateActiveHeading(scrollTop: number): void {
+	private updateActiveHeading(): void {
 		if (!this.headings.length || !this.currentView) return;
 
-		const mode = this.currentView.getMode();
+		const activeIndex = this.binarySearchClosestHeading(
+			this.headings,
+			this.currentView.currentMode.getScroll()
+		);
 
-		if (mode === "source") {
-			const editor = this.currentView.editor;
-			if (editor) {
-				const currentLine = editor.getCursor().line;
-				let activeIndex = -1;
-
-				for (let i = this.headings.length - 1; i >= 0; i--) {
-					if (this.headings[i].position.start.line <= currentLine) {
-						activeIndex = i;
-						break;
-					}
-				}
-
-				if (this.currentHeadingIndex !== activeIndex) {
-					this.currentHeadingIndex = activeIndex;
-					this.renderComponent();
-				}
-			}
-		} else {
-			if (!this.scrollElement) return;
-
-			const viewportTop = this.scrollElement.scrollTop;
-			const viewportHeight = this.scrollElement.clientHeight;
-			const viewportThreshold = viewportTop + viewportHeight / 3;
-
-			let activeIndex = -1;
-			let minDistance = Infinity;
-
-			for (let i = 0; i < this.headings.length; i++) {
-				const element = this.findHeadingElement(this.headings[i]);
-				if (!element) continue;
-
-				const rect = element.getBoundingClientRect();
-				const offsetTop = viewportTop + rect.top;
-				const distance = viewportThreshold - offsetTop;
-
-				if (distance >= 0 && distance < minDistance) {
-					activeIndex = i;
-					minDistance = distance;
-				}
-			}
-
-			if (this.currentHeadingIndex !== activeIndex) {
-				this.currentHeadingIndex = activeIndex;
-				this.renderComponent();
-			}
+		if (this.currentHeadingIndex !== activeIndex) {
+			this.currentHeadingIndex = activeIndex;
+			this.renderComponent();
 		}
 	}
 
-	private findHeadingElement(heading: HeadingCache): HTMLElement | null {
-		if (!this.currentView) return null;
-		const previewView = this.currentView.containerEl.querySelector(
-			".markdown-preview-view"
-		);
-		if (!previewView) return null;
-
-		// 1. 尝试使用 data-line 属性
-		const lineSelector = `[data-line="${heading.position.start.line}"]`;
-		const elementByLine = previewView.querySelector(
-			lineSelector
-		) as HTMLElement;
-		if (elementByLine) return elementByLine;
-
-		// 2. 尝试使用 data-heading 属性
-		const escapedHeading = CSS.escape(heading.heading);
-		const headingSelector = `[data-heading="${escapedHeading}"]`;
-		const elementByDataHeading = previewView.querySelector(
-			headingSelector
-		) as HTMLElement;
-		if (elementByDataHeading) return elementByDataHeading;
-
-		// 3. 使用标签和文本内容匹配
-		const headingElements = Array.from(
-			previewView.querySelectorAll(`h${heading.level}`)
-		);
-		return (
-			(headingElements.find(
-				(el) => el.textContent?.trim() === heading.heading
-			) as HTMLElement) || null
-		);
+	private binarySearchClosestHeading(
+		headings: HeadingCache[],
+		targetLine: number
+	): number {
+		let closestIndex = 0;
+		let low = 0;
+		let high = headings.length - 1;
+		while (low <= high) {
+			const mid = Math.floor((low + high) / 2);
+			const midLine = headings[mid].position.start.line;
+			if (midLine <= targetLine) {
+				closestIndex = mid;
+				low = mid + 1;
+			} else {
+				high = mid - 1;
+			}
+		}
+		return closestIndex;
 	}
 
 	private updateTOC(): void {
@@ -348,7 +293,7 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 		// 每 100ms 检查一次光标位置
 		const interval = window.setInterval(() => {
 			if (this.currentView?.getMode() === "source") {
-				this.updateActiveHeading(this.scrollElement?.scrollTop || 0);
+				this.updateActiveHeading();
 			}
 		}, 100);
 
