@@ -4,9 +4,10 @@ import {
 	MarkdownPostProcessorContext,
 	MarkdownPreviewRenderer,
 } from "obsidian";
-import "./ReadingTime.css";
+import "../components/styles/ReadingTime.css";
+import { Logger } from "@/src/core/services/Log";
 
-export interface ReadingTimeConfig {
+export interface IReadingTimeConfig {
 	// 基础配置
 	chineseWordsPerMinute?: number;
 	englishWordsPerMinute?: number;
@@ -38,50 +39,18 @@ export interface ReadingTimeConfig {
 }
 
 export class EstimatedReadingTime {
-	private static app: App;
+	private app: App;
+	private logger: Logger;
 
-	// 将 DEFAULT_CONFIG 改为 getter
-	private static get DEFAULT_CONFIG(): ReadingTimeConfig {
-		return {
-			chineseWordsPerMinute: 300,
-			englishWordsPerMinute: 200,
-			removeCodeBlocks: true,
-			removeWikiLinks: false,
-			removeImageLinks: true,
-			removeNormalLinks: false,
-
-			// 现在 t() 函数会在实际需要时才被调用
-			template: t(
-				"toolkit.readingProgress.estimatedReadingTime.template"
-			),
-			showWordCount: true,
-			showIcon: true,
-			showRange: false,
-
-			style: {
-				color: "var(--text-normal)",
-				backgroundColor: "var(--background-secondary)",
-				borderRadius: "8px",
-				padding: "12px 16px",
-				fontSize: "0.95em",
-				fontWeight: "normal",
-				boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-				border: "1px solid var(--background-modifier-border)",
-				width: "auto",
-				maxWidth: "100%",
-				margin: "1em 0",
-			},
-		};
-	}
-
-	public static setApp(app: App) {
+	constructor(app: App, logger: Logger) {
 		this.app = app;
+		this.logger = logger;
 	}
 
 	/**
-	 * 注册 Markdown Post Processor 处理器
+	 * 初始化并注册处理器
 	 */
-	public static registerPostProcessor(): void {
+	public initialize(): void {
 		MarkdownPreviewRenderer.registerPostProcessor(
 			MarkdownPreviewRenderer.createCodeBlockPostProcessor(
 				"rht-reading-time",
@@ -117,10 +86,7 @@ export class EstimatedReadingTime {
 						}
 
 						const container = el.createEl("div");
-						await EstimatedReadingTime.calculateReadingTime(
-							container,
-							config
-						);
+						await this.calculateReadingTime(container, config);
 					} catch (error) {
 						el.setText(
 							t(
@@ -134,9 +100,81 @@ export class EstimatedReadingTime {
 	}
 
 	/**
+	 * 计算阅读时间
+	 */
+	private async calculateReadingTime(
+		container: HTMLElement,
+		config?: IReadingTimeConfig
+	): Promise<void> {
+		try {
+			const mergedConfig = { ...this.DEFAULT_CONFIG, ...config };
+			const activeFile = this.app.workspace.getActiveFile();
+			if (!activeFile) {
+				throw new Error("No active file found");
+			}
+
+			const content = await this.app.vault.read(activeFile);
+			const cleanedContent = this.cleanContentWithConfig(
+				content,
+				mergedConfig
+			);
+			const wordCounts = this.getWordCounts(cleanedContent);
+
+			// 计算时间
+			const chineseTime =
+				wordCounts.chineseCount / mergedConfig.chineseWordsPerMinute!;
+			const englishTime =
+				wordCounts.englishCount / mergedConfig.englishWordsPerMinute!;
+			const totalTime = chineseTime + englishTime;
+
+			// 应用样式和渲染内容
+			this.applyStyles(container, mergedConfig);
+			container.appendChild(
+				this.formatContent(totalTime, wordCounts, mergedConfig)
+			);
+		} catch (error) {
+			this.logger.error("Error calculating reading time:", error);
+			throw error;
+		}
+	}
+
+	private get DEFAULT_CONFIG(): IReadingTimeConfig {
+		return {
+			chineseWordsPerMinute: 300,
+			englishWordsPerMinute: 200,
+			removeCodeBlocks: true,
+			removeWikiLinks: false,
+			removeImageLinks: true,
+			removeNormalLinks: false,
+
+			// 现在 t() 函数会在实际需要时才被调用
+			template: t(
+				"toolkit.readingProgress.estimatedReadingTime.template"
+			),
+			showWordCount: true,
+			showIcon: true,
+			showRange: false,
+
+			style: {
+				color: "var(--text-normal)",
+				backgroundColor: "var(--background-secondary)",
+				borderRadius: "8px",
+				padding: "12px 16px",
+				fontSize: "0.95em",
+				fontWeight: "normal",
+				boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+				border: "1px solid var(--background-modifier-border)",
+				width: "auto",
+				maxWidth: "100%",
+				margin: "1em 0",
+			},
+		};
+	}
+
+	/**
 	 * 获取中英文单词数
 	 */
-	private static getWordCounts(content: string): {
+	private getWordCounts(content: string): {
 		chineseCount: number;
 		englishCount: number;
 	} {
@@ -159,9 +197,9 @@ export class EstimatedReadingTime {
 	/**
 	 * 根据配置清理内容
 	 */
-	private static cleanContentWithConfig(
+	private cleanContentWithConfig(
 		content: string,
-		config?: ReadingTimeConfig
+		config?: IReadingTimeConfig
 	): string {
 		let cleanedContent = content
 			.replace(/---[\s\S]*?---/, "") // 移除 front matter
@@ -186,7 +224,7 @@ export class EstimatedReadingTime {
 	/**
 	 * 美化显示阅读时间
 	 */
-	private static formatReadingTime(minutes: number): string {
+	private formatReadingTime(minutes: number): string {
 		if (minutes < 1) {
 			return t(
 				"toolkit.readingProgress.estimatedReadingTime.formatReadingTime.lessThanOneMinute"
@@ -206,9 +244,9 @@ export class EstimatedReadingTime {
 		}
 	}
 
-	private static applyStyles(
+	private applyStyles(
 		element: HTMLElement,
-		config: ReadingTimeConfig
+		config: IReadingTimeConfig
 	): void {
 		element.addClass("rht-reading-time-card");
 
@@ -240,10 +278,10 @@ export class EstimatedReadingTime {
 		}
 	}
 
-	private static formatContent(
+	private formatContent(
 		time: number,
 		wordCounts: { chineseCount: number; englishCount: number },
-		config: ReadingTimeConfig
+		config: IReadingTimeConfig
 	): DocumentFragment {
 		const fragment = document.createDocumentFragment();
 
@@ -322,45 +360,5 @@ export class EstimatedReadingTime {
 			}
 		}
 		return fragment;
-	}
-
-	public static async calculateReadingTime(
-		container: HTMLElement,
-		config?: ReadingTimeConfig
-	): Promise<void> {
-		try {
-			if (!this.app) {
-				throw new Error("App instance not initialized");
-			}
-
-			const activeFile = this.app.workspace.getActiveFile();
-			if (!activeFile) {
-				throw new Error("No active file found");
-			}
-
-			const content = await this.app.vault.read(activeFile);
-			const mergedConfig = { ...this.DEFAULT_CONFIG, ...config };
-			const cleanedContent = this.cleanContentWithConfig(
-				content,
-				mergedConfig
-			);
-			const wordCounts = this.getWordCounts(cleanedContent);
-
-			// 计算时间
-			const chineseTime =
-				wordCounts.chineseCount / mergedConfig.chineseWordsPerMinute!;
-			const englishTime =
-				wordCounts.englishCount / mergedConfig.englishWordsPerMinute!;
-			const totalTime = chineseTime + englishTime;
-
-			// 应用样式和渲染内容
-			this.applyStyles(container, mergedConfig);
-			container.appendChild(
-				this.formatContent(totalTime, wordCounts, mergedConfig)
-			);
-		} catch (error) {
-			console.error("Error calculating reading time:", error);
-			throw error;
-		}
 	}
 }

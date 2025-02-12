@@ -9,10 +9,8 @@ import {
 	IReadingProgressData,
 	READING_PROGRESS_DEFAULT_CONFIG,
 } from "@/src/toolkit/readingProgress/types/config";
-import {
-	EstimatedReadingTime,
-	ReadingTimeConfig,
-} from "../services/estimatedReadingTime";
+import { EstimatedReadingTime } from "../services/estimatedReadingTime";
+import { GenerateTOC } from "../services/generateTableOfContents";
 
 interface IReadingProgressModule extends IToolkitModule {
 	config: IReadingProgressConfig;
@@ -28,6 +26,8 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 	private progress = 0;
 	private headings: HeadingCache[] = [];
 	private currentHeadingIndex = -1;
+	private estimatedReadingTime: EstimatedReadingTime | null = null;
+	private toc: GenerateTOC | null = null;
 
 	protected getDefaultConfig(): IReadingProgressConfig {
 		return READING_PROGRESS_DEFAULT_CONFIG;
@@ -39,8 +39,13 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 		this.registerEventHandlers();
 		this.updateContainerPosition();
 
-		EstimatedReadingTime.setApp(this.app);
-		EstimatedReadingTime.registerPostProcessor();
+		this.estimatedReadingTime = new EstimatedReadingTime(
+			this.app,
+			this.logger
+		);
+		this.estimatedReadingTime.initialize();
+		this.toc = new GenerateTOC(this.app, this.logger);
+		this.toc.initialize();
 	}
 
 	protected onModuleUnload(): void {
@@ -55,6 +60,7 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 			this.resizeObserver.disconnect();
 			this.resizeObserver = null;
 		}
+		this.estimatedReadingTime = null;
 	}
 
 	protected registerEventHandlers(): void {
@@ -90,14 +96,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 				}
 			})
 		);
-
-		// @ts-ignore
-		window.calculateReadingTime = (
-			container: HTMLElement,
-			config?: ReadingTimeConfig
-		) => {
-			return EstimatedReadingTime.calculateReadingTime(container, config);
-		};
 	}
 
 	private renderComponent(): void {

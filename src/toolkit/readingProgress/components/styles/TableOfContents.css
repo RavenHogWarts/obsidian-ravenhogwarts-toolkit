@@ -1,0 +1,30 @@
+.rht-inline-toc-container {
+	overflow-y: auto;
+}
+
+.rht-inline-toc-title {
+	font-weight: bold;
+	margin-bottom: 1em;
+	padding-bottom: 0.5em;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.rht-inline-toc-list {
+	list-style-position: inside;
+	padding-left: 0;
+}
+
+.rht-inline-toc-item {
+	margin: 0.5em 0;
+	line-height: 1.4;
+}
+
+.rht-inline-toc-item > span:hover {
+	color: var(--text-accent);
+}
+
+.rht-inline-toc-number {
+	color: var(--text-muted);
+	font-size: 0.9em;
+	font-weight: normal;
+}
