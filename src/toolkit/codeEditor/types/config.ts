@@ -36,4 +36,10 @@ export interface ICodeBlock {
 	language: string;
 	code: string;
 	range: { start: number; end: number };
+	context?: {
+		isInCallout: boolean;
+		calloutType?: string;
+		calloutStartLine?: number;
+	};
+	indent?: number;
 }
