@@ -180,10 +180,26 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 	private updateActiveHeading(): void {
 		if (!this.headings.length || !this.currentView) return;
 
-		const activeIndex = this.binarySearchClosestHeading(
-			this.headings,
-			this.currentView.currentMode.getScroll()
-		);
+		let activeIndex = -1;
+
+		const mode = this.currentView.getMode();
+		if (mode === "source") {
+			const editor = this.currentView.editor;
+			if (!editor) return;
+
+			const currentLine = editor.getCursor().line;
+			for (let i = this.headings.length - 1; i >= 0; i--) {
+				if (this.headings[i].position.start.line <= currentLine) {
+					activeIndex = i;
+					break;
+				}
+			}
+		} else {
+			activeIndex = this.binarySearchClosestHeading(
+				this.headings,
+				this.currentView.currentMode.getScroll()
+			);
+		}
 
 		if (this.currentHeadingIndex !== activeIndex) {
 			this.currentHeadingIndex = activeIndex;
