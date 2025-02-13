@@ -144,8 +144,6 @@ export class GenerateTOC {
 	): DocumentFragment {
 		const fragment = document.createDocumentFragment();
 
-		const contentEl = fragment;
-
 		if (config.title) {
 			const titleEl = fragment.createEl("div", {
 				cls: "rht-inline-toc-title",
@@ -168,7 +166,15 @@ export class GenerateTOC {
 			let parent1 = -1;
 			let parent2 = -1;
 
+			// 向前查找最近的上级标题
 			for (let i = index1; i >= 0; i--) {
+				// 跳过不在配置范围内的标题
+				if (
+					headings[i].level < config.minDepth! ||
+					headings[i].level > config.maxDepth!
+				) {
+					continue;
+				}
 				if (headings[i].level < level) {
 					parent1 = i;
 					break;
@@ -176,6 +182,13 @@ export class GenerateTOC {
 			}
 
 			for (let i = index2; i >= 0; i--) {
+				// 跳过不在配置范围内的标题
+				if (
+					headings[i].level < config.minDepth! ||
+					headings[i].level > config.maxDepth!
+				) {
+					continue;
+				}
 				if (headings[i].level < level) {
 					parent2 = i;
 					break;
@@ -186,12 +199,28 @@ export class GenerateTOC {
 		};
 
 		const generateHeadingNumber = (index: number): string => {
+			// 如果标题不在配置的深度范围内，不显示编号
+			if (
+				filteredHeadings[index].level < config.minDepth! ||
+				filteredHeadings[index].level > config.maxDepth!
+			) {
+				return "";
+			}
+
 			const stack: number[] = [];
 			const levels: number[] = [];
 
 			// 从头开始遍历，构建正确的层级关系
 			for (let i = 0; i <= index; i++) {
-				const heading = headings[i];
+				const heading = filteredHeadings[i];
+
+				// 跳过不在配置范围内的标题
+				if (
+					heading.level < config.minDepth! ||
+					heading.level > config.maxDepth!
+				) {
+					continue;
+				}
 
 				while (
 					levels.length > 0 &&
@@ -209,8 +238,15 @@ export class GenerateTOC {
 					let count = 1;
 					// 向前查找同级标题
 					for (let j = i - 1; j >= 0; j--) {
+						// 跳过不在配置范围内的标题
 						if (
-							headings[j].level === heading.level &&
+							filteredHeadings[j].level < config.minDepth! ||
+							filteredHeadings[j].level > config.maxDepth!
+						) {
+							continue;
+						}
+						if (
+							filteredHeadings[j].level === heading.level &&
 							isUnderSameParent(j, i)
 						) {
 							count++;
