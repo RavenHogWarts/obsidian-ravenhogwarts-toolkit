@@ -1,21 +1,21 @@
 import * as React from "react";
 import { HeadingCache } from "obsidian";
 import { ProgressRing } from "@/src/components/base/ProgressRing/ProgressRing";
-import {
-	ArrowDownToLine,
-	ArrowLeftRight,
-	ArrowUpToLine,
-	ChevronLeft,
-	ChevronRight,
-	ChevronsDownUp,
-	ChevronsUpDown,
-	ClipboardCopy,
-	Pin,
-	TextCursorInput,
-} from "lucide-react";
+import { ArrowDownToLine, ArrowUpToLine, TextCursorInput } from "lucide-react";
 import { t } from "@/src/i18n/i18n";
 import { IReadingProgressConfig } from "@/src/toolkit/readingProgress/types/config";
 import "./styles/ReadingProgress.css";
+import { TOCToolbar } from "./TOCToolbar";
+import { TOCItem } from "./TOCItem";
+import { useTOCDrag } from "../../hooks/useTOCDrag";
+import {
+	calculateActualDepth,
+	getChildIndices,
+	getCleanHeadingText,
+	hasChildren,
+	isUnderSameParent,
+	smoothScroll,
+} from "../../utils/tocUtils";
 
 interface ReadingProgressProps {
 	config: IReadingProgressConfig;
@@ -39,9 +39,6 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 	onReturnClick,
 }) => {
 	const [isHovered, setIsHovered] = React.useState(false);
-	const [isMouseDragging, setIsMouseDragging] = React.useState(false);
-	const [startX, setStartX] = React.useState(0);
-	const [startWidth, setStartWidth] = React.useState(0);
 	const [collapsedItems, setCollapsedItems] = React.useState<Set<number>>(
 		new Set()
 	);
@@ -49,39 +46,15 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 	const tocListRef = React.useRef<HTMLDivElement>(null);
 	const indicatorsRef = React.useRef<HTMLDivElement>(null);
 
+	const { isMouseDragging, handleMouseDragStart } = useTOCDrag({
+		config,
+		onConfigChange,
+		tocListRef,
+	});
+
 	// 添加平滑滚动效果
 	React.useEffect(() => {
 		if (activeHeadingIndex >= 0) {
-			const smoothScroll = (
-				container: HTMLElement,
-				element: HTMLElement,
-				duration = 300
-			) => {
-				const startTime = performance.now();
-				const startScroll = container.scrollTop;
-				const containerHeight = container.clientHeight;
-				const elementOffset = element.offsetTop;
-				const elementHeight = element.offsetHeight;
-				const targetScroll =
-					elementOffset - (containerHeight - elementHeight) / 2;
-				const distance = targetScroll - startScroll;
-
-				const animate = (currentTime: number) => {
-					const elapsed = currentTime - startTime;
-					const progress = Math.min(elapsed / duration, 1);
-
-					// easeOutCubic 缓动函数
-					const easeProgress = 1 - Math.pow(1 - progress, 3);
-					container.scrollTop = startScroll + distance * easeProgress;
-
-					if (progress < 1) {
-						requestAnimationFrame(animate);
-					}
-				};
-
-				requestAnimationFrame(animate);
-			};
-
 			const activeElement = tocListRef.current?.querySelector(
 				`[data-index="${activeHeadingIndex}"]`
 			) as HTMLElement;
@@ -99,16 +72,6 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 		}
 	}, [activeHeadingIndex]);
 
-	// 处理标题文本，移除 Markdown 语法并保留纯文本
-	const getCleanHeadingText = (heading: string) => {
-		return heading
-			.replace(/^#+\s+/, "") // 移除标题标记
-			.replace(/\[\[([^\]]+)\]\]/g, "$1") // 处理内部链接
-			.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // 处理外部链接
-			.replace(/[*_`]/g, "") // 移除强调标记
-			.trim();
-	};
-
 	// 计算并设置目录列表高度
 	React.useEffect(() => {
 		if (tocListRef.current) {
@@ -119,40 +82,6 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 			);
 		}
 	}, [headings]);
-
-	// 处理鼠标拖动
-	const handleMouseDragStart = React.useCallback(
-		(e: React.MouseEvent<HTMLDivElement>) => {
-			e.preventDefault();
-			setIsMouseDragging(true);
-			setStartX(e.clientX);
-			setStartWidth(config.tocWidth);
-		},
-		[config.tocWidth]
-	);
-	const handleMouseDrag = React.useCallback(
-		(e: MouseEvent) => {
-			if (!isMouseDragging || !tocListRef.current) return;
-
-			const delta = e.clientX - startX;
-			// 根据位置调整宽度变化方向
-			const widthDelta = config.position === "right" ? -delta : delta;
-			const newWidth = startWidth + widthDelta;
-
-			tocListRef.current.style.width = `${newWidth}px`;
-		},
-		[isMouseDragging, startX, startWidth]
-	);
-	const handleMouseDragEnd = React.useCallback(() => {
-		if (!isMouseDragging) return;
-
-		setIsMouseDragging(false);
-
-		if (tocListRef.current) {
-			const newWidth = tocListRef.current.offsetWidth;
-			onConfigChange?.({ tocWidth: newWidth });
-		}
-	}, [isMouseDragging, onConfigChange]);
 
 	const handlePinClick = React.useCallback(() => {
 		onConfigChange?.({ tocAlwaysExpanded: !config.tocAlwaysExpanded });
@@ -206,19 +135,6 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 			console.error("Failed to copy TOC:", err);
 		}
 	}, [headings, getCleanHeadingText]);
-
-	// 添加和移除全局事件监听器
-	React.useEffect(() => {
-		if (isMouseDragging) {
-			document.addEventListener("mousemove", handleMouseDrag);
-			document.addEventListener("mouseup", handleMouseDragEnd);
-		}
-
-		return () => {
-			document.removeEventListener("mousemove", handleMouseDrag);
-			document.removeEventListener("mouseup", handleMouseDragEnd);
-		};
-	}, [isMouseDragging, handleMouseDrag, handleMouseDragEnd]);
 
 	const generateHeadingNumber = React.useCallback(
 		(index: number): string => {
@@ -275,91 +191,6 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 		[headings]
 	);
 
-	// 辅助函数：检查两个标题是否在同一个父标题下
-	const isUnderSameParent = (
-		index1: number,
-		index2: number,
-		headings: HeadingCache[],
-		skipH1: boolean
-	): boolean => {
-		const level = headings[index1].level;
-
-		// 向前查找最近的上级标题
-		let parent1 = -1;
-		let parent2 = -1;
-
-		for (let i = index1; i >= 0; i--) {
-			if (skipH1 && headings[i].level === 1) {
-				continue;
-			}
-			if (headings[i].level < level) {
-				parent1 = i;
-				break;
-			}
-		}
-
-		for (let i = index2; i >= 0; i--) {
-			if (skipH1 && headings[i].level === 1) {
-				continue;
-			}
-			if (headings[i].level < level) {
-				parent2 = i;
-				break;
-			}
-		}
-
-		return parent1 === parent2;
-	};
-
-	// 判断标题是否有子标题
-	const hasChildren = React.useCallback(
-		(index: number) => {
-			if (index >= headings.length - 1) return false;
-			return headings[index + 1].level > headings[index].level;
-		},
-		[headings]
-	);
-
-	// 获取标题的所有子标题索引
-	const getChildIndices = React.useCallback(
-		(index: number) => {
-			const indices: number[] = [];
-			const parentLevel = headings[index].level;
-
-			for (let i = index + 1; i < headings.length; i++) {
-				if (headings[i].level <= parentLevel) break;
-				indices.push(i);
-			}
-
-			return indices;
-		},
-		[headings]
-	);
-
-	const calculateActualDepth = React.useCallback(
-		(index: number): number => {
-			const currentHeading = headings[index];
-			let depth = 0;
-			let minLevel = currentHeading.level;
-
-			// 向前遍历寻找父级标题
-			for (let i = index - 1; i >= 0; i--) {
-				const prevHeading = headings[i];
-				// 只关注比当前标题级别小的标题
-				if (prevHeading.level < currentHeading.level) {
-					// 如果找到新的最小级别，增加深度
-					if (prevHeading.level < minLevel) {
-						depth++;
-						minLevel = prevHeading.level;
-					}
-				}
-			}
-
-			return depth;
-		},
-		[headings]
-	);
-
 	// 处理折叠/展开
 	const handleCollapse = React.useCallback((index: number) => {
 		setCollapsedItems((prev) => {
@@ -382,13 +213,13 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 				const allParents = new Set(
 					headings
 						.map((_, index) => index)
-						.filter((index) => hasChildren(index))
+						.filter((index) => hasChildren(index, headings))
 				);
 				setCollapsedItems(allParents);
 			}
 			return !prev;
 		});
-	}, [headings, hasChildren]);
+	}, [headings]);
 
 	const shouldShowTOC = React.useMemo(() => {
 		if (headings.length === 0) return false;
@@ -541,71 +372,15 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 				>
 					{/* 添加工具栏 */}
 					{config.showToolbar && (
-						<div className="rht-toc-toolbar">
-							<button
-								className={`rht-toc-toolbar-btn ${
-									config.tocAlwaysExpanded ? "active" : ""
-								}`}
-								onClick={handlePinClick}
-								aria-label={t(
-									"toolkit.readingProgress.toolbar.toggle_pin"
-								)}
-							>
-								<Pin size={16} />
-							</button>
-							<button
-								className="rht-toc-toolbar-btn"
-								onClick={handlePositionFlip}
-								aria-label={t(
-									"toolkit.readingProgress.toolbar.toggle_position"
-								)}
-							>
-								<ArrowLeftRight size={16} />
-							</button>
-							<button
-								className="rht-toc-toolbar-btn"
-								onClick={handleToggleAll}
-								aria-label={t(
-									`toolkit.readingProgress.toolbar.${
-										allCollapsed ? "expand" : "collapse"
-									}_all`
-								)}
-							>
-								{allCollapsed ? (
-									<ChevronsUpDown size={16} />
-								) : (
-									<ChevronsDownUp size={16} />
-								)}
-							</button>
-							<button
-								className="rht-toc-toolbar-btn"
-								onClick={() => handleOffsetChange("left")}
-								aria-label={t(
-									"toolkit.readingProgress.toolbar.move_left"
-								)}
-							>
-								<ChevronLeft size={16} />
-							</button>
-							<button
-								className="rht-toc-toolbar-btn"
-								onClick={() => handleOffsetChange("right")}
-								aria-label={t(
-									"toolkit.readingProgress.toolbar.move_right"
-								)}
-							>
-								<ChevronRight size={16} />
-							</button>
-							<button
-								className="rht-toc-toolbar-btn"
-								onClick={handleCopyTOC}
-								data-action="copy"
-								aria-label={t(
-									"toolkit.readingProgress.toolbar.copy_toc"
-								)}
-							>
-								<ClipboardCopy size={16} />
-							</button>
-						</div>
+						<TOCToolbar
+							tocAlwaysExpanded={config.tocAlwaysExpanded}
+							onPinClick={handlePinClick}
+							onPositionFlip={handlePositionFlip}
+							onToggleAll={handleToggleAll}
+							allCollapsed={allCollapsed}
+							onOffsetChange={handleOffsetChange}
+							onCopyTOC={handleCopyTOC}
+						/>
 					)}
 					{/* 添加拖动手柄 */}
 					<div
@@ -631,11 +406,16 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 							)}
 							<div className="rht-toc-list-container">
 								{headings.map((heading, index) => {
-									const actualDepth =
-										calculateActualDepth(index);
+									const actualDepth = calculateActualDepth(
+										index,
+										headings
+									);
 									const headingNumber =
 										generateHeadingNumber(index);
-									const showChildren = hasChildren(index);
+									const showChildren = hasChildren(
+										index,
+										headings
+									);
 									const isCollapsed =
 										collapsedItems.has(index);
 									const shouldHide = headings
@@ -643,71 +423,33 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 										.some(
 											(h, i) =>
 												collapsedItems.has(i) &&
-												getChildIndices(i).includes(
-													index
-												)
+												getChildIndices(
+													i,
+													headings
+												).includes(index)
 										);
 									if (shouldHide) return null;
 
 									return (
-										<div
-											key={index}
-											className="rht-toc-item"
-											data-index={index}
-											data-depth={heading.level}
-											data-relative-depth={actualDepth}
-											data-line={
-												heading.position.start.line
-											}
-											data-active={
+										<TOCItem
+											heading={heading}
+											index={index}
+											actualDepth={actualDepth}
+											headingNumber={headingNumber}
+											showChildren={showChildren}
+											isCollapsed={isCollapsed}
+											isActive={
 												index === activeHeadingIndex
 											}
-											onClick={() =>
-												onHeadingClick(heading)
+											useHeadingNumber={
+												config.useHeadingNumber
 											}
-										>
-											<div className="rht-toc-item-content">
-												{showChildren && (
-													<button
-														className="rht-toc-collapse-btn clickable-icon"
-														onClick={(e) => {
-															e.stopPropagation();
-															handleCollapse(
-																index
-															);
-														}}
-													>
-														<ChevronRight
-															size={14}
-															className={`rht-toc-collapse-icon ${
-																isCollapsed
-																	? ""
-																	: "expanded"
-															}`}
-														/>
-													</button>
-												)}
-												<span className="rht-toc-item-text">
-													<span
-														className="rht-toc-item-number"
-														style={{
-															display:
-																config.useHeadingNumber
-																	? "inline"
-																	: "none",
-														}}
-													>
-														{headingNumber}
-													</span>
-													{getCleanHeadingText(
-														heading.heading
-													)}
-												</span>
-											</div>
-											<span className="rht-toc-item-level">
-												H{heading.level}
-											</span>
-										</div>
+											onHeadingClick={onHeadingClick}
+											onCollapse={handleCollapse}
+											getCleanHeadingText={
+												getCleanHeadingText
+											}
+										/>
 									);
 								})}
 							</div>
