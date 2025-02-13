@@ -3,6 +3,7 @@ import {
 	App,
 	MarkdownPostProcessorContext,
 	MarkdownPreviewRenderer,
+	setIcon,
 } from "obsidian";
 import "../components/styles/ReadingTime.css";
 import { Logger } from "@/src/core/services/Log";
@@ -285,23 +286,17 @@ export class EstimatedReadingTime {
 	): DocumentFragment {
 		const fragment = document.createDocumentFragment();
 
-		// 创建内容容器，应用主题和动画
-		const contentEl = fragment;
-
-		// 渲染基本内容
-		const textContainer = contentEl.createEl("div", {
+		const textContainer = fragment.createEl("div", {
 			cls: "rht-reading-time-text-container",
 		});
 
-		// 添加图标
 		if (config.showIcon) {
 			const iconEl = textContainer.createEl("span", {
 				cls: "rht-reading-time-icon",
 			});
-			iconEl.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+			setIcon(iconEl, "clock");
 		}
 
-		// 处理时间范围显示
 		let timeDisplay = "";
 		if (config.showRange) {
 			const fastTime = this.formatReadingTime(time * 0.8); // 快速阅读时间
@@ -320,15 +315,13 @@ export class EstimatedReadingTime {
 			text: content,
 		});
 
-		// 如果需要显示字数统计
 		if (config.showWordCount) {
-			const statsEl = contentEl.createEl("div", {
+			const statsEl = fragment.createEl("div", {
 				cls: "rht-reading-time-stats",
 			});
 			const totalWords =
 				wordCounts.chineseCount + wordCounts.englishCount;
 
-			// 创建总字数统计
 			statsEl.createEl("div", {
 				cls: "rht-reading-time-stat-item",
 				text: t(
@@ -337,7 +330,6 @@ export class EstimatedReadingTime {
 				),
 			});
 
-			// 创建中文字数统计
 			if (wordCounts.chineseCount > 0) {
 				statsEl.createEl("div", {
 					cls: "rht-reading-time-stat-item",
@@ -348,7 +340,6 @@ export class EstimatedReadingTime {
 				});
 			}
 
-			// 创建英文字数统计
 			if (wordCounts.englishCount > 0) {
 				statsEl.createEl("div", {
 					cls: "rht-reading-time-stat-item",
