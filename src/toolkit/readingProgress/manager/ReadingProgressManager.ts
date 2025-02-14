@@ -27,7 +27,7 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 	private headings: HeadingCache[] = [];
 	private currentHeadingIndex = -1;
 	private estimatedReadingTime: EstimatedReadingTime | null = null;
-	private toc: GenerateTOC | null = null;
+	private tocGenerator: GenerateTOC | null = null;
 
 	protected getDefaultConfig(): IReadingProgressConfig {
 		return READING_PROGRESS_DEFAULT_CONFIG;
@@ -41,11 +41,12 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 
 		this.estimatedReadingTime = new EstimatedReadingTime(
 			this.app,
+			this.plugin,
 			this.logger
 		);
 		this.estimatedReadingTime.initialize();
-		this.toc = new GenerateTOC(this.app, this.logger);
-		this.toc.initialize();
+		this.tocGenerator = new GenerateTOC(this.app, this.plugin, this.logger);
+		this.tocGenerator.initialize();
 	}
 
 	protected onModuleUnload(): void {
@@ -54,13 +55,12 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 
 	protected onModuleCleanup(): void {
 		this.cleanupCurrentView();
-		// @ts-ignore
-		window.calculateReadingTime = undefined;
 		if (this.resizeObserver) {
 			this.resizeObserver.disconnect();
 			this.resizeObserver = null;
 		}
-		this.estimatedReadingTime = null;
+		this.estimatedReadingTime?.unload();
+		this.tocGenerator?.unload();
 	}
 
 	protected registerEventHandlers(): void {

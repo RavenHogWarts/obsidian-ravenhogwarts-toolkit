@@ -2,12 +2,14 @@ import { t } from "@/src/i18n/i18n";
 import {
 	App,
 	MarkdownPostProcessorContext,
-	MarkdownPreviewRenderer,
+	MarkdownRenderChild,
 	setIcon,
+	TFile,
 } from "obsidian";
 import "../components/styles/ReadingTime.css";
 import { Logger } from "@/src/core/services/Log";
-
+import { registerCodeblock } from "@/src/lib/registerCodeblock";
+import RavenHogwartsToolkitPlugin from "@/src/main";
 export interface IReadingTimeConfig {
 	// 基础配置
 	chineseWordsPerMinute?: number;
@@ -40,70 +42,95 @@ export interface IReadingTimeConfig {
 }
 
 export class EstimatedReadingTime {
-	private app: App;
+	app: App;
+	plugin: RavenHogwartsToolkitPlugin;
 	private logger: Logger;
+	private codeBlockProcessor: registerCodeblock;
 
-	constructor(app: App, logger: Logger) {
+	constructor(app: App, plugin: RavenHogwartsToolkitPlugin, logger: Logger) {
 		this.app = app;
+		this.plugin = plugin;
 		this.logger = logger;
+		this.codeBlockProcessor = new registerCodeblock(this.plugin);
 	}
 
 	/**
 	 * 初始化并注册处理器
 	 */
 	public initialize(): void {
-		MarkdownPreviewRenderer.registerPostProcessor(
-			MarkdownPreviewRenderer.createCodeBlockPostProcessor(
+		try {
+			this.codeBlockProcessor.registerPriorityCodeblockPostProcessor(
 				"rht-reading-time",
+				-99,
 				async (
 					source: string,
 					el: HTMLElement,
 					ctx: MarkdownPostProcessorContext
 				) => {
 					try {
-						// 清理源代码
-						const cleanSource = source.trim();
-						let config = {};
-
-						if (cleanSource) {
-							// 使用 Function 构造器来解析 JavaScript 对象字面量
-							// 这样可以支持不带引号的属性名和尾随逗号
+						let config: IReadingTimeConfig = {};
+						if (source.trim()) {
 							try {
 								config = new Function(
-									`return (${cleanSource})`
+									`return (${source.trim()})`
 								)();
 							} catch (parseError) {
-								// 如果对象字面量解析失败，尝试 JSON.parse 作为后备
 								try {
-									config = JSON.parse(cleanSource);
+									config = JSON.parse(source.trim());
 								} catch (jsonError) {
-									throw new Error(
-										t(
-											"toolkit.readingProgress.estimatedReadingTime.error.message"
-										)
+									this.logger.error(
+										"Failed to parse reading time config"
 									);
 								}
 							}
 						}
 
 						const container = el.createEl("div");
-						await this.calculateReadingTime(container, config);
-					} catch (error) {
-						el.setText(
-							t(
-								"toolkit.readingProgress.estimatedReadingTime.error.message"
+						ctx.addChild(
+							new ReadingTimeRenderChild(
+								container,
+								this,
+								config,
+								ctx.sourcePath
 							)
 						);
+					} catch (error) {
+						this.logger.error(
+							"Error processing reading time codeblock:",
+							error
+						);
+						el.setText("Error calculating reading time");
 					}
 				}
-			)
-		);
+			);
+
+			this.logger.debug(
+				"Successfully initialized reading time processor"
+			);
+		} catch (error) {
+			this.logger.error(
+				"Error initializing reading time processor:",
+				error
+			);
+			throw error;
+		}
+	}
+
+	public unload(): void {
+		try {
+			this.codeBlockProcessor.unregisterCodeblockProcessor(
+				"rht-reading-time"
+			);
+			this.logger.debug("Successfully unloaded reading time processor");
+		} catch (error) {
+			this.logger.error("Error unloading reading time processor:", error);
+		}
 	}
 
 	/**
 	 * 计算阅读时间
 	 */
-	private async calculateReadingTime(
+	public async calculateReadingTime(
 		container: HTMLElement,
 		config?: IReadingTimeConfig
 	): Promise<void> {
@@ -351,5 +378,69 @@ export class EstimatedReadingTime {
 			}
 		}
 		return fragment;
+	}
+}
+
+class ReadingTimeRenderChild extends MarkdownRenderChild {
+	private config: IReadingTimeConfig;
+	private readingTime: EstimatedReadingTime;
+	private sourcePath: string;
+	private activeFile: TFile | null = null;
+
+	constructor(
+		containerEl: HTMLElement,
+		readingTime: EstimatedReadingTime,
+		config: IReadingTimeConfig,
+		sourcePath: string
+	) {
+		super(containerEl);
+		this.readingTime = readingTime;
+		this.config = config;
+		this.sourcePath = sourcePath;
+	}
+
+	async onload() {
+		this.activeFile = this.readingTime.app.vault.getAbstractFileByPath(
+			this.sourcePath
+		) as TFile;
+		if (!this.activeFile) return;
+
+		await this.render();
+
+		// this.registerEvent(
+		// 	this.readingTime.app.metadataCache.on("changed", async (file) => {
+		// 		if (file && file.path === this.sourcePath) {
+		// 			await this.render();
+		// 		}
+		// 	})
+		// );
+
+		// this.registerEvent(
+		// 	this.readingTime.app.workspace.on(
+		// 		"editor-change",
+		// 		async (editor) => {
+		// 			const activeFile =
+		// 				this.readingTime.app.workspace.getActiveFile();
+		// 			if (activeFile && activeFile.path === this.sourcePath) {
+		// 				await this.render();
+		// 			}
+		// 		}
+		// 	)
+		// );
+	}
+
+	async render() {
+		if (!this.activeFile) return;
+
+		try {
+			this.containerEl.empty();
+			await this.readingTime.calculateReadingTime(
+				this.containerEl,
+				this.config
+			);
+		} catch (error) {
+			this.containerEl.setText("Error updating reading time");
+			console.error("Error updating reading time:", error);
+		}
 	}
 }

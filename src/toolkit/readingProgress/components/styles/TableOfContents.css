@@ -28,3 +28,24 @@
 	font-size: 0.9em;
 	font-weight: normal;
 }
+
+.rht-inline-toc-container.columns {
+	.rht-inline-toc-list {
+		column-width: var(--toc-column-min-width);
+		column-gap: var(--toc-column-gap);
+		column-rule: var(--toc-column-rule);
+		orphans: 3;
+		widows: 3;
+	}
+
+	.rht-inline-toc-item {
+		break-inside: avoid;
+		page-break-inside: avoid;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.rht-inline-toc-container.columns .rht-inline-toc-list {
+		columns: 1;
+	}
+}
