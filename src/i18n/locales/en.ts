@@ -5,7 +5,7 @@ export const en: Message = {
 		settings: "Settings",
 		overview: {
 			title: "Toolkit Management",
-			description: `Welcome to the toolkit, view <a href="https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit" target="_blank">wiki documentation</a> for more features`,
+			description: `Welcome to the toolkit, view <a href="https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit" target="_blank">wiki documentation</a> for more features, if the tool is enabled/disabled and an error occurs, you can try to restart obsidian to solve it`,
 			version_hint: "Keep clicking...",
 			auto_update: "Auto Update",
 			check_beta: "Receive Beta",
@@ -299,10 +299,6 @@ export const en: Message = {
 				wordCount: "Total words: {0}",
 				chineseCount: "Chinese words: {0}",
 				englishCount: "English words: {0}",
-				error: {
-					title: "Error calculating reading time",
-					message: "Configuration format error, please check syntax",
-				},
 				formatReadingTime: {
 					lessThanOneMinute: "Less than 1 minute",
 					lessThanOneHour: "About {0} minutes",

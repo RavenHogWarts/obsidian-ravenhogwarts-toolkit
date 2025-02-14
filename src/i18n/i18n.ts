@@ -276,10 +276,6 @@ export type Message = {
 				wordCount: string;
 				chineseCount: string;
 				englishCount: string;
-				error: {
-					title: string;
-					message: string;
-				};
 				formatReadingTime: {
 					lessThanOneMinute: string;
 					lessThanOneHour: string;

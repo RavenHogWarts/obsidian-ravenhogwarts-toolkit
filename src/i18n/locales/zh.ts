@@ -6,7 +6,7 @@ export const zh: Message = {
 		overview: {
 			title: "工具包管理",
 			description:
-				"欢迎使用工具包，查看<a href='https://ravenhogwarts.github.io/docs/zh/obsidian-ravenhogwarts-toolkit' target='_blank'>wiki文档</a>了解更多功能",
+				"欢迎使用工具包，查看<a href='https://ravenhogwarts.github.io/docs/zh/obsidian-ravenhogwarts-toolkit' target='_blank'>wiki文档</a>了解更多功能，工具启用/禁止后发生报错，可以尝试重启obsidian解决",
 			version_hint: "继续点击...",
 			auto_update: "自动更新",
 			check_beta: "接收Beta",
@@ -284,10 +284,6 @@ export const zh: Message = {
 				wordCount: "总字数：{0}",
 				chineseCount: "中文字数：{0}",
 				englishCount: "英文字数：{0}",
-				error: {
-					title: "计算阅读时间时出错",
-					message: "配置格式错误，请检查语法",
-				},
 				formatReadingTime: {
 					lessThanOneMinute: "小于 1 分钟",
 					lessThanOneHour: "约 {0} 分钟",
