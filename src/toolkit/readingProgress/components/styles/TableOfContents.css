@@ -19,8 +19,9 @@
 	line-height: 1.4;
 }
 
-.rht-inline-toc-item > span:hover {
+.rht-inline-toc-item:hover {
 	color: var(--text-accent);
+	cursor: pointer;
 }
 
 .rht-inline-toc-number {
