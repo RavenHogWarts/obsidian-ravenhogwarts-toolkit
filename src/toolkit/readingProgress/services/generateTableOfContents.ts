@@ -374,23 +374,28 @@ export class GenerateTOC {
 				(heading.level - config.minDepth!) * 20
 			}px`;
 
-			if (config.redirect) {
-				if (config.ordered) {
-					const numberSpan = listItem.createEl("span", {
-						cls: "rht-inline-toc-number",
-						text: generateHeadingNumber(index),
-					});
-					numberSpan.style.marginRight = "0.5em";
-				}
+			// 创建链接容器
+			const linkContainer = listItem.createEl("div", {
+				cls: "rht-inline-toc-link-container",
+			});
 
-				listItem.createEl("span", {
-					text: heading.heading,
+			if (config.ordered) {
+				const numberSpan = linkContainer.createEl("span", {
+					cls: "rht-inline-toc-number",
+					text: generateHeadingNumber(index),
 				});
+				numberSpan.style.marginRight = "0.5em";
+			}
 
-				// 添加点击事件处理
+			const textContainer = linkContainer.createEl("a", {
+				cls: "rht-inline-toc-text",
+				text: heading.heading,
+			});
+
+			if (config.redirect) {
+				// 在 Obsidian 中点击时的处理
 				listItem.addEventListener("click", (e) => {
 					e.preventDefault();
-
 					const activeView =
 						this.app.workspace.getActiveViewOfType(MarkdownView);
 					if (!activeView?.file) return;
@@ -404,17 +409,6 @@ export class GenerateTOC {
 							mode: mode,
 						},
 					});
-				});
-			} else {
-				if (config.ordered) {
-					const numberSpan = listItem.createEl("span", {
-						cls: "rht-inline-toc-number",
-						text: generateHeadingNumber(index),
-					});
-					numberSpan.style.marginRight = "0.5em";
-				}
-				listItem.createEl("span", {
-					text: heading.heading,
 				});
 			}
 		});

@@ -30,6 +30,16 @@
 	font-weight: normal;
 }
 
+.rht-inline-toc-text {
+	text-decoration: none;
+	color: inherit;
+}
+
+.rht-inline-toc-link-container {
+	display: inline-flex;
+	align-items: center;
+}
+
 .rht-inline-toc-container.columns {
 	.rht-inline-toc-list {
 		column-width: var(--toc-column-min-width);
