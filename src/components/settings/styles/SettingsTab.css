@@ -2,7 +2,7 @@
 .rht-settings-container {
 	width: 100%;
 	height: 100%;
-	overflow-y: auto;
+	/* overflow-y: auto; */
 }
 
 .rht-settings-container h2 {

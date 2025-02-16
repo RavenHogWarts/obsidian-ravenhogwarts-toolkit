@@ -4,7 +4,9 @@ import { Logger, LogLevel } from "@/src/core/services/Log";
 import { t } from "@/src/i18n/i18n";
 import { SettingItem } from "@/src/components/base/Setting/SettingItem";
 import { Toggle } from "@/src/components/base/Button/Toggle";
-import "./styles/DeveloperSettings.css";
+import { OverviewSettingItem } from "../base/Setting/OverviewSettingItem";
+import { Input } from "../base/Input/Input";
+import { Select } from "../base/Select/Select";
 
 interface DeveloperSettingsProps {
 	plugin: RavenHogwartsToolkitPlugin;
@@ -18,164 +20,104 @@ export const DeveloperSettings: React.FC<DeveloperSettingsProps> = ({
 	const [loggerConfig, setLoggerConfig] = React.useState(
 		plugin.settings.config.logger
 	);
-	const [menuConfig, setMenuConfig] = React.useState(
-		plugin.settings.config.menu
-	);
 
 	// 监听插件设置变化
 	React.useEffect(() => {
 		setLoggerConfig(plugin.settings.config.logger);
-		setMenuConfig(plugin.settings.config.menu);
-	}, [plugin.settings.config.logger, plugin.settings.config.menu]);
+	}, [plugin.settings.config.logger]);
 
-	const handleSettingChange = async (
-		section: "logger" | "menu",
-		key: string,
-		value: any
-	) => {
+	const handleConfigUpdate = async (path: string, value: any) => {
 		try {
-			if (section === "logger") {
-				const newLoggerConfig = {
-					...loggerConfig,
-					[key]: value,
-				};
-				setLoggerConfig(newLoggerConfig);
-				await plugin.updateSettings({
-					config: {
-						...plugin.settings.config,
-						logger: newLoggerConfig,
-					},
-				});
-				Logger.initRootLogger(newLoggerConfig);
-			} else if (section === "menu") {
-				const newMenuConfig = {
-					...menuConfig,
-					[key]: value,
-				};
-				setMenuConfig(newMenuConfig);
-				await plugin.updateSettings({
-					config: {
-						...plugin.settings.config,
-						menu: newMenuConfig,
-					},
-				});
-			}
+			const newConfig = { ...plugin.settings.config };
+			path.split(".").reduce(
+				(obj: any, key: string, index: number, arr: string[]) => {
+					if (index === arr.length - 1) {
+						obj[key] = value;
+					} else {
+						obj[key] = { ...obj[key] };
+					}
+					return obj[key];
+				},
+				newConfig
+			);
+
+			await plugin.updateSettings({ config: newConfig });
+			logger.debug(`Updated config ${path}:`, value);
 		} catch (error) {
-			logger.error("Failed to update settings:", error);
+			logger.error(`Failed to update config ${path}:`, error);
 		}
 	};
 
+	const levelOptions = Object.entries(LogLevel)
+		.filter(([key, value]) => typeof value === "number")
+		.map(([key, value]) => ({
+			value: value,
+			label: key,
+		}));
+
 	return (
-		<div className="rht-toolkit-developer">
-			<div className="rht-toolkit-developer-settings-header">
-				<h2>{t("common.developer.title")}</h2>
-				<p>{t("common.developer.description")}</p>
-			</div>
-			<div className="rht-toolkit-developer-settings-content">
-				<div className="rht-toolkit-developer-settings">
-					<SettingItem name={t("common.developer.menu.useSubMenu")}>
-						<Toggle
-							checked={menuConfig.useSubMenu}
-							onChange={(checked: boolean) =>
-								handleSettingChange(
-									"menu",
-									"useSubMenu",
-									checked
-								)
-							}
-						/>
-					</SettingItem>
-					<SettingItem name={t("common.developer.logger.level")}>
-						<select
-							value={loggerConfig.level}
-							onChange={(e) =>
-								handleSettingChange(
-									"logger",
-									"level",
-									Number(e.target.value) as LogLevel
-								)
-							}
-						>
-							{Object.entries(LogLevel)
-								.filter(
-									([key, value]) => typeof value === "number"
-								)
-								.map(([key, value]) => (
-									<option key={value} value={value}>
-										{key}
-									</option>
-								))}
-						</select>
-					</SettingItem>
-					<SettingItem
-						name={t("common.developer.logger.showTimestamp")}
-					>
-						<Toggle
-							checked={loggerConfig.showTimestamp}
-							onChange={(checked: boolean) =>
-								handleSettingChange(
-									"logger",
-									"showTimestamp",
-									checked
-								)
-							}
-						/>
-					</SettingItem>
-					<SettingItem name={t("common.developer.logger.showLevel")}>
-						<Toggle
-							checked={loggerConfig.showLevel}
-							onChange={(checked: boolean) =>
-								handleSettingChange(
-									"logger",
-									"showLevel",
-									checked
-								)
-							}
-						/>
-					</SettingItem>
-					<SettingItem name={t("common.developer.logger.console")}>
-						<Toggle
-							checked={loggerConfig.console}
-							onChange={(checked: boolean) =>
-								handleSettingChange(
-									"logger",
-									"console",
-									checked
-								)
-							}
-						/>
-					</SettingItem>
-					<SettingItem
-						name={t("common.developer.logger.showNotifications")}
-					>
-						<Toggle
-							checked={loggerConfig.showNotifications}
-							onChange={(checked: boolean) =>
-								handleSettingChange(
-									"logger",
-									"showNotifications",
-									checked
-								)
-							}
-						/>
-					</SettingItem>
-					<SettingItem
-						name={t("common.developer.logger.noticeTimeout")}
-					>
-						<input
-							type="number"
-							value={loggerConfig.noticeTimeout}
-							onChange={(e) =>
-								handleSettingChange(
-									"logger",
-									"noticeTimeout",
-									Number(e.target.value)
-								)
-							}
-						/>
-					</SettingItem>
-				</div>
-			</div>
-		</div>
+		<OverviewSettingItem
+			name={t("common.developer.title")}
+			desc={t("common.developer.description")}
+			collapsible
+			defaultCollapsed={true}
+		>
+			<SettingItem name={t("common.developer.logger.level")}>
+				<Select
+					options={levelOptions}
+					value={loggerConfig.level}
+					onValueChange={(value) =>
+						handleConfigUpdate(
+							"logger.level",
+							Number(value) as LogLevel
+						)
+					}
+				></Select>
+			</SettingItem>
+			<SettingItem name={t("common.developer.logger.showTimestamp")}>
+				<Toggle
+					checked={loggerConfig.showTimestamp}
+					onChange={(checked: boolean) =>
+						handleConfigUpdate("logger.showTimestamp", checked)
+					}
+				/>
+			</SettingItem>
+			<SettingItem name={t("common.developer.logger.showLevel")}>
+				<Toggle
+					checked={loggerConfig.showLevel}
+					onChange={(checked: boolean) =>
+						handleConfigUpdate("logger.showLevel", checked)
+					}
+				/>
+			</SettingItem>
+			<SettingItem name={t("common.developer.logger.console")}>
+				<Toggle
+					checked={loggerConfig.console}
+					onChange={(checked: boolean) =>
+						handleConfigUpdate("logger.console", checked)
+					}
+				/>
+			</SettingItem>
+			<SettingItem name={t("common.developer.logger.showNotifications")}>
+				<Toggle
+					checked={loggerConfig.showNotifications}
+					onChange={(checked: boolean) =>
+						handleConfigUpdate("logger.showNotifications", checked)
+					}
+				/>
+			</SettingItem>
+			<SettingItem name={t("common.developer.logger.noticeTimeout")}>
+				<Input
+					type="number"
+					value={loggerConfig.noticeTimeout}
+					onChange={(value) =>
+						handleConfigUpdate(
+							"logger.noticeTimeout",
+							Number(value)
+						)
+					}
+				/>
+			</SettingItem>
+		</OverviewSettingItem>
 	);
 };

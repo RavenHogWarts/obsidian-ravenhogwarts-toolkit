@@ -5,12 +5,23 @@ export const en: Message = {
 		settings: "Settings",
 		overview: {
 			title: "Toolkit Management",
-			description: `Welcome to the toolkit, view <a href="https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit" target="_blank">wiki documentation</a> for more features, if the tool is enabled/disabled and an error occurs, you can try to restart obsidian to solve it`,
+			description: `Welcome to the toolkit, view <a href="https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit" target="_blank">wiki documentation</a> for more features`,
 			version_hint: "Keep clicking...",
 			auto_update: "Auto Update",
 			check_beta: "Receive Beta",
 			check_update: "Check Update",
 			update_available: "Update Available: {0}",
+		},
+		general: {
+			title: "General Settings",
+			menu: {
+				useSubMenu: "Use Sub Menu",
+			},
+		},
+		toolkit: {
+			title: "Toolkit Settings",
+			description:
+				"After enabling/disabling the tool, an error may occur, you can try to restart obsidian to solve it",
 		},
 		developer: {
 			title: "Developer Settings",
@@ -23,9 +34,6 @@ export const en: Message = {
 				console: "Log to Console",
 				showNotifications: "Show Notifications",
 				noticeTimeout: "Notice Timeout (ms)",
-			},
-			menu: {
-				useSubMenu: "Use Sub Menu",
 			},
 		},
 		back: "Back",

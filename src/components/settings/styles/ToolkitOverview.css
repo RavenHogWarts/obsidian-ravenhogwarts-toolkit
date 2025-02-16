@@ -6,21 +6,31 @@
 }
 
 .rht-toolkit-header {
-	/* margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--background-modifier-border); */
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 2rem;
+	margin-bottom: 2.5rem;
+	padding-bottom: 1.5rem;
+	border-bottom: 1px solid var(--background-modifier-border);
 }
 
 .rht-toolkit-header-left {
 	flex: 1;
 }
+.rht-toolkit-header-left h2 {
+	margin: 0 0 0.75rem;
+	font-size: 1.8rem;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+.rht-toolkit-header-left p {
+	color: var(--text-muted);
+	line-height: 1.5;
+	margin: 0;
+}
 
 .rht-toolkit-header-right {
-	padding-top: 1.3rem;
+	padding-top: 1rem;
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -34,6 +44,10 @@
 	font-size: 0.9em;
 	user-select: none;
 	opacity: 0.6;
+	padding: 4px 8px;
+	border-radius: 4px;
+	background: var(--background-secondary);
+	transition: all 0.2s ease;
 }
 
 .rht-version-text:hover {
@@ -59,8 +73,8 @@
 
 .rht-toolkit-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-	gap: 1.25rem;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 1.5rem;
 	padding: 0.5rem;
 	width: 100%;
 	max-width: 1400px;
@@ -69,11 +83,14 @@
 
 .rht-toolkit-settings-btn {
 	background: transparent;
-	border: none;
-	padding: 4px;
-	border-radius: 4px;
-	cursor: pointer;
+	border: 1px solid var(--background-modifier-border);
 	color: var(--text-muted);
+	cursor: pointer;
+	padding: 0.5rem;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	transition: all 0.2s ease;
 }
 
@@ -84,8 +101,18 @@
 
 /* 添加响应式断点 */
 @media screen and (max-width: 768px) {
+	.rht-toolkit-header {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 1rem;
+	}
+
+	.rht-toolkit-header-right {
+		align-items: flex-start;
+	}
+
 	.rht-toolkit-grid {
-		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		grid-template-columns: 1fr;
 		gap: 1rem;
 	}
 }

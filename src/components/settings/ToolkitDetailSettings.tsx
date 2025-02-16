@@ -44,14 +44,14 @@ export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
 	return (
 		<div className="rht-toolkit-detail">
 			<div className="rht-toolkit-detail-header">
-				<button
+				<span
 					className="rht-back-button"
 					onClick={onNavigateBack}
 					aria-label={t("common.back")}
 				>
 					<ArrowLeft size={16} />
 					{t("common.back")}
-				</button>
+				</span>
 				<h2>{t(`toolkit.${moduleId}.title`)}</h2>
 			</div>
 			<div className="rht-toolkit-detail-content">

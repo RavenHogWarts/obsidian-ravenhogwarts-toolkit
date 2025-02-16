@@ -18,6 +18,16 @@ export type Message = {
 			check_update: string;
 			update_available: string;
 		};
+		general: {
+			title: string;
+			menu: {
+				useSubMenu: string;
+			};
+		};
+		toolkit: {
+			title: string;
+			description: string;
+		};
 		developer: {
 			title: string;
 			description: string;
@@ -28,9 +38,6 @@ export type Message = {
 				console: string;
 				showNotifications: string;
 				noticeTimeout: string;
-			};
-			menu: {
-				useSubMenu: string;
 			};
 		};
 	};

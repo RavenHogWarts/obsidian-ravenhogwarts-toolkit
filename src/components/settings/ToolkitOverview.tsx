@@ -13,6 +13,9 @@ import {
 } from "@/src/core/interfaces/types";
 import parse from "html-react-parser";
 import { ContextMenu } from "@/src/components/base/Menu/ContextMenu";
+import { SettingItem } from "../base/Setting/SettingItem";
+import { OverviewSettingItem } from "../base/Setting/OverviewSettingItem";
+import { DeveloperSettings } from "./DeveloperSettings";
 import "./styles/ToolkitOverview.css";
 
 interface ToolkitOverviewProps {
@@ -44,11 +47,13 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
 		y: number;
 	}>({ show: false, x: 0, y: 0 });
 	const [updaterConfig, setUpdaterConfig] = React.useState(config.updater);
+	const [menuConfig, setMenuConfig] = React.useState(config.menu);
 
 	// 监听配置变化
 	React.useEffect(() => {
 		setUpdaterConfig(config.updater);
-	}, [config.updater]);
+		setMenuConfig(config.menu);
+	}, [config.updater, config.menu]);
 
 	const handleContextMenu = (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -190,37 +195,71 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
 					)}
 				</div>
 			</div>
-			<div className="rht-toolkit-grid">
-				{toolkits.map((toolkit) => (
-					<Card
-						key={toolkit.id}
-						className={toolkit.id}
-						title={t(`toolkit.${toolkit.id}.title`)}
-						icon={toolkit.icon}
-						description={t(`toolkit.${toolkit.id}.description`)}
-						actions={
-							<>
-								<Toggle
-									checked={toolkit.enabled}
-									onChange={(checked) =>
-										handleToolkitToggle(toolkit.id, checked)
-									}
-									aria-label={t("common.toggle_toolkit")}
-								/>
-								<button
-									className="rht-toolkit-settings-btn"
-									onClick={() =>
-										onNavigateToDetail(toolkit.id)
-									}
-									aria-label={t("common.settings")}
-								>
-									<Settings size={16} />
-								</button>
-							</>
-						}
+			<OverviewSettingItem
+				name={t("common.general.title")}
+				collapsible
+				defaultCollapsed={true}
+			>
+				<SettingItem name={t("common.general.menu.useSubMenu")}>
+					<Toggle
+						checked={menuConfig.useSubMenu}
+						onChange={async (checked: boolean) => {
+							await handleConfigUpdate(
+								"menu.useSubMenu",
+								checked
+							);
+							setMenuConfig((prev) => ({
+								...prev,
+								useSubMenu: checked,
+							}));
+						}}
 					/>
-				))}
-			</div>
+				</SettingItem>
+			</OverviewSettingItem>
+			<OverviewSettingItem
+				name={t("common.toolkit.title")}
+				desc={t("common.toolkit.description")}
+				collapsible
+				defaultCollapsed={false}
+			>
+				<div className="rht-toolkit-grid">
+					{toolkits.map((toolkit) => (
+						<Card
+							key={toolkit.id}
+							className={toolkit.id}
+							title={t(`toolkit.${toolkit.id}.title`)}
+							icon={toolkit.icon}
+							description={t(`toolkit.${toolkit.id}.description`)}
+							actions={
+								<>
+									<Toggle
+										checked={toolkit.enabled}
+										onChange={(checked) =>
+											handleToolkitToggle(
+												toolkit.id,
+												checked
+											)
+										}
+										aria-label={t("common.toggle_toolkit")}
+									/>
+									<span
+										className="rht-toolkit-settings-btn"
+										onClick={() =>
+											onNavigateToDetail(toolkit.id)
+										}
+										aria-label={t("common.settings")}
+									>
+										<Settings size={16} />
+									</span>
+								</>
+							}
+						/>
+					))}
+				</div>
+			</OverviewSettingItem>
+			{plugin.settings.config.developer?.enabled && (
+				<DeveloperSettings plugin={plugin} logger={logger} />
+			)}
 		</div>
 	);
 };

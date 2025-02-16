@@ -2,12 +2,12 @@ import * as React from "react";
 import "./styles/Select.css";
 
 interface SelectOption {
-	value: string;
+	value: any;
 	label: string;
 }
 
 interface SelectProps {
-	value: string;
+	value: any;
 	onValueChange: (value: any) => void;
 	options: SelectOption[];
 	placeholder?: string;

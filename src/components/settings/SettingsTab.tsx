@@ -5,7 +5,6 @@ import { createRoot, Root } from "react-dom/client";
 import { ToolkitOverview } from "./ToolkitOverview";
 import { ToolkitDetailSettings } from "./ToolkitDetailSettings";
 import { ToolkitId } from "@/src/core/interfaces/types";
-import { DeveloperSettings } from "./DeveloperSettings";
 import { Logger } from "@/src/core/services/Log";
 import "./styles/SettingsTab.css";
 
@@ -57,12 +56,6 @@ export default class RavenHogwartsToolkitSettingTab extends PluginSettingTab {
 								}}
 								onVersionClick={() => this.renderContent()}
 							/>
-							{this.plugin.settings.config.developer?.enabled && (
-								<DeveloperSettings
-									plugin={this.plugin}
-									logger={this.logger}
-								/>
-							)}
 						</>
 					) : (
 						<ToolkitDetailSettings

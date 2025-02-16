@@ -6,12 +6,22 @@ export const zh: Message = {
 		overview: {
 			title: "工具包管理",
 			description:
-				"欢迎使用工具包，查看<a href='https://ravenhogwarts.github.io/docs/zh/obsidian-ravenhogwarts-toolkit' target='_blank'>wiki文档</a>了解更多功能，工具启用/禁止后发生报错，可以尝试重启obsidian解决",
+				"欢迎使用工具包，查看<a href='https://ravenhogwarts.github.io/docs/zh/obsidian-ravenhogwarts-toolkit' target='_blank'>wiki文档</a>了解更多功能",
 			version_hint: "继续点击...",
 			auto_update: "自动更新",
 			check_beta: "接收Beta",
 			check_update: "检查更新",
 			update_available: "更新可用: {0}",
+		},
+		general: {
+			title: "常规设置",
+			menu: {
+				useSubMenu: "使用子菜单",
+			},
+		},
+		toolkit: {
+			title: "工具设置",
+			description: "工具启用/禁止后发生报错，可以尝试重启obsidian解决",
 		},
 		developer: {
 			title: "开发者设置",
@@ -23,9 +33,6 @@ export const zh: Message = {
 				console: "日志输出到控制台",
 				showNotifications: "显示通知",
 				noticeTimeout: "通知消失时间(ms)",
-			},
-			menu: {
-				useSubMenu: "使用子菜单",
 			},
 		},
 		back: "返回",

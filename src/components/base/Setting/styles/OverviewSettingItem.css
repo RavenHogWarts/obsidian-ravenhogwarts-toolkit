@@ -1,0 +1,82 @@
+.rht-overview-setting-item {
+	margin: 1rem 0 2.5rem;
+	border: none;
+	background: var(--background-secondary);
+	border-radius: 12px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	transition: all 0.2s ease;
+}
+
+.rht-overview-setting-item.is-collapsible {
+	flex-direction: column;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.rht-overview-setting-item-info .rht-overview-setting-item-heading {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem 1.25rem;
+	background: transparent;
+	cursor: pointer;
+	user-select: none;
+	transition: background-color 0.2s ease;
+}
+
+.rht-overview-setting-item-info .rht-overview-setting-item-name {
+	margin: 0;
+	font-size: 1.1rem;
+	color: var(--text-normal);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.5;
+	flex: 1;
+}
+
+.rht-overview-setting-item-info .rht-overview-setting-item-description {
+	padding: 0.25rem 1.25rem;
+	margin-top: -1.5rem;
+	font-size: 0.925rem;
+	color: var(--text-muted);
+	line-height: 1.5;
+	letter-spacing: 0.01em;
+}
+
+.rht-overview-setting-item-info .rht-overview-setting-item-icon {
+	display: flex;
+	align-items: center;
+	color: var(--text-muted);
+	transition: color 0.2s ease;
+}
+
+.rht-overview-setting-item-info .rht-overview-setting-item-collapse-icon {
+	background: transparent;
+	border: none;
+	color: var(--text-muted);
+	cursor: pointer;
+	padding: 0.5rem;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+}
+.rht-overview-setting-item-info .rht-overview-setting-item-collapse-icon:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.rht-overview-setting-item-control {
+	padding: 0 1.25rem;
+	max-height: 0;
+	opacity: 0;
+	overflow: hidden;
+	transition: all 0.3s ease-out;
+}
+
+.rht-overview-setting-item.is-collapsible .rht-overview-setting-item-control {
+	max-height: 100%;
+	opacity: 1;
+	padding: 0 1.25rem 1.25rem;
+}
