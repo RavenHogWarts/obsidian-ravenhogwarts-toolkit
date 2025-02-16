@@ -200,36 +200,51 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		if (!this.isEnabled()) return;
 
 		if (file instanceof TFolder) {
-			this.addMenuItem(menu, {
-				title: this.t("toolkit.codeEditor.file_menu.createCodeFile"),
-				icon: "code-xml",
-				callback: () => {
-					this.createCodeFile(file.path);
-				},
-			});
+			this.addMenuItem(
+				menu,
+				[
+					{
+						title: this.t(
+							"toolkit.codeEditor.file_menu.createCodeFile"
+						),
+						icon: "code-xml",
+						order: 1,
+						callback: () => {
+							this.createCodeFile(file.path);
+						},
+					},
+				],
+				{ showSeparator: true }
+			);
 		}
 
 		if (file instanceof TFile) {
-			this.addMenuItem(menu, [
-				{
-					title: this.t(
-						"toolkit.codeEditor.file_menu.createCodeFile"
-					),
-					icon: "code-xml",
-					callback: () => {
-						this.createCodeFile(file.parent?.path || "");
+			this.addMenuItem(
+				menu,
+				[
+					{
+						title: this.t(
+							"toolkit.codeEditor.file_menu.createCodeFile"
+						),
+						icon: "code-xml",
+						order: 1,
+						callback: () => {
+							this.createCodeFile(file.parent?.path || "");
+						},
 					},
-				},
-				{
-					title: this.t(
-						"toolkit.codeEditor.file_menu.openInCodeEditor"
-					),
-					icon: "code-xml",
-					callback: async () => {
-						await this.openInCodeEditor(file.path, true);
+					{
+						title: this.t(
+							"toolkit.codeEditor.file_menu.openInCodeEditor"
+						),
+						icon: "code-xml",
+						order: 2,
+						callback: async () => {
+							await this.openInCodeEditor(file.path, true);
+						},
 					},
-				},
-			]);
+				],
+				{ showSeparator: true }
+			);
 		}
 	}
 

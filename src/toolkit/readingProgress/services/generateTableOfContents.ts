@@ -143,7 +143,7 @@ export class GenerateTOC {
 		}
 	}
 
-	private get DEFAULT_CONFIG(): ITocConfig {
+	public get DEFAULT_CONFIG(): ITocConfig {
 		return {
 			maxDepth: 3,
 			minDepth: 1,

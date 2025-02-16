@@ -45,6 +45,12 @@ export type Message = {
 			editor_menu: {
 				table_enhancements: string;
 			};
+			file_menu: {
+				table_enhancements: string;
+			};
+			command: {
+				table_enhancements: string;
+			};
 			formula: {
 				output_type: string;
 				output_value: string;
@@ -208,6 +214,14 @@ export type Message = {
 		readingProgress: {
 			title: string;
 			description: string;
+			command: {
+				insert_toc: string;
+				insert_reading_time: string;
+			};
+			editor_menu: {
+				insert_toc: string;
+				insert_reading_time: string;
+			};
 			return_button: {
 				return_to_cursor: string;
 				return_to_top: string;

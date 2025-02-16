@@ -1,4 +1,4 @@
-import { Editor, MarkdownView, Menu } from "obsidian";
+import { Editor, MarkdownView, Menu, TFile } from "obsidian";
 import { BaseManager } from "@/src/core/services/BaseManager";
 import { MarkdownTableParser } from "../parser/MarkdownTableParser";
 import { TableGenerator } from "../parser/TableGenerator";
@@ -58,6 +58,7 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
 	protected async onModuleLoad(): Promise<void> {
 		this.logger.info("Loading table enhancements manager");
 		await this.loadSavedCalculations();
+		this.registerCommands();
 		this.registerEventHandlers();
 	}
 
@@ -74,6 +75,18 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
 		this.savedCalculations.clear();
 	}
 
+	protected registerCommands(): void {
+		this.addCommand({
+			id: "table-enhancements-editor",
+			name: this.t(
+				"toolkit.tableEnhancements.command.table_enhancements"
+			),
+			callback: () => {
+				this.showTableEditor();
+			},
+		});
+	}
+
 	protected registerEventHandlers(): void {
 		// 编辑器菜单事件
 		this.registerEvent(
@@ -81,6 +94,11 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
 				"editor-menu",
 				this.handleEditorMenu.bind(this)
 			)
+		);
+
+		// 文件菜单事件
+		this.registerEvent(
+			this.app.workspace.on("file-menu", this.handleFileMenu.bind(this))
 		);
 	}
 
@@ -101,6 +119,21 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
 			},
 			{ showSeparator: true }
 		);
+	}
+
+	private handleFileMenu(menu: Menu, file: TFile): void {
+		if (!this.isEnabled()) return;
+
+		this.addMenuItem(menu, {
+			title: this.t(
+				"toolkit.tableEnhancements.file_menu.table_enhancements"
+			),
+			icon: "wand",
+			order: 1,
+			callback: () => {
+				this.showTableEditor();
+			},
+		});
 	}
 
 	/**

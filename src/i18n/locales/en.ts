@@ -45,6 +45,12 @@ export const en: Message = {
 			editor_menu: {
 				table_enhancements: "Table Enhancements",
 			},
+			file_menu: {
+				table_enhancements: "Table Enhancements",
+			},
+			command: {
+				table_enhancements: "Table Enhancements",
+			},
 			formula: {
 				output_type: "Output Type",
 				output_value: "Output Value",
@@ -225,6 +231,14 @@ export const en: Message = {
 			title: "Table of Contents Navigation",
 			description:
 				"Display reading progress and table of contents in a floating window",
+			command: {
+				insert_toc: "Insert TOC",
+				insert_reading_time: "Insert Reading Time",
+			},
+			editor_menu: {
+				insert_toc: "Insert TOC",
+				insert_reading_time: "Insert Reading Time",
+			},
 			return_button: {
 				return_to_cursor: "Return to Cursor",
 				return_to_top: "Return to Top",

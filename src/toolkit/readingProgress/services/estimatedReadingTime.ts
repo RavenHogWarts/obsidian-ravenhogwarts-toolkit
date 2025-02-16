@@ -166,7 +166,7 @@ export class EstimatedReadingTime {
 		}
 	}
 
-	private get DEFAULT_CONFIG(): IReadingTimeConfig {
+	public get DEFAULT_CONFIG(): IReadingTimeConfig {
 		return {
 			chineseWordsPerMinute: 300,
 			englishWordsPerMinute: 200,

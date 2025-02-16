@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseManager } from "@/src/core/services/BaseManager";
-import { debounce, HeadingCache, MarkdownView } from "obsidian";
+import { debounce, Editor, HeadingCache, MarkdownView, Menu } from "obsidian";
 import { createRoot, Root } from "react-dom/client";
 import { IToolkitModule } from "@/src/core/interfaces/types";
 import { ReadingProgress } from "@/src/toolkit/readingProgress/components/ReadingProgress/ReadingProgress";
@@ -36,6 +36,7 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 	protected async onModuleLoad(): Promise<void> {
 		this.logger.info("Loading reading progress manager");
 		this.initResizeObserver();
+		this.registerCommands();
 		this.registerEventHandlers();
 		this.updateContainerPosition();
 
@@ -61,6 +62,50 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 		}
 		this.estimatedReadingTime?.unload();
 		this.tocGenerator?.unload();
+	}
+
+	protected registerCommands(): void {
+		this.addCommand({
+			id: "insert-rht-toc",
+			name: this.t("toolkit.readingProgress.command.insert_toc"),
+			editorCallback: (editor: Editor) => {
+				this.insertTOC(editor);
+			},
+		});
+
+		this.addCommand({
+			id: "insert-rht-reading-time",
+			name: this.t("toolkit.readingProgress.command.insert_reading_time"),
+			editorCallback: (editor: Editor) => {
+				this.insertReadingTime(editor);
+			},
+		});
+	}
+
+	private insertTOC(editor: Editor) {
+		const defaultConfig = this.tocGenerator?.DEFAULT_CONFIG;
+		if (!defaultConfig) return;
+
+		const codeBlock = [
+			"```rht-toc",
+			JSON.stringify(defaultConfig, null, 2),
+			"```",
+		].join("\n");
+
+		editor.replaceSelection(codeBlock);
+	}
+
+	private insertReadingTime(editor: Editor) {
+		const defaultConfig = this.estimatedReadingTime?.DEFAULT_CONFIG;
+		if (!defaultConfig) return;
+
+		const codeBlock = [
+			"```rht-reading-time",
+			JSON.stringify(defaultConfig, null, 2),
+			"```",
+		].join("\n");
+
+		editor.replaceSelection(codeBlock);
 	}
 
 	protected registerEventHandlers(): void {
@@ -95,6 +140,50 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 					this.updateTOC();
 				}
 			})
+		);
+
+		this.registerEvent(
+			this.app.workspace.on(
+				"editor-menu",
+				this.handleEditorMenu.bind(this)
+			)
+		);
+	}
+
+	private handleEditorMenu(menu: Menu, editor: Editor): void {
+		if (!this.isEnabled()) return;
+
+		this.addMenuItem(
+			menu,
+			[
+				{
+					title: this.t(
+						"toolkit.readingProgress.editor_menu.insert_toc"
+					),
+					icon: "table-of-contents",
+					order: 1,
+					callback: () => {
+						const editor = this.currentView?.editor;
+						if (editor) {
+							this.insertTOC(editor);
+						}
+					},
+				},
+				{
+					title: this.t(
+						"toolkit.readingProgress.editor_menu.insert_reading_time"
+					),
+					icon: "hourglass",
+					order: 2,
+					callback: () => {
+						const editor = this.currentView?.editor;
+						if (editor) {
+							this.insertReadingTime(editor);
+						}
+					},
+				},
+			],
+			{ showSeparator: true }
 		);
 	}
 

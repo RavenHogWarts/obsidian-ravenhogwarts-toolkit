@@ -44,6 +44,12 @@ export const zh: Message = {
 			editor_menu: {
 				table_enhancements: "表格增强编辑",
 			},
+			file_menu: {
+				table_enhancements: "表格增强编辑",
+			},
+			command: {
+				table_enhancements: "表格增强编辑",
+			},
 			formula: {
 				output_type: "输出类型",
 				output_value: "输出值",
@@ -213,6 +219,14 @@ export const zh: Message = {
 		readingProgress: {
 			title: "目录导航",
 			description: "悬浮显示当前文档的阅读进度，目录等",
+			command: {
+				insert_toc: "插入目录",
+				insert_reading_time: "插入预计阅读时间",
+			},
+			editor_menu: {
+				insert_toc: "插入目录",
+				insert_reading_time: "插入预计阅读时间",
+			},
 			return_button: {
 				return_to_cursor: "返回光标位置",
 				return_to_top: "返回顶部",
