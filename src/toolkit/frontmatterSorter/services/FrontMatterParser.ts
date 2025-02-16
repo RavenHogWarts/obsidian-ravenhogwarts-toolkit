@@ -1,11 +1,11 @@
-import { parseYaml } from "obsidian";
+import { parseYaml, TFile } from "obsidian";
 import { IFrontMatterEntry, IParsedFrontMatter } from "../types/config";
 import { Logger } from "@/src/core/services/Log";
 
 export class FrontMatterParser {
 	constructor(private logger: Logger) {}
 
-	parse(content: string): IParsedFrontMatter | null {
+	parse(file: TFile, content: string): IParsedFrontMatter | null {
 		try {
 			if (!content) return null;
 
@@ -38,7 +38,10 @@ export class FrontMatterParser {
 				end: match[0].length,
 			};
 		} catch (error) {
-			this.logger.error("Error parsing frontmatter:", error);
+			this.logger.error(
+				`Error parsing frontmatter in ${file.path}:`,
+				error
+			);
 			return null;
 		}
 	}

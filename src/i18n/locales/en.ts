@@ -110,6 +110,9 @@ export const en: Message = {
 				sortCurrentFile: "Sort frontmatter in current file",
 				sortAllFiles: "Sort frontmatter in all files",
 			},
+			file_menu: {
+				sort_folder: "Sort frontmatter in the folder",
+			},
 			notice: {
 				ignore_folder: "In ignored folder {0}",
 				ignore_pattern: "Match ignored pattern {0}",
@@ -121,12 +124,21 @@ export const en: Message = {
 				file_sorted: "File {0} sorted",
 				sort_complete:
 					"Frontmatter sorted:\nProcessed {0} files, skipped {1} files",
-				sort_details:
-					"Frontmatter sorting details:\nProcessed {0} files, skipped {1} files\nSkipped files:\n  {2}",
+				sort_details: {
+					title: "Frontmatter sorting details:",
+					success: "\n {0} files successfully sorted, files:",
+					unchanged: "\n {0} files do not need to be sorted, files:",
+					skipped: "\n {0} files in ignored rules, files:",
+				},
 				confirm_sort_all: {
 					title: "Confirm Bulk Sort",
 					message:
 						"This will sort frontmatter in all Markdown files. Do you want to continue?",
+				},
+				confirm_sort_folder: {
+					title: "Confirm Bulk Sort",
+					message:
+						"This will sort frontmatter in all Markdown files in the folder {0} (excluding subfolders). Do you want to continue?",
 				},
 			},
 

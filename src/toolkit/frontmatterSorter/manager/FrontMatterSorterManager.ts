@@ -9,7 +9,7 @@ import { FrontMatterParser } from "../services/FrontMatterParser";
 import { FrontMatterSorter } from "../services/FrontMatterSorter";
 import { FrontMatterWriter } from "../services/FrontMatterWriter";
 import minimatch from "minimatch";
-import { Modal, TFile } from "obsidian";
+import { Editor, Menu, Modal, TFile, TFolder } from "obsidian";
 
 interface IFrontMatterSorterModule extends IToolkitModule {
 	config: IFrontmatterSorterConfig;
@@ -21,6 +21,9 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 	private sorter: FrontMatterSorter;
 	private writer: FrontMatterWriter;
 	private processing = false;
+	private skippedFiles: string[] = [];
+	private sortedFiles: string[] = [];
+	private unchangedFiles: string[] = [];
 
 	protected getDefaultConfig(): IFrontmatterSorterConfig {
 		return FRONTMATTER_SORTER_DEFAULT_CONFIG;
@@ -106,6 +109,10 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 			this.eventRefs.push(unsubscribe);
 			this.logger.debug("Registered auto-sort on save handler");
 		}
+
+		this.registerEvent(
+			this.app.workspace.on("file-menu", this.handleFileMenu.bind(this))
+		);
 	}
 
 	private async handleFileModify(file: TFile): Promise<void> {
@@ -139,6 +146,25 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 		await this.sortFile(file);
 	}
 
+	private handleFileMenu(menu: Menu, file: TFile | TFolder): void {
+		if (!this.isEnabled()) return;
+
+		if (file instanceof TFolder) {
+			this.addMenuItem(menu, [
+				{
+					title: this.t(
+						"toolkit.frontmatterSorter.file_menu.sort_folder"
+					),
+					icon: "list-ordered",
+					order: 1,
+					callback: () => {
+						this.sortFolderFrontmatter(file.path);
+					},
+				},
+			]);
+		}
+	}
+
 	private async sortCurrentFileFrontmatter(): Promise<void> {
 		const activeFile = this.app.workspace.getActiveFile();
 		if (!activeFile) return;
@@ -156,25 +182,66 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 		await this.sortFile(activeFile);
 	}
 
-	private async sortAllFrontmatter(): Promise<void> {
-		const confirmed = await new Promise<boolean>((resolve) => {
+	private async batchSortFiles(files: TFile[]): Promise<void> {
+		const batchSize = 5;
+		this.skippedFiles = [];
+		this.sortedFiles = [];
+		this.unchangedFiles = [];
+
+		if (this.processing) return;
+
+		try {
+			this.processing = true;
+
+			for (let i = 0; i < files.length; i += batchSize) {
+				const batch = files.slice(i, i + batchSize);
+				await Promise.all(
+					batch.map(async (file) => {
+						if (!this.shouldProcessFile(file)) {
+							this.skippedFiles.push(
+								`${file.path} (${this.getIgnoreReason(file)})`
+							);
+							return { status: "skipped" as const, file };
+						}
+						const sorted = await this.sortFile(file, true);
+						if (sorted === true) {
+							this.sortedFiles.push(file.path);
+							return { status: "sorted" as const, file };
+						} else {
+							this.unchangedFiles.push(file.path);
+							return { status: "unchanged" as const, file };
+						}
+					})
+				);
+			}
+
+			this.sortCompletedNotice(
+				this.skippedFiles,
+				this.sortedFiles,
+				this.unchangedFiles
+			);
+		} finally {
+			this.processing = false;
+		}
+	}
+
+	private async showConfirmationDialog(
+		title: string,
+		message: string
+	): Promise<boolean> {
+		return new Promise<boolean>((resolve) => {
 			const modal = new Modal(this.app);
-			modal.titleEl.setText(
-				this.t(
-					"toolkit.frontmatterSorter.notice.confirm_sort_all.title"
-				)
-			);
-			modal.contentEl.setText(
-				this.t(
-					"toolkit.frontmatterSorter.notice.confirm_sort_all.message"
-				)
-			);
+			modal.titleEl.setText(title);
+			modal.contentEl.setText(message);
 
 			modal.contentEl.createDiv(
 				{ cls: "modal-button-container" },
 				(buttonContainer) => {
 					buttonContainer
-						.createEl("button", { text: this.t("common.confirm") })
+						.createEl("button", {
+							text: this.t("common.confirm"),
+							cls: "mod-cta",
+						})
 						.addEventListener("click", () => {
 							modal.close();
 							resolve(true);
@@ -191,59 +258,67 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 
 			modal.open();
 		});
+	}
+
+	private async sortFolderFrontmatter(folderPath: string): Promise<void> {
+		const confirmed = await this.showConfirmationDialog(
+			this.t(
+				"toolkit.frontmatterSorter.notice.confirm_sort_folder.title"
+			),
+			this.t(
+				"toolkit.frontmatterSorter.notice.confirm_sort_folder.message",
+				[folderPath]
+			)
+		);
+
+		if (!confirmed) return;
+
+		const files = this.app.vault
+			.getMarkdownFiles()
+			.filter((file) => file.path.startsWith(folderPath + "/"));
+
+		await this.batchSortFiles(files);
+	}
+
+	private async sortAllFrontmatter(): Promise<void> {
+		const confirmed = await this.showConfirmationDialog(
+			this.t("toolkit.frontmatterSorter.notice.confirm_sort_all.title"),
+			this.t("toolkit.frontmatterSorter.notice.confirm_sort_all.message")
+		);
 
 		if (!confirmed) return;
 
 		const files = this.app.vault.getMarkdownFiles();
-		const batchSize = 5;
+		await this.batchSortFiles(files);
+	}
 
-		let sortedCount = 0;
-		let skippedCount = 0;
-		const skippedFiles: string[] = [];
+	private sortCompletedNotice(
+		skippedFiles: string[],
+		sortedFiles: string[],
+		unchangedFiles: string[]
+	): void {
+		this.logger.notice(
+			`${this.t("toolkit.frontmatterSorter.notice.sort_complete", [
+				sortedFiles.length,
+				skippedFiles.length,
+			])}\n` + this.t("toolkit.frontmatterSorter.notice.check_console")
+		);
 
-		if (this.processing) return;
-
-		try {
-			this.processing = true;
-
-			for (let i = 0; i < files.length; i += batchSize) {
-				const batch = files.slice(i, i + batchSize);
-				const results = await Promise.all(
-					batch.map(async (file) => {
-						if (!this.shouldProcessFile(file)) {
-							skippedFiles.push(
-								`${file.path} (${this.getIgnoreReason(file)})`
-							);
-							return false;
-						}
-						return this.sortFile(file, true);
-					})
-				);
-
-				sortedCount += results.filter(Boolean).length;
-				skippedCount += results.filter((r) => r === false).length;
-			}
-
-			this.logger.notice(
-				`${this.t("toolkit.frontmatterSorter.notice.sort_complete", [
-					sortedCount,
-					skippedCount,
-				])}\n` +
-					this.t("toolkit.frontmatterSorter.notice.check_console")
-			);
-
-			if (skippedFiles.length > 0) {
-				this.logger.info(
-					this.t("toolkit.frontmatterSorter.notice.sort_details", [
-						sortedCount,
-						skippedCount,
-						skippedFiles.join("\n  "),
-					])
-				);
-			}
-		} finally {
-			this.processing = false;
-		}
+		this.logger.info(
+			this.t("toolkit.frontmatterSorter.notice.sort_details.title"),
+			this.t("toolkit.frontmatterSorter.notice.sort_details.success", [
+				sortedFiles.length,
+			]),
+			sortedFiles,
+			this.t("toolkit.frontmatterSorter.notice.sort_details.unchanged", [
+				unchangedFiles.length,
+			]),
+			unchangedFiles,
+			this.t("toolkit.frontmatterSorter.notice.sort_details.skipped", [
+				skippedFiles.length,
+			]),
+			skippedFiles
+		);
 	}
 
 	private getIgnoreReason(file: TFile): string {
@@ -286,7 +361,7 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 			}
 
 			const content = await this.app.vault.read(file);
-			const parsed = this.parser.parse(content);
+			const parsed = this.parser.parse(file, content);
 			this.logger.debug("Parsed frontmatter:", parsed);
 			if (!parsed) return false;
 

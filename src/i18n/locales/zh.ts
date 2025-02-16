@@ -105,6 +105,9 @@ export const zh: Message = {
 				sortCurrentFile: "排序当前文件",
 				sortAllFiles: "排序所有文件",
 			},
+			file_menu: {
+				sort_folder: "排序文件夹内文档属性",
+			},
 			notice: {
 				ignore_folder: "在忽略文件夹 {0} 中",
 				ignore_pattern: "匹配忽略规则 {0}",
@@ -115,12 +118,21 @@ export const zh: Message = {
 				file_sorted: "文件 {0} 已排序",
 				sort_complete:
 					"前置元数据排序完成：\n已处理 {0} 个文件，已跳过 {1} 个文件",
-				sort_details:
-					"前置元数据排序详细信息：\n已处理 {0} 个文件，已跳过 {1} 个文件\n跳过的文件：\n  {2}",
+				sort_details: {
+					title: "前置元数据排序详细信息：",
+					success: "\n {0} 个文件成功排序，文件：",
+					unchanged: "\n {0} 个文件无须排序，文件：",
+					skipped: "\n {0} 个文件在忽略规则中，文件：",
+				},
 				confirm_sort_all: {
 					title: "批量排序确认",
 					message:
 						"此操作将对所有 Markdown 文件的文档属性进行排序，是否继续？",
+				},
+				confirm_sort_folder: {
+					title: "批量排序确认",
+					message:
+						"此操作将对文件夹中 {0} (不包括子文件夹)的所有 Markdown 文件的文档属性进行排序，是否继续？",
 				},
 			},
 			settings: {

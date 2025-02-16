@@ -106,6 +106,9 @@ export type Message = {
 				sortCurrentFile: string;
 				sortAllFiles: string;
 			};
+			file_menu: {
+				sort_folder: string;
+			};
 			notice: {
 				ignore_folder: string;
 				ignore_pattern: string;
@@ -115,8 +118,17 @@ export type Message = {
 				file_ignored: string;
 				file_sorted: string;
 				sort_complete: string;
-				sort_details: string;
+				sort_details: {
+					title: string;
+					success: string;
+					unchanged: string;
+					skipped: string;
+				};
 				confirm_sort_all: {
+					title: string;
+					message: string;
+				};
+				confirm_sort_folder: {
 					title: string;
 					message: string;
 				};
