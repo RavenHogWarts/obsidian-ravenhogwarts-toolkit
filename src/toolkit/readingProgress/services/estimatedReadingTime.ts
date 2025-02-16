@@ -23,6 +23,7 @@ export interface IReadingTimeConfig {
 	template?: string;
 	showWordCount?: boolean;
 	showIcon?: boolean;
+	iconName?: string;
 	showRange?: boolean;
 
 	// 样式配置
@@ -181,6 +182,7 @@ export class EstimatedReadingTime {
 			),
 			showWordCount: true,
 			showIcon: true,
+			iconName: "clock",
 			showRange: false,
 
 			style: {
@@ -321,7 +323,7 @@ export class EstimatedReadingTime {
 			const iconEl = textContainer.createEl("span", {
 				cls: "rht-reading-time-icon",
 			});
-			setIcon(iconEl, "clock");
+			setIcon(iconEl, config.iconName || this.DEFAULT_CONFIG.iconName!);
 		}
 
 		let timeDisplay = "";

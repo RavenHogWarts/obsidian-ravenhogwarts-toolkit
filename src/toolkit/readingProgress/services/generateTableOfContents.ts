@@ -180,8 +180,11 @@ export class GenerateTOC {
 
 			// 设置CSS变量用于自定义样式
 			styles["--toc-column-min-width"] =
-				config.layout?.columnMinWidth || "250px";
-			styles["--toc-column-gap"] = config.layout?.columnGap || "2em";
+				config.layout?.columnMinWidth ||
+				this.DEFAULT_CONFIG.layout!.columnMinWidth!;
+			styles["--toc-column-gap"] =
+				config.layout?.columnGap ||
+				this.DEFAULT_CONFIG.layout!.columnGap!;
 			styles["--toc-column-rule"] =
 				config.layout?.columnRule ||
 				this.DEFAULT_CONFIG.layout!.columnRule!;
