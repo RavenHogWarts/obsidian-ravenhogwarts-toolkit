@@ -160,7 +160,7 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 					title: this.t(
 						"toolkit.readingProgress.editor_menu.insert_toc"
 					),
-					icon: "table-of-contents",
+					icon: "list-tree",
 					order: 1,
 					callback: () => {
 						const editor = this.currentView?.editor;
