@@ -15,158 +15,18 @@ export class MonacoWorkerService {
 		this.logger.debug("[MonacoWorkerService] Initializing...");
 
 		try {
-			// 配置 Monaco 环境
 			window.MonacoEnvironment = {
-				getWorker: function (moduleId: string, label: string) {
-					let workerCode = "";
-
-					switch (label) {
-						case "typescript":
-						case "javascript":
-							workerCode = `
-                                self.MonacoEnvironment = { baseUrl: '' };
-                                self.onmessage = function(e) {
-                                    self.postMessage({
-                                        type: 'response',
-                                        requestId: e.data.requestId,
-                                        data: {
-                                            capabilities: {
-                                                textDocumentSync: 1,
-                                                completionProvider: {
-                                                    triggerCharacters: [".", '"', "'", "\`", "/", "@", "<"]
-                                                },
-                                                signatureHelpProvider: {
-                                                    triggerCharacters: ['(', ',']
-                                                },
-                                                definitionProvider: true,
-                                                referencesProvider: true,
-                                                documentHighlightProvider: true,
-                                                documentSymbolProvider: true,
-                                                codeActionProvider: true,
-                                                documentFormattingProvider: true,
-                                                documentRangeFormattingProvider: true,
-                                                renameProvider: true,
-                                                hoverProvider: true
-                                            }
-                                        }
-                                    });
-                                };
-                            `;
-							break;
-
-						case "css":
-						case "scss":
-						case "less":
-							workerCode = `
-                                self.MonacoEnvironment = { baseUrl: '' };
-                                self.onmessage = function(e) {
-                                    self.postMessage({
-                                        type: 'response',
-                                        requestId: e.data.requestId,
-                                        data: {
-                                            capabilities: {
-                                                textDocumentSync: 1,
-                                                completionProvider: {
-                                                    triggerCharacters: [':']
-                                                },
-                                                hoverProvider: true,
-                                                documentSymbolProvider: true,
-                                                documentFormattingProvider: true,
-                                                documentRangeFormattingProvider: true,
-                                                colorProvider: true,
-                                                foldingRangeProvider: true
-                                            }
-                                        }
-                                    });
-                                };
-                            `;
-							break;
-
-						case "html":
-							workerCode = `
-                                self.MonacoEnvironment = { baseUrl: '' };
-                                self.onmessage = function(e) {
-                                    self.postMessage({
-                                        type: 'response',
-                                        requestId: e.data.requestId,
-                                        data: {
-                                            capabilities: {
-                                                textDocumentSync: 1,
-                                                completionProvider: {
-                                                    triggerCharacters: ['<', '/', '.']
-                                                },
-                                                documentFormattingProvider: true,
-                                                documentRangeFormattingProvider: true,
-                                                documentHighlightProvider: true,
-                                                documentSymbolProvider: true,
-                                                hoverProvider: true,
-                                                foldingRangeProvider: true
-                                            }
-                                        }
-                                    });
-                                };
-                            `;
-							break;
-
-						case "json":
-							workerCode = `
-                                self.MonacoEnvironment = { baseUrl: '' };
-                                self.onmessage = function(e) {
-                                    self.postMessage({
-                                        type: 'response',
-                                        requestId: e.data.requestId,
-                                        data: {
-                                            capabilities: {
-                                                textDocumentSync: 1,
-                                                completionProvider: {
-                                                    triggerCharacters: ['"', ':']
-                                                },
-                                                documentFormattingProvider: true,
-                                                documentRangeFormattingProvider: true,
-                                                documentSymbolProvider: true,
-                                                colorProvider: true,
-                                                foldingRangeProvider: true,
-                                                selectionRangeProvider: true
-                                            }
-                                        }
-                                    });
-                                };
-                            `;
-							break;
-
-						default:
-							// 基础编辑器功能
-							workerCode = `
-                                self.MonacoEnvironment = { baseUrl: '' };
-                                self.onmessage = function(e) {
-                                    self.postMessage({
-                                        type: 'response',
-                                        requestId: e.data.requestId,
-                                        data: {
-                                            capabilities: {
-                                                textDocumentSync: 1,
-                                                completionProvider: {
-                                                    triggerCharacters: []
-                                                }
-                                            }
-                                        }
-                                    });
-                                };
-                            `;
-							break;
-					}
-
-					const blob = new Blob([workerCode], {
-						type: "text/javascript",
-					});
-					return new Worker(URL.createObjectURL(blob), {
-						name: label,
-					});
+				getWorkerUrl: function (_moduleId: string, _label: string) {
+					return (
+						"data:text/javascript;charset=utf-8," +
+						encodeURIComponent(`
+				            self.MonacoEnvironment = {
+				                baseUrl: ''
+				            };
+				        `)
+					);
 				},
 			};
-
-			// 配置语言服务
-			this.configureLanguageServices();
 
 			this.initialized = true;
 			this.logger.debug("[MonacoWorkerService] Initialized successfully");

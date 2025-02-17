@@ -189,6 +189,19 @@ export function getMonacoSettings(language: string, config: ICodeEditorConfig) {
 		links: true, // 链接可点击
 		multiCursorPaste: "full", // 多光标粘贴模式
 		dragAndDrop: true, // 拖放编辑
+		quickSuggestions: {
+			other: true,
+			comments: true,
+			strings: true,
+		},
+		suggestOnTriggerCharacters: true,
+		acceptSuggestionOnEnter: "on",
+		tabCompletion: "on",
+		snippetSuggestions: "inline",
+		wordBasedSuggestions: "currentDocument",
+		parameterHints: {
+			enabled: true,
+		},
 	} as monaco.editor.IStandaloneEditorConstructionOptions;
 }
 
