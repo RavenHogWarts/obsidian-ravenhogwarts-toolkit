@@ -208,8 +208,13 @@ export class Logger {
 	/**
 	 * 显示通知
 	 */
-	notice(message: string): void {
-		new Notice(message, Logger.config.noticeTimeout);
+	notice(message: string, ...args: any[]): void {
+		const formattedMessage = this.formatMessage(
+			LogLevel.INFO,
+			message,
+			args
+		);
+		new Notice(formattedMessage, Logger.config.noticeTimeout);
 	}
 
 	/**

@@ -40,7 +40,7 @@ export const DeveloperSettings: React.FC<DeveloperSettingsProps> = ({
 				},
 				newConfig
 			);
-
+			setLoggerConfig(newConfig.logger);
 			await plugin.updateSettings({ config: newConfig });
 			logger.debug(`Updated config ${path}:`, value);
 		} catch (error) {
