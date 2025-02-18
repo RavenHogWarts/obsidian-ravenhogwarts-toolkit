@@ -71,6 +71,7 @@
 	align-items: center;
 	justify-content: flex-end;
 	flex-shrink: 0;
+	gap: 0.5rem;
 }
 
 .rht-setting-item-control .rht-select-wrapper {

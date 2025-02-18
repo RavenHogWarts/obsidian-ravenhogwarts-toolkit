@@ -236,6 +236,10 @@ export type Message = {
 			command: {
 				insert_toc: string;
 				insert_reading_time: string;
+				toggle_toc_expanded: string;
+				jump_to_next_heading: string;
+				jump_to_prev_heading: string;
+				toggle_all_headings: string;
 			};
 			editor_menu: {
 				insert_toc: string;
@@ -245,6 +249,8 @@ export type Message = {
 				return_to_cursor: string;
 				return_to_top: string;
 				return_to_bottom: string;
+				jump_to_next_heading: string;
+				jump_to_prev_heading;
 			};
 			toolbar: {
 				toggle_pin: string;
@@ -302,6 +308,30 @@ export type Message = {
 				tocWidth: {
 					title: string;
 					description: string;
+				};
+				progressBtn: {
+					title: string;
+					description: string;
+					returnToCursor: {
+						title: string;
+						description: string;
+					};
+					returnToTop: {
+						title: string;
+						description: string;
+					};
+					returnToBottom: {
+						title: string;
+						description: string;
+					};
+					jumpToNextHeading: {
+						title: string;
+						description: string;
+					};
+					jumpToPrevHeading: {
+						title: string;
+						description: string;
+					};
 				};
 			};
 			estimatedReadingTime: {

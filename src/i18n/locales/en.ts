@@ -254,6 +254,10 @@ export const en: Message = {
 			command: {
 				insert_toc: "Insert TOC",
 				insert_reading_time: "Insert Reading Time",
+				toggle_toc_expanded: "Toggle TOC Expanded",
+				jump_to_next_heading: "Jump to Next Heading",
+				jump_to_prev_heading: "Jump to Previous Heading",
+				toggle_all_headings: "Toggle All Headings Collapsed",
 			},
 			editor_menu: {
 				insert_toc: "Insert TOC",
@@ -263,6 +267,8 @@ export const en: Message = {
 				return_to_cursor: "Return to Cursor",
 				return_to_top: "Return to Top",
 				return_to_bottom: "Return to Bottom",
+				jump_to_next_heading: "Jump to Next heading",
+				jump_to_prev_heading: "Jump to Previous heading",
 			},
 			toolbar: {
 				toggle_pin: "Toggle Pin",
@@ -326,6 +332,30 @@ export const en: Message = {
 				tocWidth: {
 					title: "TOC Width",
 					description: "TOC width, unit is px, default is 240px",
+				},
+				progressBtn: {
+					title: "Progress Button",
+					description: "Progress button",
+					returnToCursor: {
+						title: "Return to Cursor",
+						description: "Return to cursor button",
+					},
+					returnToTop: {
+						title: "Return to Top",
+						description: "Return to top button",
+					},
+					returnToBottom: {
+						title: "Return to Bottom",
+						description: "Return to bottom button",
+					},
+					jumpToNextHeading: {
+						title: "Jump to Next Heading",
+						description: "Jump to next heading button",
+					},
+					jumpToPrevHeading: {
+						title: "Jump to Previous Heading",
+						description: "Jump to previous heading button",
+					},
 				},
 			},
 			estimatedReadingTime: {

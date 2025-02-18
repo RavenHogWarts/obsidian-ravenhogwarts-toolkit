@@ -241,6 +241,10 @@ export const zh: Message = {
 			command: {
 				insert_toc: "插入目录",
 				insert_reading_time: "插入预计阅读时间",
+				toggle_toc_expanded: "切换目录显示状态",
+				jump_to_next_heading: "跳转至下一标题",
+				jump_to_prev_heading: "跳转至上一标题",
+				toggle_all_headings: "切换所有标题折叠状态",
 			},
 			editor_menu: {
 				insert_toc: "插入目录",
@@ -250,6 +254,8 @@ export const zh: Message = {
 				return_to_cursor: "返回光标位置",
 				return_to_top: "返回顶部",
 				return_to_bottom: "返回底部",
+				jump_to_next_heading: "跳转至下一个标题",
+				jump_to_prev_heading: "跳转至上一个标题",
 			},
 			toolbar: {
 				toggle_pin: "固定/取消固定",
@@ -310,6 +316,30 @@ export const zh: Message = {
 				tocWidth: {
 					title: "目录宽度",
 					description: "目录的宽度，单位为px，默认为240px",
+				},
+				progressBtn: {
+					title: "进度按钮",
+					description: "进度按钮",
+					returnToCursor: {
+						title: "返回光标位置",
+						description: "返回光标位置按钮",
+					},
+					returnToTop: {
+						title: "返回顶部",
+						description: "返回顶部按钮",
+					},
+					returnToBottom: {
+						title: "返回底部",
+						description: "返回底部按钮",
+					},
+					jumpToNextHeading: {
+						title: "跳转至下一标题",
+						description: "跳转至下一标题按钮",
+					},
+					jumpToPrevHeading: {
+						title: "跳转至上一标题",
+						description: "跳转至上一标题按钮",
+					},
 				},
 			},
 			estimatedReadingTime: {
