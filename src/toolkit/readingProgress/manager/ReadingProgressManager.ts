@@ -17,6 +17,11 @@ interface IReadingProgressModule extends IToolkitModule {
 	data: IReadingProgressData;
 }
 
+interface IReadingProgressTocState {
+	collapsedItems: Set<number>;
+	allCollapsed: boolean;
+}
+
 export class ReadingProgressManager extends BaseManager<IReadingProgressModule> {
 	private root: Root | null = null;
 	private container: HTMLElement | null = null;
@@ -28,6 +33,10 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 	private currentHeadingIndex = -1;
 	private estimatedReadingTime: EstimatedReadingTime | null = null;
 	private tocGenerator: GenerateTOC | null = null;
+	private state: IReadingProgressTocState = {
+		collapsedItems: new Set(),
+		allCollapsed: false,
+	};
 
 	protected getDefaultConfig(): IReadingProgressConfig {
 		return READING_PROGRESS_DEFAULT_CONFIG;
@@ -78,6 +87,44 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 			name: this.t("toolkit.readingProgress.command.insert_reading_time"),
 			editorCallback: (editor: Editor) => {
 				this.insertReadingTime(editor);
+			},
+		});
+
+		this.addCommand({
+			id: "toggle-rht-toc-expanded",
+			name: this.t("toolkit.readingProgress.command.toggle_toc_expanded"),
+			callback: () => {
+				this.setConfig({
+					tocAlwaysExpanded: !this.getConfig().tocAlwaysExpanded,
+				});
+			},
+		});
+
+		this.addCommand({
+			id: "jump-to-next-heading",
+			name: this.t(
+				"toolkit.readingProgress.command.jump_to_next_heading"
+			),
+			callback: () => {
+				this.navigateHeading("next");
+			},
+		});
+
+		this.addCommand({
+			id: "jump-to-previous-heading",
+			name: this.t(
+				"toolkit.readingProgress.command.jump_to_prev_heading"
+			),
+			callback: () => {
+				this.navigateHeading("previous");
+			},
+		});
+
+		this.addCommand({
+			id: "toggle-all-headings",
+			name: this.t("toolkit.readingProgress.command.toggle_all_headings"),
+			callback: () => {
+				this.toggleAllHeadings();
 			},
 		});
 	}
@@ -200,6 +247,13 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 				activeHeadingIndex: this.currentHeadingIndex,
 				isEditing: this.currentView?.getMode() === "source",
 				onReturnClick: (target) => this.handleReturnClick(target),
+				onNavigateHeading: (direction) =>
+					this.navigateHeading(direction),
+				collapsedItems: this.state.collapsedItems,
+				allCollapsed: this.state.allCollapsed,
+				onToggleCollapse: (index: number) =>
+					this.handleToggleCollapse(index),
+				onToggleAll: () => this.toggleAllHeadings(),
 			})
 		);
 	}
@@ -248,6 +302,61 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 			requestAnimationFrame(smoothScroll);
 		}
 	};
+
+	private navigateHeading(direction: "next" | "previous"): void {
+		if (!this.currentView || this.headings.length === 0) return;
+
+		const mode = this.currentView.getMode();
+		let nextIndex = -1;
+
+		if (mode === "source") {
+			const editor = this.currentView.editor;
+			if (!editor) return;
+
+			const currentLine = editor.getCursor().line;
+
+			if (direction === "next") {
+				// 查找下一个标题
+				nextIndex = this.headings.findIndex(
+					(h) => h.position.start.line > currentLine
+				);
+				// 如果没找到下一个，循环到第一个
+				if (nextIndex === -1) nextIndex = 0;
+			} else {
+				// 查找上一个标题
+				for (let i = this.headings.length - 1; i >= 0; i--) {
+					if (this.headings[i].position.start.line < currentLine) {
+						nextIndex = i;
+						break;
+					}
+				}
+				// 如果没找到上一个，循环到最后一个
+				if (nextIndex === -1) nextIndex = this.headings.length - 1;
+			}
+		} else {
+			const scrollInfo = this.currentView.currentMode.getScroll();
+			const currentIndex = this.binarySearchClosestHeading(
+				this.headings,
+				scrollInfo
+			);
+
+			if (direction === "next") {
+				nextIndex =
+					currentIndex < this.headings.length - 1
+						? currentIndex + 1
+						: 0;
+			} else {
+				nextIndex =
+					currentIndex > 0
+						? currentIndex - 1
+						: this.headings.length - 1;
+			}
+		}
+
+		if (nextIndex >= 0) {
+			this.scrollToHeading(this.headings[nextIndex]);
+		}
+	}
 
 	private updateProgress(): void {
 		if (!this.scrollElement) return;
@@ -445,5 +554,36 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 	protected onConfigChange(): void {
 		this.renderComponent();
 		this.updateContainerPosition();
+	}
+
+	private toggleAllHeadings(): void {
+		if (this.state.allCollapsed) {
+			this.state.collapsedItems = new Set();
+		} else {
+			this.state.collapsedItems = new Set(
+				this.headings
+					.map((_, index) => index)
+					.filter((index) => this.hasChildren(index))
+			);
+		}
+		this.state.allCollapsed = !this.state.allCollapsed;
+		this.renderComponent();
+	}
+
+	private hasChildren(index: number): boolean {
+		if (index >= this.headings.length - 1) return false;
+		const currentLevel = this.headings[index].level;
+		return this.headings[index + 1].level > currentLevel;
+	}
+
+	private handleToggleCollapse(index: number): void {
+		const newCollapsedItems = new Set(this.state.collapsedItems);
+		if (newCollapsedItems.has(index)) {
+			newCollapsedItems.delete(index);
+		} else {
+			newCollapsedItems.add(index);
+		}
+		this.state.collapsedItems = newCollapsedItems;
+		this.renderComponent();
 	}
 }

@@ -10,6 +10,26 @@ export interface IReadingProgressConfig extends IToolkitModuleConfig {
 	position: "left" | "right";
 	offset: number;
 	tocWidth: number;
+	returnToCursor: {
+		enabled: boolean;
+		icon: string;
+	};
+	returnToTop: {
+		enabled: boolean;
+		icon: string;
+	};
+	returnToBottom: {
+		enabled: boolean;
+		icon: string;
+	};
+	jumpToNextHeading: {
+		enabled: boolean;
+		icon: string;
+	};
+	jumpToPrevHeading: {
+		enabled: boolean;
+		icon: string;
+	};
 }
 
 export interface IReadingProgressData {
@@ -27,4 +47,24 @@ export const READING_PROGRESS_DEFAULT_CONFIG: IReadingProgressConfig = {
 	position: "right",
 	offset: 12,
 	tocWidth: 240,
+	returnToCursor: {
+		enabled: true,
+		icon: "text-cursor-input",
+	},
+	returnToTop: {
+		enabled: true,
+		icon: "arrow-up-to-line",
+	},
+	returnToBottom: {
+		enabled: true,
+		icon: "arrow-down-to-line",
+	},
+	jumpToNextHeading: {
+		enabled: false,
+		icon: "corner-right-down",
+	},
+	jumpToPrevHeading: {
+		enabled: false,
+		icon: "corner-left-up",
+	},
 };

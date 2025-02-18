@@ -7,6 +7,7 @@ import { Toggle } from "@/src/components/base/Button/Toggle";
 import { t } from "@/src/i18n/i18n";
 import { Select } from "@/src/components/base/Select/Select";
 import { Input } from "@/src/components/base/Input/Input";
+import { IconPicker } from "@/src/components/base/Icon/IconPicker";
 
 interface ReadingProgressSettingsProps {
 	plugin: RavenHogwartsToolkitPlugin;
@@ -29,6 +30,25 @@ export const ReadingProgressSettings: React.FC<
 			console.error("Failed to update config:", err);
 		}
 	};
+
+	const progressStyle = [
+		{
+			label: t("toolkit.readingProgress.settings.progressStyle.bar"),
+			value: "bar",
+		},
+		{
+			label: t("toolkit.readingProgress.settings.progressStyle.ring"),
+			value: "ring",
+		},
+		{
+			label: t("toolkit.readingProgress.settings.progressStyle.none"),
+			value: "none",
+		},
+		{
+			label: t("toolkit.readingProgress.settings.progressStyle.both"),
+			value: "both",
+		},
+	];
 
 	return (
 		<div className="rht-toolkit-detail-settings">
@@ -179,6 +199,60 @@ export const ReadingProgressSettings: React.FC<
 							}
 						/>
 					</SettingItem>
+
+					<SettingItem
+						name={t(
+							"toolkit.readingProgress.settings.progressBtn.jumpToNextHeading.title"
+						)}
+						desc={t(
+							"toolkit.readingProgress.settings.progressBtn.jumpToNextHeading.description"
+						)}
+					>
+						<IconPicker
+							app={plugin.app}
+							value={config.jumpToNextHeading.icon}
+							onChange={(value) =>
+								handleUpdateConfig({
+									"jumpToNextHeading.icon": value,
+								})
+							}
+						/>
+						<Toggle
+							checked={config.jumpToNextHeading.enabled}
+							onChange={(checked) =>
+								handleUpdateConfig({
+									"jumpToNextHeading.enabled": checked,
+								})
+							}
+						/>
+					</SettingItem>
+
+					<SettingItem
+						name={t(
+							"toolkit.readingProgress.settings.progressBtn.jumpToPrevHeading.title"
+						)}
+						desc={t(
+							"toolkit.readingProgress.settings.progressBtn.jumpToPrevHeading.description"
+						)}
+					>
+						<IconPicker
+							app={plugin.app}
+							value={config.jumpToPrevHeading.icon}
+							onChange={(value) =>
+								handleUpdateConfig({
+									"jumpToPrevHeading.icon": value,
+								})
+							}
+						/>
+						<Toggle
+							checked={config.jumpToPrevHeading.enabled}
+							onChange={(checked) =>
+								handleUpdateConfig({
+									"jumpToPrevHeading.enabled": checked,
+								})
+							}
+						/>
+					</SettingItem>
 				</>
 			)}
 
@@ -200,33 +274,89 @@ export const ReadingProgressSettings: React.FC<
 								| "both",
 						})
 					}
-					options={[
-						{
-							label: t(
-								"toolkit.readingProgress.settings.progressStyle.bar"
-							),
-							value: "bar",
-						},
-						{
-							label: t(
-								"toolkit.readingProgress.settings.progressStyle.ring"
-							),
-							value: "ring",
-						},
-						{
-							label: t(
-								"toolkit.readingProgress.settings.progressStyle.none"
-							),
-							value: "none",
-						},
-						{
-							label: t(
-								"toolkit.readingProgress.settings.progressStyle.both"
-							),
-							value: "both",
-						},
-					]}
+					options={progressStyle}
 				></Select>
+			</SettingItem>
+
+			<SettingItem
+				name={t(
+					"toolkit.readingProgress.settings.progressBtn.returnToCursor.title"
+				)}
+				desc={t(
+					"toolkit.readingProgress.settings.progressBtn.returnToCursor.description"
+				)}
+			>
+				<IconPicker
+					app={plugin.app}
+					value={config.returnToCursor.icon}
+					onChange={(value) =>
+						handleUpdateConfig({
+							"returnToCursor.icon": value,
+						})
+					}
+				/>
+				<Toggle
+					checked={config.returnToCursor.enabled}
+					onChange={(checked) =>
+						handleUpdateConfig({
+							"returnToCursor.enabled": checked,
+						})
+					}
+				/>
+			</SettingItem>
+
+			<SettingItem
+				name={t(
+					"toolkit.readingProgress.settings.progressBtn.returnToTop.title"
+				)}
+				desc={t(
+					"toolkit.readingProgress.settings.progressBtn.returnToTop.description"
+				)}
+			>
+				<IconPicker
+					app={plugin.app}
+					value={config.returnToTop.icon}
+					onChange={(value) =>
+						handleUpdateConfig({
+							"returnToTop.icon": value,
+						})
+					}
+				/>
+				<Toggle
+					checked={config.returnToTop.enabled}
+					onChange={(checked) =>
+						handleUpdateConfig({
+							"returnToTop.enabled": checked,
+						})
+					}
+				/>
+			</SettingItem>
+
+			<SettingItem
+				name={t(
+					"toolkit.readingProgress.settings.progressBtn.returnToBottom.title"
+				)}
+				desc={t(
+					"toolkit.readingProgress.settings.progressBtn.returnToBottom.description"
+				)}
+			>
+				<IconPicker
+					app={plugin.app}
+					value={config.returnToBottom.icon}
+					onChange={(value) =>
+						handleUpdateConfig({
+							"returnToBottom.icon": value,
+						})
+					}
+				/>
+				<Toggle
+					checked={config.returnToBottom.enabled}
+					onChange={(checked) =>
+						handleUpdateConfig({
+							"returnToBottom.enabled": checked,
+						})
+					}
+				/>
 			</SettingItem>
 		</div>
 	);

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { HeadingCache } from "obsidian";
+import { HeadingCache, setIcon } from "obsidian";
 import { ProgressRing } from "@/src/components/base/ProgressRing/ProgressRing";
 import { ArrowDownToLine, ArrowUpToLine, TextCursorInput } from "lucide-react";
 import { t } from "@/src/i18n/i18n";
@@ -26,6 +26,11 @@ interface ReadingProgressProps {
 	activeHeadingIndex?: number;
 	isEditing: boolean;
 	onReturnClick: (target: "cursor" | "top" | "bottom") => void;
+	onNavigateHeading: (direction: "next" | "previous") => void;
+	collapsedItems: Set<number>;
+	allCollapsed: boolean;
+	onToggleCollapse: (index: number) => void;
+	onToggleAll: () => void;
 }
 
 export const ReadingProgress: React.FC<ReadingProgressProps> = ({
@@ -37,12 +42,13 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 	activeHeadingIndex = -1,
 	isEditing,
 	onReturnClick,
+	onNavigateHeading,
+	collapsedItems,
+	allCollapsed,
+	onToggleCollapse,
+	onToggleAll,
 }) => {
 	const [isHovered, setIsHovered] = React.useState(false);
-	const [collapsedItems, setCollapsedItems] = React.useState<Set<number>>(
-		new Set()
-	);
-	const [allCollapsed, setAllCollapsed] = React.useState(false);
 	const tocListRef = React.useRef<HTMLDivElement>(null);
 	const indicatorsRef = React.useRef<HTMLDivElement>(null);
 
@@ -192,34 +198,17 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 	);
 
 	// 处理折叠/展开
-	const handleCollapse = React.useCallback((index: number) => {
-		setCollapsedItems((prev) => {
-			const next = new Set(prev);
-			if (next.has(index)) {
-				next.delete(index);
-			} else {
-				next.add(index);
-			}
-			return next;
-		});
-	}, []);
+	const handleCollapse = React.useCallback(
+		(index: number) => {
+			onToggleCollapse(index);
+		},
+		[onToggleCollapse]
+	);
 
 	// 处理全部折叠/展开
 	const handleToggleAll = React.useCallback(() => {
-		setAllCollapsed((prev) => {
-			if (prev) {
-				setCollapsedItems(new Set());
-			} else {
-				const allParents = new Set(
-					headings
-						.map((_, index) => index)
-						.filter((index) => hasChildren(index, headings))
-				);
-				setCollapsedItems(allParents);
-			}
-			return !prev;
-		});
-	}, [headings]);
+		onToggleAll();
+	}, [onToggleAll]);
 
 	const shouldShowTOC = React.useMemo(() => {
 		if (headings.length === 0) return false;
@@ -307,36 +296,70 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 			</div>
 			<div className="rht-return">
 				{isEditing ? (
-					<div
-						className="rht-return-btn"
-						onClick={() => onReturnClick("cursor")}
-						aria-label={t(
-							"toolkit.readingProgress.return_button.return_to_cursor"
-						)}
-					>
-						<TextCursorInput size={16} />
-					</div>
+					config.returnToCursor.enabled && (
+						<div
+							className="rht-return-btn"
+							onClick={() => onReturnClick("cursor")}
+							aria-label={t(
+								"toolkit.readingProgress.return_button.return_to_cursor"
+							)}
+							ref={(el) =>
+								el && setIcon(el, config.returnToCursor.icon)
+							}
+						></div>
+					)
 				) : (
 					<>
-						<div
-							className="rht-return-btn"
-							onClick={() => onReturnClick("top")}
-							aria-label={t(
-								"toolkit.readingProgress.return_button.return_to_top"
-							)}
-						>
-							<ArrowUpToLine size={16} />
-						</div>
-						<div
-							className="rht-return-btn"
-							onClick={() => onReturnClick("bottom")}
-							aria-label={t(
-								"toolkit.readingProgress.return_button.return_to_bottom"
-							)}
-						>
-							<ArrowDownToLine size={16} />
-						</div>
+						{config.returnToTop.enabled && (
+							<div
+								className="rht-return-btn"
+								onClick={() => onReturnClick("top")}
+								aria-label={t(
+									"toolkit.readingProgress.return_button.return_to_top"
+								)}
+								ref={(el) =>
+									el && setIcon(el, config.returnToTop.icon)
+								}
+							></div>
+						)}
+						{config.returnToBottom.enabled && (
+							<div
+								className="rht-return-btn"
+								onClick={() => onReturnClick("bottom")}
+								aria-label={t(
+									"toolkit.readingProgress.return_button.return_to_bottom"
+								)}
+								ref={(el) =>
+									el &&
+									setIcon(el, config.returnToBottom.icon)
+								}
+							></div>
+						)}
 					</>
+				)}
+				{config.jumpToPrevHeading.enabled && (
+					<div
+						className="rht-return-btn"
+						onClick={() => onNavigateHeading("previous")}
+						aria-label={t(
+							"toolkit.readingProgress.return_button.jump_to_prev_heading"
+						)}
+						ref={(el) =>
+							el && setIcon(el, config.jumpToPrevHeading.icon)
+						}
+					></div>
+				)}
+				{config.jumpToNextHeading.enabled && (
+					<div
+						className="rht-return-btn"
+						onClick={() => onNavigateHeading("next")}
+						aria-label={t(
+							"toolkit.readingProgress.return_button.jump_to_next_heading"
+						)}
+						ref={(el) =>
+							el && setIcon(el, config.jumpToNextHeading.icon)
+						}
+					></div>
 				)}
 			</div>
 
