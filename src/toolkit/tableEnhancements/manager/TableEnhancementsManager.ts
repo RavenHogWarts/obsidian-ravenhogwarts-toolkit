@@ -1,4 +1,4 @@
-import { Editor, MarkdownView, Menu, TFile } from "obsidian";
+import { Editor, MarkdownView, Menu, TFile, TFolder } from "obsidian";
 import { BaseManager } from "@/src/core/services/BaseManager";
 import { MarkdownTableParser } from "../parser/MarkdownTableParser";
 import { TableGenerator } from "../parser/TableGenerator";
@@ -121,8 +121,9 @@ export class TableEnhancementsManager extends BaseManager<ITableEnhancementsModu
 		);
 	}
 
-	private handleFileMenu(menu: Menu, file: TFile): void {
+	private handleFileMenu(menu: Menu, file: TFile | TFolder): void {
 		if (!this.isEnabled()) return;
+		if (file instanceof TFolder) return;
 
 		this.addMenuItem(menu, {
 			title: this.t(
