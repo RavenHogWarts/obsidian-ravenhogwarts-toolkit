@@ -338,23 +338,25 @@ export const en: Message = {
 					description: "Progress button",
 					returnToCursor: {
 						title: "Return to Cursor",
-						description: "Return to cursor button",
+						description: "Use return to cursor button, custom icon",
 					},
 					returnToTop: {
 						title: "Return to Top",
-						description: "Return to top button",
+						description: "Use return to top button, custom icon",
 					},
 					returnToBottom: {
 						title: "Return to Bottom",
-						description: "Return to bottom button",
+						description: "Use return to bottom button, custom icon",
 					},
 					jumpToNextHeading: {
 						title: "Jump to Next Heading",
-						description: "Jump to next heading button",
+						description:
+							"Use jump to next heading button, custom icon",
 					},
 					jumpToPrevHeading: {
 						title: "Jump to Previous Heading",
-						description: "Jump to previous heading button",
+						description:
+							"Use jump to previous heading button, custom icon",
 					},
 				},
 			},

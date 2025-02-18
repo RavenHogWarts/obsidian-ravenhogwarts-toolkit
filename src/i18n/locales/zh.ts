@@ -322,23 +322,23 @@ export const zh: Message = {
 					description: "进度按钮",
 					returnToCursor: {
 						title: "返回光标位置",
-						description: "返回光标位置按钮",
+						description: "是否使用返回光标位置按钮，自定义图标",
 					},
 					returnToTop: {
 						title: "返回顶部",
-						description: "返回顶部按钮",
+						description: "是否使用返回顶部按钮，自定义图标",
 					},
 					returnToBottom: {
 						title: "返回底部",
-						description: "返回底部按钮",
+						description: "是否使用返回底部按钮，自定义图标",
 					},
 					jumpToNextHeading: {
 						title: "跳转至下一标题",
-						description: "跳转至下一标题按钮",
+						description: "是否使用跳转至下一标题按钮，自定义图标",
 					},
 					jumpToPrevHeading: {
 						title: "跳转至上一标题",
-						description: "跳转至上一标题按钮",
+						description: "是否使用跳转至上一标题按钮，自定义图标",
 					},
 				},
 			},
