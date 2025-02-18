@@ -1,0 +1,44 @@
+.rht-icon-suggestion {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	border-radius: 4px;
+	transition: background-color 0.2s ease;
+}
+
+.rht-icon-suggestion:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.rht-icon-display {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	color: var(--text-muted);
+}
+
+.rht-iconPick {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	cursor: pointer;
+	border-radius: 4px;
+	background-color: var(--background-modifier-form-field);
+	border: 1px solid var(--background-modifier-border);
+	color: var(--text-muted);
+	transition: all 0.2s ease;
+}
+
+.rht-iconPick:hover {
+	background-color: var(--background-modifier-form-field-highlighted);
+	color: var(--text-normal);
+	border-color: var(--interactive-accent);
+}
+
+.rht-iconPick:active {
+	transform: scale(0.96);
+}
