@@ -53,14 +53,22 @@ jobs:
                     echo "## 🎉 First Release" > temp_changelog.md
                     COMMITS=$(git log --pretty=format:"- %s" --reverse)
                   else
-                    # 获取最近的两个tag
+                    # 获取最新tag
                     LATEST_TAG=$(git describe --tags --abbrev=0)
                     
-                    # 尝试获取前一个tag，如果不存在则使用第一个commit
-                    if git describe --tags --abbrev=0 `git rev-list --tags --skip=1 --max-count=1` > /dev/null 2>&1; then
-                      PREVIOUS_TAG=$(git describe --tags --abbrev=0 `git rev-list --tags --skip=1 --max-count=1`)
+                    # 判断当前是否为beta版本
+                    if [[ $LATEST_TAG == *"-beta"* ]]; then
+                      # Beta版本：查找上一个beta版本tag
+                      PREVIOUS_TAG=$(git tag --sort=-version:refname | grep -E ".*-beta.*" | sed -n '2p')
+                    else
+                      # 正式版本：查找上一个正式版本tag（不包含beta）
+                      PREVIOUS_TAG=$(git tag --sort=-version:refname | grep -vE ".*-beta.*" | sed -n '2p')
+                    fi
+                    
+                    if [ ! -z "$PREVIOUS_TAG" ]; then
                       COMMITS=$(git log ${PREVIOUS_TAG}..${LATEST_TAG} --no-merges --pretty=format:"- %s" --reverse)
                     else
+                      # 如果找不到上一个对应类型的tag，则使用第一个commit
                       FIRST_COMMIT=$(git rev-list --max-parents=0 HEAD)
                       COMMITS=$(git log ${FIRST_COMMIT}..${LATEST_TAG} --no-merges --pretty=format:"- %s" --reverse)
                     fi
