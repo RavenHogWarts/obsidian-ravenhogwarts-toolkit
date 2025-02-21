@@ -55,13 +55,15 @@ export class UpdateManager {
 				this.compareVersions(latestVersion, currentVersion, checkBeta) >
 				0;
 
-			rootLogger.notice(
-				t("notice.version_check", [
-					currentVersion,
-					latestVersion,
-					this.hasNewVersion,
-				])
-			);
+			if (this.hasNewVersion) {
+				rootLogger.notice(
+					t("notice.version_check", [
+						currentVersion,
+						latestVersion,
+						this.hasNewVersion,
+					])
+				);
+			}
 
 			if (this.hasNewVersion) {
 				await this.performUpdate(this.latestRelease);
