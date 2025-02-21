@@ -27,10 +27,15 @@ export function useModuleConfig<T>(
 					}
 					current[parts[parts.length - 1]] = value;
 				} else {
-					// For non-nested updates, perform deep merge
-					if (typeof value === "object" && value !== null) {
+					// For non-nested updates
+					if (Array.isArray(value)) {
+						// 直接赋值数组
+						newConfig[key] = value;
+					} else if (typeof value === "object" && value !== null) {
+						// 对象进行合并
 						newConfig[key] = { ...newConfig[key], ...value };
 					} else {
+						// 基本类型直接赋值
 						newConfig[key] = value;
 					}
 				}
