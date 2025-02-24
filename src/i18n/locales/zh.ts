@@ -245,6 +245,8 @@ export const zh: Message = {
 				jump_to_next_heading: "跳转至下一标题",
 				jump_to_prev_heading: "跳转至上一标题",
 				toggle_all_headings: "切换所有标题折叠状态",
+				scroll_to_top: "滚动到顶部",
+				scroll_to_bottom: "滚动到底部",
 			},
 			editor_menu: {
 				insert_toc: "插入目录",

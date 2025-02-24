@@ -1,7 +1,6 @@
 import * as React from "react";
 import { HeadingCache, setIcon } from "obsidian";
 import { ProgressRing } from "@/src/components/base/ProgressRing/ProgressRing";
-import { ArrowDownToLine, ArrowUpToLine, TextCursorInput } from "lucide-react";
 import { t } from "@/src/i18n/i18n";
 import { IReadingProgressConfig } from "@/src/toolkit/readingProgress/types/config";
 import "./styles/ReadingProgress.css";

@@ -127,6 +127,22 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 				this.toggleAllHeadings();
 			},
 		});
+
+		this.addCommand({
+			id: "scroll-to-top",
+			name: this.t("toolkit.readingProgress.command.scroll_to_top"),
+			callback: () => {
+				this.handleReturnClick("top");
+			},
+		});
+
+		this.addCommand({
+			id: "scroll-to-bottom",
+			name: this.t("toolkit.readingProgress.command.scroll_to_bottom"),
+			callback: () => {
+				this.handleReturnClick("bottom");
+			},
+		});
 	}
 
 	private insertTOC(editor: Editor) {
@@ -274,28 +290,56 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 					);
 					editor.focus();
 				}
+			} else {
+				const currentScroll = this.currentView.currentMode.getScroll();
+				const targetScroll =
+					target === "top" ? 0 : Number.MAX_SAFE_INTEGER;
+
+				const startTime = Date.now();
+				const startPosition = currentScroll;
+				const distance = targetScroll - startPosition;
+				const duration = 500;
+
+				const smoothScroll = () => {
+					const elapsed = Date.now() - startTime;
+					const progress = Math.min(elapsed / duration, 1);
+
+					if (progress < 1) {
+						const easeProgress = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
+						const newScroll =
+							startPosition + distance * easeProgress;
+						this.currentView?.currentMode.applyScroll(newScroll);
+						requestAnimationFrame(smoothScroll);
+					} else {
+						this.currentView?.currentMode.applyScroll(targetScroll);
+					}
+				};
+				requestAnimationFrame(smoothScroll);
 			}
-		} else {
-			const startTime = Date.now();
-			const startPosition = this.scrollElement.scrollTop;
-			const targetPosition =
+		} else if (mode === "preview") {
+			const currentScroll = this.scrollElement.scrollTop;
+			const targetScroll =
 				target === "top"
 					? 0
 					: this.scrollElement.scrollHeight -
 					  this.scrollElement.clientHeight;
-			const distance = targetPosition - startPosition;
+
+			const startTime = Date.now();
+			const startPosition = currentScroll;
+			const distance = targetScroll - startPosition;
+			const duration = 500;
 
 			const smoothScroll = () => {
 				const elapsed = Date.now() - startTime;
-				const progress = Math.min(elapsed / 500, 1); // 500ms 的动画时间
+				const progress = Math.min(elapsed / duration, 1);
 
 				if (progress < 1) {
-					const easeProgress = 1 - Math.pow(1 - progress, 3);
+					const easeProgress = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
 					this.scrollElement!.scrollTop =
 						startPosition + distance * easeProgress;
 					requestAnimationFrame(smoothScroll);
 				} else {
-					this.scrollElement!.scrollTop = targetPosition;
+					this.scrollElement!.scrollTop = targetScroll;
 				}
 			};
 

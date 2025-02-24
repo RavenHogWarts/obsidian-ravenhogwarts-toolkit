@@ -258,6 +258,8 @@ export const en: Message = {
 				jump_to_next_heading: "Jump to Next Heading",
 				jump_to_prev_heading: "Jump to Previous Heading",
 				toggle_all_headings: "Toggle All Headings Collapsed",
+				scroll_to_top: "Scroll to Top",
+				scroll_to_bottom: "Scroll to Bottom",
 			},
 			editor_menu: {
 				insert_toc: "Insert TOC",

@@ -240,6 +240,8 @@ export type Message = {
 				jump_to_next_heading: string;
 				jump_to_prev_heading: string;
 				toggle_all_headings: string;
+				scroll_to_top: string;
+				scroll_to_bottom: string;
 			};
 			editor_menu: {
 				insert_toc: string;
