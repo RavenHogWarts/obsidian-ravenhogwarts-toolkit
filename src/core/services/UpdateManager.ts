@@ -63,9 +63,6 @@ export class UpdateManager {
 						this.hasNewVersion,
 					])
 				);
-			}
-
-			if (this.hasNewVersion) {
 				await this.performUpdate(this.latestRelease);
 			}
 
