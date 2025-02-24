@@ -334,7 +334,9 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 				if (nextIndex === -1) nextIndex = this.headings.length - 1;
 			}
 		} else {
-			const scrollInfo = this.currentView.currentMode.getScroll();
+			const scrollInfo = Math.ceil(
+				this.currentView.currentMode.getScroll()
+			);
 			const currentIndex = this.binarySearchClosestHeading(
 				this.headings,
 				scrollInfo
