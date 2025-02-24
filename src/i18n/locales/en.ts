@@ -361,6 +361,10 @@ export const en: Message = {
 							"Use jump to previous heading button, custom icon",
 					},
 				},
+				renderMarkdown: {
+					title: "Render Markdown Element",
+					description: "Whether to use markdown to render the title",
+				},
 			},
 			estimatedReadingTime: {
 				template: "Estimated reading time: {{time}}",

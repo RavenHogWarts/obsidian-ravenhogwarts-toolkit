@@ -335,6 +335,10 @@ export type Message = {
 						description: string;
 					};
 				};
+				renderMarkdown: {
+					title: string;
+					description: string;
+				};
 			};
 			estimatedReadingTime: {
 				template: string;

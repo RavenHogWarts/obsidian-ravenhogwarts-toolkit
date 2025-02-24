@@ -113,6 +113,22 @@ export const ReadingProgressSettings: React.FC<
 				<>
 					<SettingItem
 						name={t(
+							"toolkit.readingProgress.settings.renderMarkdown.title"
+						)}
+						desc={t(
+							"toolkit.readingProgress.settings.renderMarkdown.description"
+						)}
+					>
+						<Toggle
+							checked={config.renderMarkdown}
+							onChange={(checked) =>
+								handleUpdateConfig({ renderMarkdown: checked })
+							}
+						/>
+					</SettingItem>
+
+					<SettingItem
+						name={t(
 							"toolkit.readingProgress.settings.tocAlwaysExpanded.title"
 						)}
 						desc={t(

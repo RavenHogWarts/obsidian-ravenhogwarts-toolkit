@@ -1,5 +1,5 @@
 import * as React from "react";
-import { HeadingCache, setIcon } from "obsidian";
+import { App, HeadingCache, MarkdownView, setIcon } from "obsidian";
 import { ProgressRing } from "@/src/components/base/ProgressRing/ProgressRing";
 import { t } from "@/src/i18n/i18n";
 import { IReadingProgressConfig } from "@/src/toolkit/readingProgress/types/config";
@@ -17,7 +17,9 @@ import {
 } from "../../utils/tocUtils";
 
 interface ReadingProgressProps {
+	app: App;
 	config: IReadingProgressConfig;
+	currentView: MarkdownView;
 	onConfigChange: (config: Partial<IReadingProgressConfig>) => void;
 	headings: HeadingCache[];
 	progress: number;
@@ -33,7 +35,9 @@ interface ReadingProgressProps {
 }
 
 export const ReadingProgress: React.FC<ReadingProgressProps> = ({
+	app,
 	config,
+	currentView,
 	onConfigChange,
 	headings,
 	progress,
@@ -454,6 +458,9 @@ export const ReadingProgress: React.FC<ReadingProgressProps> = ({
 
 									return (
 										<TOCItem
+											app={app}
+											config={config}
+											currentView={currentView}
 											heading={heading}
 											index={index}
 											actualDepth={actualDepth}

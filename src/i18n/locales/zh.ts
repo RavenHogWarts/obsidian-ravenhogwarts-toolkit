@@ -343,6 +343,10 @@ export const zh: Message = {
 						description: "是否使用跳转至上一标题按钮，自定义图标",
 					},
 				},
+				renderMarkdown: {
+					title: "渲染Markdown元素",
+					description: "是否使用Markdown渲染目录标题",
+				},
 			},
 			estimatedReadingTime: {
 				template: "预计阅读时间：{{time}}",

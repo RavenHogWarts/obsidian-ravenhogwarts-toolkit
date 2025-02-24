@@ -10,6 +10,7 @@ export interface IReadingProgressConfig extends IToolkitModuleConfig {
 	position: "left" | "right";
 	offset: number;
 	tocWidth: number;
+	renderMarkdown: boolean;
 	returnToCursor: {
 		enabled: boolean;
 		icon: string;
@@ -47,6 +48,7 @@ export const READING_PROGRESS_DEFAULT_CONFIG: IReadingProgressConfig = {
 	position: "right",
 	offset: 12,
 	tocWidth: 240,
+	renderMarkdown: false,
 	returnToCursor: {
 		enabled: true,
 		icon: "text-cursor-input",

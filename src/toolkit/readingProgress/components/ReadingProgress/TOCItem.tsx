@@ -1,8 +1,12 @@
 import * as React from "react";
 import { ChevronRight } from "lucide-react";
-import { HeadingCache } from "obsidian";
+import { App, HeadingCache, MarkdownRenderer, MarkdownView } from "obsidian";
+import { IReadingProgressConfig } from "../../types/config";
 
 interface TOCItemProps {
+	app: App;
+	config: IReadingProgressConfig;
+	currentView: MarkdownView;
 	heading: HeadingCache;
 	index: number;
 	actualDepth: number;
@@ -18,6 +22,9 @@ interface TOCItemProps {
 
 export const TOCItem: React.FC<TOCItemProps> = React.memo(
 	({
+		app,
+		config,
+		currentView,
 		heading,
 		index,
 		actualDepth,
@@ -30,6 +37,34 @@ export const TOCItem: React.FC<TOCItemProps> = React.memo(
 		onCollapse,
 		getCleanHeadingText,
 	}) => {
+		const [renderedHeading, setRenderedHeading] = React.useState("");
+
+		React.useEffect(() => {
+			const renderHeading = async () => {
+				if (config.renderMarkdown) {
+					// 使用 Obsidian 的 MarkdownRenderer 来渲染标题
+					const tempEl = document.createElement("div");
+					await MarkdownRenderer.render(
+						app,
+						heading.heading,
+						tempEl,
+						"",
+						currentView
+					);
+					// 获取 p 标签内的内容
+					const pContent =
+						tempEl.querySelector("p")?.innerHTML ||
+						tempEl.innerHTML;
+					setRenderedHeading(pContent);
+				} else {
+					// 使用纯文本模式
+					setRenderedHeading(getCleanHeadingText(heading.heading));
+				}
+			};
+
+			renderHeading();
+		}, [heading.heading, config.renderMarkdown]);
+
 		return (
 			<div
 				className="rht-toc-item"
@@ -58,15 +93,26 @@ export const TOCItem: React.FC<TOCItemProps> = React.memo(
 						</button>
 					)}
 					<span className="rht-toc-item-text">
-						<span
-							className="rht-toc-item-number"
-							style={{
-								display: useHeadingNumber ? "inline" : "none",
-							}}
-						>
-							{headingNumber}
-						</span>
-						{getCleanHeadingText(heading.heading)}
+						{useHeadingNumber && headingNumber && (
+							<span className="rht-toc-number">
+								{headingNumber}
+							</span>
+						)}
+						{config.renderMarkdown ? (
+							<span
+								className="rht-toc-text markdown-rendered"
+								dangerouslySetInnerHTML={{
+									__html: renderedHeading,
+								}}
+								style={{
+									display: "inline-block",
+								}}
+							/>
+						) : (
+							<span className="rht-toc-text">
+								{renderedHeading}
+							</span>
+						)}
 					</span>
 				</div>
 				<span className="rht-toc-item-level">H{heading.level}</span>
