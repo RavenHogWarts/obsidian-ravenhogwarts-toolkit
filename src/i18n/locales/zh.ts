@@ -42,7 +42,13 @@ export const zh: Message = {
 	},
 	notice: {
 		version_check: "版本检查: 当前版本={0}, 最新版本={1}, 可更新={2}",
-		update_success: "插件 {0} 更新到 {1} 版本，请重启 Obsidian",
+		update_success: "插件更新到 {0} 版本，请重启 Obsidian",
+		downloading_file: "正在下载文件: {0}",
+		installing_update: "正在安装更新...",
+		no_update_needed: "无可用更新",
+		checking_update: "正在检查更新...",
+		update_completed: "更新完成",
+		update_error: "更新失败",
 	},
 	toolkit: {
 		tableEnhancements: {

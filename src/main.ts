@@ -9,9 +9,11 @@ import { FrontMatterSorterManager } from "./toolkit/frontmatterSorter/manager/Fr
 import { QuickPathManager } from "./toolkit/quickPath/manager/QuickPathManager";
 import { ReadingProgressManager } from "./toolkit/readingProgress/manager/ReadingProgressManager";
 import { CodeEditorManager } from "./toolkit/codeEditor/manager/CodeEditorManager";
+import { UpdateManager } from "./core/services/UpdateManager";
 
 export default class RavenHogwartsToolkitPlugin extends Plugin {
 	public pluginManager: PluginManager;
+	public updateManager: UpdateManager;
 	registeredMenus: Record<string, Set<string>> = {};
 
 	async onload() {
@@ -27,6 +29,8 @@ export default class RavenHogwartsToolkitPlugin extends Plugin {
 			this.addSettingTab(
 				new RavenHogwartsToolkitSettingTab(this.app, this)
 			);
+
+			this.updateManager = new UpdateManager(this);
 		} catch (e) {
 			rootLogger.error("Plugin load error", e);
 			rootLogger.notice("Plugin load error: " + e.message);

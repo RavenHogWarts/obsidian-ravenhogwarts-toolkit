@@ -21,6 +21,7 @@
 		"node": ">=18.x"
 	},
 	"devDependencies": {
+		"@types/fs-extra": "^11.0.4",
 		"@types/node": "^18.0.0",
 		"@types/react": "^18.3.12",
 		"@types/react-dom": "^18.3.1",
@@ -29,6 +30,7 @@
 		"builtin-modules": "3.3.0",
 		"esbuild": "0.17.3",
 		"eslint": "^8.57.1",
+		"fs-extra": "^11.3.0",
 		"monaco-editor": "^0.52.2",
 		"obsidian": "latest",
 		"postcss": "^8.5.1",
@@ -44,12 +46,13 @@
 		"ag-grid-community": "^30.2.0",
 		"ag-grid-react": "^30.2.0",
 		"date-fns": "^4.1.0",
-		"fs-extra": "^11.3.0",
 		"html-react-parser": "^5.2.2",
 		"lucide-react": "^0.460.0",
+		"p-queue": "^8.1.0",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-select": "^5.8.3",
+		"semver": "^7.7.1",
 		"uuid": "^11.0.3"
 	}
 }

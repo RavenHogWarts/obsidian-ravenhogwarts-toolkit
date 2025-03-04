@@ -22,10 +22,16 @@ const renamePlugin = () => ({
 			const parent = path.dirname(file);
 			const cssFileName = path.join(parent, "main.css");
 			const newCssFileName = path.join(parent, "styles.css");
-			try {
-				fs.renameSync(cssFileName, newCssFileName);
-			} catch (e) {
-				console.error("Failed to rename file:", e);
+
+			if (fs.existsSync(cssFileName)) {
+				try {
+					if (fs.existsSync(newCssFileName)) {
+						fs.unlinkSync(newCssFileName);
+					}
+					fs.renameSync(cssFileName, newCssFileName);
+				} catch (e) {
+					console.error("Failed to rename CSS file:", e);
+				}
 			}
 		});
 	},
@@ -35,14 +41,28 @@ const cssReBuild = () => ({
 	name: "css-rebuild",
 	setup(build) {
 		build.onLoad({ filter: /\.css$/ }, async (args) => {
-			const css = await fs.promises.readFile(args.path, "utf8");
-			const result = await postcss([postcssNesting]).process(css, {
-				from: args.path,
-			});
-			return {
-				contents: result.css,
-				loader: "css",
-			};
+			try {
+				const css = await fs.promises.readFile(args.path, "utf8");
+				const result = await postcss([postcssNesting]).process(css, {
+					from: args.path,
+				});
+
+				const outDir = path.dirname(build.initialOptions.outfile);
+				if (!fs.existsSync(outDir)) {
+					fs.mkdirSync(outDir, { recursive: true });
+				}
+
+				return {
+					contents: result.css,
+					loader: "css",
+				};
+			} catch (error) {
+				console.error("Error processing CSS:", error);
+				return {
+					contents: "",
+					loader: "css",
+				};
+			}
 		});
 	},
 });
@@ -71,7 +91,7 @@ const context = await esbuild.context({
 		...builtins,
 	],
 	format: "cjs",
-	target: "es2018",
+	target: "es2020",
 	logLevel: "info",
 	sourcemap: prod ? false : "inline",
 	treeShaking: true,

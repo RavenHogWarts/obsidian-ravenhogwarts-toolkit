@@ -44,7 +44,13 @@ export const en: Message = {
 	notice: {
 		version_check: "Version check: current={0}, latest={1}, hasUpdate={2}",
 		update_success:
-			"Plugin {0} updated to {1} version, please restart Obsidian",
+			"Plugin updated to {0} version, please restart Obsidian",
+		downloading_file: "Downloading file: {0}",
+		installing_update: "Installing update...",
+		no_update_needed: "No update available",
+		checking_update: "Checking update...",
+		update_completed: "Update completed",
+		update_error: "Update failed",
 	},
 	toolkit: {
 		tableEnhancements: {

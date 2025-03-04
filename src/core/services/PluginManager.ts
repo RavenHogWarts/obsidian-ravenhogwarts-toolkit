@@ -1,4 +1,4 @@
-import { Menu, Plugin } from "obsidian";
+import { Menu } from "obsidian";
 import {
 	DEFAULT_CONFIG,
 	IRavenHogwartsToolkitConfig,
@@ -233,6 +233,14 @@ export class PluginManager {
 	}
 
 	async checkForUpdates(): Promise<boolean> {
+		rootLogger.debug("Manual update check triggered");
+		rootLogger.debug("Current settings:", {
+			checkBeta: this.settings.config.updater.checkBeta,
+			autoUpdate: this.settings.config.updater.autoUpdate,
+			updateCheckInterval:
+				this.settings.config.updater.updateCheckInterval,
+		});
+
 		return await this.updateManager.checkForUpdates();
 	}
 }

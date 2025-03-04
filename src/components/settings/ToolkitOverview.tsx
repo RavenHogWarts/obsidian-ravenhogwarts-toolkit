@@ -17,6 +17,7 @@ import { SettingItem } from "../base/Setting/SettingItem";
 import { OverviewSettingItem } from "../base/Setting/OverviewSettingItem";
 import { DeveloperSettings } from "./DeveloperSettings";
 import "./styles/ToolkitOverview.css";
+import { useUpdateProgress } from "@/src/core/hooks/useUpdateProgress";
 
 interface ToolkitOverviewProps {
 	plugin: RavenHogwartsToolkitPlugin;
@@ -48,6 +49,12 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
 	}>({ show: false, x: 0, y: 0 });
 	const [updaterConfig, setUpdaterConfig] = React.useState(config.updater);
 	const [menuConfig, setMenuConfig] = React.useState(config.menu);
+	const {
+		updateStatus,
+		handleUpdateProgress,
+		resetStatus,
+		showUpdateStatus,
+	} = useUpdateProgress();
 
 	// 监听配置变化
 	React.useEffect(() => {
@@ -66,9 +73,21 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
 
 	const handleCheckUpdate = async () => {
 		try {
-			// 实现检查更新逻辑
-			logger.info("Checking for updates...");
-			await plugin.pluginManager.checkForUpdates();
+			logger.debug("Update check requested from UI");
+			resetStatus();
+			const result = await plugin.updateManager.checkForUpdates({
+				checkBeta: updaterConfig.checkBeta,
+				force: true,
+				onProgress: handleUpdateProgress,
+			});
+			logger.debug("Update check result:", result);
+
+			if (!result) {
+				handleUpdateProgress({
+					stage: "completed",
+					message: "已是最新版本",
+				});
+			}
 		} catch (error) {
 			logger.error("Failed to check for updates:", error);
 		}
@@ -192,6 +211,34 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
 						<small className="rht-version-hint">
 							{t("common.overview.version_hint")}
 						</small>
+					)}
+
+					{showUpdateStatus && (
+						<div className="rht-update-progress">
+							<div className="rht-update-status">
+								<span>{updateStatus.status}</span>
+								{updateStatus.currentFile && (
+									<small className="rht-update-file">
+										{updateStatus.currentFile}
+									</small>
+								)}
+							</div>
+							{updateStatus.needsUpdate && (
+								<div className="rht-progress-bar">
+									<div
+										className="rht-progress-fill"
+										style={{
+											width: `${updateStatus.progress}%`,
+										}}
+									/>
+								</div>
+							)}
+							{updateStatus.error && (
+								<div className="rht-update-error">
+									{updateStatus.error}
+								</div>
+							)}
+						</div>
 					)}
 				</div>
 			</div>

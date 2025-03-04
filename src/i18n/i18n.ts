@@ -43,7 +43,13 @@ export type Message = {
 	};
 	notice: {
 		version_check: string;
+		checking_update: string;
+		downloading_file: string;
+		installing_update: string;
+		no_update_needed: string;
 		update_success: string;
+		update_completed: string;
+		update_error: string;
 	};
 	toolkit: {
 		tableEnhancements: {

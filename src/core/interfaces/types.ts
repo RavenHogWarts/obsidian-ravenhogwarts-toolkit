@@ -27,6 +27,7 @@ export interface IRavenHogwartsToolkitConfig {
 			checkBeta: boolean;
 			proxySource: ProxySource[];
 			lastProxyOptimizeTime?: string;
+			updateCheckInterval?: number;
 		};
 	};
 	toolkit: {
@@ -50,42 +51,69 @@ export interface IToolkitModule {
 	data: IToolkitModuleData;
 }
 
+export interface UpdateProgress {
+	stage: "checking" | "downloading" | "installing" | "completed" | "error";
+	progress?: number;
+	message?: string;
+	error?: Error;
+}
+
+export interface UpdateOptions {
+	checkBeta?: boolean;
+	force?: boolean;
+	onProgress?: (progress: UpdateProgress) => void;
+}
+
+export interface ProxySource {
+	url: string;
+	name: string;
+	timeout: number;
+	enabled: boolean;
+	priority: number;
+}
+
 export const PROXY_SOURCE_DEFAULT: ProxySource[] = [
 	{
 		url: "https://github.com/",
 		name: "Direct",
 		timeout: 5000,
 		enabled: true,
+		priority: 0,
 	},
 	{
 		url: "https://ghproxy.cn/https://github.com/",
 		name: "GHProxy-CN",
 		timeout: 5000,
 		enabled: true,
+		priority: 100,
 	},
 	{
 		url: "https://hub.gitmirror.com/https://github.com/",
 		name: "GitMirror",
 		timeout: 5000,
 		enabled: true,
+		priority: 90,
 	},
 	{
 		url: "https://slink.ltd/https://github.com/",
 		name: "Slink",
 		timeout: 5000,
 		enabled: true,
+		priority: 80,
 	},
 	{
 		url: "https://gh-proxy.ygxz.in/https://github.com/",
 		name: "GHProxy-YGXZ",
 		timeout: 5000,
 		enabled: true,
+		priority: 70,
 	},
 	{
 		url: "https://down.sciproxy.com/github.com//https://github.com/",
 		name: "SciProxy",
 		timeout: 5000,
 		enabled: true,
+		priority: 60,
 	},
 ];
 
@@ -106,6 +134,7 @@ export const DEFAULT_CONFIG: IRavenHogwartsToolkitConfig = {
 			checkBeta: false,
 			proxySource: PROXY_SOURCE_DEFAULT,
 			lastProxyOptimizeTime: undefined,
+			updateCheckInterval: 3600000,
 		},
 	},
 	toolkit: {},
@@ -148,10 +177,3 @@ export const TOOLKIT_CONFIG: Record<
 		iconName: "square-code",
 	},
 };
-
-export interface ProxySource {
-	url: string;
-	name: string;
-	timeout: number;
-	enabled: boolean;
-}
