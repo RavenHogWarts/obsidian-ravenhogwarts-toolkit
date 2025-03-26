@@ -363,6 +363,7 @@ export type Message = {
 			description: string;
 			command: {
 				createCodeFile: string;
+				openCssSnippet: string;
 			};
 			file_menu: {
 				openInCodeEditor: string;
@@ -386,6 +387,16 @@ export type Message = {
 				cancel: string;
 				edit_code_block: string;
 				save: string;
+
+				confirm_delete: string;
+				css_snippets: string;
+				search_snippets: string;
+				no_matching_snippets: string;
+				no_snippets: string;
+				new_snippet_name: string;
+				new_snippet: string;
+				refresh: string;
+				open_snippetsFolder: string;
 			};
 			notice: {
 				file_name_validate: string;
@@ -394,6 +405,8 @@ export type Message = {
 				create_file_success: string;
 				create_file_failed: string;
 				no_code_block: string;
+				file_deleted: string;
+				file_delete_error: string;
 			};
 			settings: {
 				supportExtensions: {
@@ -401,6 +414,20 @@ export type Message = {
 					description: string;
 				};
 				theme: {
+					light: string;
+					light_description: string;
+					dark: string;
+					dark_description: string;
+				};
+				snippetsManager: {
+					title: string;
+					description: string;
+					location: {
+						Null: string;
+						Ribbon: string;
+					};
+				};
+				keyboard: {
 					title: string;
 					description: string;
 				};
