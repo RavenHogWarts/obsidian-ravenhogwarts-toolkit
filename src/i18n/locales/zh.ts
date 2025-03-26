@@ -371,6 +371,7 @@ export const zh: Message = {
 			description: "在obsidian中进行代码文件的编辑",
 			command: {
 				createCodeFile: "创建代码文件",
+				openCssSnippet: "打开CSS片段",
 			},
 			file_menu: {
 				openInCodeEditor: "在代码编辑器中打开",
@@ -394,6 +395,16 @@ export const zh: Message = {
 				cancel: "取消",
 				edit_code_block: "编辑代码块",
 				save: "保存",
+
+				confirm_delete: "确认删除 {0} 吗？",
+				css_snippets: "CSS片段",
+				search_snippets: "搜索CSS片段",
+				no_matching_snippets: "没有找到匹配的CSS片段",
+				no_snippets: "没有CSS片段",
+				new_snippet_name: "新片段名",
+				new_snippet: "新片段",
+				refresh: "重新加载",
+				open_snippetsFolder: "打开snippets文件夹",
 			},
 			notice: {
 				file_name_validate: "请输入文件名",
@@ -403,6 +414,8 @@ export const zh: Message = {
 				create_file_success: "文件创建成功 {0}",
 				create_file_failed: "创建文件失败 {0}",
 				no_code_block: "没有找到代码块",
+				file_deleted: "文件删除成功 {0}",
+				file_delete_error: "文件删除失败 {0}",
 			},
 			settings: {
 				supportExtensions: {
@@ -411,8 +424,22 @@ export const zh: Message = {
 						"注册后，点击文件将直接在代码编辑器中打开，修改后需重启obsidian",
 				},
 				theme: {
-					title: "主题",
-					description: "代码编辑器的主题",
+					light: "亮色主题",
+					light_description: "代码编辑器的亮色主题",
+					dark: "暗色主题",
+					dark_description: "代码编辑器的暗色主题",
+				},
+				snippetsManager: {
+					title: "css片段",
+					description: "css片段管理按钮，修改后需重启obsidian",
+					location: {
+						Null: "不显示",
+						Ribbon: "在ribbon显示",
+					},
+				},
+				keyboard: {
+					title: "键盘",
+					description: "代码编辑器的键盘样式",
 				},
 				lineNumbers: {
 					title: "行号",

@@ -2,11 +2,11 @@ import * as React from "react";
 import { useModal } from "@/src/components/base/Modal/BaseModal";
 import { Button } from "@/src/components/base/Button/Button";
 import { t } from "@/src/i18n/i18n";
-import * as monaco from "monaco-editor";
+import { Ace } from "ace-builds";
+import { AceService } from "../../services/AceService";
 import { Logger } from "@/src/core/services/Log";
 import "./styles/EditCodeBlockModal.css";
 import { ICodeEditorConfig } from "../../types/config";
-import { getMonacoSettings } from "../CodeEditorView";
 
 interface EditCodeBlockModalProps {
 	onClose: () => void;
@@ -17,8 +17,8 @@ export const EditCodeBlockModal: React.FC<EditCodeBlockModalProps> = ({
 }) => {
 	const { additionalProps } = useModal();
 	const editorRef = React.useRef<HTMLDivElement>(null);
-	const monacoEditorRef =
-		React.useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+	const aceEditorRef = React.useRef<Ace.Editor | null>(null);
+	const aceServiceRef = React.useRef<AceService | null>(null);
 
 	const codeBlock = additionalProps?.codeBlock as {
 		language: string;
@@ -30,24 +30,28 @@ export const EditCodeBlockModal: React.FC<EditCodeBlockModalProps> = ({
 	const config = additionalProps?.config as ICodeEditorConfig;
 
 	React.useEffect(() => {
-		if (editorRef.current && !monacoEditorRef.current) {
-			monacoEditorRef.current = monaco.editor.create(editorRef.current, {
-				value: codeBlock.code,
-				...getMonacoSettings(codeBlock.language, config),
-			});
+		if (editorRef.current && !aceEditorRef.current) {
+			aceServiceRef.current = new AceService(logger);
+			aceEditorRef.current = aceServiceRef.current.createEditor(
+				editorRef.current
+			);
+			aceServiceRef.current.configureEditor(config, codeBlock.language);
+			aceServiceRef.current.setValue(codeBlock.code);
 		}
 
 		return () => {
-			if (monacoEditorRef.current) {
-				monacoEditorRef.current.dispose();
+			if (aceServiceRef.current) {
+				aceServiceRef.current.destroy();
+				aceServiceRef.current = null;
+				aceEditorRef.current = null;
 			}
 		};
 	}, []);
 
 	const handleSave = async () => {
-		if (!monacoEditorRef.current) return;
+		if (!aceServiceRef.current) return;
 
-		const newCode = monacoEditorRef.current.getValue();
+		const newCode = aceServiceRef.current.getValue();
 		await onSave(newCode);
 		onClose();
 	};
@@ -62,7 +66,7 @@ export const EditCodeBlockModal: React.FC<EditCodeBlockModalProps> = ({
 			</div>
 
 			<div className="rht-code-editor-modal-content">
-				<div ref={editorRef} className="monaco-editor-container" />
+				<div ref={editorRef} className="ace-editor-container" />
 			</div>
 
 			<div className="rht-code-editor-modal-footer">

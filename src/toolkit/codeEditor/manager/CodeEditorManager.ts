@@ -17,9 +17,9 @@ import {
 	TFile,
 	TFolder,
 } from "obsidian";
-import { CodeEditorView, getLanguage } from "../components/CodeEditorView";
-import { MonacoWorkerService } from "../services/MonacoWorkerService";
+import { CodeEditorView } from "../components/CodeEditorView";
 import { BaseModal } from "@/src/components/base/Modal/BaseModal";
+import { getLanguageMode } from "../services/AceLanguages";
 
 interface ICodeEditorModule extends IToolkitModule {
 	config: ICodeEditorConfig;
@@ -27,15 +27,12 @@ interface ICodeEditorModule extends IToolkitModule {
 }
 
 export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
-	private markdownPostProcessor: MarkdownPostProcessor | null = null;
-
 	protected getDefaultConfig(): ICodeEditorConfig {
 		return CODE_EDITOR_DEFAULT_CONFIG;
 	}
 
 	protected async onModuleLoad(): Promise<void> {
 		this.logger.info("Loading code editor manager");
-		MonacoWorkerService.initialize(this.logger);
 
 		try {
 			this.plugin.registerView(CODE_EDITOR_VIEW_TYPE, (leaf) => {
@@ -49,7 +46,6 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 
 		this.registerEventHandlers();
 		this.registerCommands();
-		this.registerMarkdownPostProcessor();
 
 		this.plugin.registerHoverLinkSource(CODE_EDITOR_VIEW_TYPE, {
 			display: CODE_EDITOR_VIEW_TYPE,
@@ -63,7 +59,6 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 
 	protected onModuleCleanup(): void {
 		this.logger.info("Cleaning up code editor manager");
-		MonacoWorkerService.dispose();
 
 		const leaves = this.app.workspace.getLeavesOfType(
 			CODE_EDITOR_VIEW_TYPE
@@ -82,8 +77,6 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		this.app.workspace.detachLeavesOfType(CODE_EDITOR_VIEW_TYPE);
 		// @ts-ignore
 		this.app.viewRegistry.unregisterView(CODE_EDITOR_VIEW_TYPE);
-
-		this.unregisterMarkdownPostProcessor();
 	}
 
 	private registerFileExtensions(): void {
@@ -105,80 +98,26 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 				await this.createCodeFile(folderPath);
 			},
 		});
-	}
 
-	private registerMarkdownPostProcessor(): void {
-		// 为所有代码块注册处理器
-		this.markdownPostProcessor = this.plugin.registerMarkdownPostProcessor(
-			(el, ctx) => {
-				// 只处理代码块元素
-				const preElements = el.querySelectorAll("pre > code");
-				if (!preElements.length) return;
+		this.addCommand({
+			id: "openCssSnippet",
+			name: this.t("toolkit.codeEditor.command.openCssSnippet"),
+			callback: async () => {
+				await this.openCssSnippetSelector();
+			},
+		});
 
-				preElements.forEach((codeEl) => {
-					const pre = codeEl.parentElement;
-					if (!pre) return;
-
-					const buttonContainer = pre.createDiv({
-						cls: "rht-code-block-buttons",
-					});
-					const editButton = buttonContainer.createEl("button", {
-						cls: "rht-edit-code-button",
-					});
-					setIcon(editButton, "edit");
-
-					const language = getLanguage(
-						codeEl.className.replace("language-", "") || ""
-					);
-					const source = codeEl.textContent || "";
-
-					// 绑定编辑按钮点击事件
-					editButton.addEventListener("click", (e) => {
-						e.stopPropagation();
-						const sectionInfo = ctx.getSectionInfo(el);
-						const codeBlock: ICodeBlock = {
-							language,
-							code: source,
-							range: {
-								start: sectionInfo?.lineStart || 0,
-								end: sectionInfo?.lineEnd || 0,
-							},
-						};
-						this.openCodeBlockEditor(codeBlock);
-					});
-
-					// 将复制按钮移动到按钮容器中
-					const copyButton = pre.querySelector(".copy-code-button");
-					if (copyButton) {
-						copyButton.detach();
-						buttonContainer.appendChild(copyButton);
+		if (this.config.snippetsManager.location !== "Null") {
+			if (this.config.snippetsManager.location === "Ribbon") {
+				this.addRibbonIcon(
+					this.config.snippetsManager.icon,
+					this.t("toolkit.codeEditor.command.openCssSnippet"),
+					async () => {
+						await this.openCssSnippetSelector();
 					}
-				});
+				);
 			}
-		);
-	}
-
-	private unregisterMarkdownPostProcessor(): void {
-		if (!this.markdownPostProcessor) return;
-
-		this.markdownPostProcessor = null;
-		document
-			.querySelectorAll(".rht-code-block-buttons")
-			.forEach((buttonContainer) => {
-				const pre = buttonContainer.closest("pre");
-				if (pre) {
-					// 将复制按钮移回原位置
-					const copyButton =
-						buttonContainer.querySelector(".copy-code-button");
-					if (copyButton) {
-						copyButton.detach();
-						pre.appendChild(copyButton);
-					}
-
-					// 移除编辑按钮和按钮容器
-					buttonContainer.remove();
-				}
-			});
+		}
 	}
 
 	protected registerEventHandlers(): void {
@@ -248,18 +187,6 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		}
 	}
 
-	async openInCodeEditor(
-		filePath: string,
-		newTab: boolean = false
-	): Promise<void> {
-		const leaf = this.app.workspace.getLeaf(newTab);
-		await leaf.setViewState({
-			type: CODE_EDITOR_VIEW_TYPE,
-			state: { file: filePath },
-		});
-		this.app.workspace.setActiveLeaf(leaf);
-	}
-
 	async createCodeFile(folderPath: string): Promise<void> {
 		new BaseModal(
 			this.app,
@@ -275,17 +202,58 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		).open();
 	}
 
+	async openCssSnippetSelector(): Promise<void> {
+		const snippetsFolder = `${this.app.vault.configDir}/snippets`;
+
+		new BaseModal(
+			this.app,
+			this.plugin,
+			() => import("../components/Modal/SnippetsFileModal"),
+			{
+				snippetsFolder,
+				logger: this.logger,
+				openExternalFile: (filePath: string, newTab: boolean) =>
+					this.openExternalFile(filePath, newTab),
+			},
+			"modal-size-medium"
+		).open();
+	}
+
+	async openCodeBlockEditor(codeBlock: ICodeBlock): Promise<void> {
+		new BaseModal(
+			this.app,
+			this.plugin,
+			() => import("../components/Modal/EditCodeBlockModal"),
+			{
+				codeBlock,
+				logger: this.logger,
+				plugin: this.plugin,
+				config: this.config,
+				onSave: (newCode: string) =>
+					this.updateCodeBlock(
+						codeBlock.range,
+						newCode,
+						codeBlock.indent
+					),
+			},
+			"modal-size-large"
+		).open();
+	}
+
 	private handleEditorMenu(menu: Menu, editor: Editor): void {
 		if (!this.isEnabled()) return;
 
 		this.addMenuItem(menu, {
 			title: this.t("toolkit.codeEditor.editor_menu.editCodeBlock"),
 			icon: "code-xml",
-			callback: () => {
+			callback: async () => {
 				const cursor = editor.getCursor();
-				const codeBlock = this.getCodeBlockAtCursor(editor, cursor);
+				const codeBlock = await this.getCodeBlockAtCursor(
+					editor,
+					cursor
+				);
 				if (codeBlock) {
-					this.openCodeBlockEditor(codeBlock);
+					await this.openCodeBlockEditor(codeBlock);
 				} else {
 					this.logger.notice(
 						this.t("toolkit.codeEditor.notice.no_code_block")
@@ -295,10 +263,52 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 		});
 	}
 
-	private getCodeBlockAtCursor(
+	async openInCodeEditor(
+		filePath: string,
+		newTab: boolean = false
+	): Promise<void> {
+		const leaf = this.app.workspace.getLeaf(newTab);
+		await leaf.setViewState({
+			type: CODE_EDITOR_VIEW_TYPE,
+			state: { file: filePath },
+		});
+		this.app.workspace.setActiveLeaf(leaf);
+	}
+
+	private async openExternalFile(
+		filePath: string,
+		newTab: boolean = false
+	): Promise<void> {
+		const adapter = this.app.vault.adapter;
+		const exists = await adapter.exists(filePath);
+		if (!exists) {
+			return;
+		}
+
+		// @ts-ignore
+		const file = new TFile(this.app.vault, filePath);
+		const content = await adapter.read(filePath);
+
+		const leaf = this.app.workspace.getLeaf(newTab);
+		const view = new CodeEditorView(leaf, this.config, this.logger);
+		view.file = file;
+
+		await view.onOpen();
+		await view.onLoadFile(file);
+
+		view.setViewData(content, true);
+
+		await leaf.open(view);
+		leaf.setViewState({
+			type: CODE_EDITOR_VIEW_TYPE,
+		});
+		this.app.workspace.setActiveLeaf(leaf);
+	}
+
+	private async getCodeBlockAtCursor(
 		editor: Editor,
 		cursor: EditorPosition
-	): ICodeBlock | null {
+	): Promise<ICodeBlock | null> {
 		const line = cursor.line;
 		const content = editor.getValue();
 		const lines = content.split("\n");
@@ -335,7 +345,7 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 				.trim()
 				.replace(/^>\s*/, "");
 			const blockLanguage = startLineContent.slice(3).trim();
-			const language = getLanguage(blockLanguage);
+			const resolvedLanguage = await getLanguageMode(blockLanguage);
 
 			// 提取代码内容
 			const codeLines = lines
@@ -368,7 +378,7 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 			const context = this.getCodeBlockContext(lines, startLine);
 
 			return {
-				language,
+				language: resolvedLanguage,
 				code,
 				range: {
 					start: startLine,
@@ -421,26 +431,6 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 			calloutType,
 			calloutStartLine,
 		};
-	}
-
-	async openCodeBlockEditor(codeBlock: ICodeBlock): Promise<void> {
-		new BaseModal(
-			this.app,
-			this.plugin,
-			() => import("../components/Modal/EditCodeBlockModal"),
-			{
-				codeBlock,
-				logger: this.logger,
-				config: this.config,
-				onSave: (newCode: string) =>
-					this.updateCodeBlock(
-						codeBlock.range,
-						newCode,
-						codeBlock.indent
-					),
-			},
-			"modal-size-large"
-		).open();
 	}
 
 	private async updateCodeBlock(

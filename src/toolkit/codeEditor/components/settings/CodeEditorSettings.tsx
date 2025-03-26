@@ -8,6 +8,12 @@ import RavenHogwartsToolkitPlugin from "@/src/main";
 import { TagInput } from "@/src/components/base/Input/TagInput";
 import { Select } from "@/src/components/base/Select/Select";
 import { Input } from "@/src/components/base/Input/Input";
+import {
+	AceDarkThemesList,
+	AceKeyboardList,
+	AceLightThemesList,
+} from "@/src/toolkit/codeEditor/services/AceThemes";
+import { IconPicker } from "@/src/components/base/Icon/IconPicker";
 
 interface CodeEditorSettingsProps {
 	plugin: RavenHogwartsToolkitPlugin;
@@ -29,12 +35,34 @@ export const CodeEditorSettings: React.FC<CodeEditorSettingsProps> = ({
 		}
 	};
 
-	const themeOptions = [
-		{ value: "auto", label: "auto" },
-		{ value: "vs", label: "vs" },
-		{ value: "vs-dark", label: "vs-dark" },
-		{ value: "hc-light", label: "hc-light" },
-		{ value: "hc-black", label: "hc-black" },
+	const lightThemeOptions = AceLightThemesList.map((theme) => ({
+		value: theme,
+		label: theme,
+	}));
+
+	const darkThemeOptions = AceDarkThemesList.map((theme) => ({
+		value: theme,
+		label: theme,
+	}));
+
+	const keyboardOptions = AceKeyboardList.map((keyboard) => ({
+		value: keyboard,
+		label: keyboard,
+	}));
+
+	const snippetsManagerOptions = [
+		{
+			value: "Null",
+			label: t(
+				"toolkit.codeEditor.settings.snippetsManager.location.Null"
+			),
+		},
+		{
+			value: "Ribbon",
+			label: t(
+				"toolkit.codeEditor.settings.snippetsManager.location.Ribbon"
+			),
+		},
 	];
 
 	return (
@@ -56,14 +84,64 @@ export const CodeEditorSettings: React.FC<CodeEditorSettingsProps> = ({
 			</SettingItem>
 
 			<SettingItem
-				name={t("toolkit.codeEditor.settings.theme.title")}
-				desc={t("toolkit.codeEditor.settings.theme.description")}
+				name={t("toolkit.codeEditor.settings.theme.light")}
+				desc={t("toolkit.codeEditor.settings.theme.light_description")}
 			>
 				<Select
-					options={themeOptions}
-					value={config.theme}
+					options={lightThemeOptions}
+					value={config.lightTheme}
 					onValueChange={(value) =>
-						handleUpdateConfig({ theme: value })
+						handleUpdateConfig({ lightTheme: value })
+					}
+				/>
+			</SettingItem>
+
+			<SettingItem
+				name={t("toolkit.codeEditor.settings.theme.dark")}
+				desc={t("toolkit.codeEditor.settings.theme.dark_description")}
+			>
+				<Select
+					options={darkThemeOptions}
+					value={config.darkTheme}
+					onValueChange={(value) =>
+						handleUpdateConfig({ darkTheme: value })
+					}
+				/>
+			</SettingItem>
+
+			<SettingItem
+				name={t("toolkit.codeEditor.settings.snippetsManager.title")}
+				desc={t(
+					"toolkit.codeEditor.settings.snippetsManager.description"
+				)}
+			>
+				<Select
+					options={snippetsManagerOptions}
+					value={config.snippetsManager.location}
+					onValueChange={(value) =>
+						handleUpdateConfig({
+							"snippetsManager.location": value,
+						})
+					}
+				/>
+				<IconPicker
+					app={plugin.app}
+					value={config.snippetsManager.icon}
+					onChange={(value) =>
+						handleUpdateConfig({ "snippetsManager.icon": value })
+					}
+				/>
+			</SettingItem>
+
+			<SettingItem
+				name={t("toolkit.codeEditor.settings.keyboard.title")}
+				desc={t("toolkit.codeEditor.settings.keyboard.description")}
+			>
+				<Select
+					options={keyboardOptions}
+					value={config.keyboard}
+					onValueChange={(value) =>
+						handleUpdateConfig({ keyboard: value })
 					}
 				/>
 			</SettingItem>
@@ -77,16 +155,6 @@ export const CodeEditorSettings: React.FC<CodeEditorSettingsProps> = ({
 					onChange={(value) =>
 						handleUpdateConfig({ lineNumbers: value })
 					}
-				/>
-			</SettingItem>
-
-			<SettingItem
-				name={t("toolkit.codeEditor.settings.minimap.title")}
-				desc={t("toolkit.codeEditor.settings.minimap.description")}
-			>
-				<Toggle
-					checked={config.minimap}
-					onChange={(value) => handleUpdateConfig({ minimap: value })}
 				/>
 			</SettingItem>
 
@@ -124,34 +192,6 @@ export const CodeEditorSettings: React.FC<CodeEditorSettingsProps> = ({
 					value={config.tabSize}
 					onChange={(value) =>
 						handleUpdateConfig({ tabSize: Number(value) })
-					}
-				/>
-			</SettingItem>
-
-			<SettingItem
-				name={t("toolkit.codeEditor.settings.lineHeight.title")}
-				desc={t("toolkit.codeEditor.settings.lineHeight.description")}
-			>
-				<Input
-					type="number"
-					value={config.lineHeight}
-					onChange={(value) =>
-						handleUpdateConfig({ lineHeight: Number(value) })
-					}
-				/>
-			</SettingItem>
-
-			<SettingItem
-				name={t("toolkit.codeEditor.settings.letterSpacing.title")}
-				desc={t(
-					"toolkit.codeEditor.settings.letterSpacing.description"
-				)}
-			>
-				<Input
-					type="number"
-					value={config.letterSpacing}
-					onChange={(value) =>
-						handleUpdateConfig({ letterSpacing: Number(value) })
 					}
 				/>
 			</SettingItem>

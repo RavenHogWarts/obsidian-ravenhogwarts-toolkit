@@ -389,6 +389,7 @@ export const en: Message = {
 			description: "Edit code files in Obsidian",
 			command: {
 				createCodeFile: "Create Code File",
+				openCssSnippet: "Open CSS Snippet",
 			},
 			file_menu: {
 				openInCodeEditor: "Open in Code Editor",
@@ -413,6 +414,16 @@ export const en: Message = {
 				cancel: "Cancel",
 				edit_code_block: "Edit Code Block",
 				save: "Save",
+
+				confirm_delete: "Confirm delete {0}?",
+				css_snippets: "CSS Snippets",
+				search_snippets: "Search CSS Snippets",
+				no_matching_snippets: "No matching CSS snippets",
+				no_snippets: "No CSS snippets",
+				new_snippet_name: "New Snippet Name",
+				new_snippet: "New Snippet",
+				refresh: "Reload",
+				open_snippetsFolder: "Open Snippets Folder",
 			},
 			notice: {
 				file_name_validate: "Please enter file name",
@@ -422,6 +433,8 @@ export const en: Message = {
 				create_file_success: "File created successfully {0}",
 				create_file_failed: "Create file failed {0}",
 				no_code_block: "No code block found",
+				file_deleted: "File deleted successfully {0}",
+				file_delete_error: "File delete failed {0}",
 			},
 			settings: {
 				supportExtensions: {
@@ -430,8 +443,23 @@ export const en: Message = {
 						"Register file extensions, click the file to open it directly in the code editor, and restart Obsidian after modification",
 				},
 				theme: {
-					title: "Theme",
-					description: "Code editor theme",
+					light: "Light Theme",
+					light_description: "Code editor light theme",
+					dark: "Dark Theme",
+					dark_description: "Code editor dark theme",
+				},
+				snippetsManager: {
+					title: "CSS Snippets",
+					description:
+						"CSS snippets manager button, need to restart obsidian after modification",
+					location: {
+						Null: "Not display",
+						Ribbon: "Display in ribbon",
+					},
+				},
+				keyboard: {
+					title: "Keyboard",
+					description: "Code editor keyboard",
 				},
 				lineNumbers: {
 					title: "Line Numbers",

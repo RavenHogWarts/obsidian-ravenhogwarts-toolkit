@@ -2,17 +2,25 @@ import {
 	IToolkitModuleConfig,
 	IToolkitModuleData,
 } from "@/src/core/interfaces/types";
+import {
+	AceDarkThemes,
+	AceKeyboard,
+	AceLightThemes,
+} from "../services/AceThemes";
 
 export interface ICodeEditorConfig extends IToolkitModuleConfig {
 	supportExtensions: string[]; // 支持的文件扩展名
-	theme: "auto" | "vs" | "vs-dark" | "hc-light" | "hc-black";
+	lightTheme: AceLightThemes;
+	darkTheme: AceDarkThemes;
+	keyboard: AceKeyboard;
 	lineNumbers: boolean;
-	minimap: boolean;
 	fontSize: number;
 	fontFamily: string;
 	tabSize: number;
-	lineHeight: number;
-	letterSpacing: number;
+	snippetsManager: {
+		location: "Null" | "Ribbon";
+		icon: string;
+	};
 }
 
 export interface ICodeEditorData extends IToolkitModuleData {}
@@ -20,14 +28,17 @@ export interface ICodeEditorData extends IToolkitModuleData {}
 export const CODE_EDITOR_DEFAULT_CONFIG: ICodeEditorConfig = {
 	supportExtensions: ["js"],
 	enabled: true,
-	theme: "auto",
+	lightTheme: "chrome",
+	darkTheme: "monokai",
+	keyboard: "vscode",
 	lineNumbers: true,
-	minimap: true,
 	fontSize: 14,
 	fontFamily: "Consolas, 'Courier New', monospace",
 	tabSize: 4,
-	lineHeight: 1.5,
-	letterSpacing: 0,
+	snippetsManager: {
+		location: "Null",
+		icon: "code",
+	},
 };
 
 export const CODE_EDITOR_VIEW_TYPE = "rht-code-editor";
