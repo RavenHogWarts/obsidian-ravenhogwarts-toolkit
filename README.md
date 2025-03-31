@@ -33,7 +33,7 @@ A personal toolkit plugin (OTK) that integrates various Obsidian utilities, desi
 ### Manual Installation
 
 1. Download the latest release
-2. Copy `main.js`, `styles.css`, and `manifest.json` to your vault's plugins folder: `<vault>/.obsidian/plugins/obsidian-ravenhogwarts-toolkit/`
+2. Copy `main.js`, `styles.css`, and `manifest.json` to your vault's plugins folder: `<vault>/.obsidian/plugins/ravenhogwarts-toolkit/`
 3. Reload Obsidian
 4. Enable the plugin in Settings → Community Plugins
 

@@ -9,7 +9,7 @@ permissions:
     contents: write
 
 env:
-    PLUGIN_NAME: obsidian-ravenhogwarts-toolkit
+    PLUGIN_NAME: ravenhogwarts-toolkit
 
 jobs:
     build:
@@ -135,7 +135,7 @@ jobs:
 
                       ## Installation
                       1. Download the files from the Assets section below
-                      2. Copy them to your vault's plugins folder: `<vault>/.obsidian/plugins/obsidian-ravenhogwarts-toolkit/`
+                      2. Copy them to your vault's plugins folder: `<vault>/.obsidian/plugins/ravenhogwarts-toolkit/`
                       3. Reload Obsidian
                       4. Enable plugin in settings
 

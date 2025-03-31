@@ -33,7 +33,7 @@
 ### 手动安装
 
 1. 下载最新版本
-2. 将 `main.js`, `styles.css`, 和 `manifest.json` 复制到你的笔记库的 `plugins` 文件夹中：`<vault>/.obsidian/plugins/obsidian-ravenhogwarts-toolkit/`
+2. 将 `main.js`, `styles.css`, 和 `manifest.json` 复制到你的笔记库的 `plugins` 文件夹中：`<vault>/.obsidian/plugins/ravenhogwarts-toolkit/`
 3. 重新加载Obsidian
 4. 在设置中启用插件
 

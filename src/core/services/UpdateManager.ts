@@ -30,7 +30,7 @@ export class UpdateManager {
 		"manifest.json",
 		"styles.css",
 	];
-	private readonly PLUGIN_ID = "obsidian-ravenhogwarts-toolkit";
+	private readonly PLUGIN_ID = "ravenhogwarts-toolkit";
 	private updateQueue: PQueue;
 	private updating = false;
 	private lastUpdateCheck: number = 0;
