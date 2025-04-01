@@ -1,4 +1,4 @@
-import { Plugin } from "obsidian";
+import { FileSystemAdapter, Plugin } from "obsidian";
 import { IRavenHogwartsToolkitConfig } from "./core/interfaces/types";
 import { PluginManager } from "./core/services/PluginManager";
 import { BaseManager } from "./core/services/BaseManager";
@@ -30,7 +30,12 @@ export default class RavenHogwartsToolkitPlugin extends Plugin {
 				new RavenHogwartsToolkitSettingTab(this.app, this)
 			);
 
-			this.updateManager = new UpdateManager(this);
+			// 只在桌面环境初始化更新管理器
+			const isDesktop =
+				this.app.vault.adapter instanceof FileSystemAdapter;
+			if (isDesktop) {
+				this.updateManager = new UpdateManager(this);
+			}
 		} catch (e) {
 			rootLogger.error("Plugin load error", e);
 			rootLogger.notice("Plugin load error: " + e.message);
