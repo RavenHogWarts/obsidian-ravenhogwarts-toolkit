@@ -51,11 +51,23 @@ export const TOCItem: React.FC<TOCItemProps> = React.memo(
 						"",
 						currentView
 					);
-					// 获取 p 标签内的内容
-					const pContent =
-						tempEl.querySelector("p")?.innerHTML ||
-						tempEl.innerHTML;
-					setRenderedHeading(pContent);
+
+					// 使用 createDiv 和 setHTML Obsidian 安全 API
+					const contentEl = createDiv();
+					const pElement = tempEl.querySelector("p");
+					if (pElement) {
+						// 只复制 p 元素的内容，而不是整个 p 标签
+						Array.from(pElement.childNodes).forEach((node) => {
+							contentEl.appendChild(node.cloneNode(true));
+						});
+					} else {
+						// 如果没有 p 元素，复制所有子节点
+						Array.from(tempEl.childNodes).forEach((node) => {
+							contentEl.appendChild(node.cloneNode(true));
+						});
+					}
+
+					setRenderedHeading(contentEl.innerHTML);
 				} else {
 					// 使用纯文本模式
 					setRenderedHeading(getCleanHeadingText(heading.heading));
