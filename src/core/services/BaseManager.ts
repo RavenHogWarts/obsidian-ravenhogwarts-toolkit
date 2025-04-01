@@ -20,6 +20,20 @@ interface MenuItemConfig {
 
 type EventRef = () => void;
 
+// 添加 Obsidian Menu 相关接口定义
+interface ObsidianMenuItem {
+	titleEl?: HTMLElement;
+	submenu?: ObsidianMenu;
+	dom?: HTMLElement;
+	onClick?: (callback: () => void) => void;
+}
+
+interface ObsidianMenu {
+	items?: ObsidianMenuItem[];
+	addItem?: (callback: (item: ObsidianMenuItem) => void) => ObsidianMenuItem;
+	addSeparator?: () => void;
+}
+
 export abstract class BaseManager<T extends IToolkitModule> extends Component {
 	private initPromise: Promise<void>;
 	protected config: T["config"];
@@ -180,40 +194,41 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
 			.pluginManager;
 		const useSubMenu = pluginManager.getSettings().config.menu.useSubMenu;
 
-		const existingToolkitMenu = (menu as any).items?.find(
-			(item: any) => item.titleEl?.textContent === "RavenHogwartsToolkit"
+		// 使用类型安全的方式访问菜单项
+		const obsidianMenu = menu as unknown as ObsidianMenu;
+		const existingToolkitMenu = obsidianMenu.items?.find(
+			(item) => item.titleEl?.textContent === "RavenHogwartsToolkit"
 		);
 
 		if (useSubMenu) {
-			const mainItems = (menu as any).items || [];
+			const mainItems = obsidianMenu.items || [];
 			const moduleItemIndexes = mainItems
-				.map((item: any, index: number) =>
+				.map((item, index) =>
 					item.titleEl?.textContent?.includes(this.moduleId)
 						? index
 						: -1
 				)
-				.filter((index: number) => index !== -1)
+				.filter((index) => index !== -1)
 				.reverse(); // 从后往前删除，避免索引变化
 
-			moduleItemIndexes.forEach((index: number) => {
+			moduleItemIndexes.forEach((index) => {
 				mainItems.splice(index, 1);
 			});
 
 			if (existingToolkitMenu?.submenu) {
-				const existingSubItems = (
-					existingToolkitMenu.submenu as any
-				).items?.filter((item: any) =>
-					item.titleEl?.textContent?.includes(this.moduleId)
-				);
-				if (existingSubItems?.length > 0) {
+				const existingSubItems =
+					existingToolkitMenu.submenu.items?.filter((item) =>
+						item.titleEl?.textContent?.includes(this.moduleId)
+					);
+				if (existingSubItems && existingSubItems.length > 0) {
 					return;
 				}
 			}
 		} else {
-			const existingItems = (menu as any).items?.filter((item: any) =>
+			const existingItems = obsidianMenu.items?.filter((item) =>
 				item.titleEl?.textContent?.includes(this.moduleId)
 			);
-			if (existingItems?.length > 0) {
+			if (existingItems && existingItems.length > 0) {
 				return;
 			}
 		}

@@ -1,4 +1,4 @@
-import { Editor, Menu, TFile, TFolder } from "obsidian";
+import { Editor, FileSystemAdapter, Menu, TFile, TFolder } from "obsidian";
 import { BaseManager } from "@/src/core/services/BaseManager";
 import { IToolkitModule } from "@/src/core/interfaces/types";
 import {
@@ -21,10 +21,11 @@ export class QuickPathManager extends BaseManager<IQuickPathModule> {
 
 	protected async onModuleLoad(): Promise<void> {
 		this.logger.info("Loading quick path manager");
+		if (!(this.app.vault.adapter instanceof FileSystemAdapter)) {
+			return;
+		}
 		this.basePath =
-			(this.app.vault.adapter as any)
-				.getBasePath()
-				?.replace(/\\/g, "/") || "";
+			this.app.vault.adapter.getBasePath()?.replace(/\\/g, "/") || "";
 
 		this.registerCommands();
 		this.registerEventHandlers();
