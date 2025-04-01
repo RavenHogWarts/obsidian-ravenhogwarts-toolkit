@@ -34,12 +34,29 @@ export class UpdateManager {
 	private updateQueue: PQueue;
 	private updating = false;
 	private lastUpdateCheck: number = 0;
+	private isDesktop: boolean;
 
 	constructor(private plugin: RavenHogwartsToolkitPlugin) {
 		this.updateQueue = new PQueue({ concurrency: 1 });
+		// 检测是否为桌面环境
+		this.isDesktop =
+			this.plugin.app.vault.adapter instanceof FileSystemAdapter;
+		rootLogger.debug(
+			`UpdateManager initialized in ${
+				this.isDesktop ? "desktop" : "mobile"
+			} environment`
+		);
 	}
 
 	async checkForUpdates(options: UpdateOptions = {}): Promise<boolean> {
+		// 在移动端直接返回 false
+		if (!this.isDesktop) {
+			rootLogger.debug(
+				"Update check skipped - mobile environment detected"
+			);
+			return false;
+		}
+
 		rootLogger.debug("Starting update check with options:", options);
 
 		if (this.updating && !options.force) {
@@ -158,7 +175,15 @@ export class UpdateManager {
 		release: ReleaseInfo,
 		options: UpdateOptions
 	): Promise<void> {
-		const adapter = this.plugin.app.vault.adapter as FileSystemAdapter;
+		// 再次检查是否为桌面环境
+		if (!this.isDesktop) {
+			throw new Error("Unsupported environment");
+		}
+
+		const adapter = this.plugin.app.vault.adapter;
+		if (!(adapter instanceof FileSystemAdapter)) {
+			throw new Error("Unsupported adapter type");
+		}
 		const pluginPath = `${this.plugin.app.vault.configDir}/plugins/${this.PLUGIN_ID}`;
 		const currentVersion = this.parseVersion(this.plugin.manifest.version);
 

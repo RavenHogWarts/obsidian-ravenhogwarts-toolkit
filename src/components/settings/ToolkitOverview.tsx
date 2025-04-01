@@ -18,6 +18,7 @@ import { OverviewSettingItem } from "../base/Setting/OverviewSettingItem";
 import { DeveloperSettings } from "./DeveloperSettings";
 import "./styles/ToolkitOverview.css";
 import { useUpdateProgress } from "@/src/core/hooks/useUpdateProgress";
+import { FileSystemAdapter } from "obsidian";
 
 interface ToolkitOverviewProps {
 	plugin: RavenHogwartsToolkitPlugin;
@@ -75,6 +76,18 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
 		try {
 			logger.debug("Update check requested from UI");
 			resetStatus();
+
+			// 检查是否为桌面环境
+			const isDesktop =
+				plugin.app.vault.adapter instanceof FileSystemAdapter;
+			if (!isDesktop) {
+				handleUpdateProgress({
+					stage: "error",
+					error: new Error("Unsupported environment"),
+				});
+				return;
+			}
+
 			const result = await plugin.updateManager.checkForUpdates({
 				checkBeta: updaterConfig.checkBeta,
 				force: true,

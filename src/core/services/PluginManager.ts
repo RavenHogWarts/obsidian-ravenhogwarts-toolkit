@@ -1,4 +1,4 @@
-import { Menu } from "obsidian";
+import { FileSystemAdapter, Menu } from "obsidian";
 import {
 	DEFAULT_CONFIG,
 	IRavenHogwartsToolkitConfig,
@@ -28,7 +28,11 @@ export class PluginManager {
 			"Plugin manager initialized with settings:",
 			this.settings
 		);
-		if (this.settings.config.updater.autoUpdate) {
+
+		// 只在桌面环境启用自动更新
+		const isDesktop =
+			this.plugin.app.vault.adapter instanceof FileSystemAdapter;
+		if (this.settings.config.updater.autoUpdate && isDesktop) {
 			this.checkForUpdates();
 		}
 	}
@@ -240,6 +244,16 @@ export class PluginManager {
 			updateCheckInterval:
 				this.settings.config.updater.updateCheckInterval,
 		});
+
+		// 检查是否为桌面环境
+		const isDesktop =
+			this.plugin.app.vault.adapter instanceof FileSystemAdapter;
+		if (!isDesktop) {
+			rootLogger.debug(
+				"Update check skipped - mobile environment detected"
+			);
+			return false;
+		}
 
 		return await this.updateManager.checkForUpdates();
 	}
