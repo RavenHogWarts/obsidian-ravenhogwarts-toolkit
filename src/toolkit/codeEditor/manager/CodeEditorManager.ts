@@ -74,7 +74,6 @@ export class CodeEditorManager extends BaseManager<ICodeEditorModule> {
 			}
 		});
 
-		this.app.workspace.detachLeavesOfType(CODE_EDITOR_VIEW_TYPE);
 		// @ts-ignore
 		this.app.viewRegistry.unregisterView(CODE_EDITOR_VIEW_TYPE);
 	}
