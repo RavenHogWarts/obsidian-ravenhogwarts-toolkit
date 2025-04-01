@@ -9,8 +9,6 @@ import {
 	IReadingProgressData,
 	READING_PROGRESS_DEFAULT_CONFIG,
 } from "@/src/toolkit/readingProgress/types/config";
-import { EstimatedReadingTime } from "../services/estimatedReadingTime";
-import { GenerateTOC } from "../services/generateTableOfContents";
 
 interface IReadingProgressModule extends IToolkitModule {
 	config: IReadingProgressConfig;
@@ -31,8 +29,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 	private progress = 0;
 	private headings: HeadingCache[] = [];
 	private currentHeadingIndex = -1;
-	private estimatedReadingTime: EstimatedReadingTime | null = null;
-	private tocGenerator: GenerateTOC | null = null;
 	private state: IReadingProgressTocState = {
 		collapsedItems: new Set(),
 		allCollapsed: false,
@@ -48,15 +44,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 		this.registerCommands();
 		this.registerEventHandlers();
 		this.updateContainerPosition();
-
-		this.estimatedReadingTime = new EstimatedReadingTime(
-			this.app,
-			this.plugin,
-			this.logger
-		);
-		this.estimatedReadingTime.initialize();
-		this.tocGenerator = new GenerateTOC(this.app, this.plugin, this.logger);
-		this.tocGenerator.initialize();
 	}
 
 	protected onModuleUnload(): void {
@@ -69,27 +56,9 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 			this.resizeObserver.disconnect();
 			this.resizeObserver = null;
 		}
-		this.estimatedReadingTime?.unload();
-		this.tocGenerator?.unload();
 	}
 
 	protected registerCommands(): void {
-		this.addCommand({
-			id: "insert-rht-toc",
-			name: this.t("toolkit.readingProgress.command.insert_toc"),
-			editorCallback: (editor: Editor) => {
-				this.insertTOC(editor);
-			},
-		});
-
-		this.addCommand({
-			id: "insert-rht-reading-time",
-			name: this.t("toolkit.readingProgress.command.insert_reading_time"),
-			editorCallback: (editor: Editor) => {
-				this.insertReadingTime(editor);
-			},
-		});
-
 		this.addCommand({
 			id: "toggle-rht-toc-expanded",
 			name: this.t("toolkit.readingProgress.command.toggle_toc_expanded"),
@@ -145,32 +114,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 		});
 	}
 
-	private insertTOC(editor: Editor) {
-		const defaultConfig = this.tocGenerator?.DEFAULT_CONFIG;
-		if (!defaultConfig) return;
-
-		const codeBlock = [
-			"```rht-toc",
-			JSON.stringify(defaultConfig, null, 2),
-			"```",
-		].join("\n");
-
-		editor.replaceSelection(codeBlock);
-	}
-
-	private insertReadingTime(editor: Editor) {
-		const defaultConfig = this.estimatedReadingTime?.DEFAULT_CONFIG;
-		if (!defaultConfig) return;
-
-		const codeBlock = [
-			"```rht-reading-time",
-			JSON.stringify(defaultConfig, null, 2),
-			"```",
-		].join("\n");
-
-		editor.replaceSelection(codeBlock);
-	}
-
 	protected registerEventHandlers(): void {
 		// 监听活动视图变化
 		this.registerEvent(
@@ -203,50 +146,6 @@ export class ReadingProgressManager extends BaseManager<IReadingProgressModule> 
 					this.updateTOC();
 				}
 			})
-		);
-
-		this.registerEvent(
-			this.app.workspace.on(
-				"editor-menu",
-				this.handleEditorMenu.bind(this)
-			)
-		);
-	}
-
-	private handleEditorMenu(menu: Menu, editor: Editor): void {
-		if (!this.isEnabled()) return;
-
-		this.addMenuItem(
-			menu,
-			[
-				{
-					title: this.t(
-						"toolkit.readingProgress.editor_menu.insert_toc"
-					),
-					icon: "list-tree",
-					order: 1,
-					callback: () => {
-						const editor = this.currentView?.editor;
-						if (editor) {
-							this.insertTOC(editor);
-						}
-					},
-				},
-				{
-					title: this.t(
-						"toolkit.readingProgress.editor_menu.insert_reading_time"
-					),
-					icon: "hourglass",
-					order: 2,
-					callback: () => {
-						const editor = this.currentView?.editor;
-						if (editor) {
-							this.insertReadingTime(editor);
-						}
-					},
-				},
-			],
-			{ showSeparator: true }
 		);
 	}
 
