@@ -1,7 +1,7 @@
 {
 	"name": "ravenhogwarts-toolkit",
 	"version": "1.1.0",
-	"description": "A personal toolkit plugin (OTK) that integrates various Obsidian utilities, designed to enhance personal note-taking experience.",
+	"description": "A personal toolkit plugin (OTK) that integrates various utilities, designed to enhance personal note-taking experience.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node scripts/esbuild.config.mjs",
