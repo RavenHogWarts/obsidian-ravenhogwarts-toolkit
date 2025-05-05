@@ -3,12 +3,12 @@
 
 ### ♻️ Refactor
 
-* 优化国际化调用并移除代码编辑器设置组件 ([8c019fa](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/8c019fa2cab67dc981fb50d7ebe1efa66d60dfb3))
+* Optimize internationalization calls and remove code editor settings component ([8c019fa](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/8c019fa2cab67dc981fb50d7ebe1efa66d60dfb3))
 
 
 ### ✨ Features
 
-* **i18n:** 优化翻译函数支持命名参数替换 ([5dbc6b8](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/5dbc6b8f4d29c31ac4b52ed6a12409b78f76b6dc))
+* **i18n:** Enhance translation function to support named parameter replacement ([5dbc6b8](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/5dbc6b8f4d29c31ac4b52ed6a12409b78f76b6dc))
 
 
 

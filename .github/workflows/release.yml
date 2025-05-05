@@ -207,12 +207,6 @@ jobs:
 
                       ${{ steps.changelog.outputs.changelog }}
 
-                      ## Installation
-                      1. Download the files from the Assets section below
-                      2. Copy them to your vault's plugins folder: `<vault>/.obsidian/plugins/ravenhogwarts-toolkit/`
-                      3. Reload Obsidian
-                      4. Enable plugin in settings
-
             - name: Upload zip file
               id: upload-zip
               uses: actions/upload-release-asset@v1
