@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.1.0...1.2.0) (2025-05-05)
+
+
+### ♻️ 重构
+
+* 优化国际化调用并移除代码编辑器设置组件 ([8c019fa](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/8c019fa2cab67dc981fb50d7ebe1efa66d60dfb3))
+
+
+### ✨ 新功能
+
+* **i18n:** 优化翻译函数支持命名参数替换 ([5dbc6b8](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/5dbc6b8f4d29c31ac4b52ed6a12409b78f76b6dc))
+
+
+
 # [1.1.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.0.0-beta.35...1.1.0) (2025-03-31)
 
 
