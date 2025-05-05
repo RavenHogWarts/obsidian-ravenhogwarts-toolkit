@@ -1,6 +1,6 @@
-import { Message } from "../i18n";
+import { BaseMessage } from "../types";
 
-export const zh: Message = {
+const translations: BaseMessage = {
 	common: {
 		settings: "设置",
 		overview: {
@@ -11,7 +11,6 @@ export const zh: Message = {
 			auto_update: "自动更新",
 			check_beta: "接收Beta",
 			check_update: "检查更新",
-			update_available: "更新可用: {0}",
 		},
 		general: {
 			title: "常规设置",
@@ -41,9 +40,8 @@ export const zh: Message = {
 		cancel: "取消",
 	},
 	notice: {
-		version_check: "版本检查: 当前版本={0}, 最新版本={1}, 可更新={2}",
-		update_success: "插件更新到 {0} 版本，请重启 Obsidian",
-		downloading_file: "正在下载文件: {0}",
+		update_success: "插件更新到 {{latestVersion}} 版本，请重启 Obsidian",
+		downloading_file: "正在下载文件: {{fileName}}",
 		installing_update: "正在安装更新...",
 		no_update_needed: "无可用更新",
 		checking_update: "正在检查更新...",
@@ -122,20 +120,19 @@ export const zh: Message = {
 				sort_folder: "排序文件夹内文档属性",
 			},
 			notice: {
-				ignore_folder: "在忽略文件夹 {0} 中",
-				ignore_pattern: "匹配忽略规则 {0}",
+				ignore_folder: "在忽略文件夹 {{ignoredFolder}} 中",
+				ignore_pattern: "匹配忽略规则 {{ignoredPattern}}",
 				ignore_unknown: "在忽略列表中",
-				sortAllFiles_completed: "已处理 {0} 个文件，已跳过 {1} 个文件",
 				check_console: "请检查控制台以获取更多详细信息",
-				file_ignored: "文件 {0} 被忽略，原因：{1}",
-				file_sorted: "文件 {0} 已排序",
+				file_ignored: "文件 {{filePath}} 被忽略，原因：{{reason}}",
+				file_sorted: "文件 {{filePath}} 已排序",
 				sort_complete:
-					"前置元数据排序完成：\n已处理 {0} 个文件，已跳过 {1} 个文件",
+					"前置元数据排序完成：\n已处理 {{processedFiles}} 个文件，已跳过 {{skippedFiles}} 个文件",
 				sort_details: {
 					title: "前置元数据排序详细信息：",
-					success: "\n {0} 个文件成功排序，文件：",
-					unchanged: "\n {0} 个文件无须排序，文件：",
-					skipped: "\n {0} 个文件在忽略规则中，文件：",
+					success: "\n {{successFiles}} 个文件成功排序，文件：",
+					unchanged: "\n {{unchangedFiles}} 个文件无须排序，文件：",
+					skipped: "\n {{skippedFiles}} 个文件在忽略规则中，文件：",
 				},
 				confirm_sort_all: {
 					title: "批量排序确认",
@@ -145,7 +142,7 @@ export const zh: Message = {
 				confirm_sort_folder: {
 					title: "批量排序确认",
 					message:
-						"此操作将对文件夹中 {0} (不包括子文件夹)的所有 Markdown 文件的文档属性进行排序，是否继续？",
+						"此操作将对文件夹中 {{folderPath}} (不包括子文件夹)的所有 Markdown 文件的文档属性进行排序，是否继续？",
 				},
 			},
 			settings: {
@@ -356,120 +353,17 @@ export const zh: Message = {
 			},
 			estimatedReadingTime: {
 				template: "预计阅读时间：{{time}}",
-				wordCount: "总字数：{0}",
-				chineseCount: "中文字数：{0}",
-				englishCount: "英文字数：{0}",
+				wordCount: "总字数：{{wordCount}}",
+				chineseCount: "中文字数：{{chineseCount}}",
+				englishCount: "英文字数：{{englishCount}}",
 				formatReadingTime: {
 					lessThanOneMinute: "小于 1 分钟",
-					lessThanOneHour: "约 {0} 分钟",
-					moreThanOneHour: "约 {0} 小时 {1} 分钟",
-				},
-			},
-		},
-		codeEditor: {
-			title: "代码编辑器",
-			description: "在obsidian中进行代码文件的编辑",
-			command: {
-				createCodeFile: "创建代码文件",
-				openCssSnippet: "打开CSS片段",
-			},
-			file_menu: {
-				openInCodeEditor: "在代码编辑器中打开",
-				createCodeFile: "创建代码文件",
-			},
-			editor_menu: {
-				editCodeBlock: "编辑代码块",
-			},
-			modal: {
-				header: "创建代码文件",
-				file_type: "文件类型",
-				file_type_placeholder: "请选择文件类型",
-				file_name: "文件名",
-				file_name_placeholder: "请输入文件名",
-
-				file_name_with_extension: "文件名(带扩展名)",
-				file_name_with_extension_placeholder: "请输入文件名(带扩展名)",
-				preview: "预览",
-				open_file_after_creation: "创建后打开文件",
-				create: "创建",
-				cancel: "取消",
-				edit_code_block: "编辑代码块",
-				save: "保存",
-
-				confirm_delete: "确认删除 {0} 吗？",
-				css_snippets: "CSS片段",
-				search_snippets: "搜索CSS片段",
-				no_matching_snippets: "没有找到匹配的CSS片段",
-				no_snippets: "没有CSS片段",
-				new_snippet_name: "新片段名",
-				new_snippet: "新片段",
-				refresh: "重新加载",
-				open_snippetsFolder: "打开snippets文件夹",
-			},
-			notice: {
-				file_name_validate: "请输入文件名",
-				file_name_with_extension_validate:
-					"自定义文件名必须包含文件扩展名",
-				file_already_exists: "文件已存在",
-				create_file_success: "文件创建成功 {0}",
-				create_file_failed: "创建文件失败 {0}",
-				no_code_block: "没有找到代码块",
-				file_deleted: "文件删除成功 {0}",
-				file_delete_error: "文件删除失败 {0}",
-			},
-			settings: {
-				supportExtensions: {
-					title: "注册文件扩展名",
-					description:
-						"注册后，点击文件将直接在代码编辑器中打开，修改后需重启obsidian",
-				},
-				theme: {
-					light: "亮色主题",
-					light_description: "代码编辑器的亮色主题",
-					dark: "暗色主题",
-					dark_description: "代码编辑器的暗色主题",
-				},
-				snippetsManager: {
-					title: "css片段",
-					description: "css片段管理按钮，修改后需重启obsidian",
-					location: {
-						Null: "不显示",
-						Ribbon: "在ribbon显示",
-					},
-				},
-				keyboard: {
-					title: "键盘",
-					description: "代码编辑器的键盘样式",
-				},
-				lineNumbers: {
-					title: "行号",
-					description: "显示行号",
-				},
-				minimap: {
-					title: "代码缩略图",
-					description: "显示代码缩略图",
-				},
-				fontSize: {
-					title: "字体大小",
-					description: "代码编辑器的字体大小",
-				},
-				fontFamily: {
-					title: "字体",
-					description: "代码编辑器的字体",
-				},
-				tabSize: {
-					title: "缩进字符",
-					description: "tab键的宽度",
-				},
-				lineHeight: {
-					title: "行高",
-					description: "代码编辑器的行高",
-				},
-				letterSpacing: {
-					title: "字间距",
-					description: "代码编辑器的字间距",
+					lessThanOneHour: "约 {{minutes}} 分钟",
+					moreThanOneHour: "约 {{hours}} 小时 {{minutes}} 分钟",
 				},
 			},
 		},
 	},
 };
+
+export default translations;

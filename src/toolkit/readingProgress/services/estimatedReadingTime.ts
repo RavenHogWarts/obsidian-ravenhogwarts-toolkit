@@ -262,14 +262,19 @@ export class EstimatedReadingTime {
 		} else if (minutes < 60) {
 			return t(
 				"toolkit.readingProgress.estimatedReadingTime.formatReadingTime.lessThanOneHour",
-				[Math.ceil(minutes)]
+				{
+					minutes: Math.ceil(minutes),
+				}
 			);
 		} else {
 			const hours = Math.floor(minutes / 60);
 			const remainingMinutes = Math.ceil(minutes % 60);
 			return t(
 				"toolkit.readingProgress.estimatedReadingTime.formatReadingTime.moreThanOneHour",
-				[hours, remainingMinutes]
+				{
+					hours,
+					minutes: remainingMinutes,
+				}
 			);
 		}
 	}
@@ -355,7 +360,9 @@ export class EstimatedReadingTime {
 				cls: "rht-reading-time-stat-item",
 				text: t(
 					"toolkit.readingProgress.estimatedReadingTime.wordCount",
-					[totalWords]
+					{
+						totalWords,
+					}
 				),
 			});
 
@@ -364,7 +371,9 @@ export class EstimatedReadingTime {
 					cls: "rht-reading-time-stat-item",
 					text: t(
 						"toolkit.readingProgress.estimatedReadingTime.chineseCount",
-						[wordCounts.chineseCount]
+						{
+							chineseCount: wordCounts.chineseCount,
+						}
 					),
 				});
 			}
@@ -374,7 +383,9 @@ export class EstimatedReadingTime {
 					cls: "rht-reading-time-stat-item",
 					text: t(
 						"toolkit.readingProgress.estimatedReadingTime.englishCount",
-						[wordCounts.englishCount]
+						{
+							englishCount: wordCounts.englishCount,
+						}
 					),
 				});
 			}

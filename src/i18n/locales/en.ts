@@ -1,113 +1,109 @@
-import { Message } from "../i18n";
+import { BaseMessage } from "../types";
 
-export const en: Message = {
+const translations: BaseMessage = {
 	common: {
 		settings: "Settings",
 		overview: {
 			title: "Toolkit Management",
-			description: `Welcome to the toolkit, view <a href="https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit" target="_blank">wiki documentation</a> for more features`,
-			version_hint: "Keep clicking...",
+			description:
+				"Welcome to the toolkit, check out the <a href='https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit' target='_blank'>wiki documentation</a> to learn more about its features",
+			version_hint: "Continue clicking...",
 			auto_update: "Auto Update",
 			check_beta: "Receive Beta",
-			check_update: "Check Update",
-			update_available: "Update Available: {0}",
+			check_update: "Check for Updates",
 		},
 		general: {
 			title: "General Settings",
 			menu: {
-				useSubMenu: "Use Sub Menu",
+				useSubMenu: "Use Submenu",
 			},
 		},
 		toolkit: {
-			title: "Toolkit Settings",
+			title: "Tool Settings",
 			description:
-				"After enabling/disabling the tool, an error may occur, you can try to restart obsidian to solve it",
+				"If errors occur after enabling/disabling tools, try restarting Obsidian to resolve them",
 		},
 		developer: {
 			title: "Developer Settings",
 			description:
-				"Leave the page, the developer mode will be closed, and you need to re-enable it",
+				"Developer mode will be turned off when leaving the page, and needs to be re-enabled",
 			logger: {
-				level: "Logger Level",
-				showTimestamp: "Show Timestamp",
-				showLevel: "Show Level",
-				console: "Log to Console",
+				level: "Log Level",
+				showTimestamp: "Show Timestamp in Logs",
+				showLevel: "Show Level in Logs",
+				console: "Output Logs to Console",
 				showNotifications: "Show Notifications",
-				noticeTimeout: "Notice Timeout (ms)",
+				noticeTimeout: "Notification Timeout (ms)",
 			},
 		},
 		back: "Back",
-		toggle_toolkit: "Toggle Toolkit",
+		toggle_toolkit: "Enable/Disable Toolkit",
 		confirm: "Confirm",
 		cancel: "Cancel",
 	},
 	notice: {
-		version_check: "Version check: current={0}, latest={1}, hasUpdate={2}",
 		update_success:
-			"Plugin updated to {0} version, please restart Obsidian",
-		downloading_file: "Downloading file: {0}",
+			"Plugin updated to version {{latestVersion}}, please restart Obsidian",
+		downloading_file: "Downloading file: {{fileName}}",
 		installing_update: "Installing update...",
-		no_update_needed: "No update available",
-		checking_update: "Checking update...",
+		no_update_needed: "No updates available",
+		checking_update: "Checking for updates...",
 		update_completed: "Update completed",
 		update_error: "Update failed",
 	},
 	toolkit: {
 		tableEnhancements: {
 			title: "Table Enhancements",
-			description: "Better utilization of markdown tables",
+			description: "Better utilize markdown tables",
 			editor_menu: {
-				table_enhancements: "Table Enhancements",
+				table_enhancements: "Table Enhancement Editor",
 			},
 			file_menu: {
-				table_enhancements: "Table Enhancements",
+				table_enhancements: "Table Enhancement Editor",
 			},
 			command: {
-				table_enhancements: "Table Enhancements",
+				table_enhancements: "Table Enhancement Editor",
 			},
 			formula: {
 				output_type: "Output Type",
 				output_value: "Output Value",
-				add_calculation: "Add Calculation",
-				execute_all: "Execute All",
+				add_calculation: "Add Formula Calculation",
+				execute_all: "Execute All Formulas in Current Table",
 				cancel: "Cancel",
 				update: "Update",
 				add: "Add",
-				hide_calculator: "Hide Calculator",
-				show_calculator: "Show Calculator",
-				edit_calculation: "Edit Calculation",
-				remove_calculation: "Remove Calculation",
-				execute_calculation: "Execute Calculation",
+				hide_calculator: "Hide Formula Editor",
+				show_calculator: "Show Formula Editor",
+				edit_calculation: "Edit Formula",
+				remove_calculation: "Delete Formula",
+				execute_calculation: "Execute Formula",
 				edit_table: "Edit Table",
 				save_changes: "Save Changes",
-				no_table_data: "No table data available",
+				no_table_data: "No table data",
 			},
 			formula_editor: {
 				math: {
-					COUNT: "Count values in selected columns",
-					count_modifier: "Type of counting",
-					SUM: "Sum up values in selected columns",
-					AVERAGE: "Calculate average of values",
-					MIN: "Calculate the minimum value in selected columns",
-					MAX: "Calculate the maximum value in selected columns",
-					MEDIAN: "Calculate the median value in selected columns",
-					MODE: "Calculate the mode value in selected columns",
-					STDDEV: "Calculate standard deviation of values",
-					VARIANCE: "Calculate variance of values",
+					COUNT: "Count items in selected column",
+					count_modifier: "Count type",
+					SUM: "Calculate sum of values in selected column",
+					AVERAGE: "Calculate average of values in selected column",
+					MIN: "Find minimum value in selected column",
+					MAX: "Find maximum value in selected column",
+					MEDIAN: "Calculate median of values in selected column",
+					MODE: "Calculate mode of values in selected column",
+					STDDEV: "Calculate standard deviation of values in selected column",
+					VARIANCE: "Calculate variance of values in selected column",
 				},
 				time: {
-					TIME_EARLIEST:
-						"Calculate the earliest date in selected columns",
-					TIME_LATEST:
-						"Calculate the latest date in selected columns",
-					TIME_SPAN:
-						"Calculate the span of dates in selected columns",
-					time_format: "Date format pattern",
-					time_unit: "Unit of time span",
+					TIME_EARLIEST: "Find earliest date in selected column",
+					TIME_LATEST: "Find latest date in selected column",
+					TIME_SPAN: "Calculate date span in selected column",
+					time_format: "Date format",
+					time_unit: "Time unit",
 				},
 				table_columns: "Table Columns",
 				input_placeholder: "Select a function or start typing...",
-				function_name: "Formula Functions",
+				function_name: "Formula Function",
 				hint_syntax: "Syntax",
 				hint_example: "Example",
 				hint_parameters: "Parameters",
@@ -119,43 +115,42 @@ export const en: Message = {
 		frontmatterSorter: {
 			title: "Frontmatter Sorter",
 			description:
-				"Automatically organize and sort document front matter content",
+				"Automatically organize and sort frontmatter content in documents",
 			command: {
-				sortCurrentFile: "Sort frontmatter in current file",
-				sortAllFiles: "Sort frontmatter in all files",
+				sortCurrentFile: "Sort Current File",
+				sortAllFiles: "Sort All Files",
 			},
 			file_menu: {
-				sort_folder: "Sort frontmatter in the folder",
+				sort_folder: "Sort Frontmatter in Folder",
 			},
 			notice: {
-				ignore_folder: "In ignored folder {0}",
-				ignore_pattern: "Match ignored pattern {0}",
-				ignore_unknown: "In ignored list",
-				sortAllFiles_completed:
-					"Processed {0} files, skipped {1} files",
-				check_console: "Please check the console for more details",
-				file_ignored: "File {0} ignored, reason: {1}",
-				file_sorted: "File {0} sorted",
+				ignore_folder: "In ignored folder {{ignoredFolder}}",
+				ignore_pattern: "Matches ignore pattern {{ignoredPattern}}",
+				ignore_unknown: "In ignore list",
+				check_console: "Please check console for more details",
+				file_ignored: "File {{filePath}} ignored, reason: {{reason}}",
+				file_sorted: "File {{filePath}} sorted",
 				sort_complete:
-					"Frontmatter sorted:\nProcessed {0} files, skipped {1} files",
+					"Frontmatter sorting completed:\n{{processedFiles}} files processed, {{skippedFiles}} files skipped",
 				sort_details: {
 					title: "Frontmatter sorting details:",
-					success: "\n {0} files successfully sorted, files:",
-					unchanged: "\n {0} files do not need to be sorted, files:",
-					skipped: "\n {0} files in ignored rules, files:",
+					success:
+						"\n {{successFiles}} files successfully sorted, files:",
+					unchanged: "\n {{unchangedFiles}} files unchanged, files:",
+					skipped:
+						"\n {{skippedFiles}} files in ignore rules, files:",
 				},
 				confirm_sort_all: {
-					title: "Confirm Bulk Sort",
+					title: "Batch Sort Confirmation",
 					message:
-						"This will sort frontmatter in all Markdown files. Do you want to continue?",
+						"This operation will sort frontmatter in all Markdown files. Continue?",
 				},
 				confirm_sort_folder: {
-					title: "Confirm Bulk Sort",
+					title: "Batch Sort Confirmation",
 					message:
-						"This will sort frontmatter in all Markdown files in the folder {0} (excluding subfolders). Do you want to continue?",
+						"This operation will sort frontmatter in all Markdown files in folder {{folderPath}} (excluding subfolders). Continue?",
 				},
 			},
-
 			settings: {
 				segment: {
 					general: "General Settings",
@@ -164,40 +159,41 @@ export const en: Message = {
 				},
 				sortOnSave: {
 					title: "Sort on Save",
-					description: "Sort frontmatter on save",
+					description:
+						"Automatically sort frontmatter when saving files",
 				},
 				ignoreFolders: {
 					title: "Ignore Folders",
-					description: "Ignore specific folders",
-					placeholder: "Please enter the folders to ignore",
+					description: "Ignore frontmatter in specific folders",
+					placeholder: "Enter folders to ignore",
 				},
 				ignoreFiles: {
 					title: "Ignore Files",
-					description: "Ignore specific files",
-					placeholder: "Please enter the files to ignore",
+					description: "Ignore frontmatter in specific files",
+					placeholder: "Enter files to ignore",
 				},
 				rules: {
 					priority: {
-						title: "Priority Sorting Group",
+						title: "Priority Sort Group",
 						description:
-							"Priority sorting keys, sort within the group alphabetically",
-						placeholder:
-							"Please enter the keys to priority sorting",
+							"Frontmatter properties to sort first, alphabetically within group",
+						placeholder: "Enter priority frontmatter properties",
 					},
 					ignoreKeys: {
-						title: "Ignore Sorting Group",
+						title: "Ignore Sort Group",
 						description:
-							"Ignore specific keys, keep relative order, placed after all keys to be sorted",
-						placeholder: "Please enter the keys to ignore",
+							"Frontmatter properties to ignore sorting, maintaining original relative order, placed at the end",
+						placeholder: "Enter frontmatter properties to ignore",
 					},
 					arraySort: {
 						title: "Array Sorting",
-						description: "Sort array values in frontmatter",
+						description:
+							"Sort values alphabetically in array-type frontmatter properties",
 					},
 					caseSensitive: {
 						title: "Case Sensitive",
 						description:
-							"When enabled, sorts as AA -> aa -> BB -> bb; otherwise treats cases as equal",
+							"When enabled, sorts as AA -> aa -> BB -> bb; when disabled, treats same letters as equal",
 					},
 				},
 			},
@@ -210,34 +206,34 @@ export const en: Message = {
 				paste_folderPath: "Paste Folder Path",
 			},
 			file_menu: {
-				copy_folderPath: "Copy Folder Path",
 				copy_filePath: "Copy File Path",
-				copy_filesPath: "Copy Multiple Files Path",
+				copy_folderPath: "Copy Folder Path",
+				copy_filesPath: "Copy File Paths (Multiple Files)",
 			},
 			command: {
 				copy_filePath: "Copy File Path",
 				copy_folderPath: "Copy Folder Path",
 			},
 			status: {
-				copy_success: "Copied to clipboard",
-				copy_failed: "Copy Failed",
-				no_parent_path: "Root directory file has no parent directory",
+				copy_success: "Path copied to clipboard",
+				copy_failed: "Copy failed",
+				no_parent_path: "Root directory files have no parent directory",
 			},
 			settings: {
 				addEditorMenu: {
 					title: "Add Editor Menu",
 					description:
-						"Add an option to paste the current file path in the editor menu",
+						"Add option to paste current file path in editor menu",
 				},
 				addFileMenu: {
 					title: "Add File List Menu",
 					description:
-						"Add an option to copy the file/folder path in the file list menu.",
+						"Add option to copy file/folder path in file list menu",
 				},
 				absolutePath: {
 					title: "Absolute Path",
 					description:
-						"Use absolute path, starting from the root directory of the operating system",
+						"Use absolute path, starting from operating system root directory",
 				},
 				separator: {
 					title: "Separator",
@@ -254,242 +250,143 @@ export const en: Message = {
 			description: "OBReader",
 		},
 		readingProgress: {
-			title: "Table of Contents Navigation",
+			title: "TOC Navigation",
 			description:
-				"Display reading progress and table of contents in a floating window",
+				"Floating display of current document's reading progress, table of contents, etc.",
 			command: {
-				insert_toc: "Insert TOC",
-				insert_reading_time: "Insert Reading Time",
-				toggle_toc_expanded: "Toggle TOC Expanded",
+				insert_toc: "Insert Table of Contents",
+				insert_reading_time: "Insert Estimated Reading Time",
+				toggle_toc_expanded: "Toggle TOC Display State",
 				jump_to_next_heading: "Jump to Next Heading",
 				jump_to_prev_heading: "Jump to Previous Heading",
-				toggle_all_headings: "Toggle All Headings Collapsed",
+				toggle_all_headings: "Toggle All Headings Collapse State",
 				scroll_to_top: "Scroll to Top",
 				scroll_to_bottom: "Scroll to Bottom",
 			},
 			editor_menu: {
-				insert_toc: "Insert TOC",
-				insert_reading_time: "Insert Reading Time",
+				insert_toc: "Insert Table of Contents",
+				insert_reading_time: "Insert Estimated Reading Time",
 			},
 			return_button: {
-				return_to_cursor: "Return to Cursor",
+				return_to_cursor: "Return to Cursor Position",
 				return_to_top: "Return to Top",
 				return_to_bottom: "Return to Bottom",
-				jump_to_next_heading: "Jump to Next heading",
-				jump_to_prev_heading: "Jump to Previous heading",
+				jump_to_next_heading: "Jump to Next Heading",
+				jump_to_prev_heading: "Jump to Previous Heading",
 			},
 			toolbar: {
-				toggle_pin: "Toggle Pin",
+				toggle_pin: "Pin/Unpin",
 				toggle_position: "Toggle Position",
 				move_left: "Move Left 1px",
 				move_right: "Move Right 1px",
-				copy_toc: "Copy TOC",
+				copy_toc: "Copy Table of Contents",
 				expand_all: "Expand All",
 				collapse_all: "Collapse All",
 			},
 			settings: {
 				segment: {
 					general: "General Settings",
-					toc: "TOC",
+					toc: "Table of Contents",
 					progress: "Progress",
 				},
 				showTOC: {
-					title: "Show TOC",
-					description: "Show  TOC",
+					title: "Floating TOC",
+					description:
+						"Display floating table of contents; use cssclasses show-rht-toc or hide-rht-toc to control TOC display for individual pages",
 				},
 				tocAlwaysExpanded: {
-					title: "TOC Always Expanded",
+					title: "Always Expand Floating TOC",
 					description:
-						"TOC always expanded, not affected by mouse hover state",
+						"Floating TOC always expanded, not changing with mouse hover state",
 				},
 				useHeadingNumber: {
-					title: "Use Heading Number",
+					title: "Use Heading Numbers",
 					description:
-						"Heading number, calculated based on relative depth",
+						"Hierarchical numbering, calculated based on relative depth; use cssclasses show-rht-heading-number or hide-rht-heading-number to control heading number display in TOC for individual pages",
 				},
 				skipH1: {
-					title: "Ignore H1",
+					title: "Skip H1",
 					description:
-						"After opening, do not number h1, and do not display the table of contents when only h1 exists",
+						"When enabled, H1 is not numbered, and TOC is not displayed when only H1 exists",
 				},
-
 				showToolbar: {
-					title: "Toolbar",
-					description: "Use toolbar",
+					title: "Floating Toolbar",
+					description: "Use floating toolbar",
 				},
 				progressStyle: {
 					title: "Reading Progress Style",
 					description:
-						"Reading progress style, progress bar inside the TOC, progress ring above the TOC",
+						"Reading progress style, progress bar displays inside TOC, progress ring displays above TOC",
 					bar: "Progress Bar",
 					ring: "Progress Ring",
-					none: "None",
-					both: "Both",
+					none: "Don't Show",
+					both: "Show Both",
 				},
 				position: {
 					title: "Position",
-					description: "Reading progress ring position",
+					description: "Position of reading progress",
 					left: "Left",
 					right: "Right",
 				},
 				offset: {
 					title: "Offset",
 					description:
-						"Reading progress ring offset, unit is px, default is 12px",
+						"Offset of reading progress from the side, in px, default is 12px",
 				},
 				tocWidth: {
 					title: "TOC Width",
-					description: "TOC width, unit is px, default is 240px",
+					description:
+						"Width of table of contents, in px, default is 240px",
 				},
 				progressBtn: {
-					title: "Progress Button",
-					description: "Progress button",
+					title: "Progress Buttons",
+					description: "Progress buttons",
 					returnToCursor: {
-						title: "Return to Cursor",
-						description: "Use return to cursor button, custom icon",
+						title: "Return to Cursor Position",
+						description:
+							"Whether to use return to cursor position button, customize icon",
 					},
 					returnToTop: {
 						title: "Return to Top",
-						description: "Use return to top button, custom icon",
+						description:
+							"Whether to use return to top button, customize icon",
 					},
 					returnToBottom: {
 						title: "Return to Bottom",
-						description: "Use return to bottom button, custom icon",
+						description:
+							"Whether to use return to bottom button, customize icon",
 					},
 					jumpToNextHeading: {
 						title: "Jump to Next Heading",
 						description:
-							"Use jump to next heading button, custom icon",
+							"Whether to use jump to next heading button, customize icon",
 					},
 					jumpToPrevHeading: {
 						title: "Jump to Previous Heading",
 						description:
-							"Use jump to previous heading button, custom icon",
+							"Whether to use jump to previous heading button, customize icon",
 					},
 				},
 				renderMarkdown: {
-					title: "Render Markdown Element",
-					description: "Whether to use markdown to render the title",
+					title: "Render Markdown Elements",
+					description:
+						"Whether to use Markdown rendering for TOC headings",
 				},
 			},
 			estimatedReadingTime: {
 				template: "Estimated reading time: {{time}}",
-				wordCount: "Total words: {0}",
-				chineseCount: "Chinese words: {0}",
-				englishCount: "English words: {0}",
+				wordCount: "Total word count: {{wordCount}}",
+				chineseCount: "Chinese character count: {{chineseCount}}",
+				englishCount: "English word count: {{englishCount}}",
 				formatReadingTime: {
 					lessThanOneMinute: "Less than 1 minute",
-					lessThanOneHour: "About {0} minutes",
-					moreThanOneHour: "About {0} hours {1} minutes",
-				},
-			},
-		},
-		codeEditor: {
-			title: "Code Editor",
-			description: "Edit code files in Obsidian",
-			command: {
-				createCodeFile: "Create Code File",
-				openCssSnippet: "Open CSS Snippet",
-			},
-			file_menu: {
-				openInCodeEditor: "Open in Code Editor",
-				createCodeFile: "Create Code File",
-			},
-			editor_menu: {
-				editCodeBlock: "Edit Code Block",
-			},
-			modal: {
-				header: "Create Code File",
-				file_type: "File Type",
-				file_type_placeholder: "Please select file type",
-				file_name: "File Name",
-				file_name_placeholder: "Please enter file name",
-
-				file_name_with_extension: "File Name (with Extension)",
-				file_name_with_extension_placeholder:
-					"Please enter file name (with extension)",
-				preview: "Preview",
-				open_file_after_creation: "Open file after creation",
-				create: "Create",
-				cancel: "Cancel",
-				edit_code_block: "Edit Code Block",
-				save: "Save",
-
-				confirm_delete: "Confirm delete {0}?",
-				css_snippets: "CSS Snippets",
-				search_snippets: "Search CSS Snippets",
-				no_matching_snippets: "No matching CSS snippets",
-				no_snippets: "No CSS snippets",
-				new_snippet_name: "New Snippet Name",
-				new_snippet: "New Snippet",
-				refresh: "Reload",
-				open_snippetsFolder: "Open Snippets Folder",
-			},
-			notice: {
-				file_name_validate: "Please enter file name",
-				file_name_with_extension_validate:
-					"Custom filename must include file extension",
-				file_already_exists: "File already exists",
-				create_file_success: "File created successfully {0}",
-				create_file_failed: "Create file failed {0}",
-				no_code_block: "No code block found",
-				file_deleted: "File deleted successfully {0}",
-				file_delete_error: "File delete failed {0}",
-			},
-			settings: {
-				supportExtensions: {
-					title: "Support Extensions",
-					description:
-						"Register file extensions, click the file to open it directly in the code editor, and restart Obsidian after modification",
-				},
-				theme: {
-					light: "Light Theme",
-					light_description: "Code editor light theme",
-					dark: "Dark Theme",
-					dark_description: "Code editor dark theme",
-				},
-				snippetsManager: {
-					title: "CSS Snippets",
-					description:
-						"CSS snippets manager button, need to restart obsidian after modification",
-					location: {
-						Null: "Not display",
-						Ribbon: "Display in ribbon",
-					},
-				},
-				keyboard: {
-					title: "Keyboard",
-					description: "Code editor keyboard",
-				},
-				lineNumbers: {
-					title: "Line Numbers",
-					description: "Show line numbers",
-				},
-				minimap: {
-					title: "Minimap",
-					description: "Show code minimap",
-				},
-				fontSize: {
-					title: "Font Size",
-					description: "Code editor font size",
-				},
-				fontFamily: {
-					title: "Font",
-					description: "Code editor font",
-				},
-				tabSize: {
-					title: "Tab Size",
-					description: "Tab size",
-				},
-				lineHeight: {
-					title: "Line Height",
-					description: "Code editor line height",
-				},
-				letterSpacing: {
-					title: "Letter Spacing",
-					description: "Code editor letter spacing",
+					lessThanOneHour: "About {{minutes}} minutes",
+					moreThanOneHour:
+						"About {{hours}} hours {{minutes}} minutes",
 				},
 			},
 		},
 	},
 };
+
+export default translations;

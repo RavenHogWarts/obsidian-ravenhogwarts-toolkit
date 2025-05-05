@@ -9,7 +9,7 @@ import { QuickPathSettings } from "@/src/toolkit/quickPath/components/settings/Q
 import { FrontmatterSorterSettings } from "@/src/toolkit/frontmatterSorter/components/settings/FrontmatterSorterSettings";
 import { TableEnhancementsSettings } from "@/src/toolkit/tableEnhancements/components/settings/TableEnhancementsSettings";
 import { ReadingProgressSettings } from "@/src/toolkit/readingProgress/components/settings/ReadingProgressSettings";
-import { CodeEditorSettings } from "@/src/toolkit/codeEditor/components/settings/CodeEditorSettings";
+import { TranslationKeys } from "@/src/i18n/types";
 
 interface ToolkitDetailSettingsProps {
 	app: App;
@@ -34,8 +34,6 @@ export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
 				return <FrontmatterSorterSettings app={app} plugin={plugin} />;
 			case "readingProgress":
 				return <ReadingProgressSettings plugin={plugin} />;
-			case "codeEditor":
-				return <CodeEditorSettings plugin={plugin} />;
 			default:
 				return null;
 		}
@@ -52,7 +50,7 @@ export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
 					<ArrowLeft size={16} />
 					{t("common.back")}
 				</span>
-				<h2>{t(`toolkit.${moduleId}.title`)}</h2>
+				<h2>{t(`toolkit.${moduleId}.title` as TranslationKeys)}</h2>
 			</div>
 			<div className="rht-toolkit-detail-content">
 				{renderModuleSettings()}

@@ -3,6 +3,7 @@ import RavenHogwartsToolkitPlugin from "@/src/main";
 import { t } from "@/src/i18n/i18n";
 import { LucideIcon } from "lucide-react";
 import { TOOLKIT_CONFIG, ToolkitId } from "@/src/core/interfaces/types";
+import { TranslationKeys } from "@/src/i18n/types";
 
 export interface ToolkitInfo {
 	id: ToolkitId;
@@ -44,8 +45,12 @@ export const useToolkitSettings = ({
 						id: toolkitId,
 						icon: config.icon,
 						enabled: manager?.isEnabled() ?? false,
-						title: t(`toolkit.${toolkitId}.title`),
-						description: t(`toolkit.${toolkitId}.description`),
+						title: t(
+							`toolkit.${toolkitId}.title` as TranslationKeys
+						),
+						description: t(
+							`toolkit.${toolkitId}.description` as TranslationKeys
+						),
 						openSettings: () => onNavigateToDetail(toolkitId),
 					};
 				})

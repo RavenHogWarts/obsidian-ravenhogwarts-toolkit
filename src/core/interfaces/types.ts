@@ -145,8 +145,7 @@ export type ToolkitId =
 	| "quickPath"
 	| "frontmatterSorter"
 	| "obReader"
-	| "readingProgress"
-	| "codeEditor";
+	| "readingProgress";
 
 export const TOOLKIT_CONFIG: Record<
 	ToolkitId,
@@ -171,9 +170,5 @@ export const TOOLKIT_CONFIG: Record<
 	readingProgress: {
 		icon: Radar,
 		iconName: "radar",
-	},
-	codeEditor: {
-		icon: SquareCode,
-		iconName: "square-code",
 	},
 };

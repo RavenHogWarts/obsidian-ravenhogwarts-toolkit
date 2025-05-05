@@ -18,6 +18,7 @@ import { OverviewSettingItem } from "../base/Setting/OverviewSettingItem";
 import { DeveloperSettings } from "./DeveloperSettings";
 import "./styles/ToolkitOverview.css";
 import { useUpdateProgress } from "@/src/core/hooks/useUpdateProgress";
+import { TranslationKeys } from "@/src/i18n/types";
 
 interface ToolkitOverviewProps {
 	plugin: RavenHogwartsToolkitPlugin;
@@ -274,9 +275,13 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
 						<Card
 							key={toolkit.id}
 							className={toolkit.id}
-							title={t(`toolkit.${toolkit.id}.title`)}
+							title={t(
+								`toolkit.${toolkit.id}.title` as TranslationKeys
+							)}
 							icon={toolkit.icon}
-							description={t(`toolkit.${toolkit.id}.description`)}
+							description={t(
+								`toolkit.${toolkit.id}.description` as TranslationKeys
+							)}
 							actions={
 								<>
 									<Toggle
