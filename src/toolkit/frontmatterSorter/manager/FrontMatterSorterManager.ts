@@ -171,10 +171,10 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 
 		if (!this.shouldProcessFile(activeFile)) {
 			this.logger.notice(
-				this.t("toolkit.frontmatterSorter.notice.file_ignored", [
-					activeFile.path,
-					this.getIgnoreReason(activeFile),
-				])
+				this.t("toolkit.frontmatterSorter.notice.file_ignored", {
+					filePath: activeFile.path,
+					reason: this.getIgnoreReason(activeFile),
+				})
 			);
 			return;
 		}
@@ -267,7 +267,9 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 			),
 			this.t(
 				"toolkit.frontmatterSorter.notice.confirm_sort_folder.message",
-				[folderPath]
+				{
+					folderPath,
+				}
 			)
 		);
 
@@ -298,25 +300,25 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 		unchangedFiles: string[]
 	): void {
 		this.logger.notice(
-			`${this.t("toolkit.frontmatterSorter.notice.sort_complete", [
-				sortedFiles.length,
-				skippedFiles.length,
-			])}\n` + this.t("toolkit.frontmatterSorter.notice.check_console")
+			`${this.t("toolkit.frontmatterSorter.notice.sort_complete", {
+				processedFiles: sortedFiles.length,
+				skippedFiles: skippedFiles.length,
+			})}\n` + this.t("toolkit.frontmatterSorter.notice.check_console")
 		);
 
 		this.logger.info(
 			this.t("toolkit.frontmatterSorter.notice.sort_details.title"),
-			this.t("toolkit.frontmatterSorter.notice.sort_details.success", [
-				sortedFiles.length,
-			]),
+			this.t("toolkit.frontmatterSorter.notice.sort_details.success", {
+				successFiles: sortedFiles.length,
+			}),
 			sortedFiles,
-			this.t("toolkit.frontmatterSorter.notice.sort_details.unchanged", [
-				unchangedFiles.length,
-			]),
+			this.t("toolkit.frontmatterSorter.notice.sort_details.unchanged", {
+				unchangedFiles: unchangedFiles.length,
+			}),
 			unchangedFiles,
-			this.t("toolkit.frontmatterSorter.notice.sort_details.skipped", [
-				skippedFiles.length,
-			]),
+			this.t("toolkit.frontmatterSorter.notice.sort_details.skipped", {
+				skippedFiles: skippedFiles.length,
+			}),
 			skippedFiles
 		);
 	}
@@ -329,9 +331,9 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 			return file.path.startsWith(normalizedFolder);
 		});
 		if (ignoredFolder) {
-			return this.t("toolkit.frontmatterSorter.notice.ignore_folder", [
+			return this.t("toolkit.frontmatterSorter.notice.ignore_folder", {
 				ignoredFolder,
-			]);
+			});
 		}
 
 		const ignoredPattern = this.config.ignoreFiles.find((pattern) => {
@@ -342,9 +344,9 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 			}
 		});
 		if (ignoredPattern) {
-			return this.t("toolkit.frontmatterSorter.notice.ignore_pattern", [
+			return this.t("toolkit.frontmatterSorter.notice.ignore_pattern", {
 				ignoredPattern,
-			]);
+			});
 		}
 		return this.t("toolkit.frontmatterSorter.notice.ignore_unknown");
 	}
@@ -377,9 +379,9 @@ export class FrontMatterSorterManager extends BaseManager<IFrontMatterSorterModu
 			if (content !== newContent) {
 				await this.app.vault.modify(file, newContent);
 				this.logger.notice(
-					this.t("toolkit.frontmatterSorter.notice.file_sorted", [
-						file.path,
-					])
+					this.t("toolkit.frontmatterSorter.notice.file_sorted", {
+						filePath: file.path,
+					})
 				);
 				return true;
 			}

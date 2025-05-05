@@ -108,7 +108,9 @@ export class UpdateManager {
 				options.onProgress?.({
 					stage: "completed",
 				});
-				rootLogger.notice(t("notice.update_success", [latestVersion]));
+				rootLogger.notice(
+					t("notice.update_success", { latestVersion })
+				);
 
 				return true;
 			} catch (error) {
@@ -174,7 +176,7 @@ export class UpdateManager {
 				options.onProgress?.({
 					stage: "downloading",
 					progress,
-					message: t("notice.downloading_file", [fileName]),
+					message: t("notice.downloading_file", { fileName }),
 				});
 
 				// 模拟下载延迟
@@ -214,7 +216,7 @@ export class UpdateManager {
 				options.onProgress?.({
 					stage: "downloading",
 					progress,
-					message: t("notice.downloading_file", [fileName]),
+					message: t("notice.downloading_file", { fileName }),
 				});
 
 				const asset = release.assets.find(
