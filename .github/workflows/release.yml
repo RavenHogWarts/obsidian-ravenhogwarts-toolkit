@@ -47,73 +47,147 @@ jobs:
             - name: Generate Changelog
               id: changelog
               run: |
-                  # 检查是否存在任何tag
-                  if ! git describe --tags > /dev/null 2>&1; then
-                    # 如果没有任何tag，使用初始commit作为起点
-                    echo "## 🎉 First Release" > temp_changelog.md
-                    COMMITS=$(git log --pretty=format:"- %s" --reverse)
+                  # 定义部分名称
+                  declare -A SECTION_MAP
+                  SECTION_MAP["BREAKING CHANGES"]="BREAKING CHANGES"
+                  SECTION_MAP["Features"]="Features"
+                  SECTION_MAP["Bug Fixes"]="Bug Fixes"
+                  SECTION_MAP["Documentation"]="Documentation"
+                  SECTION_MAP["Styles"]="Styles"
+                  SECTION_MAP["Refactors"]="Refactors"
+                  SECTION_MAP["Performance"]="Performance"
+                  SECTION_MAP["Tests"]="Tests"
+                  SECTION_MAP["Build"]="Build"
+                  SECTION_MAP["CI"]="CI"
+                  SECTION_MAP["Chore"]="Chore"
+                  SECTION_MAP["Reverts"]="Reverts"
+
+                  # 定义中文翻译
+                  declare -A ZH_SECTION_MAP
+                  ZH_SECTION_MAP["BREAKING CHANGES"]="破坏性变更"
+                  ZH_SECTION_MAP["Features"]="新功能"
+                  ZH_SECTION_MAP["Bug Fixes"]="修复"
+                  ZH_SECTION_MAP["Documentation"]="文档"
+                  ZH_SECTION_MAP["Styles"]="样式"
+                  ZH_SECTION_MAP["Refactors"]="重构"
+                  ZH_SECTION_MAP["Performance"]="性能优化"
+                  ZH_SECTION_MAP["Tests"]="测试"
+                  ZH_SECTION_MAP["Build"]="构建"
+                  ZH_SECTION_MAP["CI"]="持续集成"
+                  ZH_SECTION_MAP["Chore"]="杂项"
+                  ZH_SECTION_MAP["Reverts"]="回退"
+
+                  # 初始化 changelog 文件
+                  CHANGELOG_EN="CHANGELOG.md"
+                  CHANGELOG_ZH="CHANGELOG-zh.md"
+                  TEMP_CHANGELOG="temp_changelog.md"
+
+                  # 获取当前版本号（从 git tag）
+                  CURRENT_VERSION=$(git tag --sort version:refname | tail -n 1)
+                  echo "Current version: $CURRENT_VERSION"
+
+                  # 使用 awk 提取特定版本的 changelog 内容
+                  extract_changelog() {
+                    local changelog_file=$1
+                    local output_file=$2
+                    local is_chinese=$3
+                    local target_version=$4
+                    
+                    > "$output_file"  # 初始化空文件
+                    
+                    # 确定版本的标题级别 (# 或 ##)
+                    # 分解版本号，检查是否为小版本
+                    IFS='.' read -r major minor patch <<< "$target_version"
+                    # 如果patch不是0，那么是小版本，使用二级标题 (##)
+                    if [[ -n "$patch" && "$patch" != "0" ]]; then
+                      local title_level="##"
+                    else
+                      # 大版本或次版本，使用一级标题 (#)
+                      local title_level="#"
+                    fi
+                    
+                    echo "Looking for version $target_version with title level: $title_level"
+                    
+                    # 使用 awk 提取目标版本的内容到临时文件
+                    awk -v version="$target_version" -v level="$title_level" '
+                    BEGIN { found = 0; printing = 0; }
+                    
+                    # 当找到目标版本标题时
+                    $0 ~ "^" level " +\\[" version "\\]" { 
+                      found = 1; 
+                      printing = 1; 
+                      next;  # 跳过版本标题行
+                    }
+                    
+                    # 当找到下一个版本标题时停止打印
+                    printing && $0 ~ "^#+ +\\[" { 
+                      printing = 0; 
+                    }
+                    
+                    # 打印匹配到的内容
+                    printing { 
+                      print; 
+                    }
+                    
+                    # 文件结束时，如果没有找到目标版本，输出警告
+                    END { 
+                      if (!found) {
+                        print "Warning: Version " version " not found with title level " level > "/dev/stderr";
+                        exit 1;
+                      }
+                    }' "$changelog_file" > "temp_version_content.md"
+                    
+                    # 检查提取内容
+                    if [ ! -s "temp_version_content.md" ]; then
+                      echo "Warning: No content found for version $target_version in $changelog_file" >&2
+                      echo -e "## Changes\n\nNo changelog found for version $target_version.\n" >> "$output_file"
+                    else
+                      echo "Successfully extracted changelog for version $target_version"
+                      echo -e "## Changes\n" >> "$output_file"
+                      cat "temp_version_content.md" >> "$output_file"
+                    fi
+                    
+                    # 添加安装说明
+                    if [ "$is_chinese" = true ]; then
+                      echo -e "\n## 如何安装\n" >> "$output_file"
+                      echo -e "1. 下载 \`${{ env.PLUGIN_NAME }}.zip\` 压缩文件" >> "$output_file"
+                      echo -e "2. 解压到你的 Obsidian 库的插件文件夹内: \`<vault>/.obsidian/plugins/${{ env.PLUGIN_NAME }}/`" >> "$output_file"
+                      echo -e "3. 重启 Obsidian" >> "$output_file"
+                      echo -e "4. 在设置中启用 **${{ env.PLUGIN_NAME }}**" >> "$output_file"
+                    else
+                      echo -e "\n## Installation\n" >> "$output_file"
+                      echo -e "1. Download \`${{ env.PLUGIN_NAME }}.zip\`" >> "$output_file"
+                      echo -e "2. Unzip it to your Obsidian vault's plugins folder: \`<vault>/.obsidian/plugins/${{ env.PLUGIN_NAME }}/`" >> "$output_file"
+                      echo -e "3. Reload Obsidian" >> "$output_file"
+                      echo -e "4. Enable **${{ env.PLUGIN_NAME }}** plugin in settings" >> "$output_file"
+                    fi
+                  }
+
+                  # 处理英文 changelog
+                  if [ -f "$CHANGELOG_EN" ]; then
+                    extract_changelog "$CHANGELOG_EN" "en_$TEMP_CHANGELOG" false "$CURRENT_VERSION"
                   else
-                    # 获取最新tag
-                    LATEST_TAG=$(git describe --tags --abbrev=0)
-                    
-                    # 判断当前是否为beta版本
-                    if [[ $LATEST_TAG == *"-beta"* ]]; then
-                      # Beta版本：查找上一个beta版本tag
-                      PREVIOUS_TAG=$(git tag --sort=-version:refname | grep -E ".*-beta.*" | sed -n '2p')
-                    else
-                      # 正式版本：查找上一个正式版本tag（不包含beta）
-                      PREVIOUS_TAG=$(git tag --sort=-version:refname | grep -vE ".*-beta.*" | sed -n '2p')
-                    fi
-                    
-                    if [ ! -z "$PREVIOUS_TAG" ]; then
-                      COMMITS=$(git log ${PREVIOUS_TAG}..${LATEST_TAG} --no-merges --pretty=format:"- %s" --reverse)
-                    else
-                      # 如果找不到上一个对应类型的tag，则使用第一个commit
-                      FIRST_COMMIT=$(git rev-list --max-parents=0 HEAD)
-                      COMMITS=$(git log ${FIRST_COMMIT}..${LATEST_TAG} --no-merges --pretty=format:"- %s" --reverse)
-                    fi
-                    
-                    echo -e "## Changes\n" > temp_changelog.md
+                    echo "英文 changelog 文件未找到。使用备用方案。"
+                    echo -e "## Changes\n\nNo changelog available.\n\n## Installation\n\n1. Download the files from the Assets section below\n2. Copy them to your vault's plugins folder: \`<vault>/.obsidian/plugins/ace-code-editor/\`\n3. Reload Obsidian\n4. Enable plugin in settings" > "en_$TEMP_CHANGELOG"
                   fi
 
-                  # 定义要处理的commit类型
-                  TYPES=("feat" "fix" "perf" "refactor" "style" "docs" "test" "chore")
-
-                  for TYPE in "${TYPES[@]}"; do
-                    # 从所有commits中过滤出特定类型的commits
-                    TYPE_COMMITS=$(echo "$COMMITS" | grep "^- ${TYPE}(" || true)
+                  # 处理中文 changelog
+                  if [ -f "$CHANGELOG_ZH" ]; then
+                    extract_changelog "$CHANGELOG_ZH" "zh_$TEMP_CHANGELOG" true "$CURRENT_VERSION"
                     
-                    if [ ! -z "$TYPE_COMMITS" ]; then
-                      # 转换commit类型为可读文本
-                      case $TYPE in
-                        "feat") TITLE="✨ New Features";;
-                        "fix") TITLE="🐛 Bug Fixes";;
-                        "perf") TITLE="⚡ Performance";;
-                        "refactor") TITLE="♻️ Refactors";;
-                        "style") TITLE="💄 Styles";;
-                        "docs") TITLE="📝 Documentation";;
-                        "test") TITLE="✅ Tests";;
-                        "chore") TITLE="🔧 Chores";;
-                        *) TITLE="Other";;
-                      esac
-                      
-                      # 添加分类标题
-                      echo -e "\n### ${TITLE}\n" >> temp_changelog.md
-                      
-                      # 处理每个commit消息，提取scope和描述
-                      while IFS= read -r COMMIT; do
-                        if [[ $COMMIT =~ ^-\ ${TYPE}\((.*?)\):\ (.*)$ ]]; then
-                          SCOPE="${BASH_REMATCH[1]}"
-                          DESC="${BASH_REMATCH[2]}"
-                          echo "- **${SCOPE}**: ${DESC}" >> temp_changelog.md
-                        fi
-                      done <<< "$TYPE_COMMITS"
-                    fi
-                  done
+                    # 合并两个 changelogs
+                    echo -e "# English Changelog\n" > "$TEMP_CHANGELOG"
+                    cat "en_$TEMP_CHANGELOG" >> "$TEMP_CHANGELOG"
+                    echo -e "\n\n___\n\n# 中文更新日志\n" >> "$TEMP_CHANGELOG"
+                    cat "zh_$TEMP_CHANGELOG" >> "$TEMP_CHANGELOG"
+                  else
+                    # 如果没有中文 changelog，只使用英文版本
+                    cp "en_$TEMP_CHANGELOG" "$TEMP_CHANGELOG"
+                  fi
 
-                  # 将处理后的changelog保存到GITHUB_OUTPUT
+                  # 输出 changelog 给 GitHub Actions
                   echo "changelog<<EOF" >> $GITHUB_OUTPUT
-                  cat temp_changelog.md >> $GITHUB_OUTPUT
+                  cat "$TEMP_CHANGELOG" >> $GITHUB_OUTPUT
                   echo "EOF" >> $GITHUB_OUTPUT
 
             - name: Create Release

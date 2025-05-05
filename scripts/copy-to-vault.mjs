@@ -39,7 +39,7 @@ async function copyToVault() {
 		}
 
 		// 要复制的文件列表
-		const filesToCopy = ["main.js", "styles.css"];
+		const filesToCopy = ["main.js", "manifest.json", "styles.css"];
 
 		// 复制文件
 		for (const file of filesToCopy) {

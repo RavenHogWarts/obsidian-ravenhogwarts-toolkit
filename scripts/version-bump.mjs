@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import readline from "readline";
 
@@ -35,6 +36,7 @@ console.log(`5. Beta 版本 (${currentVersion}-beta.1)`);
 
 rl.question("\n请输入选项 (1-5): ", (answer) => {
 	let newVersion;
+	let isBeta = false;
 
 	switch (answer) {
 		case "1":
@@ -48,7 +50,8 @@ rl.question("\n请输入选项 (1-5): ", (answer) => {
 			break;
 		case "4":
 			rl.question("请输入自定义版本号 (x.y.z): ", (customVersion) => {
-				updateAllFiles(customVersion);
+				isBeta = customVersion.includes("-beta");
+				updateAllFiles(customVersion, isBeta);
 				rl.close();
 			});
 			return;
@@ -69,38 +72,46 @@ rl.question("\n请输入选项 (1-5): ", (answer) => {
 			} else {
 				newVersion = `${currentVersion}-beta.1`;
 			}
+			isBeta = true;
 			break;
 		default:
 			console.log("无效选项，使用补丁版本更新");
 			newVersion = `${major}.${minor}.${patch + 1}`;
 	}
 
-	updateAllFiles(newVersion);
+	updateAllFiles(newVersion, isBeta);
 	rl.close();
 });
 
 /**
  * 更新所有相关文件的版本号
  * @param {string} version 新版本号
+ * @param {boolean} isBeta 是否为Beta版本
  */
-function updateAllFiles(version) {
+function updateAllFiles(version, isBeta = false) {
 	try {
 		console.log(`\n正在更新至版本 ${version}...`);
 
 		// 1. 更新 package.json
 		updatePackageJson(version);
 
-		// 2. 更新 manifest.json
-		updateManifestJson(version);
+		// 2. 更新 manifest.json 或 manifest-beta.json
+		const minAppVersion = updateManifestJson(version, isBeta);
 
 		// 3. 更新 versions.json
-		updateVersionsJson(version);
+		updateVersionsJson(version, minAppVersion);
 
 		// 提示提交更改
 		console.log("\n版本已更新。建议执行以下命令:");
-		console.log(`git add package.json manifest.json versions.json`);
-		console.log(`git commit -m "chore: bump version to ${version}"`);
-		console.log(`git tag v${version}`);
+		if (isBeta) {
+			console.log(
+				`git add package.json manifest-beta.json versions.json`
+			);
+		} else {
+			console.log(`git add package.json manifest.json versions.json`);
+		}
+		console.log(`git commit -m "build: bump version to ${version}"`);
+		console.log(`git tag ${version}`);
 
 		console.log("\n版本更新完成！");
 	} catch (error) {
@@ -129,23 +140,43 @@ function updatePackageJson(version) {
 }
 
 /**
- * 更新 manifest.json 文件
+ * 更新 manifest.json 或 manifest-beta.json 文件
  * @param {string} version 新版本号
+ * @param {boolean} isBeta 是否为Beta版本
  * @returns {string} 最低应用版本
  */
-function updateManifestJson(version) {
+function updateManifestJson(version, isBeta = false) {
 	try {
-		const manifest = JSON.parse(readFileSync("manifest.json", "utf8"));
+		const manifestFile = isBeta ? "manifest-beta.json" : "manifest.json";
+
+		// 检查文件是否存在
+		if (!existsSync(manifestFile) && isBeta) {
+			// 如果manifest-beta.json不存在，则从manifest.json复制一份
+			if (existsSync("manifest.json")) {
+				const manifest = JSON.parse(
+					readFileSync("manifest.json", "utf8")
+				);
+				manifest.version = version;
+				writeFileSync(
+					manifestFile,
+					JSON.stringify(manifest, null, "\t") + "\n"
+				);
+				console.log(`已创建并更新 ${manifestFile} 版本至 ${version}`);
+				return manifest.minAppVersion;
+			}
+		}
+
+		const manifest = JSON.parse(readFileSync(manifestFile, "utf8"));
 		const { minAppVersion } = manifest;
 		manifest.version = version;
 		writeFileSync(
-			"manifest.json",
+			manifestFile,
 			JSON.stringify(manifest, null, "\t") + "\n"
 		);
-		console.log(`已更新 manifest.json 版本至 ${version}`);
+		console.log(`已更新 ${manifestFile} 版本至 ${version}`);
 		return minAppVersion;
 	} catch (error) {
-		console.error("更新 manifest.json 时出错:", error);
+		console.error(`更新 manifest 文件时出错:`, error);
 		throw error;
 	}
 }
@@ -153,13 +184,10 @@ function updateManifestJson(version) {
 /**
  * 更新 versions.json 文件
  * @param {string} version 新版本号
+ * @param {string} minAppVersion 最低应用版本
  */
-function updateVersionsJson(version) {
+function updateVersionsJson(version, minAppVersion) {
 	try {
-		// 获取 minAppVersion
-		const manifest = JSON.parse(readFileSync("manifest.json", "utf8"));
-		const { minAppVersion } = manifest;
-
 		// 读取或创建 versions.json
 		let versions = {};
 		try {
