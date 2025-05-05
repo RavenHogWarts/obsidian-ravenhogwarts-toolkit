@@ -23,8 +23,7 @@
 - 表格增强
 ![表格增强](./assets/table-enhance.png)
 
-- 代码编辑器
-![代码编辑器](./assets/code-editor.png)
+- 代码编辑器 （功能已拆分移植到 [Ace Code Editor](https://github.com/RavenHogWarts/obsidian-ace-code-editor)）
 
 ### 功能介绍
 [Wiki](https://ravenhogwarts.github.io/docs/zh/obsidian-ravenhogwarts-toolkit/)
@@ -58,3 +57,7 @@
 ## 许可证
 
 此项目采用 [GNU General Public License v3 (GPL-3.0)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/blob/master/LICENSE) 许可证。
+
+## Star 历史
+
+[![Star 历史图表](https://api.star-history.com/svg?repos=RavenHogWarts/obsidian-ravenhogwarts-toolkit&type=Timeline)](https://www.star-history.com/#RavenHogWarts/obsidian-ravenhogwarts-toolkit&Timeline)

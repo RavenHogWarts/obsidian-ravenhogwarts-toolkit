@@ -23,8 +23,7 @@ A personal toolkit plugin (OTK) that integrates various Obsidian utilities, desi
 - Table Enhance
 ![Table Enhance](./assets/table-enhance.png)
 
-- Code Editor
-![Code Editor](./assets/code-editor.png)
+- Code Editor (Feature has been split and migrated to [Ace Code Editor](https://github.com/RavenHogWarts/obsidian-ace-code-editor))
 
 ## Wiki
 [Wiki](https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit/)
@@ -58,3 +57,7 @@ If you find this plugin helpful, you can support the development through:
 ## License
 
 This project is licensed under the [GNU General Public License v3 (GPL-3.0)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/blob/master/LICENSE)
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=RavenHogWarts/obsidian-ravenhogwarts-toolkit&type=Timeline)](https://www.star-history.com/#RavenHogWarts/obsidian-ravenhogwarts-toolkit&Timeline)
