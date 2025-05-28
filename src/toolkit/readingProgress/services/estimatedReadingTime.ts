@@ -361,7 +361,7 @@ export class EstimatedReadingTime {
 				text: t(
 					"toolkit.readingProgress.estimatedReadingTime.wordCount",
 					{
-						totalWords,
+						wordCount: totalWords,
 					}
 				),
 			});

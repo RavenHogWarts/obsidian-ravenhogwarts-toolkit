@@ -14,6 +14,9 @@ import {
 import { getStandardTime } from "@/src/lib/date";
 import { FormulaParser } from "../parser/parseFormula";
 
+// 精度修正配置
+const DECIMAL_PRECISION = 10;
+
 type CalculationStrategy = (
 	table: IMarkdownTable,
 	columns: string[],
@@ -263,19 +266,21 @@ export class TableCalculationService {
 
 	// 数学计算辅助方法
 	private sum(numbers: number[]): number {
-		return numbers.reduce((a, b) => a + b, 0);
+		return this.fixPrecision(numbers.reduce((a, b) => a + b, 0));
 	}
 	private average(numbers: number[]): number {
 		if (numbers.length === 0) return 0;
-		return this.sum(numbers) / numbers.length;
+		return this.fixPrecision(this.sum(numbers) / numbers.length);
 	}
 	private median(numbers: number[]): number {
 		if (numbers.length === 0) return 0;
 		const sorted = [...numbers].sort((a, b) => a - b);
 		const mid = Math.floor(sorted.length / 2);
-		return sorted.length % 2 === 0
-			? (sorted[mid - 1] + sorted[mid]) / 2
-			: sorted[mid];
+		return this.fixPrecision(
+			sorted.length % 2 === 0
+				? (sorted[mid - 1] + sorted[mid]) / 2
+				: sorted[mid]
+		);
 	}
 	private mode(numbers: number[]): number {
 		if (numbers.length === 0) return 0;
@@ -292,15 +297,30 @@ export class TableCalculationService {
 			}
 		}
 
-		return mode;
+		return this.fixPrecision(mode);
 	}
 	private variance(numbers: number[]): number {
 		if (numbers.length === 0) return 0;
 		const avg = this.average(numbers);
-		return this.average(numbers.map((n) => Math.pow(n - avg, 2)));
+		return this.fixPrecision(
+			this.average(numbers.map((n) => Math.pow(n - avg, 2)))
+		);
 	}
 	private standardDeviation(numbers: number[]): number {
-		return Math.sqrt(this.variance(numbers));
+		return this.fixPrecision(Math.sqrt(this.variance(numbers)));
+	}
+
+	/**
+	 * 修正浮点数精度问题
+	 * 通过将数字乘以10^n，四舍五入，再除以10^n来修正精度
+	 */
+	private fixPrecision(
+		value: number,
+		precision: number = DECIMAL_PRECISION
+	): number {
+		if (!isFinite(value)) return value;
+		const factor = Math.pow(10, precision);
+		return Math.round(value * factor) / factor;
 	}
 
 	// 时间计算辅助方法
