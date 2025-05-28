@@ -1,3 +1,13 @@
+## [1.2.1](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.2.0...1.2.1) (2025-05-28)
+
+
+### 🐛 修复
+
+* 修正估算阅读时间中词数参数名称错误 ([cb68f13](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/cb68f1331ea4563ffc2997209617ae662934bccc))
+* 优化表格计算服务，统一修正浮点数精度问题 ([43087b0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/43087b00608f9e0d1a76ef1758fd795114245253))
+
+
+
 # [1.2.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.1.0...1.2.0) (2025-05-05)
 
 

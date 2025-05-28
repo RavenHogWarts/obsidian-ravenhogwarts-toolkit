@@ -1,3 +1,13 @@
+## [1.2.1](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.2.0...1.2.1) (2025-05-28)
+
+
+### 🐛 Bug Fixes
+
+* Fixed parameter name error in estimated reading time word count ([cb68f13](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/cb68f1331ea4563ffc2997209617ae662934bccc))
+* Optimized table calculation service and unified floating-point precision fixes ([43087b0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/43087b00608f9e0d1a76ef1758fd795114245253))
+
+
+
 # [1.2.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.1.0...1.2.0) (2025-05-05)
 
 
