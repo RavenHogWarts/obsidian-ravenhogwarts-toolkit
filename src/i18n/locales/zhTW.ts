@@ -6,7 +6,7 @@ const translations: BaseMessage = {
 		overview: {
 			title: "工具包管理",
 			description:
-				"歡迎使用工具包，查看<a href='https://ravenhogwarts.github.io/docs/zh/obsidian-ravenhogwarts-toolkit' target='_blank'>wiki文檔</a>了解更多功能",
+				"歡迎使用工具包，查看<a href='https://docs.ravenhogwarts.top/obsidian-ravenhogwarts-toolkit/' target='_blank'>wiki文檔</a>了解更多功能",
 			version_hint: "繼續點擊...",
 			auto_update: "自動更新",
 			check_beta: "接收Beta",

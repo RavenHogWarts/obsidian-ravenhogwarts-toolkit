@@ -6,7 +6,7 @@ const translations: BaseMessage = {
 		overview: {
 			title: "Toolkit Management",
 			description:
-				"Welcome to the toolkit, check out the <a href='https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit' target='_blank'>wiki documentation</a> to learn more about its features",
+				"Welcome to the toolkit, check out the <a href='https://docs.ravenhogwarts.top/obsidian-ravenhogwarts-toolkit/' target='_blank'>wiki documentation</a> to learn more about its features",
 			version_hint: "Continue clicking...",
 			auto_update: "Auto Update",
 			check_beta: "Receive Beta",
