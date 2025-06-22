@@ -5,7 +5,6 @@ import {
 } from "../interfaces/types";
 import { BaseManager } from "./BaseManager";
 import { Logger, rootLogger } from "@/src/core/services/Log";
-import { UpdateManager } from "./UpdateManager";
 import RavenHogwartsToolkitPlugin from "@/src/main";
 
 export class PluginManager {
@@ -14,12 +13,10 @@ export class PluginManager {
 	private toolkitMenu: Menu | null = null;
 	private menuRegistrations: Map<string, Set<string>> = new Map();
 	private plugin: RavenHogwartsToolkitPlugin;
-	private updateManager: UpdateManager;
 
 	constructor(plugin: RavenHogwartsToolkitPlugin) {
 		this.plugin = plugin;
 		this.settings = { ...DEFAULT_CONFIG };
-		this.updateManager = new UpdateManager(plugin);
 	}
 
 	async initialize() {
@@ -28,9 +25,6 @@ export class PluginManager {
 			"Plugin manager initialized with settings:",
 			this.settings
 		);
-		if (this.settings.config.updater.autoUpdate) {
-			this.checkForUpdates();
-		}
 	}
 
 	async loadSettings() {
@@ -68,10 +62,6 @@ export class PluginManager {
 				menu: {
 					...DEFAULT_CONFIG.config.menu,
 					...(loadedData.config?.menu || {}),
-				},
-				updater: {
-					...DEFAULT_CONFIG.config.updater,
-					...(loadedData.config?.updater || {}),
 				},
 			},
 			toolkit: {
@@ -230,17 +220,5 @@ export class PluginManager {
 
 	get pluginSettings(): IRavenHogwartsToolkitConfig {
 		return this.settings;
-	}
-
-	async checkForUpdates(): Promise<boolean> {
-		rootLogger.debug("Manual update check triggered");
-		rootLogger.debug("Current settings:", {
-			checkBeta: this.settings.config.updater.checkBeta,
-			autoUpdate: this.settings.config.updater.autoUpdate,
-			updateCheckInterval:
-				this.settings.config.updater.updateCheckInterval,
-		});
-
-		return await this.updateManager.checkForUpdates();
 	}
 }
