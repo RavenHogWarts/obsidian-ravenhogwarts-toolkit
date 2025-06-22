@@ -9,12 +9,6 @@ export const SupportedLocales: Record<string, BaseMessage> = {
 	"zh-TW": zhTW,
 };
 
-interface IBaseSettingsItem {
-	name: string;
-	desc: string;
-}
-type SettingsItem<T = Record<string, never>> = IBaseSettingsItem & T;
-
 // 生成所有可能的翻译键路径类型
 type PathsToStringProps<T> = T extends string
 	? []
@@ -54,9 +48,6 @@ export type BaseMessage = {
 			title: string;
 			description: string;
 			version_hint: string;
-			auto_update: string;
-			check_beta: string;
-			check_update: string;
 		};
 		general: {
 			title: string;

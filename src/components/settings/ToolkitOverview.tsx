@@ -17,7 +17,6 @@ import { SettingItem } from "../base/Setting/SettingItem";
 import { OverviewSettingItem } from "../base/Setting/OverviewSettingItem";
 import { DeveloperSettings } from "./DeveloperSettings";
 import "./styles/ToolkitOverview.css";
-import { useUpdateProgress } from "@/src/core/hooks/useUpdateProgress";
 import { TranslationKeys } from "@/src/i18n/types";
 
 interface ToolkitOverviewProps {
@@ -43,56 +42,7 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
 		plugin,
 		onActivated: onVersionClick,
 	});
-	const [contextMenu, setContextMenu] = React.useState<{
-		show: boolean;
-		x: number;
-		y: number;
-	}>({ show: false, x: 0, y: 0 });
-	const [updaterConfig, setUpdaterConfig] = React.useState(config.updater);
 	const [menuConfig, setMenuConfig] = React.useState(config.menu);
-	const {
-		updateStatus,
-		handleUpdateProgress,
-		resetStatus,
-		showUpdateStatus,
-	} = useUpdateProgress();
-
-	// 监听配置变化
-	React.useEffect(() => {
-		setUpdaterConfig(config.updater);
-		setMenuConfig(config.menu);
-	}, [config.updater, config.menu]);
-
-	const handleContextMenu = (e: React.MouseEvent) => {
-		e.preventDefault();
-		setContextMenu({
-			show: true,
-			x: e.clientX,
-			y: e.clientY,
-		});
-	};
-
-	const handleCheckUpdate = async () => {
-		try {
-			logger.debug("Update check requested from UI");
-			resetStatus();
-			const result = await plugin.updateManager.checkForUpdates({
-				checkBeta: updaterConfig.checkBeta,
-				force: true,
-				onProgress: handleUpdateProgress,
-			});
-			logger.debug("Update check result:", result);
-
-			if (!result) {
-				handleUpdateProgress({
-					stage: "completed",
-					message: "已是最新版本",
-				});
-			}
-		} catch (error) {
-			logger.error("Failed to check for updates:", error);
-		}
-	};
 
 	const handleConfigUpdate = async (path: string, value: any) => {
 		try {
@@ -156,90 +106,14 @@ export const ToolkitOverview: React.FC<ToolkitOverviewProps> = ({
 					<span
 						className="rht-version-text"
 						onClick={handleVersionClick}
-						onContextMenu={handleContextMenu}
 					>
 						Version: {plugin.manifest.version}
 					</span>
-
-					{contextMenu.show && (
-						<ContextMenu
-							options={[
-								{
-									type: "button",
-									label: t("common.overview.check_update"),
-									onClick: handleCheckUpdate,
-									icon: <CircleArrowDown size={16} />,
-								},
-								{
-									type: "toggle",
-									label: t("common.overview.auto_update"),
-									checked: updaterConfig.autoUpdate,
-									onClick: async () => {
-										await handleConfigUpdate(
-											"updater.autoUpdate",
-											!updaterConfig.autoUpdate
-										);
-										setUpdaterConfig((prev) => ({
-											...prev,
-											autoUpdate: !prev.autoUpdate,
-										}));
-									},
-								},
-								{
-									type: "toggle",
-									label: t("common.overview.check_beta"),
-									checked: updaterConfig.checkBeta,
-									onClick: async () => {
-										await handleConfigUpdate(
-											"updater.checkBeta",
-											!updaterConfig.checkBeta
-										);
-										setUpdaterConfig((prev) => ({
-											...prev,
-											checkBeta: !prev.checkBeta,
-										}));
-									},
-								},
-							]}
-							position={contextMenu}
-							onClose={() =>
-								setContextMenu({ show: false, x: 0, y: 0 })
-							}
-						/>
-					)}
 
 					{showHint && (
 						<small className="rht-version-hint">
 							{t("common.overview.version_hint")}
 						</small>
-					)}
-
-					{showUpdateStatus && (
-						<div className="rht-update-progress">
-							<div className="rht-update-status">
-								<span>{updateStatus.status}</span>
-								{updateStatus.currentFile && (
-									<small className="rht-update-file">
-										{updateStatus.currentFile}
-									</small>
-								)}
-							</div>
-							{updateStatus.needsUpdate && (
-								<div className="rht-progress-bar">
-									<div
-										className="rht-progress-fill"
-										style={{
-											width: `${updateStatus.progress}%`,
-										}}
-									/>
-								</div>
-							)}
-							{updateStatus.error && (
-								<div className="rht-update-error">
-									{updateStatus.error}
-								</div>
-							)}
-						</div>
 					)}
 				</div>
 			</div>

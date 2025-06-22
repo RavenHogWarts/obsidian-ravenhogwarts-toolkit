@@ -8,9 +8,6 @@ const translations: BaseMessage = {
 			description:
 				"歡迎使用工具包，查看<a href='https://docs.ravenhogwarts.top/obsidian-ravenhogwarts-toolkit/' target='_blank'>wiki文檔</a>了解更多功能",
 			version_hint: "繼續點擊...",
-			auto_update: "自動更新",
-			check_beta: "接收Beta",
-			check_update: "檢查更新",
 		},
 		general: {
 			title: "常規設置",

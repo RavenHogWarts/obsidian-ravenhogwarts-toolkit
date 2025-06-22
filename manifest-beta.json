@@ -2,7 +2,7 @@
 	"id": "ravenhogwarts-toolkit",
 	"name": "RavenHogwarts's Toolkit",
 	"version": "1.0.0-beta.35",
-	"minAppVersion": "1.6.7",
+	"minAppVersion": "1.8.0",
 	"description": "A personal toolkit plugin (OTK) that integrates various utilities, designed to enhance personal note-taking experience.",
 	"author": "RavenHogWarts",
 	"authorUrl": "https://github.com/RavenHogWarts",
