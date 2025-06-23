@@ -106,86 +106,6 @@ const translations: BaseMessage = {
 				insert_option: "插入",
 			},
 		},
-		frontmatterSorter: {
-			title: "文檔屬性排序",
-			description: "自動整理和排序文檔的文檔屬性內容",
-			command: {
-				sortCurrentFile: "排序當前文件",
-				sortAllFiles: "排序所有文件",
-			},
-			file_menu: {
-				sort_folder: "排序文件夾內文檔屬性",
-			},
-			notice: {
-				ignore_folder: "在忽略文件夾 {{ignoredFolder}} 中",
-				ignore_pattern: "匹配忽略規則 {{ignoredPattern}}",
-				ignore_unknown: "在忽略列表中",
-				check_console: "請檢查控制台以獲取更多詳細信息",
-				file_ignored: "文件 {{filePath}} 被忽略，原因：{{reason}}",
-				file_sorted: "文件 {{filePath}} 已排序",
-				sort_complete:
-					"前置元數據排序完成：\n已處理 {{processedFiles}} 個文件，已跳過 {{skippedFiles}} 個文件",
-				sort_details: {
-					title: "前置元數據排序詳細信息：",
-					success: "\n {{successFiles}} 個文件成功排序，文件：",
-					unchanged: "\n {{unchangedFiles}} 個文件無須排序，文件：",
-					skipped: "\n {{skippedFiles}} 個文件在忽略規則中，文件：",
-				},
-				confirm_sort_all: {
-					title: "批量排序確認",
-					message:
-						"此操作將對所有 Markdown 文件的文檔屬性進行排序，是否繼續？",
-				},
-				confirm_sort_folder: {
-					title: "批量排序確認",
-					message:
-						"此操作將對文件夾中 {{folderPath}} (不包括子文件夾)的所有 Markdown 文件的文檔屬性進行排序，是否繼續？",
-				},
-			},
-			settings: {
-				segment: {
-					general: "常規設置",
-					ignore_rules: "忽略規則",
-					sort_rules: "排序規則",
-				},
-				sortOnSave: {
-					title: "保存時排序",
-					description: "保存文件時自動排序文檔屬性",
-				},
-				ignoreFolders: {
-					title: "忽略文件夾",
-					description: "忽略特定文件夾中的文檔屬性",
-					placeholder: "請輸入忽略的文件夾",
-				},
-				ignoreFiles: {
-					title: "忽略文件",
-					description: "忽略特定文件中的文檔屬性",
-					placeholder: "請輸入忽略的文件",
-				},
-				rules: {
-					priority: {
-						title: "優先排序組",
-						description: "優先排序的文檔屬性組，組內按字母排序",
-						placeholder: "請輸入優先排序的文檔屬性",
-					},
-					ignoreKeys: {
-						title: "忽略排序組",
-						description:
-							"忽略的文檔屬性組，組內保持原始相對順序，放置在末尾",
-						placeholder: "請輸入忽略的文檔屬性",
-					},
-					arraySort: {
-						title: "數組排序",
-						description: "對數組類型的文檔屬性中的值進行字母排序",
-					},
-					caseSensitive: {
-						title: "大小寫敏感",
-						description:
-							"啟用後按 AA -> aa -> BB -> bb 排序，禁用則視為相同字母",
-					},
-				},
-			},
-		},
 		quickPath: {
 			title: "快速路徑",
 			description: "快速獲取指定文件/文件夾的路徑",
@@ -230,10 +150,6 @@ const translations: BaseMessage = {
 					space: "空格",
 				},
 			},
-		},
-		obReader: {
-			title: "OBReader",
-			description: "OBReader",
 		},
 		readingProgress: {
 			title: "目錄導航",

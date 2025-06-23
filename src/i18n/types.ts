@@ -142,81 +142,6 @@ export type BaseMessage = {
 				insert_option: string;
 			};
 		};
-		frontmatterSorter: {
-			title: string;
-			description: string;
-			command: {
-				sortCurrentFile: string;
-				sortAllFiles: string;
-			};
-			file_menu: {
-				sort_folder: string;
-			};
-			notice: {
-				ignore_folder: string;
-				ignore_pattern: string;
-				ignore_unknown: string;
-				check_console: string;
-				file_ignored: string;
-				file_sorted: string;
-				sort_complete: string;
-				sort_details: {
-					title: string;
-					success: string;
-					unchanged: string;
-					skipped: string;
-				};
-				confirm_sort_all: {
-					title: string;
-					message: string;
-				};
-				confirm_sort_folder: {
-					title: string;
-					message: string;
-				};
-			};
-			settings: {
-				segment: {
-					general: string;
-					ignore_rules: string;
-					sort_rules: string;
-				};
-				sortOnSave: {
-					title: string;
-					description: string;
-				};
-				ignoreFolders: {
-					title: string;
-					description: string;
-					placeholder: string;
-				};
-				ignoreFiles: {
-					title: string;
-					description: string;
-					placeholder: string;
-				};
-				rules: {
-					priority: {
-						title: string;
-						description: string;
-						placeholder: string;
-					};
-					ignoreKeys: {
-						title: string;
-						description: string;
-						placeholder: string;
-					};
-					arraySort: {
-						title: string;
-						description: string;
-					};
-					caseSensitive: {
-						title: string;
-						description: string;
-					};
-				};
-			};
-		};
 		quickPath: {
 			title: string;
 			description: string;
@@ -260,10 +185,6 @@ export type BaseMessage = {
 					space: string;
 				};
 			};
-		};
-		obReader: {
-			title: string;
-			description: string;
 		};
 		readingProgress: {
 			title: string;

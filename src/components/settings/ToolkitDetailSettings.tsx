@@ -6,7 +6,6 @@ import { App } from "obsidian";
 import RavenHogwartsToolkitPlugin from "@/src/main";
 import "./styles/ToolkitDetailSettings.css";
 import { QuickPathSettings } from "@/src/toolkit/quickPath/components/settings/QuickPathSettings";
-import { FrontmatterSorterSettings } from "@/src/toolkit/frontmatterSorter/components/settings/FrontmatterSorterSettings";
 import { TableEnhancementsSettings } from "@/src/toolkit/tableEnhancements/components/settings/TableEnhancementsSettings";
 import { ReadingProgressSettings } from "@/src/toolkit/readingProgress/components/settings/ReadingProgressSettings";
 import { TranslationKeys } from "@/src/i18n/types";
@@ -30,8 +29,6 @@ export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
 				return <QuickPathSettings plugin={plugin} />;
 			case "tableEnhancements":
 				return <TableEnhancementsSettings />;
-			case "frontmatterSorter":
-				return <FrontmatterSorterSettings app={app} plugin={plugin} />;
 			case "readingProgress":
 				return <ReadingProgressSettings plugin={plugin} />;
 			default:

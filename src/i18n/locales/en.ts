@@ -109,92 +109,6 @@ const translations: BaseMessage = {
 				insert_option: "Insert",
 			},
 		},
-		frontmatterSorter: {
-			title: "Frontmatter Sorter",
-			description:
-				"Automatically organize and sort frontmatter content in documents",
-			command: {
-				sortCurrentFile: "Sort Current File",
-				sortAllFiles: "Sort All Files",
-			},
-			file_menu: {
-				sort_folder: "Sort Frontmatter in Folder",
-			},
-			notice: {
-				ignore_folder: "In ignored folder {{ignoredFolder}}",
-				ignore_pattern: "Matches ignore pattern {{ignoredPattern}}",
-				ignore_unknown: "In ignore list",
-				check_console: "Please check console for more details",
-				file_ignored: "File {{filePath}} ignored, reason: {{reason}}",
-				file_sorted: "File {{filePath}} sorted",
-				sort_complete:
-					"Frontmatter sorting completed:\n{{processedFiles}} files processed, {{skippedFiles}} files skipped",
-				sort_details: {
-					title: "Frontmatter sorting details:",
-					success:
-						"\n {{successFiles}} files successfully sorted, files:",
-					unchanged: "\n {{unchangedFiles}} files unchanged, files:",
-					skipped:
-						"\n {{skippedFiles}} files in ignore rules, files:",
-				},
-				confirm_sort_all: {
-					title: "Batch Sort Confirmation",
-					message:
-						"This operation will sort frontmatter in all Markdown files. Continue?",
-				},
-				confirm_sort_folder: {
-					title: "Batch Sort Confirmation",
-					message:
-						"This operation will sort frontmatter in all Markdown files in folder {{folderPath}} (excluding subfolders). Continue?",
-				},
-			},
-			settings: {
-				segment: {
-					general: "General Settings",
-					ignore_rules: "Ignore Rules",
-					sort_rules: "Sort Rules",
-				},
-				sortOnSave: {
-					title: "Sort on Save",
-					description:
-						"Automatically sort frontmatter when saving files",
-				},
-				ignoreFolders: {
-					title: "Ignore Folders",
-					description: "Ignore frontmatter in specific folders",
-					placeholder: "Enter folders to ignore",
-				},
-				ignoreFiles: {
-					title: "Ignore Files",
-					description: "Ignore frontmatter in specific files",
-					placeholder: "Enter files to ignore",
-				},
-				rules: {
-					priority: {
-						title: "Priority Sort Group",
-						description:
-							"Frontmatter properties to sort first, alphabetically within group",
-						placeholder: "Enter priority frontmatter properties",
-					},
-					ignoreKeys: {
-						title: "Ignore Sort Group",
-						description:
-							"Frontmatter properties to ignore sorting, maintaining original relative order, placed at the end",
-						placeholder: "Enter frontmatter properties to ignore",
-					},
-					arraySort: {
-						title: "Array Sorting",
-						description:
-							"Sort values alphabetically in array-type frontmatter properties",
-					},
-					caseSensitive: {
-						title: "Case Sensitive",
-						description:
-							"When enabled, sorts as AA -> aa -> BB -> bb; when disabled, treats same letters as equal",
-					},
-				},
-			},
-		},
 		quickPath: {
 			title: "Quick Path",
 			description: "Quickly get the path of specified files/folders",
@@ -241,10 +155,6 @@ const translations: BaseMessage = {
 					space: "Space",
 				},
 			},
-		},
-		obReader: {
-			title: "OBReader",
-			description: "OBReader",
 		},
 		readingProgress: {
 			title: "TOC Navigation",
