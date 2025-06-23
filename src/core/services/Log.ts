@@ -109,7 +109,6 @@ export class Logger {
 		if (!this.moduleLoggers.has(moduleId)) {
 			this.moduleLoggers.set(moduleId, new Logger(moduleId));
 		}
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return this.moduleLoggers.get(moduleId)!;
 	}
 
