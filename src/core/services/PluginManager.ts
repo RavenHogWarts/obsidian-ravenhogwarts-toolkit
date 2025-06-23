@@ -2,6 +2,8 @@ import { Menu } from "obsidian";
 import {
 	DEFAULT_CONFIG,
 	IRavenHogwartsToolkitConfig,
+	TOOLKIT_CONFIG,
+	ToolkitId,
 } from "../interfaces/types";
 import { BaseManager } from "./BaseManager";
 import { Logger, rootLogger } from "@/src/core/services/Log";
@@ -46,29 +48,73 @@ export class PluginManager {
 		}
 	}
 
+	/**
+	 * 深度合并对象
+	 */
+	private deepMerge<T>(target: T, source: any): T {
+		if (!source || typeof source !== "object" || Array.isArray(source)) {
+			return target;
+		}
+
+		const result = { ...target } as any;
+
+		for (const key in source) {
+			if (source.hasOwnProperty(key)) {
+				if (
+					result[key] &&
+					typeof result[key] === "object" &&
+					!Array.isArray(result[key])
+				) {
+					result[key] = this.deepMerge(result[key], source[key]);
+				} else {
+					result[key] = source[key];
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * 验证并过滤toolkit配置
+	 */
+	private validateAndFilterToolkit(toolkit: any): Record<string, any> {
+		if (!toolkit || typeof toolkit !== "object") {
+			return {};
+		}
+
+		// 直接从TOOLKIT_CONFIG获取所有有效的ToolkitId
+		const validToolkitIds = Object.keys(TOOLKIT_CONFIG) as ToolkitId[];
+
+		// 只保留存在于ToolkitId中的模块
+		return validToolkitIds.reduce((acc, id) => {
+			if (toolkit[id]) {
+				acc[id] = toolkit[id];
+			}
+			return acc;
+		}, {} as Record<string, any>);
+	}
+
 	private mergeSettings(loadedData: any): IRavenHogwartsToolkitConfig {
-		return {
-			config: {
-				version:
-					loadedData.config?.version || DEFAULT_CONFIG.config.version,
-				logger: {
-					...DEFAULT_CONFIG.config.logger,
-					...(loadedData.config?.logger || {}),
-				},
-				developer: {
-					...DEFAULT_CONFIG.config.developer,
-					...(loadedData.config?.developer || {}),
-				},
-				menu: {
-					...DEFAULT_CONFIG.config.menu,
-					...(loadedData.config?.menu || {}),
-				},
-			},
-			toolkit: {
-				...DEFAULT_CONFIG.toolkit,
-				...(loadedData.toolkit || {}),
-			},
-		};
+		// 创建默认配置的深拷贝
+		const result = structuredClone(DEFAULT_CONFIG);
+
+		if (!loadedData || typeof loadedData !== "object") {
+			return result;
+		}
+
+		// 深度合并config部分
+		if (loadedData.config) {
+			result.config = this.deepMerge(result.config, loadedData.config);
+		}
+
+		// 验证并合并toolkit部分
+		const validToolkit = this.validateAndFilterToolkit(loadedData.toolkit);
+		if (Object.keys(validToolkit).length > 0) {
+			result.toolkit = this.deepMerge(result.toolkit, validToolkit);
+		}
+
+		return result;
 	}
 
 	async saveSettings() {
