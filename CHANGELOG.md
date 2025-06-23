@@ -1,3 +1,24 @@
+# [1.3.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.2.1...1.3.0) (2025-06-23)
+
+
+### ♻️ Refactor
+
+* Remove FrontMatterSorter related code ([8fffe9c](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/8fffe9c9e443db322036066046f89106008855b6))
+* Remove frontmatter sorting functionality and related code ([2b8bd0c](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/2b8bd0c3128cf95acae60bee69fcba877bbe787e))
+* Remove auto-update related code, simplify configuration ([d039c4a](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/d039c4adfd0b73a663efc40020370e01f4cc364a))
+
+
+### ✨ Features
+
+* Optimize configuration merge logic, enhance toolkit configuration validation ([e519426](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/e519426cbba4cfb7f9f95fcd97faafd7dbdd83dd))
+
+
+### 🐛 Bug Fixes
+
+* **i18n:** Fix language setting logic and update documentation links ([1f707f6](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/1f707f627da1a7edb0cf895a554803b25062f9cf))
+
+
+
 ## [1.2.1](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.2.0...1.2.1) (2025-05-28)
 
 

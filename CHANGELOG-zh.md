@@ -1,3 +1,24 @@
+# [1.3.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.2.1...1.3.0) (2025-06-23)
+
+
+### ♻️ 重构
+
+* 移除 FrontMatterSorter 相关代码 ([8fffe9c](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/8fffe9c9e443db322036066046f89106008855b6))
+* 移除前置元数据排序功能及相关代码 ([2b8bd0c](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/2b8bd0c3128cf95acae60bee69fcba877bbe787e))
+* 移除自动更新相关代码，简化配置 ([d039c4a](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/d039c4adfd0b73a663efc40020370e01f4cc364a))
+
+
+### ✨ 新功能
+
+* 优化配置合并逻辑，增强toolkit配置验证 ([e519426](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/e519426cbba4cfb7f9f95fcd97faafd7dbdd83dd))
+
+
+### 🐛 修复
+
+* **i18n:** 修复语言设置逻辑并更新文档链接 ([1f707f6](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/1f707f627da1a7edb0cf895a554803b25062f9cf))
+
+
+
 ## [1.2.1](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.2.0...1.2.1) (2025-05-28)
 
 
