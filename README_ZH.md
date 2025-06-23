@@ -6,16 +6,13 @@
 
 [![GitHub stars](https://img.shields.io/github/stars/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=星标)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/stargazers)
 [![Total Downloads](https://img.shields.io/github/downloads/RavenHogWarts/obsidian-ravenhogwarts-toolkit/total?style=flat&label=总下载量)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/releases)
-[![Latest Release Downloads](https://img.shields.io/github/downloads/RavenHogWarts/obsidian-ravenhogwarts-toolkit/latest/total?style=flat&label=最新版本下载量)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/releases/latest)
-[![Latest Pre-release Downloads](https://img.shields.io/github/downloads-pre/RavenHogWarts/obsidian-ravenhogwarts-toolkit/latest/total?style=flat&label=最新测试版下载量)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/releases)
 [![GitHub Release](https://img.shields.io/github/v/release/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=正式版)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/releases/latest)
-[![GitHub Release (Beta)](https://img.shields.io/github/v/release/RavenHogWarts/obsidian-ravenhogwarts-toolkit?include_prereleases&style=flat&label=测试版)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/releases)
 [![GitHub License](https://img.shields.io/github/license/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=许可证)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/blob/master/LICENSE)
 [![GitHub Issues](https://img.shields.io/github/issues/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=问题)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/issues)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=最后提交)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commits/master)
 
 ## 已有工具
-- 文档属性排序
+- 文档属性排序 （暂时移除）
 - 快速路径
 - 阅读进度
 ![阅读进度](./assets/reading-progress.png)

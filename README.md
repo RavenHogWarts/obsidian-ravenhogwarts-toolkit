@@ -15,7 +15,7 @@ A personal toolkit plugin (OTK) that integrates various Obsidian utilities, desi
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=Last%20Commit)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commits/master)
 
 ## Features
-- Front Matter Sort
+- Front Matter Sort (Disabled)
 - Quick Path
 - Reading Progress
 ![Reading Progress](./assets/reading-progress.png)
