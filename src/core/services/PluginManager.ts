@@ -142,11 +142,9 @@ export class PluginManager {
 			parentMenu.addItem((menuItem) => {
 				menuItem.setTitle("RavenHogwartsToolkit");
 				menuItem.setIcon("gavel");
-				// @ts-ignore
 				this.toolkitMenu = menuItem.setSubmenu();
 			});
 		}
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return this.toolkitMenu!;
 	}
 

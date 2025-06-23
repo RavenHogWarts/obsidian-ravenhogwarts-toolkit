@@ -156,7 +156,6 @@ export abstract class BaseManager<T extends IToolkitModule> extends Component {
 
 	protected unregisterCommand(commandId: string): void {
 		const fullCommandId = `${this.plugin.manifest.id}:${this.moduleId}.${commandId}`;
-		// @ts-ignore - Obsidian internal API
 		this.app.commands?.removeCommand?.(fullCommandId);
 	}
 
