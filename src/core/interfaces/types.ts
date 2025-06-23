@@ -59,11 +59,7 @@ export const DEFAULT_CONFIG: IRavenHogwartsToolkitConfig = {
 	toolkit: {},
 };
 
-export type ToolkitId =
-	| "tableEnhancements"
-	| "quickPath"
-	| "frontmatterSorter"
-	| "readingProgress";
+export type ToolkitId = "tableEnhancements" | "quickPath" | "readingProgress";
 
 export const TOOLKIT_CONFIG: Record<
 	ToolkitId,
@@ -76,10 +72,6 @@ export const TOOLKIT_CONFIG: Record<
 	tableEnhancements: {
 		icon: Table,
 		iconName: "table",
-	},
-	frontmatterSorter: {
-		icon: FileText,
-		iconName: "file-text",
 	},
 	readingProgress: {
 		icon: Radar,
