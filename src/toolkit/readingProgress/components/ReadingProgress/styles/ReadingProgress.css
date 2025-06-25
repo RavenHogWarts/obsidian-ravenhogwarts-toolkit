@@ -384,8 +384,32 @@
 }
 
 /* https://ravenhogwarts.github.io/docs/en/obsidian-ravenhogwarts-toolkit/advanced/styling#fix-reading-progress-position-in-modal-windows 的尝试修复 */
+@keyframes slideUp {
+	0% {
+		transform: translateY(0);
+		opacity: 0;
+	}
+	10% {
+		transform: translateY(8%);
+		opacity: 0.2;
+	}
+	20% {
+		transform: translateY(5%);
+		opacity: 0.4;
+	}
+	50% {
+		transform: translateY(-2%);
+		opacity: 0.85;
+	}
+	100% {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
 .workspace-leaf-content:has(.rht-reading-progress) {
 	container-type: inline-size;
+	animation: 0.3s slideUp forwards;
 }
 
 .mod-left-split .rht-reading-progress,
