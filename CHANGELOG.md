@@ -1,3 +1,18 @@
+## [1.3.1](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.3.0...1.3.1) (2025-08-01)
+
+
+### 🎨 Styles
+
+* 重构公式编辑器样式，提升代码可维护性 ([b43c764](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/b43c76414e73d8482157852b8ad0ed3787bf198a))
+
+
+### 🐛 Bug Fixes
+
+* 新增阅读进度条动画修复弹窗位置问题 ([c7249d6](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/c7249d6d2d5c849ab7ab58ec121e52f1cd1739d3))
+* **license:** 更新版权信息为 RavenHogwarts ([9807a0c](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/9807a0ccd226e9cb664f58eba36efc45dd39f09f))
+
+
+
 # [1.3.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.2.1...1.3.0) (2025-06-23)
 
 
