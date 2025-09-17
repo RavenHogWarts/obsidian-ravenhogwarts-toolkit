@@ -1,12 +1,12 @@
-import * as React from "react";
-import RavenHogwartsToolkitPlugin from "@/src/main";
-import { App, PluginSettingTab } from "obsidian";
-import { createRoot, Root } from "react-dom/client";
-import { ToolkitOverview } from "./ToolkitOverview";
-import { ToolkitDetailSettings } from "./ToolkitDetailSettings";
 import { ToolkitId } from "@/src/core/interfaces/types";
 import { Logger } from "@/src/core/services/Log";
+import RavenHogwartsToolkitPlugin from "@/src/main";
+import { App, PluginSettingTab } from "obsidian";
+import * as React from "react";
+import { createRoot, Root } from "react-dom/client";
 import "./styles/SettingsTab.css";
+import { ToolkitDetailSettings } from "./ToolkitDetailSettings";
+import { ToolkitOverview } from "./ToolkitOverview";
 
 export default class RavenHogwartsToolkitSettingTab extends PluginSettingTab {
 	plugin: RavenHogwartsToolkitPlugin;

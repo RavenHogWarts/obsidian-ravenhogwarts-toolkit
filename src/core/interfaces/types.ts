@@ -1,12 +1,5 @@
-import {
-	BookOpen,
-	FileText,
-	Link,
-	LucideIcon,
-	Radar,
-	Table,
-} from "lucide-react";
 import { DEFAULT_LOGGER_CONFIG, ILoggerConfig } from "@/src/core/services/Log";
+import { Link, LucideIcon, Table } from "lucide-react";
 
 // 主配置接口
 export interface IRavenHogwartsToolkitConfig {
@@ -59,7 +52,7 @@ export const DEFAULT_CONFIG: IRavenHogwartsToolkitConfig = {
 	toolkit: {},
 };
 
-export type ToolkitId = "tableEnhancements" | "quickPath" | "readingProgress";
+export type ToolkitId = "tableEnhancements" | "quickPath";
 
 export const TOOLKIT_CONFIG: Record<
 	ToolkitId,
@@ -72,9 +65,5 @@ export const TOOLKIT_CONFIG: Record<
 	tableEnhancements: {
 		icon: Table,
 		iconName: "table",
-	},
-	readingProgress: {
-		icon: Radar,
-		iconName: "radar",
 	},
 };

@@ -1,6 +1,6 @@
-import { useCallback, useState } from "react";
-import RavenHogwartsToolkitPlugin from "@/src/main";
 import { BaseManager } from "@/src/core/services/BaseManager";
+import RavenHogwartsToolkitPlugin from "@/src/main";
+import { useCallback, useState } from "react";
 
 export function useModuleConfig<T>(
 	plugin: RavenHogwartsToolkitPlugin,

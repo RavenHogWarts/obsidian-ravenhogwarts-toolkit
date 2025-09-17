@@ -1,12 +1,11 @@
-import { Plugin } from "obsidian";
-import { IRavenHogwartsToolkitConfig } from "./core/interfaces/types";
-import { PluginManager } from "./core/services/PluginManager";
-import { BaseManager } from "./core/services/BaseManager";
 import { rootLogger } from "@/src/core/services/Log";
+import { Plugin } from "obsidian";
 import RavenHogwartsToolkitSettingTab from "./components/settings/SettingsTab";
-import { TableEnhancementsManager } from "./toolkit/tableEnhancements/manager/TableEnhancementsManager";
+import { IRavenHogwartsToolkitConfig } from "./core/interfaces/types";
+import { BaseManager } from "./core/services/BaseManager";
+import { PluginManager } from "./core/services/PluginManager";
 import { QuickPathManager } from "./toolkit/quickPath/manager/QuickPathManager";
-import { ReadingProgressManager } from "./toolkit/readingProgress/manager/ReadingProgressManager";
+import { TableEnhancementsManager } from "./toolkit/tableEnhancements/manager/TableEnhancementsManager";
 
 export default class RavenHogwartsToolkitPlugin extends Plugin {
 	public pluginManager: PluginManager;
@@ -44,7 +43,6 @@ export default class RavenHogwartsToolkitPlugin extends Plugin {
 		const managers = {
 			tableEnhancements: TableEnhancementsManager,
 			quickPath: QuickPathManager,
-			readingProgress: ReadingProgressManager,
 		};
 		await this.pluginManager.registerManagers(managers);
 	}

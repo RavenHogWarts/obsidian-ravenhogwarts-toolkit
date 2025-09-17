@@ -13,7 +13,8 @@
 		"release:pre": "npm run build && npm run version && npm run changelog:u",
 		"release:tag": "node scripts/release-tag.mjs",
 		"lint": "eslint . --ext .ts,.tsx",
-		"lint:fix": "eslint . --ext .ts,.tsx --fix"
+		"lint:fix": "eslint . --ext .ts,.tsx --fix",
+		"link:data": "node scripts/link-data.mjs"
 	},
 	"keywords": [
 		"Obsidian Plugin",
