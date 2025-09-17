@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
-import RavenHogwartsToolkitPlugin from "@/src/main";
-import { t } from "@/src/i18n/i18n";
-import { LucideIcon } from "lucide-react";
 import { TOOLKIT_CONFIG, ToolkitId } from "@/src/core/interfaces/types";
+import { t } from "@/src/i18n/i18n";
 import { TranslationKeys } from "@/src/i18n/types";
+import RavenHogwartsToolkitPlugin from "@/src/main";
+import { LucideIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 export interface ToolkitInfo {
 	id: ToolkitId;

@@ -1,14 +1,13 @@
-import * as React from "react";
-import { t } from "@/src/i18n/i18n";
 import { ToolkitId } from "@/src/core/interfaces/types";
-import { ArrowLeft } from "lucide-react";
-import { App } from "obsidian";
+import { t } from "@/src/i18n/i18n";
+import { TranslationKeys } from "@/src/i18n/types";
 import RavenHogwartsToolkitPlugin from "@/src/main";
-import "./styles/ToolkitDetailSettings.css";
 import { QuickPathSettings } from "@/src/toolkit/quickPath/components/settings/QuickPathSettings";
 import { TableEnhancementsSettings } from "@/src/toolkit/tableEnhancements/components/settings/TableEnhancementsSettings";
-import { ReadingProgressSettings } from "@/src/toolkit/readingProgress/components/settings/ReadingProgressSettings";
-import { TranslationKeys } from "@/src/i18n/types";
+import { ArrowLeft } from "lucide-react";
+import { App } from "obsidian";
+import * as React from "react";
+import "./styles/ToolkitDetailSettings.css";
 
 interface ToolkitDetailSettingsProps {
 	app: App;
@@ -29,8 +28,6 @@ export const ToolkitDetailSettings: React.FC<ToolkitDetailSettingsProps> = ({
 				return <QuickPathSettings plugin={plugin} />;
 			case "tableEnhancements":
 				return <TableEnhancementsSettings />;
-			case "readingProgress":
-				return <ReadingProgressSettings plugin={plugin} />;
 			default:
 				return null;
 		}
