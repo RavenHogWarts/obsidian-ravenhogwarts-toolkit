@@ -1,3 +1,12 @@
+## [1.3.2](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.3.1...1.3.2) (2025-09-17)
+
+
+### ✨ 新功能
+
+* 移除阅读进度工具，功能拆分至https://github.com/RavenHogWarts/obsidian-next-toc (#18) ([135b224](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/135b224a1d6bffbf1a9e2d4b589e66f01ce4fbec))
+
+
+
 ## [1.3.1](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.3.0...1.3.1) (2025-08-01)
 
 
