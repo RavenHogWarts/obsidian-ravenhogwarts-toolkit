@@ -4,6 +4,7 @@ import RavenHogwartsToolkitSettingTab from "./components/settings/SettingsTab";
 import { IRavenHogwartsToolkitConfig } from "./core/interfaces/types";
 import { BaseManager } from "./core/services/BaseManager";
 import { PluginManager } from "./core/services/PluginManager";
+import { FolderTemplatesManager } from "./toolkit/folderTemplates/manager/FolderTemplatesManager";
 import { QuickPathManager } from "./toolkit/quickPath/manager/QuickPathManager";
 import { TableEnhancementsManager } from "./toolkit/tableEnhancements/manager/TableEnhancementsManager";
 
@@ -43,6 +44,7 @@ export default class RavenHogwartsToolkitPlugin extends Plugin {
 		const managers = {
 			tableEnhancements: TableEnhancementsManager,
 			quickPath: QuickPathManager,
+			templateFolder: FolderTemplatesManager,
 		};
 		await this.pluginManager.registerManagers(managers);
 	}

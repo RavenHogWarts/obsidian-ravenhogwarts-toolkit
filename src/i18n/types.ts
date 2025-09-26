@@ -186,125 +186,13 @@ export type BaseMessage = {
 				};
 			};
 		};
-		readingProgress: {
+		folderTemplates: {
 			title: string;
 			description: string;
-			command: {
-				insert_toc: string;
-				insert_reading_time: string;
-				toggle_toc_expanded: string;
-				jump_to_next_heading: string;
-				jump_to_prev_heading: string;
-				toggle_all_headings: string;
-				scroll_to_top: string;
-				scroll_to_bottom: string;
-			};
-			editor_menu: {
-				insert_toc: string;
-				insert_reading_time: string;
-			};
-			return_button: {
-				return_to_cursor: string;
-				return_to_top: string;
-				return_to_bottom: string;
-				jump_to_next_heading: string;
-				jump_to_prev_heading;
-			};
-			toolbar: {
-				toggle_pin: string;
-				toggle_position: string;
-				move_left: string;
-				move_right: string;
-				copy_toc: string;
-				expand_all: string;
-				collapse_all: string;
-			};
 			settings: {
-				segment: {
-					general: string;
-					toc: string;
-					progress: string;
-				};
-				showTOC: {
+				templatesFolderPath: {
 					title: string;
 					description: string;
-				};
-				tocAlwaysExpanded: {
-					title: string;
-					description: string;
-				};
-				useHeadingNumber: {
-					title: string;
-					description: string;
-				};
-				skipH1: {
-					title: string;
-					description: string;
-				};
-				showToolbar: {
-					title: string;
-					description: string;
-				};
-				progressStyle: {
-					title: string;
-					description: string;
-					bar: string;
-					ring: string;
-					none: string;
-					both: string;
-				};
-				position: {
-					title: string;
-					description: string;
-					left: string;
-					right: string;
-				};
-				offset: {
-					title: string;
-					description: string;
-				};
-				tocWidth: {
-					title: string;
-					description: string;
-				};
-				progressBtn: {
-					title: string;
-					description: string;
-					returnToCursor: {
-						title: string;
-						description: string;
-					};
-					returnToTop: {
-						title: string;
-						description: string;
-					};
-					returnToBottom: {
-						title: string;
-						description: string;
-					};
-					jumpToNextHeading: {
-						title: string;
-						description: string;
-					};
-					jumpToPrevHeading: {
-						title: string;
-						description: string;
-					};
-				};
-				renderMarkdown: {
-					title: string;
-					description: string;
-				};
-			};
-			estimatedReadingTime: {
-				template: string;
-				wordCount: string;
-				chineseCount: string;
-				englishCount: string;
-				formatReadingTime: {
-					lessThanOneMinute: string;
-					lessThanOneHour: string;
-					moreThanOneHour: string;
 				};
 			};
 		};

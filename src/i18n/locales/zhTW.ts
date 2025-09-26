@@ -151,128 +151,14 @@ const translations: BaseMessage = {
 				},
 			},
 		},
-		readingProgress: {
-			title: "目錄導航",
-			description: "懸浮顯示當前文檔的閱讀進度，目錄等",
-			command: {
-				insert_toc: "插入目錄",
-				insert_reading_time: "插入預計閱讀時間",
-				toggle_toc_expanded: "切換目錄顯示狀態",
-				jump_to_next_heading: "跳轉至下一標題",
-				jump_to_prev_heading: "跳轉至上一標題",
-				toggle_all_headings: "切換所有標題折疊狀態",
-				scroll_to_top: "滾動到頂部",
-				scroll_to_bottom: "滾動到底部",
-			},
-			editor_menu: {
-				insert_toc: "插入目錄",
-				insert_reading_time: "插入預計閱讀時間",
-			},
-			return_button: {
-				return_to_cursor: "返回光標位置",
-				return_to_top: "返回頂部",
-				return_to_bottom: "返回底部",
-				jump_to_next_heading: "跳轉至下一個標題",
-				jump_to_prev_heading: "跳轉至上一個標題",
-			},
-			toolbar: {
-				toggle_pin: "固定/取消固定",
-				toggle_position: "切換位置",
-				move_left: "向左移動1px",
-				move_right: "向右移動1px",
-				copy_toc: "複製目錄",
-				expand_all: "展開所有",
-				collapse_all: "折疊所有",
-			},
+		folderTemplates: {
+			title: "文件夾模板",
+			description: "在指定文件夾下創建新文件時，無感知應用模板",
 			settings: {
-				segment: {
-					general: "常規設置",
-					toc: "目錄",
-					progress: "進度",
-				},
-				showTOC: {
-					title: "懸浮目錄",
+				templatesFolderPath: {
+					title: "模板文件夾路徑",
 					description:
-						"顯示懸浮目錄；cssclasses使用show-rht-toc或hide-rht-toc可以單獨控制頁面的目錄顯示",
-				},
-				tocAlwaysExpanded: {
-					title: "懸浮目錄始終展開",
-					description: "懸浮目錄始終展開，不隨鼠標懸浮狀態變化",
-				},
-				useHeadingNumber: {
-					title: "使用標題編號",
-					description:
-						"層級編號，根據相對深度計算；cssclasses使用show-rht-heading-number或hide-rht-heading-number可以單獨控制頁面的目錄中標題編號顯示",
-				},
-				skipH1: {
-					title: "忽略h1",
-					description: "開啟後，不對h1編號，且只存在h1時不顯示目錄",
-				},
-				showToolbar: {
-					title: "懸浮工具欄",
-					description: "使用懸浮工具欄",
-				},
-				progressStyle: {
-					title: "閱讀進度樣式",
-					description:
-						"閱讀進度樣式，進度條顯示在目錄內部，進度環顯示在目錄上方",
-					bar: "進度條",
-					ring: "進度環",
-					none: "不顯示",
-					both: "都顯示",
-				},
-				position: {
-					title: "位置",
-					description: "閱讀進度的位置",
-					left: "左側",
-					right: "右側",
-				},
-				offset: {
-					title: "偏移量",
-					description: "閱讀進度與側邊的偏移量，單位為px，默認為12px",
-				},
-				tocWidth: {
-					title: "目錄寬度",
-					description: "目錄的寬度，單位為px，默認為240px",
-				},
-				progressBtn: {
-					title: "進度按鈕",
-					description: "進度按鈕",
-					returnToCursor: {
-						title: "返回光標位置",
-						description: "是否使用返回光標位置按鈕，自定義圖標",
-					},
-					returnToTop: {
-						title: "返回頂部",
-						description: "是否使用返回頂部按鈕，自定義圖標",
-					},
-					returnToBottom: {
-						title: "返回底部",
-						description: "是否使用返回底部按鈕，自定義圖標",
-					},
-					jumpToNextHeading: {
-						title: "跳轉至下一標題",
-						description: "是否使用跳轉至下一標題按鈕，自定義圖標",
-					},
-					jumpToPrevHeading: {
-						title: "跳轉至上一標題",
-						description: "是否使用跳轉至上一標題按鈕，自定義圖標",
-					},
-				},
-				renderMarkdown: {
-					title: "渲染Markdown元素",
-					description: "是否使用Markdown渲染目錄標題",
-				},
-			},
-			estimatedReadingTime: {
-				template: "預計閱讀時間：{{time}}",
-				wordCount: "總字數：{{wordCount}}",
-				chineseCount: "中文字數：{{chineseCount}}",
-				englishCount: "英文字數：{{englishCount}}",
-				formatReadingTime: {
-					lessThanOneMinute: "小於 1 分鐘",
-					lessThanOneHour: "約 {{minutes}} 分鐘",
-					moreThanOneHour: "約 {{hours}} 小時 {{minutes}} 分鐘",
+						"存放模板文件的文件夾路徑, 默認與官方模板位置相同",
 				},
 			},
 		},

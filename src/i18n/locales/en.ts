@@ -156,140 +156,15 @@ const translations: BaseMessage = {
 				},
 			},
 		},
-		readingProgress: {
-			title: "TOC Navigation",
+		folderTemplates: {
+			title: "Folder Templates",
 			description:
-				"Floating display of current document's reading progress, table of contents, etc.",
-			command: {
-				insert_toc: "Insert Table of Contents",
-				insert_reading_time: "Insert Estimated Reading Time",
-				toggle_toc_expanded: "Toggle TOC Display State",
-				jump_to_next_heading: "Jump to Next Heading",
-				jump_to_prev_heading: "Jump to Previous Heading",
-				toggle_all_headings: "Toggle All Headings Collapse State",
-				scroll_to_top: "Scroll to Top",
-				scroll_to_bottom: "Scroll to Bottom",
-			},
-			editor_menu: {
-				insert_toc: "Insert Table of Contents",
-				insert_reading_time: "Insert Estimated Reading Time",
-			},
-			return_button: {
-				return_to_cursor: "Return to Cursor Position",
-				return_to_top: "Return to Top",
-				return_to_bottom: "Return to Bottom",
-				jump_to_next_heading: "Jump to Next Heading",
-				jump_to_prev_heading: "Jump to Previous Heading",
-			},
-			toolbar: {
-				toggle_pin: "Pin/Unpin",
-				toggle_position: "Toggle Position",
-				move_left: "Move Left 1px",
-				move_right: "Move Right 1px",
-				copy_toc: "Copy Table of Contents",
-				expand_all: "Expand All",
-				collapse_all: "Collapse All",
-			},
+				"Automatically apply templates when creating new files in specified folders",
 			settings: {
-				segment: {
-					general: "General Settings",
-					toc: "Table of Contents",
-					progress: "Progress",
-				},
-				showTOC: {
-					title: "Floating TOC",
+				templatesFolderPath: {
+					title: "Templates Folder Path",
 					description:
-						"Display floating table of contents; use cssclasses show-rht-toc or hide-rht-toc to control TOC display for individual pages",
-				},
-				tocAlwaysExpanded: {
-					title: "Always Expand Floating TOC",
-					description:
-						"Floating TOC always expanded, not changing with mouse hover state",
-				},
-				useHeadingNumber: {
-					title: "Use Heading Numbers",
-					description:
-						"Hierarchical numbering, calculated based on relative depth; use cssclasses show-rht-heading-number or hide-rht-heading-number to control heading number display in TOC for individual pages",
-				},
-				skipH1: {
-					title: "Skip H1",
-					description:
-						"When enabled, H1 is not numbered, and TOC is not displayed when only H1 exists",
-				},
-				showToolbar: {
-					title: "Floating Toolbar",
-					description: "Use floating toolbar",
-				},
-				progressStyle: {
-					title: "Reading Progress Style",
-					description:
-						"Reading progress style, progress bar displays inside TOC, progress ring displays above TOC",
-					bar: "Progress Bar",
-					ring: "Progress Ring",
-					none: "Don't Show",
-					both: "Show Both",
-				},
-				position: {
-					title: "Position",
-					description: "Position of reading progress",
-					left: "Left",
-					right: "Right",
-				},
-				offset: {
-					title: "Offset",
-					description:
-						"Offset of reading progress from the side, in px, default is 12px",
-				},
-				tocWidth: {
-					title: "TOC Width",
-					description:
-						"Width of table of contents, in px, default is 240px",
-				},
-				progressBtn: {
-					title: "Progress Buttons",
-					description: "Progress buttons",
-					returnToCursor: {
-						title: "Return to Cursor Position",
-						description:
-							"Whether to use return to cursor position button, customize icon",
-					},
-					returnToTop: {
-						title: "Return to Top",
-						description:
-							"Whether to use return to top button, customize icon",
-					},
-					returnToBottom: {
-						title: "Return to Bottom",
-						description:
-							"Whether to use return to bottom button, customize icon",
-					},
-					jumpToNextHeading: {
-						title: "Jump to Next Heading",
-						description:
-							"Whether to use jump to next heading button, customize icon",
-					},
-					jumpToPrevHeading: {
-						title: "Jump to Previous Heading",
-						description:
-							"Whether to use jump to previous heading button, customize icon",
-					},
-				},
-				renderMarkdown: {
-					title: "Render Markdown Elements",
-					description:
-						"Whether to use Markdown rendering for TOC headings",
-				},
-			},
-			estimatedReadingTime: {
-				template: "Estimated reading time: {{time}}",
-				wordCount: "Total word count: {{wordCount}}",
-				chineseCount: "Chinese character count: {{chineseCount}}",
-				englishCount: "English word count: {{englishCount}}",
-				formatReadingTime: {
-					lessThanOneMinute: "Less than 1 minute",
-					lessThanOneHour: "About {{minutes}} minutes",
-					moreThanOneHour:
-						"About {{hours}} hours {{minutes}} minutes",
+						"Path to the folder where template files are stored, defaults to the official template location",
 				},
 			},
 		},
