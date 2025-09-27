@@ -1,6 +1,6 @@
 import { IToolkitModule } from "@/src/core/interfaces/types";
 import { BaseManager } from "@/src/core/services/BaseManager";
-import { Menu, TFolder } from "obsidian";
+import { FolderTemplatesService } from "../services/FolderTemplatesService";
 import {
 	FOLDER_TEMPLATES_DEFAULT_CONFIG,
 	IFolderTemplatesConfig,
@@ -13,6 +13,16 @@ interface IFolderTemplatesModule extends IToolkitModule {
 }
 
 export class FolderTemplatesManager extends BaseManager<IFolderTemplatesModule> {
+	private templatesService: FolderTemplatesService;
+
+	constructor(plugin: any, moduleId: string, settings: any) {
+		super(plugin, moduleId, settings);
+		this.templatesService = new FolderTemplatesService(
+			this.app,
+			this.logger
+		);
+	}
+
 	protected getDefaultConfig(): IFolderTemplatesConfig {
 		return FOLDER_TEMPLATES_DEFAULT_CONFIG;
 	}
@@ -34,22 +44,18 @@ export class FolderTemplatesManager extends BaseManager<IFolderTemplatesModule> 
 	protected registerEventHandlers(): void {
 		if (!this.isEnabled()) return;
 
-		this.registerEvent(
-			this.app.workspace.on("files-menu", this.handleFilesMenu.bind(this))
-		);
-	}
-
-	private handleFilesMenu(menu: Menu, files: TFolder): void {
-		if (!this.isEnabled()) return;
-		this.addMenuItem(menu, {
-			title: "create file with templates",
-			icon: "add",
-			callback: () => {},
-		});
+		this.registerEvent(this.app.vault.on("create", () => {}));
 	}
 
 	protected onConfigChange(): void {
 		this.unregisterEvents();
 		this.registerEventHandlers();
+	}
+
+	/**
+	 * 获取模板服务实例（供外部使用）
+	 */
+	public getTemplatesService(): FolderTemplatesService {
+		return this.templatesService;
 	}
 }

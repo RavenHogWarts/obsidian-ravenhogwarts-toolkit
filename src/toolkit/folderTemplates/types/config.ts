@@ -8,7 +8,7 @@ export interface IFolderTemplatesConfig extends IToolkitModuleConfig {
 	templatesFolderPath: string;
 }
 
-interface IFolderTemplate {
+export interface IFolderTemplate {
 	Folder: string;
 	TemplateFile: string;
 	FileNameRule?: string;

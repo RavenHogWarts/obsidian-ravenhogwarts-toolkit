@@ -1,0 +1,117 @@
+.rht-suggestion-input-container {
+	position: relative;
+	width: 100%;
+}
+
+.rht-suggestion-input-wrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.rht-suggestion-input {
+	width: 100%;
+	padding: 8px 32px 8px 12px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	background-color: var(--background-primary);
+	color: var(--text-normal);
+	font-family: inherit;
+	font-size: 14px;
+	line-height: 1.4;
+	transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.rht-suggestion-input:focus {
+	outline: none;
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 2px var(--interactive-accent-hover);
+}
+
+.rht-suggestion-input.disabled {
+	background-color: var(--background-secondary);
+	color: var(--text-muted);
+	cursor: not-allowed;
+}
+
+.rht-suggestion-input-toggle {
+	position: absolute;
+	right: 4px;
+	top: 50%;
+	transform: translateY(-50%);
+	padding: 4px;
+	border: none;
+	background: none;
+	color: var(--text-muted);
+	cursor: pointer;
+	border-radius: 2px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.rht-suggestion-input-toggle:hover {
+	background-color: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.rht-suggestion-input-icon {
+	transition: transform 0.2s ease-in-out;
+}
+
+.rht-suggestion-input-icon.rotated {
+	transform: rotate(180deg);
+}
+
+.rht-suggestion-input-dropdown {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	background-color: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-top: none;
+	border-radius: 0 0 4px 4px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	max-height: 200px;
+	overflow-y: auto;
+}
+
+.rht-suggestion-input-option {
+	padding: 8px 12px;
+	cursor: pointer;
+	color: var(--text-normal);
+	border-bottom: 1px solid var(--background-modifier-border-hover);
+}
+
+.rht-suggestion-input-option:last-child {
+	border-bottom: none;
+}
+
+.rht-suggestion-input-option:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.rht-suggestion-input-option.selected {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+/* 滚动条样式 */
+.rht-suggestion-input-dropdown::-webkit-scrollbar {
+	width: 6px;
+}
+
+.rht-suggestion-input-dropdown::-webkit-scrollbar-track {
+	background: var(--background-secondary);
+}
+
+.rht-suggestion-input-dropdown::-webkit-scrollbar-thumb {
+	background: var(--background-modifier-border);
+	border-radius: 3px;
+}
+
+.rht-suggestion-input-dropdown::-webkit-scrollbar-thumb:hover {
+	background: var(--text-muted);
+}

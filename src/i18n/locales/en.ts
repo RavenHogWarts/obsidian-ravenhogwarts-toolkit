@@ -165,6 +165,32 @@ const translations: BaseMessage = {
 					title: "Templates Folder Path",
 					description:
 						"Path to the folder where template files are stored, defaults to the official template location",
+					placeholder: "Please enable core Templates plugin",
+					enablePlugin: "Please enable core Templates plugin",
+				},
+				templateManagement: {
+					title: "Template Configuration",
+					addTemplate: "Add Template",
+					editTemplate: "Edit Template",
+					deleteTemplate: "Delete",
+					saveTemplate: "Save",
+					cancel: "Cancel",
+					emptyState:
+						'No templates configured yet. Click "Add Template" to get started.',
+					enablePluginFirst:
+						"Please enable core Templates plugin first",
+				},
+				templateForm: {
+					title: "Template Configuration",
+					targetFolder: "Target Folder",
+					templateFile: "Template File",
+					fileNameRule: "File Name Rule (Optional)",
+					fileNameRulePlaceholder:
+						"e.g.: {{date}}-{{title}} or leave empty for default",
+					fileNameRuleDesc:
+						"Supported variables: {{title}}, {{date}}, {{time}}, {{timestamp}}",
+					selectFolder: "Select folder path...",
+					selectTemplate: "Select template file...",
 				},
 			},
 		},

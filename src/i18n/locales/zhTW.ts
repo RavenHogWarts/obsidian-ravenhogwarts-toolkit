@@ -6,7 +6,7 @@ const translations: BaseMessage = {
 		overview: {
 			title: "工具包管理",
 			description:
-				"歡迎使用工具包，查看<a href='https://docs.ravenhogwarts.top/obsidian-ravenhogwarts-toolkit/' target='_blank'>wiki文檔</a>了解更多功能",
+				"歡迎使用 RavenHogwarts's Toolkit 插件！這是一個功能豐富的工具包，查看<a href='https://docs.ravenhogwarts.top/obsidian-ravenhogwarts-toolkit/' target='_blank'>wiki文檔</a>了解更多功能",
 			version_hint: "繼續點擊...",
 		},
 		general: {
@@ -159,6 +159,30 @@ const translations: BaseMessage = {
 					title: "模板文件夾路徑",
 					description:
 						"存放模板文件的文件夾路徑, 默認與官方模板位置相同",
+					placeholder: "請啟用核心模板插件",
+					enablePlugin: "請啟用核心模板插件",
+				},
+				templateManagement: {
+					title: "模板配置",
+					addTemplate: "添加模板",
+					editTemplate: "編輯模板",
+					deleteTemplate: "刪除",
+					saveTemplate: "保存",
+					cancel: "取消",
+					emptyState: '還沒有配置任何模板。點擊"添加模板"開始配置。',
+					enablePluginFirst: "請先啟用核心模板插件",
+				},
+				templateForm: {
+					title: "模板配置",
+					targetFolder: "目標文件夾",
+					templateFile: "模板文件",
+					fileNameRule: "文件名規則 (可選)",
+					fileNameRulePlaceholder:
+						"例如: {{date}}-{{title}} 或留空使用默認規則",
+					fileNameRuleDesc:
+						"支持變量: {{title}}, {{date}}, {{time}}, {{timestamp}}",
+					selectFolder: "選擇文件夾路徑...",
+					selectTemplate: "選擇模板文件...",
 				},
 			},
 		},

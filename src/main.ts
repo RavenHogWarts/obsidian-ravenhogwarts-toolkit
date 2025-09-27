@@ -44,7 +44,7 @@ export default class RavenHogwartsToolkitPlugin extends Plugin {
 		const managers = {
 			tableEnhancements: TableEnhancementsManager,
 			quickPath: QuickPathManager,
-			templateFolder: FolderTemplatesManager,
+			folderTemplates: FolderTemplatesManager,
 		};
 		await this.pluginManager.registerManagers(managers);
 	}

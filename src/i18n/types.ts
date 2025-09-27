@@ -193,6 +193,28 @@ export type BaseMessage = {
 				templatesFolderPath: {
 					title: string;
 					description: string;
+					placeholder: string;
+					enablePlugin: string;
+				};
+				templateManagement: {
+					title: string;
+					addTemplate: string;
+					editTemplate: string;
+					deleteTemplate: string;
+					saveTemplate: string;
+					cancel: string;
+					emptyState: string;
+					enablePluginFirst: string;
+				};
+				templateForm: {
+					title: string;
+					targetFolder: string;
+					templateFile: string;
+					fileNameRule: string;
+					fileNameRulePlaceholder: string;
+					fileNameRuleDesc: string;
+					selectFolder: string;
+					selectTemplate: string;
 				};
 			};
 		};
