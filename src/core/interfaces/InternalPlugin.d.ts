@@ -42,7 +42,7 @@ interface InternalPluginInstance<InternalPlugin> {
 }
 
 interface InternalPlugin<InternalPluginInstance> extends Component {
-	instance: InternalPluginInstance;
+	enabled: boolean;
 
-	enable(isEnabledByUser?: boolean): Promise<void>;
+	instance: InternalPluginInstance;
 }

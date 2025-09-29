@@ -6,10 +6,6 @@ import { IFolderTemplate } from "../types/config";
  * 模板变量接口
  */
 interface ITemplateVariables {
-	title?: string;
-	date?: string;
-	time?: string;
-	timestamp?: string;
 	[key: string]: string | undefined;
 }
 
@@ -25,8 +21,25 @@ export class FolderTemplatesService {
 	 * 如果存在官方模板插件设置，使用其路径，否则使用默认值
 	 */
 	getDefaultTemplatesFolderPath(): string {
-		return this.app.internalPlugins.plugins.templates.instance.options
-			.folder;
+		// 优先使用官方模板插件的设置
+		if (this.isCoreTemplatePluginEnabled()) {
+			const coreFolderPath =
+				this.app.internalPlugins.plugins.templates.instance.options
+					.folder;
+			if (coreFolderPath && coreFolderPath.trim()) {
+				return coreFolderPath;
+			}
+		}
+
+		// 如果没有找到，返回默认值
+		return "templates";
+	}
+
+	isCoreTemplatePluginEnabled(): boolean {
+		return (
+			this.app.internalPlugins.plugins.templates &&
+			this.app.internalPlugins.plugins.templates.enabled
+		);
 	}
 
 	/**
@@ -85,11 +98,22 @@ export class FolderTemplatesService {
 		for (const template of sortedTemplates) {
 			const normalizedTemplatePath = normalizePath(template.Folder);
 
-			// 精确匹配或者是子文件夹匹配
+			// 精确匹配
+			if (normalizedFolderPath === normalizedTemplatePath) {
+				return template;
+			}
+
+			// 子文件夹匹配（处理根目录模板的特殊情况）
 			if (
-				normalizedFolderPath === normalizedTemplatePath ||
-				normalizedFolderPath.startsWith(normalizedTemplatePath + "/")
+				normalizedTemplatePath === "" ||
+				normalizedTemplatePath === "/"
 			) {
+				// 根目录模板匹配所有文件夹
+				return template;
+			}
+
+			// 普通子文件夹匹配
+			if (normalizedFolderPath.startsWith(normalizedTemplatePath + "/")) {
 				return template;
 			}
 		}
@@ -148,31 +172,10 @@ export class FolderTemplatesService {
 		const now = new Date();
 
 		const variables: ITemplateVariables = {
-			title: fileName || "",
-			date: now.toISOString().split("T")[0], // YYYY-MM-DD
-			time: now.toTimeString().split(" ")[0], // HH:MM:SS
-			timestamp: now.toISOString(),
-			// 兼容官方模板插件的变量格式
+			// 官方模板插件标准变量
 			"{{date}}": now.toISOString().split("T")[0],
 			"{{time}}": now.toTimeString().split(" ")[0],
 			"{{title}}": fileName || "",
-			// 添加更多常用的日期格式
-			"{{date:YYYY-MM-DD}}": now.toISOString().split("T")[0],
-			"{{date:MM-DD-YYYY}}": `${String(now.getMonth() + 1).padStart(
-				2,
-				"0"
-			)}-${String(now.getDate()).padStart(2, "0")}-${now.getFullYear()}`,
-			"{{date:DD/MM/YYYY}}": `${String(now.getDate()).padStart(
-				2,
-				"0"
-			)}/${String(now.getMonth() + 1).padStart(
-				2,
-				"0"
-			)}/${now.getFullYear()}`,
-			// 中文日期格式
-			"{{date:YYYY年MM月DD日}}": `${now.getFullYear()}年${String(
-				now.getMonth() + 1
-			).padStart(2, "0")}月${String(now.getDate()).padStart(2, "0")}日`,
 		};
 
 		// 合并自定义变量
@@ -195,20 +198,98 @@ export class FolderTemplatesService {
 	): string {
 		let result = content;
 
-		// 替换所有变量
+		// 处理动态日期时间格式（官方模板插件标准功能）
+		result = this.replaceDynamicDateTimeVariables(result);
+
+		// 替换静态变量（所有变量都是 {{variable}} 格式）
 		for (const [key, value] of Object.entries(variables)) {
 			if (value !== undefined) {
-				// 支持多种变量格式
-				const patterns = [
-					new RegExp(`\\{\\{${key}\\}\\}`, "g"), // {{variable}}
-					new RegExp(`\\{\\{\\{${key}\\}\\}\\}`, "g"), // {{{variable}}}
-					new RegExp(`<\\%\\s*${key}\\s*\\%>`, "g"), // <% variable %>
-				];
-
-				for (const pattern of patterns) {
-					result = result.replace(pattern, value);
-				}
+				const pattern = new RegExp(this.escapeRegExp(key), "g");
+				result = result.replace(pattern, value);
 			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * 转义正则表达式特殊字符
+	 * @param string 需要转义的字符串
+	 * @returns 转义后的字符串
+	 */
+	private escapeRegExp(string: string): string {
+		return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	}
+
+	/**
+	 * 替换动态日期时间变量
+	 * 支持 {{date:format}} 和 {{time:format}} 格式，其中 format 是 Moment.js 格式字符串
+	 * @param content 模板内容
+	 * @returns 替换后的内容
+	 */
+	private replaceDynamicDateTimeVariables(content: string): string {
+		const now = new Date();
+
+		// 匹配 {{date:format}} 和 {{time:format}} 格式
+		const dateTimePattern = /\{\{(date|time):([^}]+)\}\}/g;
+
+		return content.replace(dateTimePattern, (match, type, format) => {
+			try {
+				// 使用简单的日期格式化（模拟 Moment.js 的基本功能）
+				return this.formatDate(now, format.trim());
+			} catch (error) {
+				this.logger.warn(`Failed to format date/time: ${match}`, error);
+				return match; // 如果格式化失败，返回原字符串
+			}
+		});
+	}
+
+	/**
+	 * 格式化日期（支持官方模板插件的 Moment.js 格式令牌）
+	 * @param date 日期对象
+	 * @param format 格式字符串
+	 * @returns 格式化后的日期字符串
+	 */
+	private formatDate(date: Date, format: string): string {
+		// 官方模板插件支持的 Moment.js 格式令牌
+		const tokens: { [key: string]: string } = {
+			// 年
+			YYYY: date.getFullYear().toString(),
+			YY: date.getFullYear().toString().slice(-2),
+			// 月
+			MM: String(date.getMonth() + 1).padStart(2, "0"),
+			M: (date.getMonth() + 1).toString(),
+			// 日
+			DD: String(date.getDate()).padStart(2, "0"),
+			D: date.getDate().toString(),
+			// 时
+			HH: String(date.getHours()).padStart(2, "0"),
+			H: date.getHours().toString(),
+			hh: String(date.getHours() % 12 || 12).padStart(2, "0"),
+			h: (date.getHours() % 12 || 12).toString(),
+			// 分
+			mm: String(date.getMinutes()).padStart(2, "0"),
+			m: date.getMinutes().toString(),
+			// 秒
+			ss: String(date.getSeconds()).padStart(2, "0"),
+			s: date.getSeconds().toString(),
+			// 上午/下午
+			A: date.getHours() >= 12 ? "PM" : "AM",
+			a: date.getHours() >= 12 ? "pm" : "am",
+		};
+
+		let result = format;
+
+		// 按令牌长度排序，确保较长的令牌先被替换
+		const sortedTokens = Object.keys(tokens).sort(
+			(a, b) => b.length - a.length
+		);
+
+		for (const token of sortedTokens) {
+			result = result.replace(
+				new RegExp(this.escapeRegExp(token), "g"),
+				tokens[token]
+			);
 		}
 
 		return result;
@@ -230,6 +311,7 @@ export class FolderTemplatesService {
 			return defaultName;
 		}
 
+		// 使用完整的模板变量替换逻辑（包括动态日期时间格式）
 		const fileName = this.replaceTemplateVariables(
 			template.FileNameRule,
 			variables

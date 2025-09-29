@@ -7,7 +7,7 @@ import { useVaultSuggestions } from "@/src/core/hooks/useVaultSuggestions";
 import { t } from "@/src/i18n/i18n";
 import RavenHogwartsToolkitPlugin from "@/src/main";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FolderTemplatesManager } from "../../manager/FolderTemplatesManager";
 import { IFolderTemplate, IFolderTemplatesConfig } from "../../types/config";
 import "./styles/FolderTemplatesSettings.css";
@@ -16,208 +16,225 @@ interface FolderTemplatesSettingsProps {
 	plugin: RavenHogwartsToolkitPlugin;
 }
 
-export const FolderTemplatesSettings: React.FC<
-	FolderTemplatesSettingsProps
-> = ({ plugin }) => {
-	const { config } = useModuleConfig<IFolderTemplatesConfig>(
-		plugin,
-		"folderTemplates"
+// 自定义 Hook 用于管理模板相关状态和逻辑
+const useFolderTemplatesLogic = (
+	plugin: RavenHogwartsToolkitPlugin,
+	config: IFolderTemplatesConfig | undefined,
+	updateConfig: (newConfig: Partial<IFolderTemplatesConfig>) => void
+) => {
+	const manager = useMemo(
+		() => plugin.getManager("folderTemplates") as FolderTemplatesManager,
+		[plugin]
 	);
-	const { folderSuggestions } = useVaultSuggestions(plugin.app);
 
-	// 获取模板数据和相关状态
 	const [templates, setTemplates] = useState<IFolderTemplate[]>([]);
 	const [templateFileOptions, setTemplateFileOptions] = useState<string[]>(
 		[]
 	);
 	const [templatesPath, setTemplatesPath] = useState<string>("");
-	const [isTemplatePluginEnabled, setIsTemplatePluginEnabled] =
-		useState(false);
+
+	// 初始化数据
+	useEffect(() => {
+		if (!manager) return;
+
+		const service = manager.getTemplatesService();
+		const defaultPath =
+			config?.templatesFolderPath ||
+			service.getDefaultTemplatesFolderPath();
+		setTemplatesPath(defaultPath);
+
+		const moduleData = plugin.settings.toolkit.folderTemplates?.data;
+		if (moduleData?.templates) {
+			setTemplates(moduleData.templates);
+		}
+	}, [plugin, manager, config]);
+
+	// 获取模板文件选项
+	const refreshTemplateFileOptions = useCallback(
+		async (path: string) => {
+			if (!manager || !path) {
+				setTemplateFileOptions([]);
+				return;
+			}
+
+			const service = manager.getTemplatesService();
+			const options = await service.getTemplateFileOptions(path);
+			setTemplateFileOptions(options.map((opt) => opt.value));
+		},
+		[manager]
+	);
+
+	useEffect(() => {
+		refreshTemplateFileOptions(templatesPath);
+	}, [templatesPath, refreshTemplateFileOptions]);
+
+	// 更新模板配置
+	const updateTemplates = useCallback(
+		async (newTemplates: IFolderTemplate[]) => {
+			const moduleSettings = plugin.settings.toolkit.folderTemplates;
+			if (moduleSettings) {
+				moduleSettings.data.templates = newTemplates;
+				moduleSettings.data.lastModified = new Date().toISOString();
+				await plugin.saveData(plugin.settings);
+				setTemplates(newTemplates);
+			}
+		},
+		[plugin]
+	);
+
+	// 更新模板路径
+	const updateTemplatesPath = useCallback(
+		(newPath: string) => {
+			setTemplatesPath(newPath);
+			updateConfig({ templatesFolderPath: newPath });
+			refreshTemplateFileOptions(newPath);
+		},
+		[updateConfig, refreshTemplateFileOptions]
+	);
+
+	return {
+		templates,
+		templateFileOptions,
+		templatesPath,
+		updateTemplates,
+		updateTemplatesPath,
+		setTemplates,
+	};
+};
+
+export const FolderTemplatesSettings: React.FC<
+	FolderTemplatesSettingsProps
+> = ({ plugin }) => {
+	const { config, updateConfig } = useModuleConfig<IFolderTemplatesConfig>(
+		plugin,
+		"folderTemplates"
+	);
+	const { folderSuggestions } = useVaultSuggestions(plugin.app);
+
+	const {
+		templates,
+		templateFileOptions,
+		templatesPath,
+		updateTemplates,
+		updateTemplatesPath,
+		setTemplates,
+	} = useFolderTemplatesLogic(plugin, config, updateConfig);
 
 	// 编辑状态
-	const [expandedIndex, setExpandedIndex] = useState<number>(-1);
 	const [editingIndex, setEditingIndex] = useState<number>(-1);
 	const [isAdding, setIsAdding] = useState(false);
+	// 临时编辑数据，用于存储编辑过程中的数据，不影响原始数据
+	const [editingTemplate, setEditingTemplate] =
+		useState<IFolderTemplate | null>(null);
 
-	useEffect(() => {
-		// 检查核心模板插件是否启用并获取路径
-		const manager = plugin.getManager(
-			"folderTemplates"
-		) as FolderTemplatesManager;
-		if (manager) {
-			const service = manager.getTemplatesService();
-			try {
-				const path = service.getDefaultTemplatesFolderPath();
-				setTemplatesPath(path || "");
-				setIsTemplatePluginEnabled(!!path);
-			} catch (error) {
-				setIsTemplatePluginEnabled(false);
-				setTemplatesPath("");
-			}
+	// 模板操作方法
+	const templateOperations = useMemo(
+		() => ({
+			add: () => {
+				const newTemplate = {
+					Folder: "",
+					TemplateFile: "",
+					FileNameRule: "",
+				};
+				setEditingIndex(templates.length);
+				setEditingTemplate(newTemplate);
+				setIsAdding(true);
+			},
 
-			// 获取当前模板数据
-			const moduleData = plugin.settings.toolkit.folderTemplates?.data;
-			if (moduleData?.templates) {
-				setTemplates(moduleData.templates);
-			}
-		}
-	}, [plugin]);
+			edit: (index: number) => {
+				// 复制当前模板数据到编辑状态
+				setEditingTemplate({ ...templates[index] });
+				setEditingIndex(index);
+				setIsAdding(false);
+			},
 
-	// 单独的useEffect来获取模板文件选项
-	useEffect(() => {
-		const manager = plugin.getManager(
-			"folderTemplates"
-		) as FolderTemplatesManager;
-		if (manager && templatesPath && isTemplatePluginEnabled) {
-			const service = manager.getTemplatesService();
-			service
-				.getTemplateFileOptions(templatesPath)
-				.then((options) => {
-					setTemplateFileOptions(options.map((opt) => opt.value));
-				})
-				.catch((error) => {
-					console.error(
-						"Failed to get template file options:",
-						error
-					);
-					setTemplateFileOptions([]);
-				});
-		} else {
-			setTemplateFileOptions([]);
-		}
-	}, [plugin, templatesPath, isTemplatePluginEnabled]);
+			save: async () => {
+				if (!editingTemplate) return;
 
-	const handleUpdateTemplates = async (newTemplates: IFolderTemplate[]) => {
-		try {
-			const manager = plugin.getManager(
-				"folderTemplates"
-			) as FolderTemplatesManager;
-			if (manager) {
-				// 直接访问和更新数据
-				const moduleSettings = plugin.settings.toolkit.folderTemplates;
-				if (moduleSettings) {
-					moduleSettings.data.templates = newTemplates;
-					moduleSettings.data.lastModified = new Date().toISOString();
-					await plugin.saveData(plugin.settings);
-					setTemplates(newTemplates);
+				if (
+					!editingTemplate.Folder.trim() ||
+					!editingTemplate.TemplateFile.trim()
+				) {
+					return;
 				}
-			}
-		} catch (err) {
-			console.error("Failed to update templates:", err);
-		}
-	};
 
-	const handleAddTemplate = () => {
-		const newIndex = templates.length;
-		setTemplates([
-			...templates,
-			{ Folder: "", TemplateFile: "", FileNameRule: "" },
-		]);
-		setEditingIndex(newIndex);
-		setExpandedIndex(newIndex);
-		setIsAdding(true);
-	};
+				const newTemplates = [...templates];
 
-	const handleEditTemplate = (index: number) => {
-		setEditingIndex(index);
-		setExpandedIndex(index);
-		setIsAdding(false);
-	};
+				if (isAdding) {
+					// 添加新模板
+					newTemplates.push(editingTemplate);
+				} else {
+					// 更新现有模板
+					newTemplates[editingIndex] = editingTemplate;
+				}
 
-	const handleToggleExpand = (index: number) => {
-		if (editingIndex === index) return; // 编辑时不允许折叠
-		setExpandedIndex(expandedIndex === index ? -1 : index);
-	};
+				await updateTemplates(newTemplates);
+				setEditingIndex(-1);
+				setEditingTemplate(null);
+				setIsAdding(false);
+			},
 
-	const handleSaveTemplate = async (
-		index: number,
-		template: IFolderTemplate
-	) => {
-		if (!template.Folder.trim() || !template.TemplateFile.trim()) {
-			return;
-		}
+			cancel: () => {
+				// 简单重置编辑状态，不修改原始数据
+				setEditingIndex(-1);
+				setEditingTemplate(null);
+				setIsAdding(false);
+			},
 
-		const newTemplates = [...templates];
-		newTemplates[index] = template;
-		await handleUpdateTemplates(newTemplates);
-		setEditingIndex(-1);
-		setExpandedIndex(-1);
-		setIsAdding(false);
-	};
+			delete: async (index: number) => {
+				const newTemplates = templates.filter((_, i) => i !== index);
+				await updateTemplates(newTemplates);
+				setEditingIndex(-1);
+				setEditingTemplate(null);
+				setIsAdding(false);
+			},
 
-	const handleCancelEdit = () => {
-		if (isAdding) {
-			// 如果是新增状态，移除最后添加的空模板
-			setTemplates(templates.slice(0, -1));
-		}
-		setEditingIndex(-1);
-		setExpandedIndex(-1);
-		setIsAdding(false);
-	};
+			update: (field: keyof IFolderTemplate, value: string) => {
+				if (!editingTemplate) return;
 
-	const handleDeleteTemplate = async (index: number) => {
-		const newTemplates = templates.filter((_, i) => i !== index);
-		await handleUpdateTemplates(newTemplates);
-		// 重置状态
-		setEditingIndex(-1);
-		setExpandedIndex(-1);
-		setIsAdding(false);
-	};
-
-	const handleUpdateTemplate = (
-		index: number,
-		field: keyof IFolderTemplate,
-		value: string
-	) => {
-		const newTemplates = [...templates];
-		newTemplates[index] = { ...newTemplates[index], [field]: value };
-		setTemplates(newTemplates);
-	};
+				setEditingTemplate({
+					...editingTemplate,
+					[field]: value,
+				});
+			},
+		}),
+		[templates, updateTemplates, isAdding, editingIndex, editingTemplate]
+	);
 
 	return (
-		<div className="folder-templates-settings">
-			{/* 模板文件夹路径设置 */}
-			<div className="template-folder-path-section">
-				<SettingItem
-					name={t(
-						"toolkit.folderTemplates.settings.templatesFolderPath.title"
+		<div className="rht-toolkit-detail-settings">
+			<SettingItem
+				name={t(
+					"toolkit.folderTemplates.settings.templatesFolderPath.title"
+				)}
+				desc={t(
+					"toolkit.folderTemplates.settings.templatesFolderPath.description"
+				)}
+			>
+				<SuggestionInput
+					value={templatesPath}
+					onChange={updateTemplatesPath}
+					suggestions={folderSuggestions}
+					placeholder={t(
+						"toolkit.folderTemplates.settings.templatesFolderPath.placeholder"
 					)}
-					desc={t(
-						"toolkit.folderTemplates.settings.templatesFolderPath.description"
-					)}
-				>
-					<div className="template-folder-path-input-container">
-						<Input
-							value={templatesPath}
-							onChange={() => {}} // 不允许编辑
-							placeholder={t(
-								"toolkit.folderTemplates.settings.templatesFolderPath.placeholder"
-							)}
-							disabled
-						/>
-						{!isTemplatePluginEnabled && (
-							<span className="template-folder-path-error">
-								{t(
-									"toolkit.folderTemplates.settings.templatesFolderPath.enablePlugin"
-								)}
-							</span>
-						)}
-					</div>
-				</SettingItem>
-			</div>
+				/>
+			</SettingItem>
 
-			{/* 模板管理设置 */}
 			<SettingItem
 				name={t(
 					"toolkit.folderTemplates.settings.templateManagement.title"
 				)}
 				desc=""
+				collapsible={true}
+				defaultCollapsed={false}
 			>
-				<div className="template-management-section">
-					<div className="template-management-header">
+				<div className="RHT__FT-template-management">
+					{/* 顶部操作栏 */}
+					<div className="RHT__FT-template-header">
 						<Button
-							onClick={handleAddTemplate}
-							disabled={!isTemplatePluginEnabled}
+							onClick={templateOperations.add}
+							className="RHT__FT-add-button"
 						>
 							{t(
 								"toolkit.folderTemplates.settings.templateManagement.addTemplate"
@@ -226,50 +243,26 @@ export const FolderTemplatesSettings: React.FC<
 					</div>
 
 					{/* 模板列表 */}
-					{templates.length > 0 ? (
-						<div className="template-list">
-							{templates.map((template, index) => (
-								<TemplateItem
-									key={index}
-									template={template}
-									index={index}
-									isExpanded={expandedIndex === index}
-									isEditing={editingIndex === index}
-									folderSuggestions={folderSuggestions}
-									templateFileOptions={templateFileOptions}
-									onToggleExpand={() =>
-										handleToggleExpand(index)
-									}
-									onEdit={() => handleEditTemplate(index)}
-									onSave={(template) =>
-										handleSaveTemplate(index, template)
-									}
-									onCancel={handleCancelEdit}
-									onDelete={() => handleDeleteTemplate(index)}
-									onUpdate={(field, value) =>
-										handleUpdateTemplate(
-											index,
-											field,
-											value
-										)
-									}
-									disabled={!isTemplatePluginEnabled}
-								/>
-							))}
-						</div>
-					) : (
-						<div className="template-empty-state">
-							<p>
-								{isTemplatePluginEnabled
-									? t(
-											"toolkit.folderTemplates.settings.templateManagement.emptyState"
-									  )
-									: t(
-											"toolkit.folderTemplates.settings.templateManagement.enablePluginFirst"
-									  )}
-							</p>
-						</div>
-					)}
+					<div className="RHT__FT-template-list">
+						{templates.map((template, index) => (
+							<TemplateItem
+								key={index}
+								template={template}
+								editingTemplate={editingTemplate}
+								index={index}
+								isEditing={editingIndex === index}
+								folderSuggestions={folderSuggestions}
+								templateFileOptions={templateFileOptions}
+								onEdit={() => templateOperations.edit(index)}
+								onSave={templateOperations.save}
+								onCancel={templateOperations.cancel}
+								onDelete={() =>
+									templateOperations.delete(index)
+								}
+								onUpdate={templateOperations.update}
+							/>
+						))}
+					</div>
 				</div>
 			</SettingItem>
 		</div>
@@ -278,275 +271,170 @@ export const FolderTemplatesSettings: React.FC<
 
 interface TemplateItemProps {
 	template: IFolderTemplate;
+	editingTemplate: IFolderTemplate | null;
 	index: number;
-	isExpanded: boolean;
 	isEditing: boolean;
 	folderSuggestions: string[];
 	templateFileOptions: string[];
-	onToggleExpand: () => void;
 	onEdit: () => void;
-	onSave: (template: IFolderTemplate) => void;
+	onSave: () => void;
 	onCancel: () => void;
 	onDelete: () => void;
 	onUpdate: (field: keyof IFolderTemplate, value: string) => void;
-	disabled?: boolean;
 }
 
 const TemplateItem: React.FC<TemplateItemProps> = ({
 	template,
+	editingTemplate,
 	index,
-	isExpanded,
 	isEditing,
 	folderSuggestions,
 	templateFileOptions,
-	onToggleExpand,
 	onEdit,
 	onSave,
 	onCancel,
 	onDelete,
 	onUpdate,
-	disabled = false,
 }) => {
+	// 使用编辑中的模板数据或原始数据
+	const currentTemplate =
+		isEditing && editingTemplate ? editingTemplate : template;
+
 	const handleSave = () => {
-		onSave(template);
+		onSave();
 	};
 
-	const renderSummary = (): React.ReactNode[] => {
-		const items: React.ReactNode[] = [];
-
-		if (template.Folder) {
-			items.push(
-				<span key="folder" className="template-summary-item">
-					<span className="template-summary-label">
-						{t(
-							"toolkit.folderTemplates.settings.templateForm.targetFolder"
-						)}
-						:
-					</span>
-					<span>{template.Folder}</span>
-				</span>
-			);
-		}
-		if (template.TemplateFile) {
-			items.push(
-				<span key="template" className="template-summary-item">
-					<span className="template-summary-label">
-						{t(
-							"toolkit.folderTemplates.settings.templateForm.templateFile"
-						)}
-						:
-					</span>
-					<span>{template.TemplateFile}</span>
-				</span>
-			);
-		}
-		if (template.FileNameRule) {
-			items.push(
-				<span key="rule" className="template-summary-item">
-					<span className="template-summary-label">
-						{t(
-							"toolkit.folderTemplates.settings.templateForm.fileNameRule"
-						)}
-						:
-					</span>
-					<span>{template.FileNameRule}</span>
-				</span>
-			);
-		}
-		return items.length > 0
-			? items
-			: [
-					<span key="empty" className="template-summary-item">
-						<span className="template-summary-empty">未配置</span>
-					</span>,
-			  ];
-	};
-
-	return (
-		<div className={`template-item ${isEditing ? "editing" : ""}`}>
-			{/* 标题栏 */}
-			<div
-				className={`template-item-header ${
-					isEditing ? "editing" : ""
-				} ${isExpanded ? "expanded" : ""}`}
-				onClick={!isEditing ? onToggleExpand : undefined}
-			>
-				<div className="template-item-title-section">
-					<div className="template-item-title">
-						{t(
-							"toolkit.folderTemplates.settings.templateForm.title"
-						)}{" "}
-						{index + 1}
-					</div>
-					{!isExpanded && !isEditing && (
-						<div className="template-item-summary">
-							{renderSummary()}
-						</div>
-					)}
-				</div>
-
-				<div className="template-item-actions">
-					{!isEditing && (
-						<>
-							<Button
-								onClick={(e) => {
-									e.stopPropagation();
-									onEdit();
-								}}
-								size="small"
-								disabled={disabled}
-							>
-								{t(
-									"toolkit.folderTemplates.settings.templateManagement.editTemplate"
-								)}
-							</Button>
-							<Button
-								onClick={(e) => {
-									e.stopPropagation();
-									onDelete();
-								}}
-								size="small"
-								variant="outline"
-								disabled={disabled}
-							>
-								{t(
-									"toolkit.folderTemplates.settings.templateManagement.deleteTemplate"
-								)}
-							</Button>
-						</>
-					)}
-					{!isEditing && (
-						<span
-							className={`template-expand-arrow ${
-								isExpanded ? "expanded" : ""
-							}`}
-						>
-							▶
+	if (isEditing) {
+		return (
+			<div className="RHT__FT-template-item RHT__FT-editing">
+				{/* 紧凑的编辑表单 */}
+				<div className="RHT__FT-template-form-compact">
+					<div className="RHT__FT-form-header">
+						<span className="RHT__FT-template-number">
+							{index + 1}.
 						</span>
-					)}
-				</div>
-			</div>
+						<span className="RHT__FT-form-title">编辑模板配置</span>
+						<div className="RHT__FT-form-actions-header">
+							<Button
+								onClick={handleSave}
+								disabled={
+									!currentTemplate.Folder.trim() ||
+									!currentTemplate.TemplateFile.trim()
+								}
+								size="small"
+								className="RHT__FT-save-button"
+							>
+								保存
+							</Button>
+							<Button
+								onClick={onCancel}
+								variant="outline"
+								size="small"
+								className="RHT__FT-cancel-button"
+							>
+								取消
+							</Button>
+						</div>
+					</div>
 
-			{/* 展开内容 */}
-			{(isExpanded || isEditing) && (
-				<div className="template-item-content">
-					<div className="template-form-fields">
+					<div className="RHT__FT-form-grid">
 						{/* 目标文件夹 */}
-						<SettingItem
-							name={t(
-								"toolkit.folderTemplates.settings.templateForm.targetFolder"
-							)}
-							desc=""
-						>
-							{isEditing ? (
-								<SuggestionInput
-									value={template.Folder}
-									onChange={(value) =>
-										onUpdate("Folder", value)
-									}
-									suggestions={folderSuggestions}
-									placeholder={t(
-										"toolkit.folderTemplates.settings.templateForm.selectFolder"
-									)}
-									disabled={disabled}
-								/>
-							) : (
-								<span
-									className={`template-form-value ${
-										!template.Folder ? "empty" : ""
-									}`}
-								>
-									{template.Folder || "/"}
-								</span>
-							)}
-						</SettingItem>
+						<div className="RHT__FT-form-field">
+							<label className="RHT__FT-form-label">
+								目标文件夹
+							</label>
+							<SuggestionInput
+								value={currentTemplate.Folder}
+								onChange={(value) => onUpdate("Folder", value)}
+								suggestions={folderSuggestions}
+								placeholder="选择或输入文件夹路径"
+							/>
+						</div>
 
 						{/* 模板文件 */}
-						<SettingItem
-							name={t(
-								"toolkit.folderTemplates.settings.templateForm.templateFile"
-							)}
-							desc=""
-						>
-							{isEditing ? (
-								<SuggestionInput
-									value={template.TemplateFile}
-									onChange={(value) =>
-										onUpdate("TemplateFile", value)
-									}
-									suggestions={templateFileOptions}
-									placeholder={t(
-										"toolkit.folderTemplates.settings.templateForm.selectTemplate"
-									)}
-									disabled={disabled}
-								/>
-							) : (
-								<span
-									className={`template-form-value ${
-										!template.TemplateFile ? "empty" : ""
-									}`}
-								>
-									{template.TemplateFile}
-								</span>
-							)}
-						</SettingItem>
+						<div className="RHT__FT-form-field">
+							<label className="RHT__FT-form-label">
+								模板文件
+							</label>
+							<SuggestionInput
+								value={currentTemplate.TemplateFile}
+								onChange={(value) =>
+									onUpdate("TemplateFile", value)
+								}
+								suggestions={templateFileOptions}
+								placeholder="选择模板文件"
+							/>
+						</div>
 
 						{/* 文件名规则 */}
-						<SettingItem
-							name={t(
-								"toolkit.folderTemplates.settings.templateForm.fileNameRule"
-							)}
-							desc={
-								isEditing
-									? t(
-											"toolkit.folderTemplates.settings.templateForm.fileNameRuleDesc"
-									  )
-									: ""
-							}
-						>
-							{isEditing ? (
-								<Input
-									value={template.FileNameRule || ""}
-									onChange={(value) =>
-										onUpdate("FileNameRule", value)
-									}
-									placeholder={t(
-										"toolkit.folderTemplates.settings.templateForm.fileNameRulePlaceholder"
-									)}
-									disabled={disabled}
-								/>
-							) : (
-								<span
-									className={`template-form-value ${
-										!template.FileNameRule ? "empty" : ""
-									}`}
-								>
+						<div className="RHT__FT-form-field RHT__FT-form-field-full">
+							<label className="RHT__FT-form-label">
+								文件名规则
+								<span className="RHT__FT-form-label-optional">
+									（可选）
+								</span>
+							</label>
+							<Input
+								value={currentTemplate.FileNameRule || ""}
+								onChange={(value) =>
+									onUpdate("FileNameRule", value)
+								}
+								placeholder="例如：{{title}}-{{date}}"
+							/>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	return (
+		<div className="RHT__FT-template-item">
+			{/* 紧凑的显示行 */}
+			<div className="RHT__FT-template-row-compact">
+				<div className="RHT__FT-template-info-compact">
+					<span className="RHT__FT-template-number">
+						{index + 1}.
+					</span>
+					<div className="RHT__FT-template-path-chain">
+						<span className="RHT__FT-template-folder">
+							{template.Folder || "/"}
+						</span>
+						<span className="RHT__FT-template-separator">→</span>
+						<span className="RHT__FT-template-file">
+							{template.TemplateFile || "未选择模板"}
+						</span>
+						{template.FileNameRule && (
+							<>
+								<span className="RHT__FT-template-separator">
+									|
+								</span>
+								<span className="RHT__FT-template-rule">
 									{template.FileNameRule}
 								</span>
-							)}
-						</SettingItem>
-
-						{/* 编辑模式下的操作按钮 */}
-						{isEditing && (
-							<div className="template-form-actions">
-								<Button
-									onClick={handleSave}
-									disabled={disabled}
-								>
-									{t(
-										"toolkit.folderTemplates.settings.templateManagement.saveTemplate"
-									)}
-								</Button>
-								<Button onClick={onCancel} variant="outline">
-									{t(
-										"toolkit.folderTemplates.settings.templateManagement.cancel"
-									)}
-								</Button>
-							</div>
+							</>
 						)}
 					</div>
 				</div>
-			)}
+
+				<div className="RHT__FT-template-actions-compact">
+					<Button
+						onClick={onEdit}
+						size="small"
+						className="RHT__FT-edit-button"
+					>
+						编辑
+					</Button>
+					<Button
+						onClick={onDelete}
+						size="small"
+						variant="outline"
+						className="RHT__FT-delete-button"
+					>
+						删除
+					</Button>
+				</div>
+			</div>
 		</div>
 	);
 };

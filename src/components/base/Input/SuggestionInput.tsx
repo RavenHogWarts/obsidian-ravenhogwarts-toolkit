@@ -1,4 +1,3 @@
-import { ChevronDown } from "lucide-react";
 import * as React from "react";
 import "./styles/SuggestionInput.css";
 
@@ -23,18 +22,40 @@ export const SuggestionInput: React.FC<SuggestionInputProps> = ({
 	const inputRef = React.useRef<HTMLInputElement>(null);
 
 	const filteredSuggestions = React.useMemo(() => {
-		if (!value) return suggestions;
-		return suggestions.filter((suggestion) =>
-			suggestion.toLowerCase().includes(value.toLowerCase())
-		);
+		// 如果输入为空，显示所有建议（限制数量）
+		if (!value.trim()) {
+			return suggestions.slice(0, 8);
+		}
+
+		const searchValue = value.toLowerCase().trim();
+		return suggestions
+			.filter((suggestion) =>
+				suggestion.toLowerCase().includes(searchValue)
+			)
+			.sort((a, b) => {
+				// 优先显示以搜索值开头的建议
+				const aStartsWith = a.toLowerCase().startsWith(searchValue);
+				const bStartsWith = b.toLowerCase().startsWith(searchValue);
+
+				if (aStartsWith && !bStartsWith) return -1;
+				if (!aStartsWith && bStartsWith) return 1;
+
+				// 其次按字符串长度排序（更短的在前）
+				return a.length - b.length;
+			})
+			.slice(0, 8); // 限制显示最多8个建议
 	}, [suggestions, value]);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const newValue = e.target.value;
 		onChange(newValue);
 
+		// 有建议时显示建议框（不管输入是否为空）
 		if (suggestions.length > 0) {
 			setShowSuggestions(true);
+			setSelectedIndex(-1);
+		} else {
+			setShowSuggestions(false);
 			setSelectedIndex(-1);
 		}
 	};
@@ -58,14 +79,13 @@ export const SuggestionInput: React.FC<SuggestionInputProps> = ({
 			case "Enter":
 				e.preventDefault();
 				if (selectedIndex >= 0) {
-					onChange(filteredSuggestions[selectedIndex]);
-					setShowSuggestions(false);
-					setSelectedIndex(-1);
+					selectSuggestion(filteredSuggestions[selectedIndex]);
 				}
 				break;
 			case "Escape":
 				setShowSuggestions(false);
 				setSelectedIndex(-1);
+				inputRef.current?.blur();
 				break;
 		}
 	};
@@ -74,13 +94,8 @@ export const SuggestionInput: React.FC<SuggestionInputProps> = ({
 		onChange(suggestion);
 		setShowSuggestions(false);
 		setSelectedIndex(-1);
-		inputRef.current?.focus();
-	};
-
-	const toggleSuggestions = () => {
-		if (disabled) return;
-		setShowSuggestions(!showSuggestions);
-		setSelectedIndex(-1);
+		// 失去焦点以确保建议框完全关闭
+		inputRef.current?.blur();
 	};
 
 	// 点击外部关闭建议
@@ -103,37 +118,20 @@ export const SuggestionInput: React.FC<SuggestionInputProps> = ({
 
 	return (
 		<div className="rht-suggestion-input-container" ref={containerRef}>
-			<div className="rht-suggestion-input-wrapper">
-				<input
-					ref={inputRef}
-					className={`rht-suggestion-input ${
-						disabled ? "disabled" : ""
-					}`}
-					value={value}
-					onChange={handleInputChange}
-					onKeyDown={handleKeyDown}
-					onFocus={() =>
-						suggestions.length > 0 && setShowSuggestions(true)
+			<input
+				ref={inputRef}
+				className={`rht-suggestion-input ${disabled ? "disabled" : ""}`}
+				value={value}
+				onChange={handleInputChange}
+				onKeyDown={handleKeyDown}
+				onFocus={() => {
+					if (suggestions.length > 0) {
+						setShowSuggestions(true);
 					}
-					placeholder={placeholder}
-					disabled={disabled}
-				/>
-				{suggestions.length > 0 && !disabled && (
-					<button
-						type="button"
-						className="rht-suggestion-input-toggle"
-						onClick={toggleSuggestions}
-						tabIndex={-1}
-					>
-						<ChevronDown
-							size={16}
-							className={`rht-suggestion-input-icon ${
-								showSuggestions ? "rotated" : ""
-							}`}
-						/>
-					</button>
-				)}
-			</div>
+				}}
+				placeholder={placeholder}
+				disabled={disabled}
+			/>
 
 			{showSuggestions && filteredSuggestions.length > 0 && (
 				<div className="rht-suggestion-input-dropdown">

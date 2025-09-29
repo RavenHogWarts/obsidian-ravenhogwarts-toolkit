@@ -1,165 +1,479 @@
-/* FolderTemplates Settings Styles */
-.folder-templates-settings {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+/* 模板管理主容器 */
+.RHT__FT-template-management {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	width: 100%;
 }
 
-.template-folder-path-section {
-  border-bottom: 1px solid var(--background-modifier-border);
-  padding-bottom: 16px;
+/* 顶部操作栏 */
+.RHT__FT-template-header {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	padding: 8px 0;
+	border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.template-folder-path-input-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
+.RHT__FT-add-button {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border: none;
+	padding: 6px 12px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 12px;
+	transition: all 0.2s ease;
 }
 
+.RHT__FT-add-button:hover:not(:disabled) {
+	background: var(--interactive-accent-hover);
+	transform: translateY(-1px);
+}
+
+.RHT__FT-add-button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+/* 模板列表容器 */
+.RHT__FT-template-list {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+/* 模板项 */
+.RHT__FT-template-item {
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	overflow: hidden;
+	transition: all 0.15s ease;
+	margin-bottom: 4px;
+}
+
+.RHT__FT-template-item:hover {
+	border-color: var(--interactive-accent);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	background: var(--background-secondary);
+}
+
+.RHT__FT-template-item.RHT__FT-editing {
+	border-color: var(--interactive-accent);
+	background: var(--background-primary-alt);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* 模板行 */
+.RHT__FT-template-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 12px;
+	gap: 10px;
+	min-height: 36px;
+}
+
+/* 模板信息区域 */
+.RHT__FT-template-info {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex: 1;
+	font-size: 13px;
+	overflow: hidden;
+}
+
+.RHT__FT-template-number {
+	color: var(--text-muted);
+	font-weight: 500;
+	min-width: 18px;
+	font-size: 12px;
+}
+
+.RHT__FT-template-folder {
+	color: var(--text-accent);
+	font-weight: 500;
+	background: var(--background-modifier-hover);
+	padding: 1px 4px;
+	border-radius: 2px;
+	font-size: 12px;
+	max-width: 120px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.RHT__FT-template-separator {
+	color: var(--text-muted);
+	font-weight: 600;
+	font-size: 11px;
+	flex-shrink: 0;
+}
+
+.RHT__FT-template-file {
+	color: var(--text-normal);
+	font-family: var(--font-monospace);
+	background: var(--background-modifier-hover);
+	padding: 1px 4px;
+	border-radius: 2px;
+	font-size: 11px;
+	max-width: 160px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	flex-shrink: 1;
+}
+
+.RHT__FT-template-rule {
+	color: var(--text-muted);
+	font-style: italic;
+	font-size: 11px;
+	max-width: 100px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	flex-shrink: 1;
+}
+
+/* 模板操作区域 */
+.RHT__FT-template-actions {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	flex-shrink: 0;
+}
+
+.RHT__FT-edit-button,
+.RHT__FT-delete-button {
+	padding: 3px 6px;
+	font-size: 11px;
+	border-radius: 3px;
+	transition: all 0.15s ease;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.RHT__FT-edit-button {
+	background: var(--interactive-normal);
+	color: var(--text-normal);
+	border: 1px solid var(--background-modifier-border);
+	opacity: 0.8;
+}
+
+.RHT__FT-edit-button:hover:not(:disabled) {
+	background: var(--interactive-hover);
+	border-color: var(--interactive-accent);
+	opacity: 1;
+	transform: translateY(-1px);
+}
+
+.RHT__FT-delete-button {
+	color: var(--text-error);
+	border: 1px solid transparent;
+	background: transparent;
+	opacity: 0.7;
+}
+
+.RHT__FT-delete-button:hover:not(:disabled) {
+	background: rgba(255, 82, 82, 0.1);
+	border-color: var(--text-error);
+	opacity: 1;
+	transform: translateY(-1px);
+}
+
+/* 编辑表单 */
+.RHT__FT-template-form {
+	border-top: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	animation: slideDown 0.2s ease-out;
+	margin-top: 0;
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.RHT__FT-form-fields {
+	padding: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+/* 表单内的SettingItem样式调整 */
+.RHT__FT-template-form .RHT__FT-form-fields > .setting-item {
+	margin-bottom: 0;
+	padding-bottom: 8px;
+	border-bottom: none;
+}
+
+/* 表单操作按钮 */
+.RHT__FT-form-actions {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 0 0 0;
+	border-top: 1px solid var(--background-modifier-border);
+	margin-top: 8px;
+}
+
+/* 表单按钮样式 */
+.RHT__FT-form-actions .RHT__FT-save-button,
+button.RHT__FT-save-button {
+	background: var(--interactive-accent) !important;
+	color: var(--text-on-accent) !important;
+	border: none !important;
+	padding: 4px 10px !important;
+	border-radius: 3px !important;
+	font-size: 11px !important;
+	font-weight: 500 !important;
+	transition: all 0.15s ease !important;
+	cursor: pointer !important;
+	min-height: auto !important;
+	height: auto !important;
+}
+
+.RHT__FT-form-actions .RHT__FT-save-button:hover:not(:disabled),
+button.RHT__FT-save-button:hover:not(:disabled) {
+	background: var(--interactive-accent-hover) !important;
+	transform: translateY(-1px) !important;
+}
+
+.RHT__FT-form-actions .RHT__FT-save-button:disabled,
+button.RHT__FT-save-button:disabled {
+	opacity: 0.5 !important;
+	cursor: not-allowed !important;
+}
+
+.RHT__FT-form-actions .RHT__FT-cancel-button,
+button.RHT__FT-cancel-button {
+	background: transparent !important;
+	color: var(--text-muted) !important;
+	border: 1px solid var(--background-modifier-border) !important;
+	padding: 4px 10px !important;
+	border-radius: 3px !important;
+	font-size: 11px !important;
+	transition: all 0.15s ease !important;
+	cursor: pointer !important;
+	min-height: auto !important;
+	height: auto !important;
+}
+
+.RHT__FT-form-actions .RHT__FT-cancel-button:hover,
+button.RHT__FT-cancel-button:hover {
+	background: var(--background-modifier-hover) !important;
+	color: var(--text-normal) !important;
+	border-color: var(--interactive-normal) !important;
+	transform: translateY(-1px) !important;
+}
+
+/* 模板文件夹路径错误提示 */
 .template-folder-path-error {
-  color: var(--text-error);
-  font-size: 12px;
-  white-space: nowrap;
+	color: var(--text-error);
+	font-size: 12px;
+	margin-top: 4px;
+	display: block;
 }
 
-.template-management-section {
-  display: flex;
-  flex-direction: column;
+/* 紧凑的模板行样式 */
+.RHT__FT-template-row-compact {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 14px;
+	gap: 12px;
+	min-height: 44px;
 }
 
-.template-management-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+.RHT__FT-template-info-compact {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex: 1;
+	font-size: 13px;
+	overflow: hidden;
 }
 
-.template-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.RHT__FT-template-path-chain {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex: 1;
+	overflow: hidden;
 }
 
-.template-empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text-muted);
-  border: 2px dashed var(--background-modifier-border);
-  border-radius: 8px;
-  margin-top: 16px;
+.RHT__FT-template-actions-compact {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
 }
 
-.template-empty-state p {
-  margin: 0 0 16px 0;
-  font-size: 1rem;
+/* 紧凑的编辑表单样式 */
+.RHT__FT-template-form-compact {
+	padding: 16px;
+	background: var(--background-secondary);
 }
 
-/* Template Item Styles */
-.template-item {
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 6px;
-  background: var(--background-primary);
-  transition: all 0.2s ease;
+.RHT__FT-form-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.template-item.editing {
-  border-color: var(--interactive-accent);
-  box-shadow: 0 0 0 1px var(--interactive-accent);
+.RHT__FT-form-title {
+	font-weight: 600;
+	color: var(--text-normal);
+	font-size: 14px;
+	flex: 1;
+	margin-left: 8px;
 }
 
-.template-item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 0.2s ease;
+.RHT__FT-form-actions-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
-.template-item-header.editing {
-  cursor: default;
-  background: var(--background-secondary);
+/* 网格布局的表单字段 */
+.RHT__FT-form-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px 20px;
+	align-items: start;
 }
 
-.template-item-header.expanded {
-  background: var(--background-modifier-hover);
+.RHT__FT-form-field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
 }
 
-.template-item-title-section {
-  flex: 1;
-  min-width: 0;
+.RHT__FT-form-field-full {
+	grid-column: 1 / -1;
 }
 
-.template-item-title {
-  font-weight: 600;
-  color: var(--text-normal);
-  margin-bottom: 4px;
+.RHT__FT-form-label {
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--text-normal);
+	display: flex;
+	align-items: center;
+	gap: 4px;
 }
 
-.template-item-summary {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+.RHT__FT-form-label-optional {
+	font-size: 11px;
+	color: var(--text-muted);
+	font-weight: normal;
 }
 
-.template-summary-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+/* 响应式设计 */
+@media (max-width: 768px) {
+	.RHT__FT-template-row {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 6px;
+		padding: 6px 10px;
+	}
+
+	.RHT__FT-template-row-compact {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+		padding: 12px;
+		min-height: auto;
+	}
+
+	.RHT__FT-template-info {
+		flex-wrap: wrap;
+		gap: 4px;
+	}
+
+	.RHT__FT-template-info-compact {
+		width: 100%;
+	}
+
+	.RHT__FT-template-path-chain {
+		flex-wrap: wrap;
+		gap: 4px;
+	}
+
+	.RHT__FT-template-actions {
+		align-self: flex-end;
+		gap: 3px;
+	}
+
+	.RHT__FT-template-actions-compact {
+		align-self: flex-end;
+		gap: 4px;
+	}
+
+	.RHT__FT-form-fields {
+		padding: 10px;
+	}
+
+	.RHT__FT-form-grid {
+		grid-template-columns: 1fr;
+		gap: 12px;
+	}
+
+	.RHT__FT-form-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+	}
+
+	.RHT__FT-form-actions-header {
+		align-self: flex-end;
+	}
 }
 
-.template-summary-label {
-  font-weight: 500;
+@media (max-width: 480px) {
+	.RHT__FT-template-folder,
+	.RHT__FT-template-file {
+		max-width: 100px;
+	}
+
+	.RHT__FT-template-rule {
+		max-width: 80px;
+	}
+
+	.RHT__FT-form-actions-header {
+		flex-direction: column;
+		gap: 6px;
+		width: 100%;
+	}
+
+	.RHT__FT-form-actions-header button {
+		width: 100%;
+	}
 }
 
-.template-summary-empty {
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.template-item-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.template-expand-arrow {
-  transition: transform 0.2s ease;
-  color: var(--text-muted);
-}
-
-.template-expand-arrow.expanded {
-  transform: rotate(90deg);
-}
-
-.template-item-content {
-  border-top: 1px solid var(--background-modifier-border);
-  padding: 16px;
-  background: var(--background-secondary);
-}
-
-.template-form-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.template-form-value {
-  color: var(--text-muted);
-}
-
-.template-form-value.empty::before {
-  content: "-";
-}
-
-.template-form-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  padding-top: 16px;
-  border-top: 1px solid var(--background-modifier-border);
+/* 空状态样式 */
+.RHT__FT-template-list:empty::after {
+	display: block;
+	text-align: center;
+	color: var(--text-muted);
+	font-style: italic;
+	font-size: 12px;
+	padding: 16px;
+	border: 1px dashed var(--background-modifier-border);
+	border-radius: 4px;
+	background: var(--background-secondary);
+	opacity: 0.8;
 }

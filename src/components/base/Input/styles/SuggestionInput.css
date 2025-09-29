@@ -3,115 +3,121 @@
 	width: 100%;
 }
 
-.rht-suggestion-input-wrapper {
-	position: relative;
-	display: flex;
-	align-items: center;
-}
-
 .rht-suggestion-input {
 	width: 100%;
-	padding: 8px 32px 8px 12px;
-	border: 1px solid var(--background-modifier-border);
-	border-radius: 4px;
+	padding: 10px 14px;
+	border: 1.5px solid var(--background-modifier-border);
+	border-radius: 6px;
 	background-color: var(--background-primary);
 	color: var(--text-normal);
 	font-family: inherit;
 	font-size: 14px;
-	line-height: 1.4;
-	transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+	line-height: 1.5;
+	transition: all 0.2s ease-in-out;
+}
+
+.rht-suggestion-input:hover:not(:disabled) {
+	border-color: var(--background-modifier-border-hover);
 }
 
 .rht-suggestion-input:focus {
 	outline: none;
 	border-color: var(--interactive-accent);
-	box-shadow: 0 0 0 2px var(--interactive-accent-hover);
+	box-shadow: 0 0 0 3px var(--interactive-accent-hover);
+	background-color: var(--background-primary-alt);
 }
 
 .rht-suggestion-input.disabled {
 	background-color: var(--background-secondary);
 	color: var(--text-muted);
 	cursor: not-allowed;
-}
-
-.rht-suggestion-input-toggle {
-	position: absolute;
-	right: 4px;
-	top: 50%;
-	transform: translateY(-50%);
-	padding: 4px;
-	border: none;
-	background: none;
-	color: var(--text-muted);
-	cursor: pointer;
-	border-radius: 2px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.rht-suggestion-input-toggle:hover {
-	background-color: var(--background-modifier-hover);
-	color: var(--text-normal);
-}
-
-.rht-suggestion-input-icon {
-	transition: transform 0.2s ease-in-out;
-}
-
-.rht-suggestion-input-icon.rotated {
-	transform: rotate(180deg);
+	opacity: 0.6;
 }
 
 .rht-suggestion-input-dropdown {
 	position: absolute;
-	top: 100%;
+	top: calc(100% + 4px);
 	left: 0;
 	right: 0;
 	z-index: 1000;
 	background-color: var(--background-primary);
-	border: 1px solid var(--background-modifier-border);
-	border-top: none;
-	border-radius: 0 0 4px 4px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-	max-height: 200px;
+	border: 1.5px solid var(--background-modifier-border);
+	border-radius: 8px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+	max-height: 240px;
 	overflow-y: auto;
+	animation: slideDown 0.15s ease-out;
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 .rht-suggestion-input-option {
-	padding: 8px 12px;
+	padding: 12px 16px;
 	cursor: pointer;
 	color: var(--text-normal);
-	border-bottom: 1px solid var(--background-modifier-border-hover);
+	transition: all 0.15s ease-in-out;
+	font-size: 14px;
+	line-height: 1.4;
+	position: relative;
+}
+
+.rht-suggestion-input-option:first-child {
+	border-radius: 6px 6px 0 0;
 }
 
 .rht-suggestion-input-option:last-child {
-	border-bottom: none;
+	border-radius: 0 0 6px 6px;
 }
 
 .rht-suggestion-input-option:hover {
 	background-color: var(--background-modifier-hover);
+	transform: translateX(2px);
 }
 
 .rht-suggestion-input-option.selected {
 	background-color: var(--interactive-accent);
 	color: var(--text-on-accent);
+	transform: translateX(2px);
+}
+
+.rht-suggestion-input-option.selected::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 3px;
+	background-color: var(--text-on-accent);
+	border-radius: 0 2px 2px 0;
 }
 
 /* 滚动条样式 */
 .rht-suggestion-input-dropdown::-webkit-scrollbar {
-	width: 6px;
+	width: 8px;
 }
 
 .rht-suggestion-input-dropdown::-webkit-scrollbar-track {
-	background: var(--background-secondary);
+	background: transparent;
+	margin: 8px 0;
 }
 
 .rht-suggestion-input-dropdown::-webkit-scrollbar-thumb {
 	background: var(--background-modifier-border);
-	border-radius: 3px;
+	border-radius: 4px;
+	border: 2px solid transparent;
+	background-clip: content-box;
 }
 
 .rht-suggestion-input-dropdown::-webkit-scrollbar-thumb:hover {
 	background: var(--text-muted);
+	background-clip: content-box;
 }
