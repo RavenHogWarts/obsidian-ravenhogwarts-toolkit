@@ -1,3 +1,12 @@
+# [1.4.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.3.2...1.4.0) (2025-10-11)
+
+
+### ✨ Features
+
+* 添加文件夹模板工具 (#19) ([6f456e0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/6f456e0f1a3ab9709c2331be3ca9bd793932c7a1)), closes [#19](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/issues/19)
+
+
+
 ## [1.3.2](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.3.1...1.3.2) (2025-09-17)
 
 
