@@ -1,8 +1,8 @@
-import { Toggle } from "@/src/components/base/Button/Toggle";
-import { SettingItem } from "@/src/components/base/Setting/SettingItem";
-import { Logger, LogLevel } from "@/src/core/services/Log";
-import { t } from "@/src/i18n/i18n";
-import RavenHogwartsToolkitPlugin from "@/src/main";
+import { Toggle } from "@src/components/base/Button/Toggle";
+import { SettingItem } from "@src/components/base/Setting/SettingItem";
+import { Logger, LogLevel } from "@src/core/services/Log";
+import { t } from "@src/i18n/i18n";
+import RavenHogwartsToolkitPlugin from "@src/main";
 import * as React from "react";
 import { Input } from "../base/Input/Input";
 import { Select } from "../base/Select/Select";

@@ -1,3 +1,4 @@
+import { t } from "@src/i18n/i18n";
 import { FC, useState } from "react";
 import {
 	FUNCTION_HINTS,
@@ -5,7 +6,6 @@ import {
 	IFunctionParameter,
 } from "../../types/formula";
 import { IMarkdownTable } from "../../types/table";
-import { t } from "@/src/i18n/i18n";
 import "./styles/FormulaEditor.css";
 
 interface FormulaEditorProps {

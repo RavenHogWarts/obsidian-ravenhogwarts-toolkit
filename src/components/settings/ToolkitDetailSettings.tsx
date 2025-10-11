@@ -1,10 +1,10 @@
-import { ToolkitId } from "@/src/core/interfaces/types";
-import { t } from "@/src/i18n/i18n";
-import { TranslationKeys } from "@/src/i18n/types";
-import RavenHogwartsToolkitPlugin from "@/src/main";
-import { FolderTemplatesSettings } from "@/src/toolkit/folderTemplates/components/settings/FolderTemplatesSettings";
-import { QuickPathSettings } from "@/src/toolkit/quickPath/components/settings/QuickPathSettings";
-import { TableEnhancementsSettings } from "@/src/toolkit/tableEnhancements/components/settings/TableEnhancementsSettings";
+import { ToolkitId } from "@src/core/interfaces/types";
+import { t } from "@src/i18n/i18n";
+import { TranslationKeys } from "@src/i18n/types";
+import RavenHogwartsToolkitPlugin from "@src/main";
+import { FolderTemplatesSettings } from "@src/toolkit/folderTemplates/components/settings/FolderTemplatesSettings";
+import { QuickPathSettings } from "@src/toolkit/quickPath/components/settings/QuickPathSettings";
+import { TableEnhancementsSettings } from "@src/toolkit/tableEnhancements/components/settings/TableEnhancementsSettings";
 import { ArrowLeft } from "lucide-react";
 import { App } from "obsidian";
 import * as React from "react";

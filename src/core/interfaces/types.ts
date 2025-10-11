@@ -1,4 +1,4 @@
-import { DEFAULT_LOGGER_CONFIG, ILoggerConfig } from "@/src/core/services/Log";
+import { DEFAULT_LOGGER_CONFIG, ILoggerConfig } from "@src/core/services/Log";
 import { FolderCog, Link, LucideIcon, Table } from "lucide-react";
 
 // 主配置接口

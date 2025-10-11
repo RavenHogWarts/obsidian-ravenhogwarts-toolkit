@@ -1,5 +1,5 @@
+import { rootLogger } from "@src/core/services/Log";
 import { getLanguage } from "obsidian";
-import { rootLogger } from "@/src/core/services/Log";
 import {
 	BaseMessage,
 	SupportedLocales,

@@ -1,15 +1,15 @@
-import { Toggle } from "@/src/components/base/Button/Toggle";
-import { Card } from "@/src/components/base/Card/Card";
-import { useDeveloperMode } from "@/src/core/hooks/useDeveloperMode";
-import { useToolkitSettings } from "@/src/core/hooks/useToolkitSettings";
+import { Toggle } from "@src/components/base/Button/Toggle";
+import { Card } from "@src/components/base/Card/Card";
+import { useDeveloperMode } from "@src/core/hooks/useDeveloperMode";
+import { useToolkitSettings } from "@src/core/hooks/useToolkitSettings";
 import {
 	IRavenHogwartsToolkitConfig,
 	ToolkitId,
-} from "@/src/core/interfaces/types";
-import { Logger } from "@/src/core/services/Log";
-import { t } from "@/src/i18n/i18n";
-import { TranslationKeys } from "@/src/i18n/types";
-import RavenHogwartsToolkitPlugin from "@/src/main";
+} from "@src/core/interfaces/types";
+import { Logger } from "@src/core/services/Log";
+import { t } from "@src/i18n/i18n";
+import { TranslationKeys } from "@src/i18n/types";
+import RavenHogwartsToolkitPlugin from "@src/main";
 import parse from "html-react-parser";
 import { Settings } from "lucide-react";
 import * as React from "react";

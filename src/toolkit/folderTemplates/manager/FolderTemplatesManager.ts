@@ -1,5 +1,5 @@
-import { IToolkitModule } from "@/src/core/interfaces/types";
-import { BaseManager } from "@/src/core/services/BaseManager";
+import { IToolkitModule } from "@src/core/interfaces/types";
+import { BaseManager } from "@src/core/services/BaseManager";
 import { Notice, TFile, normalizePath } from "obsidian";
 import { FolderTemplatesService } from "../services/FolderTemplatesService";
 import {

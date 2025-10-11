@@ -1,3 +1,5 @@
+import { Logger, rootLogger } from "@src/core/services/Log";
+import RavenHogwartsToolkitPlugin from "@src/main";
 import { Menu } from "obsidian";
 import {
 	DEFAULT_CONFIG,
@@ -6,8 +8,6 @@ import {
 	ToolkitId,
 } from "../interfaces/types";
 import { BaseManager } from "./BaseManager";
-import { Logger, rootLogger } from "@/src/core/services/Log";
-import RavenHogwartsToolkitPlugin from "@/src/main";
 
 export class PluginManager {
 	private managers: Map<string, BaseManager<any>> = new Map();

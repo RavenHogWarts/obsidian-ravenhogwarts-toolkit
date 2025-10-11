@@ -1,5 +1,6 @@
-import { Logger } from "@/src/core/services/Log";
+import { Logger } from "@src/core/services/Log";
 import { ColDef, ColumnApi, GridApi } from "ag-grid-community";
+import { IParserConfig } from "../types/parser";
 import {
 	IMarkdownTable,
 	ITableCell,
@@ -7,7 +8,6 @@ import {
 	ITablePosition,
 	TableCellAlignment,
 } from "../types/table";
-import { IParserConfig } from "../types/parser";
 
 export class TableGenerator {
 	private logger: Logger;

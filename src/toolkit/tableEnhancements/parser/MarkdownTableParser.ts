@@ -1,12 +1,10 @@
+import { Logger } from "@src/core/services/Log";
+import { IParserConfig, ITableParser } from "../types/parser";
 import {
 	IMarkdownTable,
-	ITableCell,
-	ITableHeader,
 	ITablePosition,
 	TableCellAlignment,
 } from "../types/table";
-import { IParserConfig, ITableParser } from "../types/parser";
-import { Logger } from "@/src/core/services/Log";
 
 export class MarkdownTableParser implements ITableParser {
 	private logger: Logger;

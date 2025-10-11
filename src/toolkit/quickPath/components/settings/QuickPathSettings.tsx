@@ -1,11 +1,11 @@
+import { Toggle } from "@src/components/base/Button/Toggle";
+import { Select } from "@src/components/base/Select/Select";
+import { SettingItem } from "@src/components/base/Setting/SettingItem";
+import { useModuleConfig } from "@src/core/hooks/useModuleConfig";
+import { t } from "@src/i18n/i18n";
+import RavenHogwartsToolkitPlugin from "@src/main";
+import { IQuickPathConfig } from "@src/toolkit/quickPath/types/config";
 import * as React from "react";
-import { SettingItem } from "@/src/components/base/Setting/SettingItem";
-import { t } from "@/src/i18n/i18n";
-import { IQuickPathConfig } from "@/src/toolkit/quickPath/types/config";
-import RavenHogwartsToolkitPlugin from "@/src/main";
-import { useModuleConfig } from "@/src/core/hooks/useModuleConfig";
-import { Toggle } from "@/src/components/base/Button/Toggle";
-import { Select } from "@/src/components/base/Select/Select";
 
 interface QuickPathSettingsProps {
 	plugin: RavenHogwartsToolkitPlugin;

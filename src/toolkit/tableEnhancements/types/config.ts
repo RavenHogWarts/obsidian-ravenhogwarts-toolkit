@@ -1,4 +1,4 @@
-import { IToolkitModuleConfig } from "@/src/core/interfaces/types";
+import { IToolkitModuleConfig } from "@src/core/interfaces/types";
 import { ISavedCalculation } from "./operations";
 
 /** 表格增强配置接口 */

@@ -1,6 +1,6 @@
-import { ToolkitId } from "@/src/core/interfaces/types";
-import { Logger } from "@/src/core/services/Log";
-import RavenHogwartsToolkitPlugin from "@/src/main";
+import { ToolkitId } from "@src/core/interfaces/types";
+import { Logger } from "@src/core/services/Log";
+import RavenHogwartsToolkitPlugin from "@src/main";
 import { App, PluginSettingTab } from "obsidian";
 import * as React from "react";
 import { createRoot, Root } from "react-dom/client";

@@ -1,8 +1,8 @@
-import { App, Modal } from "obsidian";
-import RavenHogwartsToolkitPlugin from "@/src/main";
-import { createRoot, Root } from "react-dom/client";
-import * as React from "react";
+import RavenHogwartsToolkitPlugin from "@src/main";
 import { X } from "lucide-react";
+import { App, Modal } from "obsidian";
+import * as React from "react";
+import { createRoot, Root } from "react-dom/client";
 import "./styles/BaseModal.css";
 
 interface IBaseModalProps {

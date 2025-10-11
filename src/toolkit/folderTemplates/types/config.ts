@@ -1,7 +1,7 @@
 import {
 	IToolkitModuleConfig,
 	IToolkitModuleData,
-} from "@/src/core/interfaces/types";
+} from "@src/core/interfaces/types";
 
 export interface IFolderTemplatesConfig extends IToolkitModuleConfig {
 	// 模板文件夹存放位置

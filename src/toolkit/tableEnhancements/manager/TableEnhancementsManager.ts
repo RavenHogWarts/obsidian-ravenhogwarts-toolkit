@@ -1,24 +1,21 @@
+import { BaseModal } from "@src/components/base/Modal/BaseModal";
+import { IToolkitModule } from "@src/core/interfaces/types";
+import { BaseManager } from "@src/core/services/BaseManager";
+import { getStandardTime } from "@src/lib/date";
+import { replaceFrontMatterKey, updateFrontMatter } from "@src/lib/frontMatter";
+import { UUIDGenerator } from "@src/lib/uuid";
+import RavenHogwartsToolkitPlugin from "@src/main";
 import { Editor, MarkdownView, Menu, TFile, TFolder } from "obsidian";
-import { BaseManager } from "@/src/core/services/BaseManager";
 import { MarkdownTableParser } from "../parser/MarkdownTableParser";
 import { TableGenerator } from "../parser/TableGenerator";
-import { IMarkdownTable } from "../types/table";
-import { IToolkitModule } from "@/src/core/interfaces/types";
-import RavenHogwartsToolkitPlugin from "@/src/main";
-import { BaseModal } from "@/src/components/base/Modal/BaseModal";
 import { TableCalculationService } from "../services/TableCalculationService";
 import {
 	ITableEnhancementsConfig,
 	ITableEnhancementsData,
 	TABLE_ENHANCEMENTS_DEFAULT_CONFIG,
 } from "../types/config";
-import { getStandardTime } from "@/src/lib/date";
-import { UUIDGenerator } from "@/src/lib/uuid";
-import {
-	replaceFrontMatterKey,
-	updateFrontMatter,
-} from "@/src/lib/frontMatter";
 import { ISavedCalculation, OutputType } from "../types/operations";
+import { IMarkdownTable } from "../types/table";
 
 interface ITableEnhancementsModule extends IToolkitModule {
 	config: ITableEnhancementsConfig;

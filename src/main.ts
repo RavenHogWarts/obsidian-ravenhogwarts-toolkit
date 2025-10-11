@@ -1,4 +1,4 @@
-import { rootLogger } from "@/src/core/services/Log";
+import { rootLogger } from "@src/core/services/Log";
 import { Plugin } from "obsidian";
 import RavenHogwartsToolkitSettingTab from "./components/settings/SettingsTab";
 import { IRavenHogwartsToolkitConfig } from "./core/interfaces/types";
