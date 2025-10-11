@@ -8,14 +8,14 @@ module.exports = {
 			const typeMap = {
 				feat: "✨ Features",
 				fix: "🐛 Bug Fixes",
-				// docs: "📝 Documentation",
+				docs: "📝 Documentation",
 				style: "🎨 Styles",
 				refactor: "♻️ Refactor",
 				perf: "⚡️ Performance",
-				// test: "✅ Tests",
-				// build: "👷 Build",
-				// ci: "🔧 CI",
-				// chore: "🔨 Chore",
+				test: "✅ Tests",
+				build: "👷 Build",
+				ci: "🔧 CI",
+				chore: "🔨 Chore",
 				revert: "⏪️ Reverts",
 			};
 
