@@ -1,6 +1,7 @@
 import { Button } from "@/src/components/base/Button/Button";
 import { Input } from "@/src/components/base/Input/Input";
 import { SuggestionInput } from "@/src/components/base/Input/SuggestionInput";
+import { TagInput } from "@/src/components/base/Input/TagInput";
 import { SettingItem } from "@/src/components/base/Setting/SettingItem";
 import { useModuleConfig } from "@/src/core/hooks/useModuleConfig";
 import { useVaultSuggestions } from "@/src/core/hooks/useVaultSuggestions";
@@ -217,6 +218,28 @@ export const FolderTemplatesSettings: React.FC<
 					suggestions={folderSuggestions}
 					placeholder={t(
 						"toolkit.folderTemplates.settings.templatesFolderPath.placeholder"
+					)}
+				/>
+			</SettingItem>
+
+			<SettingItem
+				name={t(
+					"toolkit.folderTemplates.settings.ignoredFolders.title"
+				)}
+				desc={t(
+					"toolkit.folderTemplates.settings.ignoredFolders.description"
+				)}
+				collapsible={true}
+				defaultCollapsed={true}
+			>
+				<TagInput
+					values={config?.ignoredFolders || []}
+					onChange={(folders) =>
+						updateConfig({ ignoredFolders: folders })
+					}
+					suggestions={folderSuggestions}
+					placeholder={t(
+						"toolkit.folderTemplates.settings.ignoredFolders.placeholder"
 					)}
 				/>
 			</SettingItem>

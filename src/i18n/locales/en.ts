@@ -168,6 +168,12 @@ const translations: BaseMessage = {
 					placeholder: "Please enable core Templates plugin",
 					enablePlugin: "Please enable core Templates plugin",
 				},
+				ignoredFolders: {
+					title: "Ignored Folders",
+					description:
+						"Files created in these folders will not automatically apply templates. Supports subdirectories.",
+					placeholder: "Add folders to ignore template application",
+				},
 				templateManagement: {
 					title: "Template Configuration",
 					addTemplate: "Add Template",

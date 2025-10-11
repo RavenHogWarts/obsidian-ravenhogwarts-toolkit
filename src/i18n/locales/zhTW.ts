@@ -162,6 +162,12 @@ const translations: BaseMessage = {
 					placeholder: "請啟用核心模板插件",
 					enablePlugin: "請啟用核心模板插件",
 				},
+				ignoredFolders: {
+					title: "忽略文件夾",
+					description:
+						"在這些文件夾中創建文件時不會自動應用模板，支持子文件夾",
+					placeholder: "添加要忽略模板應用的文件夾",
+				},
 				templateManagement: {
 					title: "模板配置",
 					addTemplate: "添加模板",

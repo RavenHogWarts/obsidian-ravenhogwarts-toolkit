@@ -220,12 +220,61 @@ export class FolderTemplatesManager extends BaseManager<IFolderTemplatesModule> 
 			return null;
 		}
 
+		// 检查文件夹是否在忽略列表中
+		if (this.isFolderIgnored(folderPath)) {
+			this.logger.debug(
+				`Folder is in ignored list, skipping template application: ${folderPath}`
+			);
+			return null;
+		}
+
 		return {
 			originalFile: file,
 			folderPath,
 			templates,
 			fileName: file.basename,
 		};
+	}
+
+	/**
+	 * 检查文件夹是否在忽略列表中
+	 */
+	private isFolderIgnored(folderPath: string): boolean {
+		const ignoredFolders = this.config?.ignoredFolders || [];
+
+		if (ignoredFolders.length === 0) {
+			return false;
+		}
+
+		const normalizedFolderPath = normalizePath(folderPath);
+
+		for (const ignoredFolder of ignoredFolders) {
+			const normalizedIgnoredPath = normalizePath(ignoredFolder);
+
+			// 精确匹配
+			if (normalizedFolderPath === normalizedIgnoredPath) {
+				return true;
+			}
+
+			// 子文件夹匹配 - 检查当前文件夹是否是忽略文件夹的子目录
+			if (
+				normalizedIgnoredPath.length > 0 &&
+				normalizedFolderPath.startsWith(normalizedIgnoredPath + "/")
+			) {
+				return true;
+			}
+
+			// 特殊处理根目录
+			if (
+				(normalizedIgnoredPath === "" ||
+					normalizedIgnoredPath === "/") &&
+				normalizedFolderPath === ""
+			) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
