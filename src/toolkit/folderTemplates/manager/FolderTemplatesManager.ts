@@ -1,6 +1,6 @@
 import { IToolkitModule } from "@/src/core/interfaces/types";
 import { BaseManager } from "@/src/core/services/BaseManager";
-import { Notice, TFile } from "obsidian";
+import { Notice, TFile, normalizePath } from "obsidian";
 import { FolderTemplatesService } from "../services/FolderTemplatesService";
 import {
 	FOLDER_TEMPLATES_DEFAULT_CONFIG,
@@ -418,7 +418,10 @@ export class FolderTemplatesManager extends BaseManager<IFolderTemplatesModule> 
 		file: TFile,
 		newFileName: string
 	): Promise<TFile | null> {
-		const newFilePath = `${file.parent?.path || ""}/${newFileName}.md`;
+		const parentPath = file.parent?.path || "";
+		const newFilePath = normalizePath(
+			parentPath ? `${parentPath}/${newFileName}.md` : `${newFileName}.md`
+		);
 
 		// 检查目标文件是否已存在
 		const existingFile = this.app.vault.getAbstractFileByPath(newFilePath);
@@ -464,7 +467,10 @@ export class FolderTemplatesManager extends BaseManager<IFolderTemplatesModule> 
 		file: TFile,
 		newFileName: string
 	): Promise<void> {
-		const newFilePath = `${file.parent?.path || ""}/${newFileName}.md`;
+		const parentPath = file.parent?.path || "";
+		const newFilePath = normalizePath(
+			parentPath ? `${parentPath}/${newFileName}.md` : `${newFileName}.md`
+		);
 
 		// 检查目标文件是否已存在
 		const existingFile = this.app.vault.getAbstractFileByPath(newFilePath);
