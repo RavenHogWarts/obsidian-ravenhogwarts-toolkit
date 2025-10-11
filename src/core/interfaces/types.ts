@@ -1,5 +1,5 @@
 import { DEFAULT_LOGGER_CONFIG, ILoggerConfig } from "@/src/core/services/Log";
-import { Link, LucideIcon, Table } from "lucide-react";
+import { FolderCog, Link, LucideIcon, Table } from "lucide-react";
 
 // 主配置接口
 export interface IRavenHogwartsToolkitConfig {
@@ -52,7 +52,7 @@ export const DEFAULT_CONFIG: IRavenHogwartsToolkitConfig = {
 	toolkit: {},
 };
 
-export type ToolkitId = "tableEnhancements" | "quickPath";
+export type ToolkitId = "tableEnhancements" | "quickPath" | "folderTemplates";
 
 export const TOOLKIT_CONFIG: Record<
 	ToolkitId,
@@ -65,5 +65,9 @@ export const TOOLKIT_CONFIG: Record<
 	tableEnhancements: {
 		icon: Table,
 		iconName: "table",
+	},
+	folderTemplates: {
+		icon: FolderCog,
+		iconName: "folder-cog",
 	},
 };

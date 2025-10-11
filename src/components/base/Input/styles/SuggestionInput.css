@@ -1,0 +1,124 @@
+.rht-suggestion-input-container {
+	position: relative;
+	width: 100%;
+}
+
+.rht-suggestion-input {
+	width: 100%;
+	padding: 10px 14px;
+	border: 1.5px solid var(--background-modifier-border);
+	border-radius: 6px;
+	background-color: var(--background-primary);
+	color: var(--text-normal);
+	font-family: inherit;
+	font-size: 14px;
+	line-height: 1.5;
+	transition: all 0.2s ease-in-out;
+}
+
+.rht-suggestion-input:hover:not(:disabled) {
+	border-color: var(--background-modifier-border-hover);
+}
+
+.rht-suggestion-input:focus {
+	outline: none;
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 3px var(--interactive-accent-hover);
+	background-color: var(--background-primary-alt);
+}
+
+.rht-suggestion-input.disabled {
+	background-color: var(--background-secondary);
+	color: var(--text-muted);
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.rht-suggestion-input-dropdown {
+	position: absolute;
+	top: calc(100% + 4px);
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	background-color: var(--background-primary);
+	border: 1.5px solid var(--background-modifier-border);
+	border-radius: 8px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+	max-height: 20dvh;
+	overflow-y: auto;
+	overflow-x: hidden;
+	animation: slideDown 0.15s ease-out;
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.rht-suggestion-input-option {
+	padding: 12px 16px;
+	cursor: pointer;
+	color: var(--text-normal);
+	transition: all 0.15s ease-in-out;
+	font-size: 14px;
+	line-height: 1.4;
+	position: relative;
+}
+
+.rht-suggestion-input-option:first-child {
+	border-radius: 6px 6px 0 0;
+}
+
+.rht-suggestion-input-option:last-child {
+	border-radius: 0 0 6px 6px;
+}
+
+.rht-suggestion-input-option:hover {
+	background-color: var(--background-modifier-hover);
+	transform: translateX(2px);
+}
+
+.rht-suggestion-input-option.selected {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	transform: translateX(2px);
+}
+
+.rht-suggestion-input-option.selected::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 3px;
+	background-color: var(--text-on-accent);
+	border-radius: 0 2px 2px 0;
+}
+
+/* 滚动条样式 */
+.rht-suggestion-input-dropdown::-webkit-scrollbar {
+	width: 8px;
+}
+
+.rht-suggestion-input-dropdown::-webkit-scrollbar-track {
+	background: transparent;
+	margin: 8px 0;
+}
+
+.rht-suggestion-input-dropdown::-webkit-scrollbar-thumb {
+	background: var(--background-modifier-border);
+	border-radius: 4px;
+	border: 2px solid transparent;
+	background-clip: content-box;
+}
+
+.rht-suggestion-input-dropdown::-webkit-scrollbar-thumb:hover {
+	background: var(--text-muted);
+	background-clip: content-box;
+}
