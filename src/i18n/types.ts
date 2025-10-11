@@ -196,6 +196,11 @@ export type BaseMessage = {
 					placeholder: string;
 					enablePlugin: string;
 				};
+				ignoredFolders: {
+					title: string;
+					description: string;
+					placeholder: string;
+				};
 				templateManagement: {
 					title: string;
 					addTemplate: string;
