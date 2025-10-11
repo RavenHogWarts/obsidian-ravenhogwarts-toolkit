@@ -615,10 +615,7 @@ button.RHT__FT-cancel-button:hover {
 }
 
 /* 空状态样式 */
-.RHT__FT-template-list:empty::after {
-	content: "🗂️ 暂无模板配置\A点击上方"添加模板 "按钮开始配置";
-	white-space: pre-line;
-	display: block;
+.RHT__FT-template-list-empty {
 	text-align: center;
 	color: var(--text-muted);
 	font-size: 13px;
@@ -628,6 +625,22 @@ button.RHT__FT-cancel-button:hover {
 	background: var(--background-secondary);
 	opacity: 0.8;
 	line-height: 1.6;
+}
+
+.RHT__FT-template-list-empty-icon {
+	font-size: 24px;
+	margin-bottom: 8px;
+	display: block;
+}
+
+.RHT__FT-template-list-empty-title {
+	font-weight: 600;
+	margin-bottom: 4px;
+	color: var(--text-normal);
+}
+
+.RHT__FT-template-list-empty-description {
+	color: var(--text-muted);
 }
 
 /* 模板状态指示器 */

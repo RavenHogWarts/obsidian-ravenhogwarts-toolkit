@@ -245,42 +245,69 @@ export const FolderTemplatesSettings: React.FC<
 
 					{/* 模板列表 */}
 					<div className="RHT__FT-template-list">
-						{templates.map((template, index) => (
-							<TemplateItem
-								key={index}
-								template={template}
-								editingTemplate={editingTemplate}
-								index={index}
-								isEditing={editingIndex === index}
-								isAdding={false}
-								folderSuggestions={folderSuggestions}
-								templateFileOptions={templateFileOptions}
-								onEdit={() => templateOperations.edit(index)}
-								onSave={templateOperations.save}
-								onCancel={templateOperations.cancel}
-								onDelete={() =>
-									templateOperations.delete(index)
-								}
-								onUpdate={templateOperations.update}
-							/>
-						))}
-						{/* 渲染正在添加的新模板 */}
-						{isAdding && editingTemplate && (
-							<TemplateItem
-								key="new-template"
-								template={editingTemplate}
-								editingTemplate={editingTemplate}
-								index={templates.length}
-								isEditing={true}
-								isAdding={true}
-								folderSuggestions={folderSuggestions}
-								templateFileOptions={templateFileOptions}
-								onEdit={() => {}}
-								onSave={templateOperations.save}
-								onCancel={templateOperations.cancel}
-								onDelete={() => {}}
-								onUpdate={templateOperations.update}
-							/>
+						{templates.length === 0 && !isAdding ? (
+							// 空状态显示
+							<div className="RHT__FT-template-list-empty">
+								<span className="RHT__FT-template-list-empty-icon">
+									🗂️
+								</span>
+								<div className="RHT__FT-template-list-empty-title">
+									{t(
+										"toolkit.folderTemplates.settings.emptyState.title"
+									)}
+								</div>
+								<div className="RHT__FT-template-list-empty-description">
+									{t(
+										"toolkit.folderTemplates.settings.emptyState.description"
+									)}
+								</div>
+							</div>
+						) : (
+							<>
+								{templates.map((template, index) => (
+									<TemplateItem
+										key={index}
+										template={template}
+										editingTemplate={editingTemplate}
+										index={index}
+										isEditing={editingIndex === index}
+										isAdding={false}
+										folderSuggestions={folderSuggestions}
+										templateFileOptions={
+											templateFileOptions
+										}
+										onEdit={() =>
+											templateOperations.edit(index)
+										}
+										onSave={templateOperations.save}
+										onCancel={templateOperations.cancel}
+										onDelete={() =>
+											templateOperations.delete(index)
+										}
+										onUpdate={templateOperations.update}
+									/>
+								))}
+								{/* 渲染正在添加的新模板 */}
+								{isAdding && editingTemplate && (
+									<TemplateItem
+										key="new-template"
+										template={editingTemplate}
+										editingTemplate={editingTemplate}
+										index={templates.length}
+										isEditing={true}
+										isAdding={true}
+										folderSuggestions={folderSuggestions}
+										templateFileOptions={
+											templateFileOptions
+										}
+										onEdit={() => {}}
+										onSave={templateOperations.save}
+										onCancel={templateOperations.cancel}
+										onDelete={() => {}}
+										onUpdate={templateOperations.update}
+									/>
+								)}
+							</>
 						)}
 					</div>
 				</div>
@@ -336,7 +363,13 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 							{index + 1}
 						</span>
 						<span className="RHT__FT-form-title">
-							{isAdding ? "添加新模板" : "编辑模板配置"}
+							{isAdding
+								? t(
+										"toolkit.folderTemplates.settings.templateForm.addNewTemplate"
+								  )
+								: t(
+										"toolkit.folderTemplates.settings.templateForm.editTemplateConfig"
+								  )}
 						</span>
 						<div className="RHT__FT-form-actions-header">
 							<Button
@@ -348,7 +381,10 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 								size="small"
 								className="RHT__FT-save-button"
 							>
-								💾 保存
+								💾{" "}
+								{t(
+									"toolkit.folderTemplates.settings.actions.save"
+								)}
 							</Button>
 							<Button
 								onClick={onCancel}
@@ -356,7 +392,10 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 								size="small"
 								className="RHT__FT-cancel-button"
 							>
-								❌ 取消
+								❌{" "}
+								{t(
+									"toolkit.folderTemplates.settings.actions.cancel"
+								)}
 							</Button>
 						</div>
 					</div>
@@ -365,20 +404,28 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 						{/* 目标文件夹 */}
 						<div className="RHT__FT-form-field">
 							<label className="RHT__FT-form-label">
-								📁 目标文件夹
+								📁{" "}
+								{t(
+									"toolkit.folderTemplates.settings.templateForm.targetFolder"
+								)}
 							</label>
 							<SuggestionInput
 								value={currentTemplate.Folder}
 								onChange={(value) => onUpdate("Folder", value)}
 								suggestions={folderSuggestions}
-								placeholder="选择或输入文件夹路径"
+								placeholder={t(
+									"toolkit.folderTemplates.settings.templateForm.targetFolderPlaceholder"
+								)}
 							/>
 						</div>
 
 						{/* 模板文件 */}
 						<div className="RHT__FT-form-field">
 							<label className="RHT__FT-form-label">
-								📄 模板文件
+								📄{" "}
+								{t(
+									"toolkit.folderTemplates.settings.templateForm.templateFile"
+								)}
 							</label>
 							<SuggestionInput
 								value={currentTemplate.TemplateFile}
@@ -386,16 +433,23 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 									onUpdate("TemplateFile", value)
 								}
 								suggestions={templateFileOptions}
-								placeholder="选择模板文件"
+								placeholder={t(
+									"toolkit.folderTemplates.settings.templateForm.templateFilePlaceholder"
+								)}
 							/>
 						</div>
 
 						{/* 文件名规则 */}
 						<div className="RHT__FT-form-field RHT__FT-form-field-full">
 							<label className="RHT__FT-form-label">
-								🏷️ 文件名规则
+								🏷️{" "}
+								{t(
+									"toolkit.folderTemplates.settings.templateForm.fileNameRule"
+								)}
 								<span className="RHT__FT-form-label-optional">
-									（可选）
+									{t(
+										"toolkit.folderTemplates.settings.templateForm.optional"
+									)}
 								</span>
 							</label>
 							<Input
@@ -403,7 +457,9 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 								onChange={(value) =>
 									onUpdate("FileNameRule", value)
 								}
-								placeholder="例如：{{title}}-{{date}}"
+								placeholder={t(
+									"toolkit.folderTemplates.settings.templateForm.fileNameRulePlaceholder"
+								)}
 							/>
 						</div>
 					</div>
@@ -427,7 +483,10 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 						</span>
 						<span className="RHT__FT-template-separator">→</span>
 						<span className="RHT__FT-template-file">
-							{template.TemplateFile || "未选择模板"}
+							{template.TemplateFile ||
+								t(
+									"toolkit.folderTemplates.settings.templateForm.noTemplateSelected"
+								)}
 						</span>
 						{template.FileNameRule && (
 							<>
@@ -448,7 +507,7 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 						size="small"
 						className="RHT__FT-edit-button"
 					>
-						编辑
+						{t("toolkit.folderTemplates.settings.actions.edit")}
 					</Button>
 					<Button
 						onClick={onDelete}
@@ -456,7 +515,7 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 						variant="outline"
 						className="RHT__FT-delete-button"
 					>
-						删除
+						{t("toolkit.folderTemplates.settings.actions.delete")}
 					</Button>
 				</div>
 			</div>

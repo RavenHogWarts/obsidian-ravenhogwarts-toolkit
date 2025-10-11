@@ -212,9 +212,22 @@ export type BaseMessage = {
 					templateFile: string;
 					fileNameRule: string;
 					fileNameRulePlaceholder: string;
-					fileNameRuleDesc: string;
-					selectFolder: string;
-					selectTemplate: string;
+					addNewTemplate: string;
+					editTemplateConfig: string;
+					noTemplateSelected: string;
+					optional: string;
+					targetFolderPlaceholder: string;
+					templateFilePlaceholder: string;
+				};
+				actions: {
+					edit: string;
+					delete: string;
+					save: string;
+					cancel: string;
+				};
+				emptyState: {
+					title: string;
+					description: string;
 				};
 			};
 		};

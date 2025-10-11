@@ -184,13 +184,25 @@ const translations: BaseMessage = {
 					title: "Template Configuration",
 					targetFolder: "Target Folder",
 					templateFile: "Template File",
-					fileNameRule: "File Name Rule (Optional)",
-					fileNameRulePlaceholder:
-						"e.g.: {{date}}-{{title}} or leave empty for default",
-					fileNameRuleDesc:
-						"Supported variables: {{title}}, {{date}}, {{time}}, {{timestamp}}",
-					selectFolder: "Select folder path...",
-					selectTemplate: "Select template file...",
+					fileNameRule: "File Name Rule",
+					fileNameRulePlaceholder: "e.g.: {{date}}-{{title}}",
+					addNewTemplate: "Add New Template",
+					editTemplateConfig: "Edit Template Configuration",
+					noTemplateSelected: "No template selected",
+					optional: "(Optional)",
+					targetFolderPlaceholder: "Select or enter folder path",
+					templateFilePlaceholder: "Select template file",
+				},
+				actions: {
+					edit: "Edit",
+					delete: "Delete",
+					save: "Save",
+					cancel: "Cancel",
+				},
+				emptyState: {
+					title: "No templates configured",
+					description:
+						'Click the "Add Template" button above to get started',
 				},
 			},
 		},
