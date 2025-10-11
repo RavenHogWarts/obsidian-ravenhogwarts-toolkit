@@ -57,7 +57,6 @@ export class FolderTemplatesService {
 			this.app.vault.getAbstractFileByPath(normalizedPath);
 
 		if (!templateFolder || !(templateFolder instanceof TFolder)) {
-			this.logger.warn(`Template folder not found: ${normalizedPath}`);
 			return [];
 		}
 
@@ -90,7 +89,7 @@ export class FolderTemplatesService {
 	): IFolderTemplate | null {
 		const normalizedFolderPath = normalizePath(folderPath);
 
-		// 按文件夹路径匹配长度排序，优先匹配更具体的路径
+		// 按文件夹路径长度排序，优先匹配更具体的路径（长度越长越具体）
 		const sortedTemplates = templates.sort(
 			(a, b) => b.Folder.length - a.Folder.length
 		);
@@ -98,22 +97,37 @@ export class FolderTemplatesService {
 		for (const template of sortedTemplates) {
 			const normalizedTemplatePath = normalizePath(template.Folder);
 
-			// 精确匹配
+			// 1. 精确匹配 - 最高优先级
 			if (normalizedFolderPath === normalizedTemplatePath) {
 				return template;
 			}
 
-			// 子文件夹匹配（处理根目录模板的特殊情况）
+			// 2. 处理根目录模板的特殊情况
 			if (
 				normalizedTemplatePath === "" ||
 				normalizedTemplatePath === "/"
 			) {
-				// 根目录模板匹配所有文件夹
-				return template;
+				// 根目录模板匹配所有文件夹，但优先级最低，继续检查其他更具体的模板
+				continue;
 			}
 
-			// 普通子文件夹匹配
-			if (normalizedFolderPath.startsWith(normalizedTemplatePath + "/")) {
+			// 3. 子文件夹匹配
+			// 确保模板路径不为空，并且目标路径是模板路径的子目录
+			if (
+				normalizedTemplatePath.length > 0 &&
+				normalizedFolderPath.startsWith(normalizedTemplatePath + "/")
+			) {
+				return template;
+			}
+		}
+
+		// 4. 最后检查根目录模板
+		for (const template of sortedTemplates) {
+			const normalizedTemplatePath = normalizePath(template.Folder);
+			if (
+				normalizedTemplatePath === "" ||
+				normalizedTemplatePath === "/"
+			) {
 				return template;
 			}
 		}

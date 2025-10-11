@@ -41,6 +41,8 @@
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
+	/* 确保编辑状态的下拉框不被裁剪 */
+	position: relative;
 }
 
 /* 模板项 */
@@ -63,6 +65,8 @@
 	border-color: var(--interactive-accent);
 	background: var(--background-primary-alt);
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+	overflow: visible; /* 允许下拉建议框显示在容器外 */
+	z-index: 10; /* 确保编辑中的项在其他元素之上 */
 }
 
 /* 模板行 */
@@ -159,7 +163,7 @@
 .RHT__FT-edit-button {
 	background: var(--interactive-normal);
 	color: var(--text-normal);
-	border: 1px solid var(--background-modifier-border);
+	border: none;
 	opacity: 0.8;
 }
 
@@ -172,7 +176,7 @@
 
 .RHT__FT-delete-button {
 	color: var(--text-error);
-	border: 1px solid transparent;
+	border: none;
 	background: transparent;
 	opacity: 0.7;
 }
@@ -260,7 +264,7 @@ button.RHT__FT-save-button:disabled {
 button.RHT__FT-cancel-button {
 	background: transparent !important;
 	color: var(--text-muted) !important;
-	border: 1px solid var(--background-modifier-border) !important;
+	border: none;
 	padding: 4px 10px !important;
 	border-radius: 3px !important;
 	font-size: 11px !important;
@@ -324,6 +328,9 @@ button.RHT__FT-cancel-button:hover {
 .RHT__FT-template-form-compact {
 	padding: 16px;
 	background: var(--background-secondary);
+	/* 确保下拉建议框不被裁剪 */
+	position: relative;
+	overflow: visible;
 }
 
 .RHT__FT-form-header {
@@ -355,12 +362,16 @@ button.RHT__FT-cancel-button:hover {
 	grid-template-columns: 1fr 1fr;
 	gap: 16px 20px;
 	align-items: start;
+	/* 确保下拉建议框不被裁剪 */
+	overflow: visible;
 }
 
 .RHT__FT-form-field {
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
+	/* 确保下拉建议框不被裁剪 */
+	position: relative;
 }
 
 .RHT__FT-form-field-full {

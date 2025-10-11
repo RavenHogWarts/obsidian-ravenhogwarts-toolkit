@@ -235,6 +235,7 @@ export const FolderTemplatesSettings: React.FC<
 						<Button
 							onClick={templateOperations.add}
 							className="RHT__FT-add-button"
+							disabled={editingIndex !== -1}
 						>
 							{t(
 								"toolkit.folderTemplates.settings.templateManagement.addTemplate"
@@ -251,6 +252,7 @@ export const FolderTemplatesSettings: React.FC<
 								editingTemplate={editingTemplate}
 								index={index}
 								isEditing={editingIndex === index}
+								isAdding={false}
 								folderSuggestions={folderSuggestions}
 								templateFileOptions={templateFileOptions}
 								onEdit={() => templateOperations.edit(index)}
@@ -262,6 +264,24 @@ export const FolderTemplatesSettings: React.FC<
 								onUpdate={templateOperations.update}
 							/>
 						))}
+						{/* 渲染正在添加的新模板 */}
+						{isAdding && editingTemplate && (
+							<TemplateItem
+								key="new-template"
+								template={editingTemplate}
+								editingTemplate={editingTemplate}
+								index={templates.length}
+								isEditing={true}
+								isAdding={true}
+								folderSuggestions={folderSuggestions}
+								templateFileOptions={templateFileOptions}
+								onEdit={() => {}}
+								onSave={templateOperations.save}
+								onCancel={templateOperations.cancel}
+								onDelete={() => {}}
+								onUpdate={templateOperations.update}
+							/>
+						)}
 					</div>
 				</div>
 			</SettingItem>
@@ -274,6 +294,7 @@ interface TemplateItemProps {
 	editingTemplate: IFolderTemplate | null;
 	index: number;
 	isEditing: boolean;
+	isAdding?: boolean;
 	folderSuggestions: string[];
 	templateFileOptions: string[];
 	onEdit: () => void;
@@ -288,6 +309,7 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 	editingTemplate,
 	index,
 	isEditing,
+	isAdding = false,
 	folderSuggestions,
 	templateFileOptions,
 	onEdit,
@@ -313,7 +335,9 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 						<span className="RHT__FT-template-number">
 							{index + 1}.
 						</span>
-						<span className="RHT__FT-form-title">编辑模板配置</span>
+						<span className="RHT__FT-form-title">
+							{isAdding ? "添加新模板" : "编辑模板配置"}
+						</span>
 						<div className="RHT__FT-form-actions-header">
 							<Button
 								onClick={handleSave}

@@ -24,7 +24,7 @@ export const SuggestionInput: React.FC<SuggestionInputProps> = ({
 	const filteredSuggestions = React.useMemo(() => {
 		// 如果输入为空，显示所有建议（限制数量）
 		if (!value.trim()) {
-			return suggestions.slice(0, 8);
+			return suggestions;
 		}
 
 		const searchValue = value.toLowerCase().trim();
@@ -42,8 +42,7 @@ export const SuggestionInput: React.FC<SuggestionInputProps> = ({
 
 				// 其次按字符串长度排序（更短的在前）
 				return a.length - b.length;
-			})
-			.slice(0, 8); // 限制显示最多8个建议
+			});
 	}, [suggestions, value]);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
