@@ -1,3 +1,22 @@
+## [1.4.1](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.4.0...1.4.1) (2025-10-11)
+
+
+### ♻️ Refactor
+
+* 统一导入与整理前端数据处理函数 (#22) ([c0b884b](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/c0b884bcba951160dee40af6b1855a47163c0f7b)), closes [#22](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/issues/22)
+
+
+### ✨ Features
+
+* **folder-templates:** 添加忽略文件夹配置与判断 (#20) ([523e7b1](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/523e7b189413d5935c77e658c1886513da218d86)), closes [#20](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/issues/20)
+
+
+### 🔨 Chore
+
+* 精简构建与发布脚本配置 (#21) ([7755c0f](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/7755c0fe3056b51d132854d63662f4961d8f67b2)), closes [#21](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/issues/21)
+
+
+
 # [1.4.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/1.3.2...1.4.0) (2025-10-11)
 
 
