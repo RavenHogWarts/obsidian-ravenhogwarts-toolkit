@@ -1,6 +1,6 @@
+import { IToolkitModule } from "@src/core/interfaces/types";
+import { BaseManager } from "@src/core/services/BaseManager";
 import { Editor, Menu, TFile, TFolder } from "obsidian";
-import { BaseManager } from "@/src/core/services/BaseManager";
-import { IToolkitModule } from "@/src/core/interfaces/types";
 import {
 	IQuickPathConfig,
 	IQuickPathData,

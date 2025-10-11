@@ -1,4 +1,4 @@
-import { Logger } from "@/src/core/services/Log";
+import { Logger } from "@src/core/services/Log";
 import { App, normalizePath, Notice, TFile, TFolder } from "obsidian";
 import { IFolderTemplate } from "../types/config";
 

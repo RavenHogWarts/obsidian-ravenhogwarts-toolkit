@@ -1,8 +1,6 @@
-import { FC, useCallback, useEffect, useState } from "react";
-import { ISavedCalculation, OutputType } from "../../types/operations";
-import { IMarkdownTable } from "../../types/table";
-import { Logger } from "@/src/core/services/Log";
-import { TableEnhancementsManager } from "../../manager/TableEnhancementsManager";
+import { BaseModal } from "@src/components/base/Modal/BaseModal";
+import { Logger } from "@src/core/services/Log";
+import { t } from "@src/i18n/i18n";
 import {
 	ArrowRight,
 	CirclePlay,
@@ -12,8 +10,10 @@ import {
 	PlayCircle,
 	Plus,
 } from "lucide-react";
-import { BaseModal } from "@/src/components/base/Modal/BaseModal";
-import { t } from "@/src/i18n/i18n";
+import { FC, useCallback, useEffect, useState } from "react";
+import { TableEnhancementsManager } from "../../manager/TableEnhancementsManager";
+import { ISavedCalculation, OutputType } from "../../types/operations";
+import { IMarkdownTable } from "../../types/table";
 import "./styles/TableCalculation.css";
 
 interface TableCalculationProps {

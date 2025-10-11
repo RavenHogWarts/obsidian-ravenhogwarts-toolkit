@@ -1,5 +1,5 @@
+import { getCurrentTime } from "@src/lib/date";
 import { Notice } from "obsidian";
-import { getCurrentTime } from "@/src/lib/date";
 
 /**
  * 日志级别枚举

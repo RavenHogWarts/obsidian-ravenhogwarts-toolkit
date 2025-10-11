@@ -1,9 +1,9 @@
+import { useModal } from "@src/components/base/Modal/BaseModal";
+import { t } from "@src/i18n/i18n";
 import { FC, useState } from "react";
 import { ISavedCalculation, OutputType } from "../../types/operations";
-import { useModal } from "@/src/components/base/Modal/BaseModal";
 import { IMarkdownTable } from "../../types/table";
 import FormulaEditor from "./FormulaEditor";
-import { t } from "@/src/i18n/i18n";
 import "./styles/FormulaModal.css";
 
 interface IFormulaModalProps {

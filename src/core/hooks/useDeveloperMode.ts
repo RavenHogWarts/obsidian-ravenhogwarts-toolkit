@@ -1,5 +1,5 @@
-import { getStandardTime } from "@/src/lib/date";
-import RavenHogwartsToolkitPlugin from "@/src/main";
+import { getStandardTime } from "@src/lib/date";
+import RavenHogwartsToolkitPlugin from "@src/main";
 import * as React from "react";
 
 interface UseDeveloperModeProps {

@@ -1,13 +1,13 @@
+import { Logger } from "@src/core/services/Log";
+import { t } from "@src/i18n/i18n";
+import { TranslationKeys } from "@src/i18n/types";
+import { getStandardTime } from "@src/lib/date";
+import RavenHogwartsToolkitPlugin from "@src/main";
 import { App, Command, Component, Menu } from "obsidian";
 import {
 	IRavenHogwartsToolkitConfig,
 	IToolkitModule,
 } from "../interfaces/types";
-import RavenHogwartsToolkitPlugin from "@/src/main";
-import { Logger } from "@/src/core/services/Log";
-import { getStandardTime } from "@/src/lib/date";
-import { t } from "@/src/i18n/i18n";
-import { TranslationKeys } from "@/src/i18n/types";
 
 interface MenuItemConfig {
 	title: string;

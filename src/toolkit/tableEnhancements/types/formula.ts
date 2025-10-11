@@ -1,4 +1,4 @@
-import { t } from "@/src/i18n/i18n";
+import { t } from "@src/i18n/i18n";
 import { FormulaFunction } from "./operations";
 
 export interface IFunctionParameter {

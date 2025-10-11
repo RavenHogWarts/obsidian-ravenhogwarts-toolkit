@@ -1,12 +1,12 @@
-import { FC, useCallback, useEffect, useState } from "react";
-import { IMarkdownTable, ITableCell, ITableGridData } from "../../types/table";
+import { useModal } from "@src/components/base/Modal/BaseModal";
+import { Logger } from "@src/core/services/Log";
+import { t } from "@src/i18n/i18n";
 import { CellValueChangedEvent, ColDef } from "ag-grid-community";
-import { useModal } from "@/src/components/base/Modal/BaseModal";
-import { Logger } from "@/src/core/services/Log";
-import { TableGrid } from "../Table/TableGrid";
+import { FC, useCallback, useEffect, useState } from "react";
 import { TableEnhancementsManager } from "../../manager/TableEnhancementsManager";
+import { IMarkdownTable, ITableCell, ITableGridData } from "../../types/table";
 import { TableCalculation } from "../Calculation/TableCalculation";
-import { t } from "@/src/i18n/i18n";
+import { TableGrid } from "../Table/TableGrid";
 import "./styles/tableEnhancementsModal.css";
 
 const TableModal: FC = () => {

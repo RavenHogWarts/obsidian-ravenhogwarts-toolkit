@@ -1,6 +1,5 @@
-import { FormulaFunction, IFormulaConfig } from "../types/operations";
-import { IMarkdownTable } from "../types/table";
-import { Logger } from "@/src/core/services/Log";
+import { Logger } from "@src/core/services/Log";
+import { getStandardTime } from "@src/lib/date";
 import {
 	compareAsc,
 	compareDesc,
@@ -11,8 +10,9 @@ import {
 	isValid,
 	parse,
 } from "date-fns";
-import { getStandardTime } from "@/src/lib/date";
 import { FormulaParser } from "../parser/parseFormula";
+import { FormulaFunction, IFormulaConfig } from "../types/operations";
+import { IMarkdownTable } from "../types/table";
 
 // 精度修正配置
 const DECIMAL_PRECISION = 10;
