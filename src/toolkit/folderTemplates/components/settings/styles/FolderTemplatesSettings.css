@@ -11,62 +11,78 @@
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
-	padding: 8px 0;
-	border-bottom: 1px solid var(--background-modifier-border);
-}
-
-.RHT__FT-add-button {
-	background: var(--interactive-accent);
-	color: var(--text-on-accent);
-	border: none;
-	padding: 6px 12px;
-	border-radius: 4px;
-	cursor: pointer;
-	font-size: 12px;
-	transition: all 0.2s ease;
-}
-
-.RHT__FT-add-button:hover:not(:disabled) {
-	background: var(--interactive-accent-hover);
-	transform: translateY(-1px);
-}
-
-.RHT__FT-add-button:disabled {
-	opacity: 0.5;
-	cursor: not-allowed;
+	padding: 12px 0;
+	border-bottom: 2px solid var(--background-modifier-border);
+	margin-bottom: 8px;
 }
 
 /* 模板列表容器 */
 .RHT__FT-template-list {
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+	gap: 8px;
 	/* 确保编辑状态的下拉框不被裁剪 */
 	position: relative;
+	padding: 4px 0;
+}
+
+/* 添加入场动画 */
+.RHT__FT-template-item {
+	animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* 删除动画 */
+.RHT__FT-template-item.removing {
+	animation: fadeOutRight 0.3s ease-in forwards;
+}
+
+@keyframes fadeOutRight {
+	from {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateX(100%);
+	}
 }
 
 /* 模板项 */
 .RHT__FT-template-item {
 	background: var(--background-primary);
 	border: 1px solid var(--background-modifier-border);
-	border-radius: 6px;
+	border-radius: 8px;
 	overflow: hidden;
-	transition: all 0.15s ease;
-	margin-bottom: 4px;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	margin-bottom: 6px;
+	position: relative;
 }
 
 .RHT__FT-template-item:hover {
 	border-color: var(--interactive-accent);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	background: var(--background-secondary);
+	transform: translateY(-1px);
 }
 
 .RHT__FT-template-item.RHT__FT-editing {
 	border-color: var(--interactive-accent);
 	background: var(--background-primary-alt);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 	overflow: visible; /* 允许下拉建议框显示在容器外 */
 	z-index: 10; /* 确保编辑中的项在其他元素之上 */
+	transform: translateY(-2px);
 }
 
 /* 模板行 */
@@ -91,55 +107,68 @@
 
 .RHT__FT-template-number {
 	color: var(--text-muted);
-	font-weight: 500;
-	min-width: 18px;
-	font-size: 12px;
+	font-weight: 600;
+	min-width: 20px;
+	font-size: 13px;
+	background: var(--background-modifier-hover);
+	padding: 2px 6px;
+	border-radius: 12px;
+	text-align: center;
+	line-height: 1.2;
 }
 
 .RHT__FT-template-folder {
 	color: var(--text-accent);
-	font-weight: 500;
-	background: var(--background-modifier-hover);
-	padding: 1px 4px;
-	border-radius: 2px;
-	font-size: 12px;
-	max-width: 120px;
+	font-weight: 600;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 11px;
+	max-width: 140px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	flex-shrink: 0;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .RHT__FT-template-separator {
 	color: var(--text-muted);
-	font-weight: 600;
-	font-size: 11px;
+	font-weight: 400;
+	font-size: 14px;
 	flex-shrink: 0;
+	margin: 0 2px;
 }
 
 .RHT__FT-template-file {
 	color: var(--text-normal);
 	font-family: var(--font-monospace);
 	background: var(--background-modifier-hover);
-	padding: 1px 4px;
-	border-radius: 2px;
+	padding: 4px 8px;
+	border-radius: 4px;
 	font-size: 11px;
-	max-width: 160px;
+	max-width: 180px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	flex-shrink: 1;
+	border: 1px solid var(--background-modifier-border);
 }
 
 .RHT__FT-template-rule {
 	color: var(--text-muted);
 	font-style: italic;
 	font-size: 11px;
-	max-width: 100px;
+	max-width: 120px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	flex-shrink: 1;
+	background: var(--background-modifier-hover);
+	padding: 2px 6px;
+	border-radius: 3px;
+	border: 1px dashed var(--background-modifier-border);
 }
 
 /* 模板操作区域 */
@@ -152,40 +181,40 @@
 
 .RHT__FT-edit-button,
 .RHT__FT-delete-button {
-	padding: 3px 6px;
+	padding: 6px 12px;
 	font-size: 11px;
-	border-radius: 3px;
-	transition: all 0.15s ease;
+	border-radius: 4px;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 	cursor: pointer;
 	white-space: nowrap;
+	font-weight: 500;
+	border: none;
 }
 
 .RHT__FT-edit-button {
 	background: var(--interactive-normal);
 	color: var(--text-normal);
-	border: none;
-	opacity: 0.8;
+	border: 1px solid var(--background-modifier-border);
 }
 
 .RHT__FT-edit-button:hover:not(:disabled) {
 	background: var(--interactive-hover);
 	border-color: var(--interactive-accent);
-	opacity: 1;
 	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .RHT__FT-delete-button {
 	color: var(--text-error);
-	border: none;
 	background: transparent;
-	opacity: 0.7;
+	border: 1px solid transparent;
 }
 
 .RHT__FT-delete-button:hover:not(:disabled) {
 	background: rgba(255, 82, 82, 0.1);
 	border-color: var(--text-error);
-	opacity: 1;
 	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(255, 82, 82, 0.15);
 }
 
 /* 编辑表单 */
@@ -295,15 +324,20 @@ button.RHT__FT-cancel-button:hover {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 10px 14px;
-	gap: 12px;
-	min-height: 44px;
+	padding: 14px 16px;
+	gap: 16px;
+	min-height: 52px;
+	background: linear-gradient(
+		135deg,
+		transparent 0%,
+		rgba(0, 0, 0, 0.02) 100%
+	);
 }
 
 .RHT__FT-template-info-compact {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 10px;
 	flex: 1;
 	font-size: 13px;
 	overflow: hidden;
@@ -312,7 +346,7 @@ button.RHT__FT-cancel-button:hover {
 .RHT__FT-template-path-chain {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: 8px;
 	flex: 1;
 	overflow: hidden;
 }
@@ -320,47 +354,66 @@ button.RHT__FT-cancel-button:hover {
 .RHT__FT-template-actions-compact {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: 8px;
 	flex-shrink: 0;
+	opacity: 0.7;
+	transition: opacity 0.2s ease;
+}
+
+.RHT__FT-template-item:hover .RHT__FT-template-actions-compact {
+	opacity: 1;
 }
 
 /* 紧凑的编辑表单样式 */
 .RHT__FT-template-form-compact {
-	padding: 16px;
-	background: var(--background-secondary);
+	padding: 20px;
+	background: linear-gradient(
+		135deg,
+		var(--background-secondary) 0%,
+		var(--background-primary-alt) 100%
+	);
 	/* 确保下拉建议框不被裁剪 */
 	position: relative;
 	overflow: visible;
+	border-top: 2px solid var(--interactive-accent);
 }
 
 .RHT__FT-form-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 16px;
-	padding-bottom: 12px;
-	border-bottom: 1px solid var(--background-modifier-border);
+	margin-bottom: 20px;
+	padding-bottom: 16px;
+	border-bottom: 2px solid var(--background-modifier-border);
 }
 
 .RHT__FT-form-title {
 	font-weight: 600;
 	color: var(--text-normal);
-	font-size: 14px;
+	font-size: 15px;
 	flex: 1;
 	margin-left: 8px;
+	display: flex;
+	align-items: center;
+}
+
+.RHT__FT-form-title::before {
+	content: "⚙️";
+	margin-right: 8px;
+	font-size: 14px;
 }
 
 .RHT__FT-form-actions-header {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 10px;
 }
 
 /* 网格布局的表单字段 */
 .RHT__FT-form-grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	gap: 16px 20px;
+	gap: 20px 24px;
 	align-items: start;
 	/* 确保下拉建议框不被裁剪 */
 	overflow: visible;
@@ -369,7 +422,7 @@ button.RHT__FT-cancel-button:hover {
 .RHT__FT-form-field {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: 8px;
 	/* 确保下拉建议框不被裁剪 */
 	position: relative;
 }
@@ -379,18 +432,55 @@ button.RHT__FT-cancel-button:hover {
 }
 
 .RHT__FT-form-label {
-	font-size: 12px;
-	font-weight: 500;
+	font-size: 13px;
+	font-weight: 600;
 	color: var(--text-normal);
 	display: flex;
 	align-items: center;
-	gap: 4px;
+	gap: 6px;
+	margin-bottom: 2px;
+}
+
+.RHT__FT-form-label::before {
+	content: "•";
+	color: var(--interactive-accent);
+	font-weight: bold;
 }
 
 .RHT__FT-form-label-optional {
 	font-size: 11px;
 	color: var(--text-muted);
 	font-weight: normal;
+	background: var(--background-modifier-hover);
+	padding: 1px 4px;
+	border-radius: 2px;
+}
+
+/* 表单字段验证状态 */
+.RHT__FT-form-field.error input,
+.RHT__FT-form-field.error .suggestion-input {
+	border-color: var(--text-error) !important;
+	box-shadow: 0 0 0 2px rgba(255, 82, 82, 0.2) !important;
+}
+
+.RHT__FT-form-field.success input,
+.RHT__FT-form-field.success .suggestion-input {
+	border-color: var(--text-success) !important;
+	box-shadow: 0 0 0 2px rgba(0, 128, 0, 0.2) !important;
+}
+
+.RHT__FT-form-field-error {
+	font-size: 11px;
+	color: var(--text-error);
+	margin-top: 4px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.RHT__FT-form-field-error::before {
+	content: "❌";
+	font-size: 10px;
 }
 
 /* 响应式设计 */
@@ -475,16 +565,119 @@ button.RHT__FT-cancel-button:hover {
 	}
 }
 
+/* 加载状态样式 */
+.RHT__FT-template-loading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40px;
+	color: var(--text-muted);
+	font-size: 13px;
+}
+
+.RHT__FT-template-loading::before {
+	content: "";
+	width: 16px;
+	height: 16px;
+	border: 2px solid var(--background-modifier-border);
+	border-top: 2px solid var(--interactive-accent);
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	margin-right: 8px;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+/* 错误状态样式 */
+.RHT__FT-template-error {
+	background: rgba(255, 82, 82, 0.1);
+	border: 1px solid var(--text-error);
+	border-radius: 6px;
+	padding: 12px;
+	margin: 8px 0;
+	color: var(--text-error);
+	font-size: 12px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.RHT__FT-template-error::before {
+	content: "⚠️";
+	font-size: 14px;
+}
+
 /* 空状态样式 */
 .RHT__FT-template-list:empty::after {
+	content: "🗂️ 暂无模板配置\A点击上方"添加模板 "按钮开始配置";
+	white-space: pre-line;
 	display: block;
 	text-align: center;
 	color: var(--text-muted);
-	font-style: italic;
-	font-size: 12px;
-	padding: 16px;
-	border: 1px dashed var(--background-modifier-border);
-	border-radius: 4px;
+	font-size: 13px;
+	padding: 24px;
+	border: 2px dashed var(--background-modifier-border);
+	border-radius: 8px;
 	background: var(--background-secondary);
 	opacity: 0.8;
+	line-height: 1.6;
+}
+
+/* 模板状态指示器 */
+.RHT__FT-template-status {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--text-success);
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.RHT__FT-template-item:hover .RHT__FT-template-status {
+	opacity: 1;
+}
+
+/* 改进添加按钮样式 */
+.RHT__FT-add-button {
+	background: linear-gradient(
+		135deg,
+		var(--interactive-accent) 0%,
+		var(--interactive-accent-hover) 100%
+	);
+	color: var(--text-on-accent);
+	border: none;
+	padding: 8px 16px;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 12px;
+	font-weight: 600;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.RHT__FT-add-button::before {
+	content: "+ ";
+	font-weight: bold;
+	margin-right: 4px;
+}
+
+.RHT__FT-add-button:hover:not(:disabled) {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.RHT__FT-add-button:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+	transform: none;
 }

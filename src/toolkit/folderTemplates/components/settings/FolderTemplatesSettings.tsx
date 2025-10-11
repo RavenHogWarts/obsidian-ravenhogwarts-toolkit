@@ -333,7 +333,7 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 				<div className="RHT__FT-template-form-compact">
 					<div className="RHT__FT-form-header">
 						<span className="RHT__FT-template-number">
-							{index + 1}.
+							{index + 1}
 						</span>
 						<span className="RHT__FT-form-title">
 							{isAdding ? "添加新模板" : "编辑模板配置"}
@@ -348,7 +348,7 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 								size="small"
 								className="RHT__FT-save-button"
 							>
-								保存
+								💾 保存
 							</Button>
 							<Button
 								onClick={onCancel}
@@ -356,7 +356,7 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 								size="small"
 								className="RHT__FT-cancel-button"
 							>
-								取消
+								❌ 取消
 							</Button>
 						</div>
 					</div>
@@ -365,7 +365,7 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 						{/* 目标文件夹 */}
 						<div className="RHT__FT-form-field">
 							<label className="RHT__FT-form-label">
-								目标文件夹
+								📁 目标文件夹
 							</label>
 							<SuggestionInput
 								value={currentTemplate.Folder}
@@ -378,7 +378,7 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 						{/* 模板文件 */}
 						<div className="RHT__FT-form-field">
 							<label className="RHT__FT-form-label">
-								模板文件
+								📄 模板文件
 							</label>
 							<SuggestionInput
 								value={currentTemplate.TemplateFile}
@@ -393,7 +393,7 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 						{/* 文件名规则 */}
 						<div className="RHT__FT-form-field RHT__FT-form-field-full">
 							<label className="RHT__FT-form-label">
-								文件名规则
+								🏷️ 文件名规则
 								<span className="RHT__FT-form-label-optional">
 									（可选）
 								</span>
@@ -414,12 +414,13 @@ const TemplateItem: React.FC<TemplateItemProps> = ({
 
 	return (
 		<div className="RHT__FT-template-item">
+			{/* 状态指示器 */}
+			<div className="RHT__FT-template-status"></div>
+
 			{/* 紧凑的显示行 */}
 			<div className="RHT__FT-template-row-compact">
 				<div className="RHT__FT-template-info-compact">
-					<span className="RHT__FT-template-number">
-						{index + 1}.
-					</span>
+					<span className="RHT__FT-template-number">{index + 1}</span>
 					<div className="RHT__FT-template-path-chain">
 						<span className="RHT__FT-template-folder">
 							{template.Folder || "/"}
