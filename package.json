@@ -6,14 +6,16 @@
 	"scripts": {
 		"dev": "node scripts/esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node scripts/esbuild.config.mjs production",
-		"build:local": "tsc -noEmit -skipLibCheck && node scripts/esbuild.config.mjs production && node scripts/copy-to-vault.mjs",
+		"build:local": "tsc -noEmit -skipLibCheck && node scripts/esbuild.config.mjs production keep-console && node scripts/copy-to-vault.mjs",
 		"version": "node scripts/version-bump.mjs",
-		"changelog:u": "conventional-changelog -p angular -i CHANGELOG.md -s -u -n ./scripts/changelog-option.js && conventional-changelog -p angular -i CHANGELOG-zh.md -s -u -n ./scripts/changelog-option-zh.js",
-		"changelog:all": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0 -n ./scripts/changelog-option.js && conventional-changelog -p angular -i CHANGELOG-zh.md -s -r 0 -n ./scripts/changelog-option-zh.js",
+		"changelog:u": "conventional-changelog -p angular -i CHANGELOG.md -s -u -n ./scripts/changelog-option.js",
+		"changelog:all": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0 -n ./scripts/changelog-option.js",
 		"release:pre": "npm run build && npm run version && npm run changelog:u",
 		"release:tag": "node scripts/release-tag.mjs",
 		"lint": "eslint . --ext .ts,.tsx",
 		"lint:fix": "eslint . --ext .ts,.tsx --fix",
+		"test": "jest",
+		"test:watch": "jest --watch",
 		"link:data": "node scripts/link-data.mjs"
 	},
 	"keywords": [
