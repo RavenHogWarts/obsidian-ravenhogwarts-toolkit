@@ -5,14 +5,10 @@ import { lstat, readFile, symlink, unlink } from "fs/promises";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
-// 获取当前文件的目录
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const rootDir = join(__dirname, "..");
+const projectRoot = join(__dirname, "..");
 
-// 加载 .env 文件中的环境变量
-dotenv.config();
-
-// 获取 VAULT_PATH 环境变量
+dotenv.config({ quiet: true });
 const VAULT_PATH = process.env.VAULT_PATH;
 if (!VAULT_PATH) {
 	throw new Error(
@@ -20,7 +16,7 @@ if (!VAULT_PATH) {
 	);
 }
 
-const manifestPath = join(rootDir, "manifest.json");
+const manifestPath = join(projectRoot, "manifest.json");
 
 // 检查是否以管理员身份运行
 function isAdmin() {

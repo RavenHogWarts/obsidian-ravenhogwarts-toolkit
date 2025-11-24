@@ -11,17 +11,6 @@
 [![GitHub Issues](https://img.shields.io/github/issues/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=问题)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/issues)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/RavenHogWarts/obsidian-ravenhogwarts-toolkit?style=flat&label=最后提交)](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commits/master)
 
-## 已有工具
-- 文档属性排序 （暂时移除）
-- 快速路径
-- 阅读进度
-![阅读进度](./assets/reading-progress.png)
-
-- 表格增强
-![表格增强](./assets/table-enhance.png)
-
-- 代码编辑器 （功能已拆分移植到 [Ace Code Editor](https://github.com/RavenHogWarts/obsidian-ace-code-editor)）
-
 ### 功能介绍
 [Wiki](https://ravenhogwarts.github.io/docs/zh/obsidian-ravenhogwarts-toolkit/)
 
@@ -49,7 +38,7 @@
 ## 支持
 
 如果此插件对你有帮助，你可以通过以下方式支持开发：
-- 微信/支付宝：[QR Code](https://s2.loli.net/2024/05/06/lWBj3ObszUXSV2f.png)
+- [爱发电](https://afdian.com/a/ravenhogwarts)
 
 ## 许可证
 
