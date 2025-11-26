@@ -1,8 +1,8 @@
 import "@styles/styles";
 import { Plugin } from "obsidian";
+import { IPluginSettings } from "./settings/IPluginSettings";
 import { PluginSettingTab } from "./settings/PluginSettingTab";
 import SettingsStore from "./settings/SettingsStore";
-import { IPluginSettings } from "./types/types";
 
 export default class RHTPlugin extends Plugin {
 	settings: IPluginSettings;

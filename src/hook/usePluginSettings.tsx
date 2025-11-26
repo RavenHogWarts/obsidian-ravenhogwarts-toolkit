@@ -1,5 +1,5 @@
+import { IPluginSettings } from "@src/settings/IPluginSettings";
 import SettingsStore from "@src/settings/SettingsStore";
-import { IPluginSettings } from "@src/types/types";
 import { useSyncExternalStore } from "react";
 
 export default function usePluginSettings(

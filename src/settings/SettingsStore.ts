@@ -1,5 +1,8 @@
 import RHTPlugin from "@src/main";
-import { DEFAULT_SETTINGS, IPluginSettings } from "@src/types/types";
+import {
+	DEFAULT_SETTINGS,
+	IPluginSettings,
+} from "@src/settings/IPluginSettings";
 
 export default class SettingsStore {
 	#plugin: RHTPlugin;
