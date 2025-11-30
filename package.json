@@ -55,6 +55,7 @@
 		"dotenv": "^17.2.3",
 		"lucide-react": "^0.548.0",
 		"react": "^19.2.0",
-		"react-dom": "^19.2.0"
+		"react-dom": "^19.2.0",
+		"reflect-metadata": "^0.2.2"
 	}
 }
