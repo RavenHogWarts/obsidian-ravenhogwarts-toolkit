@@ -77,7 +77,7 @@ async function linkDataJson() {
 			pluginId
 		);
 		const sourceDataPath = join(vaultPluginDir, "data.json");
-		const targetDataPath = join(rootDir, "data.json");
+		const targetDataPath = join(projectRoot, "data.json");
 
 		// 检查源文件是否存在
 		if (!existsSync(sourceDataPath)) {
