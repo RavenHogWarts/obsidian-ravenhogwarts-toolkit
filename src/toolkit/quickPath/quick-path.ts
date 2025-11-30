@@ -1,7 +1,6 @@
 import { t } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
-import { IToolInfo } from "@src/model/toolkit/IToolInfo";
 import { normalizePath, TFile, TFolder } from "obsidian";
 import { IQuickPathSettings, QuickPathDefaultSettings } from "./types";
 
@@ -12,7 +11,6 @@ import { IQuickPathSettings, QuickPathDefaultSettings } from "./types";
 	description: t("settings.quick_path.desc"),
 })
 export class QuickPath extends BaseTool {
-	info: IToolInfo;
 	private basePath: string;
 
 	getDefaultSettings(): IQuickPathSettings {

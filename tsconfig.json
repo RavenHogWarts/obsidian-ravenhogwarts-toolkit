@@ -8,6 +8,8 @@
 		"allowJs": true,
 		"noImplicitAny": false,
 		"moduleResolution": "bundler",
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
 		"types": ["obsidian", "jest"],
 		"importHelpers": true,
 		"isolatedModules": true,

@@ -7,6 +7,10 @@ import { PluginSettingTab } from "@src/settings/PluginSettingTab";
 import SettingsStore from "@src/settings/SettingsStore";
 import "@styles/styles";
 import { Plugin } from "obsidian";
+import "reflect-metadata";
+
+// Import all toolkits to trigger decorator registration
+import "@src/toolkit/quickPath/quick-path";
 
 export default class RHTPlugin extends Plugin {
 	settings: IPluginSettings;
@@ -21,6 +25,9 @@ export default class RHTPlugin extends Plugin {
 		this.eventBus = new EventBus();
 		this.pluginContext = new PluginContext(this, this.eventBus);
 		this.toolManager = new ToolManager(this.pluginContext);
+
+		await this.registerToolkit();
+		await this.toolManager.loadEnabledToolkit();
 
 		this.addSettingTab(new PluginSettingTab(this));
 	}

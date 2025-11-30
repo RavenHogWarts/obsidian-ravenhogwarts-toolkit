@@ -8,7 +8,16 @@ export abstract class BaseTool implements ITool {
 	protected enabled: boolean = false;
 	protected errors: Error[] = [];
 
-	abstract readonly info: IToolInfo;
+	// info will be provided by @Toolkit decorator
+	get info(): IToolInfo {
+		const meta = (this as any).toolkitMeta;
+		if (!meta) {
+			throw new Error(
+				`Tool ${this.constructor.name} is missing @Toolkit decorator`
+			);
+		}
+		return meta;
+	}
 
 	async initialize(context: IPluginContext): Promise<void> {
 		this.context = context;
