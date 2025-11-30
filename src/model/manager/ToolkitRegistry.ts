@@ -24,6 +24,10 @@ export class ToolkitRegistry {
 		return this.toolkit.get(id);
 	}
 
+	getAll(): Array<new () => ITool> {
+		return Array.from(this.toolkit.values());
+	}
+
 	has(id: string): boolean {
 		return this.toolkit.has(id);
 	}

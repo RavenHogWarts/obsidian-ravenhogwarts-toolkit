@@ -3,7 +3,7 @@ import { IPluginSettings } from "@src/settings/IPluginSettings";
 import SettingsStore from "@src/settings/SettingsStore";
 import { Command, Notice } from "obsidian";
 import { IPluginContext } from "../toolkit/IPluginContext";
-import { EventBus, EventCallback } from "./eventBus";
+import { EventBus, EventCallback } from "./EventBus";
 
 export class PluginContext implements IPluginContext {
 	private readonly plugin: RHTPlugin;

@@ -2,7 +2,7 @@ import RHTPlugin from "@src/main";
 import { IPluginSettings } from "@src/settings/IPluginSettings";
 import SettingsStore from "@src/settings/SettingsStore";
 import { App, Command } from "obsidian";
-import { EventBus, EventCallback } from "../manager/eventBus";
+import { EventBus, EventCallback } from "../manager/EventBus";
 
 export interface IPluginContext {
 	readonly _app: App;

@@ -1,6 +1,6 @@
+import { ITool } from "@src/model/toolkit/ITool";
+import { IToolInfo } from "@src/model/toolkit/IToolInfo";
 import "reflect-metadata";
-import { ITool } from "../toolkit/ITool";
-import { IToolInfo } from "../toolkit/IToolInfo";
 import { ToolkitRegistry } from "./ToolkitRegistry";
 
 export function Toolkit(info: IToolInfo) {

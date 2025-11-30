@@ -1,6 +1,6 @@
-import { IPluginContext } from "../toolkit/IPluginContext";
-import { ITool } from "../toolkit/ITool";
-import { IToolInfo } from "../toolkit/IToolInfo";
+import { IPluginContext } from "@src/model/toolkit/IPluginContext";
+import { ITool } from "@src/model/toolkit/ITool";
+import { IToolInfo } from "@src/model/toolkit/IToolInfo";
 
 export abstract class BaseTool implements ITool {
 	protected context: IPluginContext;
