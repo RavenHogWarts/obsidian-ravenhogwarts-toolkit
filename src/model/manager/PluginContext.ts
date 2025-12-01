@@ -65,8 +65,12 @@ export class PluginContext implements IPluginContext {
 	log(
 		level: "info" | "warn" | "error",
 		message: string,
+		id?: string,
 		...args: any[]
 	): void {
-		console[level](`[${this.plugin.manifest.name}] ${message}`, ...args);
+		console[level](
+			`[${id ?? this.plugin.manifest.id}] ${message}`,
+			...args
+		);
 	}
 }

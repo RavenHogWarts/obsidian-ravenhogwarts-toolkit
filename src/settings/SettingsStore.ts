@@ -1,4 +1,5 @@
 import RHTPlugin from "@src/main";
+import { IToolSettings } from "@src/model/toolkit/IToolSettings";
 import {
 	DEFAULT_SETTINGS,
 	IPluginSettings,
@@ -77,11 +78,18 @@ export default class SettingsStore {
 
 	async loadSettings() {
 		const saved = await this.#plugin.loadData();
-		// 与默认配置深度对齐：只保留定义内字段并填充缺省
-		this.#plugin.settings = this.#mergeWithDefaults(
-			saved ?? {},
-			DEFAULT_SETTINGS
-		);
+		const merged = this.#mergeWithDefaults(saved ?? {}, DEFAULT_SETTINGS);
+
+		if (
+			saved &&
+			typeof saved === "object" &&
+			"toolkit" in saved &&
+			saved.toolkit
+		) {
+			merged.toolkit = saved.toolkit as Record<string, IToolSettings>;
+		}
+		this.#plugin.settings = merged;
+
 		await this.#plugin.saveSettings();
 		this.#notifyStoreSubscribers();
 	}
@@ -131,5 +139,25 @@ export default class SettingsStore {
 
 		// 使用 updateSettings 方法更新设置
 		await this.updateSettings(newSettings);
+	}
+
+	async loadToolSettings(id: string, defaults: IToolSettings) {
+		const saved = this.#plugin.settings.toolkit[id];
+
+		this.#plugin.settings.toolkit[id] = this.#mergeWithDefaults(
+			saved,
+			defaults
+		);
+
+		await this.#plugin.saveSettings();
+		this.#notifyStoreSubscribers();
+	}
+
+	getToolSettings(id: string): IToolSettings {
+		return this.#plugin.settings.toolkit[id];
+	}
+
+	async updateToolSettingByPath<T>(id: string, path: string, value: T) {
+		await this.updateSettingByPath(`toolkit.${id}.${path}`, value);
 	}
 }

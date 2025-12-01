@@ -35,7 +35,12 @@ export class ToolkitManager {
 		if (state.loaded) return;
 
 		try {
-			await tool.initialize(this.pluginContext);
+			const settings =
+				this.pluginContext._settingsStore.getToolSettings(id);
+			if (!settings?.enabled) {
+				return;
+			}
+
 			await tool.onload();
 
 			state.loaded = true;
@@ -86,25 +91,54 @@ export class ToolkitManager {
 	}
 
 	async enableTool(id: string): Promise<void> {
+		await this.pluginContext._settingsStore.updateToolSettingByPath<boolean>(
+			id,
+			"enabled",
+			true
+		);
 		await this.loadTool(id);
 	}
 
 	async disableTool(id: string): Promise<void> {
+		await this.pluginContext._settingsStore.updateToolSettingByPath<boolean>(
+			id,
+			"enabled",
+			false
+		);
 		await this.unloadTool(id);
 	}
 
 	async loadEnabledToolkit(): Promise<void> {
 		const enabledToolkit = this.pluginContext._settings.toolkit || {};
+		const loadErrors: Array<{ id: string; error: Error }> = [];
 
 		for (const [id, config] of Object.entries(enabledToolkit)) {
 			if (config.enabled) {
 				try {
 					await this.loadTool(id);
 				} catch (error) {
-					console.error(`Failed to load tool ${id}:`, error);
-					throw error;
+					// 记录错误但不中断其他工具的加载
+					const err = error as Error;
+					loadErrors.push({ id, error: err });
+					this.pluginContext.log(
+						"error",
+						`Failed to load tool ${id}: ${err.message}`,
+						id
+					);
+					// 更新工具状态以记录错误
+					const state = this.toolkitState.get(id);
+					if (state) {
+						state.errors.push(err);
+					}
 				}
 			}
+		}
+
+		// 如果有加载失败的工具，发出事件通知
+		if (loadErrors.length > 0) {
+			this.pluginContext.emitEvent("toolkit-load-errors", {
+				errors: loadErrors,
+			});
 		}
 	}
 

@@ -26,6 +26,7 @@ export interface IPluginContext {
 	log(
 		level: "info" | "warn" | "error",
 		message: string,
+		id?: string,
 		...args: any[]
 	): void;
 }

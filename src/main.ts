@@ -26,7 +26,7 @@ export default class RHTPlugin extends Plugin {
 		this.toolkitManager = new ToolkitManager(this.pluginContext);
 
 		await this.registerToolkit();
-		await this.saveSettings();
+		await this.toolkitManager.loadEnabledToolkit();
 
 		this.addSettingTab(new PluginSettingTab(this));
 	}
@@ -46,6 +46,7 @@ export default class RHTPlugin extends Plugin {
 		for (const tk of toolkit) {
 			const tool = new tk();
 			this.toolkitManager.registerTool(tool);
+			await tool.initialize(this.pluginContext);
 		}
 	}
 }

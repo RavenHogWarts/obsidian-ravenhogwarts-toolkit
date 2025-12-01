@@ -5,7 +5,6 @@ import { IToolSettings } from "@src/model/toolkit/IToolSettings";
 
 export abstract class BaseTool implements ITool {
 	protected context: IPluginContext;
-	protected settings: IToolSettings;
 	protected enabled: boolean = false;
 	protected errors: Error[] = [];
 
@@ -19,9 +18,23 @@ export abstract class BaseTool implements ITool {
 		return meta;
 	}
 
+	get settings(): IToolSettings {
+		const settings = this.context._settingsStore.getToolSettings(
+			this.info.id
+		);
+		if (!settings) {
+			throw new Error(`Settings for tool ${this.info.id} not found.`);
+		}
+		return settings;
+	}
+
 	async initialize(context: IPluginContext): Promise<void> {
 		this.context = context;
-		this.settings = this.getDefaultSettings();
+
+		await this.context._settingsStore.loadToolSettings(
+			this.info.id,
+			this.getDefaultSettings()
+		);
 	}
 
 	async onload(): Promise<void> {
@@ -35,7 +48,7 @@ export abstract class BaseTool implements ITool {
 	abstract getDefaultSettings(): IToolSettings;
 
 	isEnabled(): boolean {
-		return this.enabled;
+		return this.enabled && this.settings.enabled;
 	}
 
 	setEnabled(enabled: boolean): void {
@@ -52,5 +65,21 @@ export abstract class BaseTool implements ITool {
 
 	protected addError(error: Error): void {
 		this.errors.push(error);
+	}
+
+	protected async updateConfig<T>(key: string, value: T): Promise<void> {
+		await this.context._settingsStore.updateToolSettingByPath(
+			this.info.id,
+			`config.${key}`,
+			value
+		);
+	}
+
+	protected async updateData<T>(key: string, value: T): Promise<void> {
+		await this.context._settingsStore.updateToolSettingByPath(
+			this.info.id,
+			`data.${key}`,
+			value
+		);
 	}
 }
