@@ -5,18 +5,16 @@ import { toolkitRegistry } from "@src/model/manager/ToolkitRegistry";
 import { IPluginSettings } from "@src/settings/IPluginSettings";
 import { PluginSettingTab } from "@src/settings/PluginSettingTab";
 import SettingsStore from "@src/settings/SettingsStore";
+import "@src/toolkit/index";
 import "@styles/styles";
 import { Plugin } from "obsidian";
-
-// Import all toolkits to trigger decorator registration
-import "@src/toolkit/quickPath/quick-path";
 
 export default class RHTPlugin extends Plugin {
 	settings: IPluginSettings;
 	readonly settingsStore = new SettingsStore(this);
-	private toolkitManager: ToolkitManager;
-	private eventBus: EventBus;
-	private pluginContext: PluginContext;
+	toolkitManager: ToolkitManager;
+	eventBus: EventBus;
+	pluginContext: PluginContext;
 
 	async onload() {
 		await this.settingsStore.loadSettings();
