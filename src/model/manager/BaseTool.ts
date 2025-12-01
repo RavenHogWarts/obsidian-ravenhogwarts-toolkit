@@ -1,14 +1,14 @@
 import { IPluginContext } from "@src/model/toolkit/IPluginContext";
 import { ITool } from "@src/model/toolkit/ITool";
 import { IToolInfo } from "@src/model/toolkit/IToolInfo";
+import { IToolSettings } from "@src/model/toolkit/IToolSettings";
 
 export abstract class BaseTool implements ITool {
 	protected context: IPluginContext;
-	protected settings: Record<string, any> = {};
+	protected settings: IToolSettings;
 	protected enabled: boolean = false;
 	protected errors: Error[] = [];
 
-	// info will be provided by @Toolkit decorator
 	get info(): IToolInfo {
 		const meta = (this as any).toolkitMeta;
 		if (!meta) {
@@ -32,13 +32,7 @@ export abstract class BaseTool implements ITool {
 		this.enabled = false;
 	}
 
-	getDefaultSettings(): Record<string, any> {
-		return {};
-	}
-
-	validateSettings(settings: Record<string, any>): boolean {
-		return true;
-	}
+	abstract getDefaultSettings(): IToolSettings;
 
 	isEnabled(): boolean {
 		return this.enabled;

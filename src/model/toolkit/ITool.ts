@@ -1,5 +1,6 @@
 import { IPluginContext } from "./IPluginContext";
 import { IToolInfo } from "./IToolInfo";
+import { IToolSettings } from "./IToolSettings";
 
 export interface ITool {
 	readonly info: IToolInfo;
@@ -8,8 +9,7 @@ export interface ITool {
 	onload(): Promise<void>;
 	onunload(): void;
 
-	getDefaultSettings(): Record<string, any>;
-	validateSettings(settings: Record<string, any>): boolean;
+	getDefaultSettings(): IToolSettings;
 
 	isEnabled(): boolean;
 	setEnabled(enabled: boolean): void;

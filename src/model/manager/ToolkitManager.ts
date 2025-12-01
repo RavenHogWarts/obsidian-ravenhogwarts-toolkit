@@ -7,7 +7,7 @@ export interface IToolState {
 	errors: Error[];
 }
 
-export class ToolManager {
+export class ToolkitManager {
 	private toolkit: Map<string, ITool> = new Map();
 	private toolkitState: Map<string, IToolState> = new Map();
 	private pluginContext: IPluginContext;

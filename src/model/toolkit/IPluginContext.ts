@@ -22,14 +22,6 @@ export interface IPluginContext {
 	emitEvent(event: string, data?: any): void;
 	onEvent(event: string, callback: EventCallback): () => void;
 
-	// getSetting<T>(key: string): T;
-	// setSetting<T>(key: string, value: T): Promise<void>;
-
-	// getToolSetting<T>(toolId: string, key: string, defaultValue?: T): T;
-	// setToolSetting<T>(toolId: string, key: string, value: T): Promise<void>;
-	// getToolData<T>(toolId: string, key: string, defaultValue?: T): T;
-	// setToolData<T>(toolId: string, key: string, value: T): Promise<void>;
-
 	notice(message: string): void;
 	log(
 		level: "info" | "warn" | "error",
