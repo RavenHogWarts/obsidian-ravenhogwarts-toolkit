@@ -101,9 +101,10 @@ export class QuickPath extends BaseTool {
 	}
 
 	private handleFileMenu(menu: Menu, file: TFile | TFolder): void {
+		// title,open,action-primary,action,info,view,system,danger
 		if (file instanceof TFolder) {
 			menu.addItem((item) => {
-				item.setSection("action");
+				item.setSection("info");
 				item.setTitle(t("menu.quick_path.copy_folder_path"));
 				item.setIcon("copy");
 				item.onClick(() => {
@@ -113,7 +114,7 @@ export class QuickPath extends BaseTool {
 			});
 		} else {
 			menu.addItem((item) => {
-				item.setSection("action");
+				item.setSection("info");
 				item.setTitle(t("menu.quick_path.copy_file_path"));
 				item.setIcon("copy");
 				item.onClick(() => {
@@ -126,7 +127,7 @@ export class QuickPath extends BaseTool {
 
 	private handleFilesMenu(menu: Menu, files: (TFile | TFolder)[]): void {
 		menu.addItem((item) => {
-			item.setSection("action");
+			item.setSection("info");
 			item.setTitle(t("menu.quick_path.copy_files_path"));
 			item.setIcon("copy");
 			item.onClick(() => {
@@ -139,10 +140,7 @@ export class QuickPath extends BaseTool {
 	}
 
 	private handleEditorMenu(menu: Menu, editor: Editor): void {
-		if (!this.isEnabled()) {
-			return;
-		}
-
+		// title,correction,spellcheck,open,selection-link,selection,selection.format,selection.paragraph,selection.paragraph.list,selection.paragraph.heading,selection.paragraph.block,selection.insert.basic,selection.insert.advanced,insert,clipboard,info,action,view,selection.format.basic,selection.format.advanced,selection.format.danger,danger
 		menu.addItem((item) => {
 			item.setSection("action");
 			item.setTitle(t("menu.quick_path.paste_current_file_path"));
