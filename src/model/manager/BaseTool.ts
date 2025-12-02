@@ -2,8 +2,9 @@ import { IPluginContext } from "@src/model/toolkit/IPluginContext";
 import { ITool } from "@src/model/toolkit/ITool";
 import { IToolInfo } from "@src/model/toolkit/IToolInfo";
 import { IToolSettings } from "@src/model/toolkit/IToolSettings";
+import { Component } from "obsidian";
 
-export abstract class BaseTool implements ITool {
+export abstract class BaseTool extends Component implements ITool {
 	protected context: IPluginContext;
 	protected enabled: boolean = false;
 	protected errors: Error[] = [];
@@ -38,11 +39,13 @@ export abstract class BaseTool implements ITool {
 	}
 
 	async onload(): Promise<void> {
+		super.onload();
 		this.enabled = true;
 	}
 
 	onunload(): void {
 		this.enabled = false;
+		super.onunload();
 	}
 
 	abstract getDefaultSettings(): IToolSettings;

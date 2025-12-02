@@ -8,6 +8,12 @@ export const Settings: FC = () => {
 	const settings = usePluginSettings(settingsStore);
 	const toolkit = settingsStore.plugin.toolkitManager.getToolkit();
 
+	const handleToolToggle = (toolId: string, enabled: boolean) => {
+		enabled
+			? settingsStore.plugin.toolkitManager.enableTool(toolId)
+			: settingsStore.plugin.toolkitManager.disableTool(toolId);
+	};
+
 	return (
 		<>
 			<ObsidianSetting.Container>
@@ -31,11 +37,7 @@ export const Settings: FC = () => {
 											settings.toolkit[tk.info.id].enabled
 										}
 										onChange={(v) => {
-											settingsStore.updateToolSettingByPath(
-												tk.info.id,
-												"enabled",
-												v
-											);
+											handleToolToggle(tk.info.id, v);
 										}}
 									/>
 									<ObsidianSetting.ExtraButton

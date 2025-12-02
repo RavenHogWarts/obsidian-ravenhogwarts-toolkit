@@ -1,8 +1,9 @@
+import { Component } from "obsidian";
 import { IPluginContext } from "./IPluginContext";
 import { IToolInfo } from "./IToolInfo";
 import { IToolSettings } from "./IToolSettings";
 
-export interface ITool {
+export interface ITool extends Component {
 	readonly info: IToolInfo;
 
 	initialize(context: IPluginContext): Promise<void>;

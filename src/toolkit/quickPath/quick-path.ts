@@ -27,9 +27,9 @@ export class QuickPath extends BaseTool {
 	}
 
 	private registerCommands() {
-		this.context.addCommand({
-			id: "copy-file-path",
-			name: "Copy File Path",
+		this.context._plugin.addCommand({
+			id: "quick_path-copy_file_path",
+			name: `[Quick Path] Copy File Path`,
 			callback: () => {
 				const activeFile = this.context._app.workspace.getActiveFile();
 				if (activeFile) {
@@ -38,6 +38,10 @@ export class QuickPath extends BaseTool {
 				}
 			},
 		});
+	}
+
+	private unregisterCommands() {
+		this.context._plugin.removeCommand("quick_path-copy_file_path");
 	}
 
 	private getPath(file: TFile | TFolder): string {
@@ -66,5 +70,10 @@ export class QuickPath extends BaseTool {
 				this.context.notice("Failed to copy file path.");
 				throw err;
 			});
+	}
+
+	onunload(): void {
+		this.unregisterCommands();
+		super.onunload();
 	}
 }

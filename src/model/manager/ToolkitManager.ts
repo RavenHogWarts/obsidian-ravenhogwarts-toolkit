@@ -2,7 +2,6 @@ import { IPluginContext } from "../toolkit/IPluginContext";
 import { ITool } from "../toolkit/ITool";
 
 export interface IToolState {
-	enabled: boolean;
 	loaded: boolean;
 	errors: Error[];
 }
@@ -19,7 +18,6 @@ export class ToolkitManager {
 	registerTool(tool: ITool): void {
 		this.toolkit.set(tool.info.id, tool);
 		this.toolkitState.set(tool.info.id, {
-			enabled: false,
 			loaded: false,
 			errors: [],
 		});
@@ -40,11 +38,13 @@ export class ToolkitManager {
 			if (!settings?.enabled) {
 				return;
 			}
+			this.pluginContext._plugin.addChild(tool);
 
 			await tool.onload();
 
 			state.loaded = true;
-			state.enabled = true;
+
+			this.pluginContext.log("info", `loaded successfully`, id);
 		} catch (error) {
 			state.errors.push(error as Error);
 			throw error;
@@ -60,9 +60,11 @@ export class ToolkitManager {
 
 		try {
 			tool.onunload();
+			this.pluginContext._plugin.removeChild(tool);
 
 			state.loaded = false;
-			state.enabled = false;
+
+			this.pluginContext.log("info", `unloaded successfully`, id);
 		} catch (error) {
 			state.errors.push(error as Error);
 			throw error;
@@ -113,7 +115,6 @@ export class ToolkitManager {
 				try {
 					await this.loadTool(id);
 				} catch (error) {
-					// 记录错误但不中断其他工具的加载
 					const err = error as Error;
 					loadErrors.push({ id, error: err });
 					this.pluginContext.log(
@@ -121,7 +122,6 @@ export class ToolkitManager {
 						`Failed to load tool ${id}: ${err.message}`,
 						id
 					);
-					// 更新工具状态以记录错误
 					const state = this.toolkitState.get(id);
 					if (state) {
 						state.errors.push(err);

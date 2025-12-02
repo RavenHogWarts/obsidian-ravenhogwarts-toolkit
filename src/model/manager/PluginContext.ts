@@ -1,7 +1,7 @@
 import RHTPlugin from "@src/main";
 import { IPluginSettings } from "@src/settings/IPluginSettings";
 import SettingsStore from "@src/settings/SettingsStore";
-import { Command, Notice } from "obsidian";
+import { Notice } from "obsidian";
 import { IPluginContext } from "../toolkit/IPluginContext";
 
 export class PluginContext implements IPluginContext {
@@ -25,10 +25,6 @@ export class PluginContext implements IPluginContext {
 
 	get _settings(): IPluginSettings {
 		return this.plugin.settings;
-	}
-
-	addCommand(command: Command): Command {
-		return this.plugin.addCommand(command);
 	}
 
 	notice(message: string): void {
