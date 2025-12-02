@@ -30,16 +30,16 @@ const translations: BaseMessage = {
 	command: {
 		quick_path: {
 			copy_current_file_path: "複製當前文件路徑",
-			copy_current_folder_path: "複製當前文件夾路徑",
+			copy_current_folder_path: "複製當前目錄路徑",
 		},
 	},
 	menu: {
 		quick_path: {
 			copy_file_path: "複製文件路徑",
-			copy_files_path: "複製多個文件路徑",
-			copy_folder_path: "複製文件夾路徑",
+			copy_files_path: "複製多個路徑",
+			copy_folder_path: "複製目錄路徑",
 			paste_current_file_path: "粘貼當前文件路徑",
-			paste_current_folder_path: "粘貼當前文件夾路徑",
+			paste_current_folder_path: "粘貼當前目錄路徑",
 		},
 	},
 	notice: {

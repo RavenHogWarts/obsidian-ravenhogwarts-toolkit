@@ -37,7 +37,7 @@ const translations: BaseMessage = {
 	menu: {
 		quick_path: {
 			copy_file_path: "Copy file path",
-			copy_files_path: "Copy multiple file paths",
+			copy_files_path: "Copy multiple paths",
 			copy_folder_path: "Copy folder path",
 			paste_current_file_path: "Paste current file path",
 			paste_current_folder_path: "Paste current folder path",
