@@ -14,6 +14,9 @@ export const Settings: FC = () => {
 		type: "main",
 	});
 
+	const [headingEl, setHeadingEl] = useState<HTMLElement | null>(null);
+	const [gridEl, setGridEl] = useState<HTMLElement | null>(null);
+
 	const handleToolToggle = (toolId: string, enabled: boolean) => {
 		enabled
 			? settingsStore.plugin.toolkitManager.enableTool(toolId)
@@ -31,16 +34,24 @@ export const Settings: FC = () => {
 	if (currentView.type === "main") {
 		return (
 			<>
-				<ObsidianSetting.Container>
+				<div ref={setHeadingEl} className="rht__settings--heading" />
+				<div ref={setGridEl} className="rht__settings--grid" />
+
+				{headingEl && (
 					<ObsidianSetting
+						containerEl={headingEl}
 						slots={{
 							name: "TK[Beta]",
 						}}
 						heading={true}
 					/>
+				)}
 
-					{toolkit.map((tk) => (
+				{gridEl &&
+					toolkit.map((tk) => (
 						<ObsidianSetting
+							containerEl={gridEl}
+							className="rht__settings--grid-item"
 							key={tk.info.name}
 							slots={{
 								name: tk.info.name,
@@ -69,7 +80,6 @@ export const Settings: FC = () => {
 							}}
 						/>
 					))}
-				</ObsidianSetting.Container>
 			</>
 		);
 	}
