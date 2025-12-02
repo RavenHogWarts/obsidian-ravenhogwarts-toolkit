@@ -40,8 +40,6 @@ export class ToolkitManager {
 			}
 			this.pluginContext._plugin.addChild(tool);
 
-			await tool.onload();
-
 			state.loaded = true;
 
 			this.pluginContext.log("info", `loaded successfully`, id);
