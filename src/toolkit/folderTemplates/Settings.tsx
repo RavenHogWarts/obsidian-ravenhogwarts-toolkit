@@ -6,7 +6,7 @@ export const Settings: FC<IToolSettingsProps> = ({ tool, onBack }) => {
 	return (
 		<ToolSettingsLayout toolName={tool.info.name} onBack={onBack}>
 			{/* Add your tool-specific settings components here */}
-			<>qa</>
+			<></>
 		</ToolSettingsLayout>
 	);
 };

@@ -16,14 +16,12 @@ export const ToolSettingsLayout: FC<ToolSettingsLayoutProps> = ({
 		<ObsidianSetting.Container>
 			<ObsidianSetting
 				slots={{
-					name: (
-						<>
-							<ObsidianSetting.Button
-								icon={"arrow-left"}
-								onClick={onBack}
-							/>
-							{/* {toolName} */}
-						</>
+					name: toolName,
+					control: (
+						<ObsidianSetting.Button
+							icon={"arrow-left"}
+							onClick={onBack}
+						/>
 					),
 				}}
 				heading={true}
