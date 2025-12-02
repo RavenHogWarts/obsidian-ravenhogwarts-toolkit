@@ -1,7 +1,7 @@
 import { t } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
-import { normalizePath, TFile, TFolder } from "obsidian";
+import { Editor, Menu, normalizePath, TFile, TFolder } from "obsidian";
 import { IQuickPathSettings, QuickPathDefaultSettings } from "./types";
 
 @Toolkit({
@@ -24,6 +24,7 @@ export class QuickPath extends BaseTool {
 			"/"
 		);
 		this.registerCommands();
+		this.registerEventHandlers();
 	}
 
 	private registerCommands() {
@@ -66,6 +67,111 @@ export class QuickPath extends BaseTool {
 		this.context._plugin.removeCommand(
 			"quick_path-copy_current_folder_path"
 		);
+	}
+
+	private registerEventHandlers(): void {
+		if (!this.isEnabled()) {
+			return;
+		}
+
+		if (this.settings.config.addFileMenu) {
+			this.registerEvent(
+				this.context._app.workspace.on(
+					"file-menu",
+					this.handleFileMenu.bind(this)
+				)
+			);
+
+			this.registerEvent(
+				this.context._app.workspace.on(
+					"files-menu",
+					this.handleFilesMenu.bind(this)
+				)
+			);
+		}
+
+		if (this.settings.config.addEditorMenu) {
+			this.registerEvent(
+				this.context._app.workspace.on(
+					"editor-menu",
+					this.handleEditorMenu.bind(this)
+				)
+			);
+		}
+	}
+
+	private handleFileMenu(menu: Menu, file: TFile | TFolder): void {
+		if (file instanceof TFolder) {
+			menu.addItem((item) => {
+				item.setSection("action");
+				item.setTitle(t("menu.quick_path.copy_folder_path"));
+				item.setIcon("copy");
+				item.onClick(() => {
+					const path = this.getPath(file);
+					this.copyToClipboard(path);
+				});
+			});
+		} else {
+			menu.addItem((item) => {
+				item.setSection("action");
+				item.setTitle(t("menu.quick_path.copy_file_path"));
+				item.setIcon("copy");
+				item.onClick(() => {
+					const path = this.getPath(file);
+					this.copyToClipboard(path);
+				});
+			});
+		}
+	}
+
+	private handleFilesMenu(menu: Menu, files: (TFile | TFolder)[]): void {
+		menu.addItem((item) => {
+			item.setSection("action");
+			item.setTitle(t("menu.quick_path.copy_files_path"));
+			item.setIcon("copy");
+			item.onClick(() => {
+				const path = files
+					.map((file) => this.getPath(file))
+					.join(this.settings.config.separator);
+				this.copyToClipboard(path);
+			});
+		});
+	}
+
+	private handleEditorMenu(menu: Menu, editor: Editor): void {
+		if (!this.isEnabled()) {
+			return;
+		}
+
+		menu.addItem((item) => {
+			item.setSection("action");
+			item.setTitle(t("menu.quick_path.paste_current_file_path"));
+			item.setIcon("file-text");
+			item.onClick(() => {
+				const activeFile = this.context._app.workspace.getActiveFile();
+				if (activeFile) {
+					const path = this.getPath(activeFile);
+					editor.replaceSelection(path);
+				}
+			});
+		});
+		menu.addItem((item) => {
+			item.setSection("action");
+			item.setTitle(t("menu.quick_path.paste_current_folder_path"));
+			item.setIcon("folder");
+			item.onClick(() => {
+				const activeFile = this.context._app.workspace.getActiveFile();
+				const activeFolder =
+					activeFile && this.getParentPath(activeFile);
+				if (activeFolder) {
+					editor.replaceSelection(activeFolder);
+				} else {
+					this.context.notice(
+						t("notice.quick_path.root_path_warning")
+					);
+				}
+			});
+		});
 	}
 
 	private getPath(file: TFile | TFolder): string {
