@@ -4,7 +4,7 @@ import { toolkitRegistry } from "@src/model/manager/ToolkitRegistry";
 import { IPluginSettings } from "@src/settings/IPluginSettings";
 import { PluginSettingTab } from "@src/settings/PluginSettingTab";
 import SettingsStore from "@src/settings/SettingsStore";
-import "@src/toolkit/index";
+import "@src/toolkit";
 import "@styles/styles";
 import { Plugin } from "obsidian";
 

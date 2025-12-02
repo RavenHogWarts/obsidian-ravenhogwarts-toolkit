@@ -28,6 +28,29 @@ const translations: BaseMessage = {
 			},
 		},
 	},
+	command: {
+		quick_path: {
+			copy_current_file_path: "Copy current file path",
+			copy_current_folder_path: "Copy current folder path",
+		},
+	},
+	menu: {
+		quick_path: {
+			copy_file_path: "Copy file path",
+			copy_files_path: "Copy multiple file paths",
+			copy_folder_path: "Copy folder path",
+			paste_current_file_path: "Paste current file path",
+			paste_current_folder_path: "Paste current folder path",
+		},
+	},
+	notice: {
+		quick_path: {
+			copy_success: "Path copied to clipboard",
+			copy_failure: "Failed to copy path",
+			root_path_warning:
+				"The current file is in the root directory, unable to get the parent folder path",
+		},
+	},
 };
 
 export default translations;

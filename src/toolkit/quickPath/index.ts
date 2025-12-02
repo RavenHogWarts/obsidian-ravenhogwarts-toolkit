@@ -28,8 +28,10 @@ export class QuickPath extends BaseTool {
 
 	private registerCommands() {
 		this.context._plugin.addCommand({
-			id: "quick_path-copy_file_path",
-			name: `[Quick Path] Copy File Path`,
+			id: "quick_path-copy_current_file_path",
+			name: `[${t("settings.quick_path.name")}] ${t(
+				"command.quick_path.copy_current_file_path"
+			)}`,
 			callback: () => {
 				const activeFile = this.context._app.workspace.getActiveFile();
 				if (activeFile) {
@@ -38,10 +40,32 @@ export class QuickPath extends BaseTool {
 				}
 			},
 		});
+
+		this.context._plugin.addCommand({
+			id: "quick_path-copy_current_folder_path",
+			name: `[${t("settings.quick_path.name")}] ${t(
+				"command.quick_path.copy_current_folder_path"
+			)}`,
+			callback: () => {
+				const activeFile = this.context._app.workspace.getActiveFile();
+				const activeFolder =
+					activeFile && this.getParentPath(activeFile);
+				if (activeFolder) {
+					this.copyToClipboard(activeFolder);
+				} else {
+					this.context.notice(
+						t("notice.quick_path.root_path_warning")
+					);
+				}
+			},
+		});
 	}
 
 	private unregisterCommands() {
-		this.context._plugin.removeCommand("quick_path-copy_file_path");
+		this.context._plugin.removeCommand("quick_path-copy_current_file_path");
+		this.context._plugin.removeCommand(
+			"quick_path-copy_current_folder_path"
+		);
 	}
 
 	private getPath(file: TFile | TFolder): string {
@@ -63,11 +87,10 @@ export class QuickPath extends BaseTool {
 		navigator.clipboard
 			.writeText(text)
 			.then(() => {
-				this.context.notice("File path copied to clipboard.");
+				this.context.notice(t("notice.quick_path.copy_success"));
 			})
 			.catch((err) => {
-				this.context.log("error", "Failed to copy file path: ", err);
-				this.context.notice("Failed to copy file path.");
+				this.context.notice(t("notice.quick_path.copy_failure"));
 				throw err;
 			});
 	}

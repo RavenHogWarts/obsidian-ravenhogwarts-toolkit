@@ -27,6 +27,28 @@ const translations: BaseMessage = {
 			},
 		},
 	},
+	command: {
+		quick_path: {
+			copy_current_file_path: "複製當前文件路徑",
+			copy_current_folder_path: "複製當前文件夾路徑",
+		},
+	},
+	menu: {
+		quick_path: {
+			copy_file_path: "複製文件路徑",
+			copy_files_path: "複製多個文件路徑",
+			copy_folder_path: "複製文件夾路徑",
+			paste_current_file_path: "粘貼當前文件路徑",
+			paste_current_folder_path: "粘貼當前文件夾路徑",
+		},
+	},
+	notice: {
+		quick_path: {
+			copy_success: "路徑已複製到剪貼板",
+			copy_failure: "複製路徑失敗",
+			root_path_warning: "當前文件位於根目錄，無法獲取上級文件夾路徑",
+		},
+	},
 };
 
 export default translations;

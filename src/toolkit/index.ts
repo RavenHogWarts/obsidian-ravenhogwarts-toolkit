@@ -1,1 +1,1 @@
-import "@src/toolkit/quickPath/quick-path";
+import "@src/toolkit/quickPath";

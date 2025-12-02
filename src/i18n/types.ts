@@ -30,6 +30,28 @@ export type BaseMessage = {
 			}>;
 		}>;
 	};
+	command: {
+		quick_path: {
+			copy_current_file_path: string;
+			copy_current_folder_path: string;
+		};
+	};
+	menu: {
+		quick_path: {
+			copy_file_path: string;
+			copy_files_path: string;
+			copy_folder_path: string;
+			paste_current_file_path: string;
+			paste_current_folder_path: string;
+		};
+	};
+	notice: {
+		quick_path: {
+			copy_success: string;
+			copy_failure: string;
+			root_path_warning: string;
+		};
+	};
 };
 
 // 生成所有可能的翻译键路径类型
