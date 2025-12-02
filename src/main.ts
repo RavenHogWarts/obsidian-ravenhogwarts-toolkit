@@ -1,4 +1,3 @@
-import { EventBus } from "@src/model/manager/EventBus";
 import { PluginContext } from "@src/model/manager/PluginContext";
 import { ToolkitManager } from "@src/model/manager/ToolkitManager";
 import { toolkitRegistry } from "@src/model/manager/ToolkitRegistry";
@@ -13,14 +12,12 @@ export default class RHTPlugin extends Plugin {
 	settings: IPluginSettings;
 	readonly settingsStore = new SettingsStore(this);
 	toolkitManager: ToolkitManager;
-	eventBus: EventBus;
 	pluginContext: PluginContext;
 
 	async onload() {
 		await this.settingsStore.loadSettings();
 
-		this.eventBus = new EventBus();
-		this.pluginContext = new PluginContext(this, this.eventBus);
+		this.pluginContext = new PluginContext(this);
 		this.toolkitManager = new ToolkitManager(this.pluginContext);
 
 		await this.registerToolkit();

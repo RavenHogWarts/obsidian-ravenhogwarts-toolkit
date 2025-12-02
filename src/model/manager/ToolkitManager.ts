@@ -45,8 +45,6 @@ export class ToolkitManager {
 
 			state.loaded = true;
 			state.enabled = true;
-
-			this.pluginContext.emitEvent(`tool-${id}-loaded`, { toolId: id });
 		} catch (error) {
 			state.errors.push(error as Error);
 			throw error;
@@ -65,8 +63,6 @@ export class ToolkitManager {
 
 			state.loaded = false;
 			state.enabled = false;
-
-			this.pluginContext.emitEvent(`tool-${id}-unloaded`, { toolId: id });
 		} catch (error) {
 			state.errors.push(error as Error);
 			throw error;
@@ -132,13 +128,6 @@ export class ToolkitManager {
 					}
 				}
 			}
-		}
-
-		// 如果有加载失败的工具，发出事件通知
-		if (loadErrors.length > 0) {
-			this.pluginContext.emitEvent("toolkit-load-errors", {
-				errors: loadErrors,
-			});
 		}
 	}
 
