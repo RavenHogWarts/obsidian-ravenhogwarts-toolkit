@@ -3,6 +3,10 @@ import { BaseMessage } from "@src/i18n/types";
 // Remember [use sentence case in UI](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines#Use+sentence+case+in+UI)
 const translations: BaseMessage = {
 	settings: {
+		folder_templates: {
+			name: "Folder Templates",
+			desc: "Apply templates seamlessly when creating new files in specified folders",
+		},
 		quick_path: {
 			name: "Quick Path",
 			desc: "Quickly get the path of a specified file/folder",

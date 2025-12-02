@@ -2,7 +2,7 @@ import { t } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
 import { Editor, Menu, normalizePath, TFile, TFolder } from "obsidian";
-import { IQuickPathSettings, QuickPathDefaultSettings } from "./types";
+import { DefaultSettings, ISettings } from "./types";
 
 @Toolkit({
 	id: "quick-path",
@@ -13,8 +13,8 @@ import { IQuickPathSettings, QuickPathDefaultSettings } from "./types";
 export class QuickPath extends BaseTool {
 	private basePath: string;
 
-	getDefaultSettings(): IQuickPathSettings {
-		return QuickPathDefaultSettings;
+	getDefaultSettings(): ISettings {
+		return DefaultSettings;
 	}
 
 	async onload(): Promise<void> {

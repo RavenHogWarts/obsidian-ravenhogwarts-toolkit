@@ -2,6 +2,10 @@ import { BaseMessage } from "@src/i18n/types";
 
 const translations: BaseMessage = {
 	settings: {
+		folder_templates: {
+			name: "文件夹模板",
+			desc: "在指定文件夹下创建新文件时，无感知应用模板",
+		},
 		quick_path: {
 			name: "快速路径",
 			desc: "快速获取指定文件/文件夹的路径",

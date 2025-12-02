@@ -1,6 +1,6 @@
 import { IToolSettings } from "@src/model/toolkit/IToolSettings";
 
-export interface IQuickPathSettings extends IToolSettings {
+export interface ISettings extends IToolSettings {
 	config: {
 		addEditorMenu: boolean;
 		addFileMenu: boolean;
@@ -9,7 +9,7 @@ export interface IQuickPathSettings extends IToolSettings {
 	};
 }
 
-export const QuickPathDefaultSettings: IQuickPathSettings = {
+export const DefaultSettings: ISettings = {
 	enabled: false,
 	config: {
 		addEditorMenu: true,
