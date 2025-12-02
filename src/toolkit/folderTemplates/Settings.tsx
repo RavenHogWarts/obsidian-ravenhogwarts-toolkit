@@ -1,5 +1,4 @@
 import { IToolSettingsProps } from "@src/model/toolkit/ITool";
-import ObsidianSetting from "@src/settings/ObsidianSetting";
 import { ToolSettingsLayout } from "@src/settings/ToolSettingsLayout";
 import { FC } from "react";
 
@@ -7,13 +6,7 @@ export const Settings: FC<IToolSettingsProps> = ({ tool, onBack }) => {
 	return (
 		<ToolSettingsLayout toolName={tool.info.name} onBack={onBack}>
 			{/* Add your tool-specific settings components here */}
-			<ObsidianSetting
-				slots={{
-					name: "使用绝对路径",
-					desc: "是否使用绝对路径",
-					control: <ObsidianSetting.Toggle value={true} />,
-				}}
-			/>
+			<>qa</>
 		</ToolSettingsLayout>
 	);
 };

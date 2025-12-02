@@ -1,6 +1,7 @@
 import { t } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
+import { Settings } from "./Settings";
 import { DefaultSettings, ISettings } from "./types";
 
 @Toolkit({
@@ -12,6 +13,10 @@ import { DefaultSettings, ISettings } from "./types";
 export class FolderTemplates extends BaseTool {
 	getDefaultSettings(): ISettings {
 		return DefaultSettings;
+	}
+
+	getSettingsComponent() {
+		return Settings;
 	}
 
 	async onload(): Promise<void> {

@@ -2,6 +2,7 @@ import { t } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
 import { Editor, Menu, normalizePath, TFile, TFolder } from "obsidian";
+import { Settings } from "./Settings";
 import { DefaultSettings, ISettings } from "./types";
 
 @Toolkit({
@@ -15,6 +16,10 @@ export class QuickPath extends BaseTool {
 
 	getDefaultSettings(): ISettings {
 		return DefaultSettings;
+	}
+
+	getSettingsComponent() {
+		return Settings;
 	}
 
 	async onload(): Promise<void> {

@@ -1,8 +1,9 @@
 import { IPluginContext } from "@src/model/toolkit/IPluginContext";
-import { ITool } from "@src/model/toolkit/ITool";
+import { ITool, IToolSettingsProps } from "@src/model/toolkit/ITool";
 import { IToolInfo } from "@src/model/toolkit/IToolInfo";
 import { IToolSettings } from "@src/model/toolkit/IToolSettings";
 import { Component } from "obsidian";
+import { ComponentType } from "react";
 
 export abstract class BaseTool extends Component implements ITool {
 	protected context: IPluginContext;
@@ -48,8 +49,6 @@ export abstract class BaseTool extends Component implements ITool {
 		super.onunload();
 	}
 
-	abstract getDefaultSettings(): IToolSettings;
-
 	isEnabled(): boolean {
 		return this.enabled && this.settings.enabled;
 	}
@@ -65,6 +64,10 @@ export abstract class BaseTool extends Component implements ITool {
 	clearErrors(): void {
 		this.errors = [];
 	}
+
+	abstract getDefaultSettings(): IToolSettings;
+
+	abstract getSettingsComponent(): ComponentType<IToolSettingsProps>;
 
 	protected addError(error: Error): void {
 		this.errors.push(error);
