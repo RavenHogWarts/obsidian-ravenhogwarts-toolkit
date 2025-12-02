@@ -5,8 +5,15 @@ export interface ISettings extends IToolSettings {
 		addEditorMenu: boolean;
 		addFileMenu: boolean;
 		useAbsolutePath: boolean;
-		pathSeparator: string;
+		pathSeparator: pathSeparators;
 	};
+}
+
+export enum pathSeparators {
+	newline = "\n",
+	comma = ", ",
+	semicolon = "; ",
+	space = " ",
 }
 
 export const DefaultSettings: ISettings = {
@@ -15,6 +22,6 @@ export const DefaultSettings: ISettings = {
 		addEditorMenu: true,
 		addFileMenu: true,
 		useAbsolutePath: false,
-		pathSeparator: "\n",
+		pathSeparator: pathSeparators.newline,
 	},
 };

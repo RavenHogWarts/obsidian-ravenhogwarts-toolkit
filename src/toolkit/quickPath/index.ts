@@ -138,7 +138,7 @@ export class QuickPath extends BaseTool {
 			item.onClick(() => {
 				const path = files
 					.map((file) => this.getPath(file))
-					.join(this.settings.config.separator);
+					.join(this.settings.config.pathSeparator);
 				this.copyToClipboard(path);
 			});
 		});

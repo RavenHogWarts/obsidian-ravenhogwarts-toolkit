@@ -21,7 +21,7 @@ const translations: BaseMessage = {
 				name: "絕對路徑",
 				desc: "使用絕對路徑，即從操作系統根目錄開始的路徑",
 			},
-			separator: {
+			pathSeparator: {
 				name: "分隔符",
 				desc: "多個路徑的分隔符",
 				newline: "換行",

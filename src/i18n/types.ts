@@ -23,7 +23,7 @@ export type BaseMessage = {
 			addEditorMenu: IBaseSettingsItem;
 			addFileMenu: IBaseSettingsItem;
 			useAbsolutePath: IBaseSettingsItem;
-			separator: SettingsItem<{
+			pathSeparator: SettingsItem<{
 				newline: string;
 				comma: string;
 				semicolon: string;

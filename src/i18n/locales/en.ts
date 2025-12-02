@@ -22,8 +22,8 @@ const translations: BaseMessage = {
 				name: "Absolute Path",
 				desc: "Use absolute path, starting from the root directory of the operating system",
 			},
-			separator: {
-				name: "Separator",
+			pathSeparator: {
+				name: "Path Separator",
 				desc: "Separator for multiple paths",
 				newline: "Newline",
 				comma: "Comma",

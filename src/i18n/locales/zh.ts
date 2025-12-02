@@ -21,7 +21,7 @@ const translations: BaseMessage = {
 				name: "绝对路径",
 				desc: "使用绝对路径，即从操作系统根目录开始的路径",
 			},
-			separator: {
+			pathSeparator: {
 				name: "分隔符",
 				desc: "多个路径的分隔符",
 				newline: "换行",
