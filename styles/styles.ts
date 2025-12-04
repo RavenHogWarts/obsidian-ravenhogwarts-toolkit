@@ -1,1 +1,1 @@
-import "./styles.css"
+import "./settings-main.css";

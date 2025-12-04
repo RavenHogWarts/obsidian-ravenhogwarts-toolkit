@@ -1,0 +1,33 @@
+.rht__settings--main-heading {
+	margin-bottom: 1rem;
+}
+
+.rht__settings--grid {
+	display: grid;
+	gap: 15px;
+	grid-template-columns: repeat(auto-fill, minmax(241px, 1fr));
+}
+
+.rht__settings--grid
+	> .setting-item:is(:has(~ .setting-item-heading), .setting-item-heading) {
+	grid-column: 1 / -1;
+}
+
+.rht__settings--grid-item {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 8px;
+	padding: 1em;
+	justify-content: center;
+	flex-direction: column;
+
+	.setting-item-info {
+		width: 100%;
+		margin: 0 var(--size-4-4) var(--size-4-4);
+		overflow: hidden;
+		overflow-wrap: anywhere;
+	}
+
+	.setting-item-control {
+		margin-left: auto;
+	}
+}

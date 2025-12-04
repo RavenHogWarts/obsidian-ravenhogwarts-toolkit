@@ -90,7 +90,11 @@ const ObsidianSetting: FC<ObsidianSettingProps> = ({
 
 	useEffect(() => {
 		if (className) {
-			obsidianSetting.setClass(className);
+			// Split multiple classes and apply them individually
+			const classes = className.split(/\s+/).filter(Boolean);
+			classes.forEach((cls) => {
+				obsidianSetting.setClass(cls);
+			});
 		}
 	}, [obsidianSetting, className]);
 

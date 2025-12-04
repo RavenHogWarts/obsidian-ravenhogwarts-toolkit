@@ -34,30 +34,45 @@ export const Settings: FC = () => {
 	if (currentView.type === "main") {
 		return (
 			<>
-				<div ref={setHeadingEl} className="rht__settings--heading" />
-				<div ref={setGridEl} className="rht__settings--grid" />
-
-				{headingEl && (
+				<ObsidianSetting.Container className="rht__settings--main-heading">
 					<ObsidianSetting
-						containerEl={headingEl}
 						slots={{
 							name: "TK[Beta]",
 						}}
 						heading={true}
 					/>
-				)}
+				</ObsidianSetting.Container>
 
-				{gridEl &&
-					toolkit.map((tk) => (
+				<ObsidianSetting.Container className="rht__settings--grid">
+					<ObsidianSetting
+						slots={{
+							name: "Toolkit",
+						}}
+						heading={true}
+					/>
+					{toolkit.map((tk) => (
 						<ObsidianSetting
-							containerEl={gridEl}
-							className="rht__settings--grid-item"
-							key={tk.info.name}
+							className="mod-toggle rht__settings--grid-item"
+							key={tk.info.id}
 							slots={{
 								name: tk.info.name,
-								desc: tk.info.description,
+								desc: (
+									<>
+										<span>V{tk.info.version}</span>
+										<br />
+										<span>{tk.info.description}</span>
+									</>
+								),
 								control: (
 									<>
+										<ObsidianSetting.ExtraButton
+											icon={"settings"}
+											onClick={() => {
+												handleOpenToolSettings(
+													tk.info.id
+												);
+											}}
+										/>
 										<ObsidianSetting.Toggle
 											value={
 												settings.toolkit[tk.info.id]
@@ -67,19 +82,12 @@ export const Settings: FC = () => {
 												handleToolToggle(tk.info.id, v);
 											}}
 										/>
-										<ObsidianSetting.ExtraButton
-											icon={"settings"}
-											onClick={() => {
-												handleOpenToolSettings(
-													tk.info.id
-												);
-											}}
-										/>
 									</>
 								),
 							}}
 						/>
 					))}
+				</ObsidianSetting.Container>
 			</>
 		);
 	}
