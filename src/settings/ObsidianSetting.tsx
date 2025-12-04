@@ -5,10 +5,15 @@ import {
 } from "@src/context/ObsidianSettingContext";
 import {
 	ButtonComponent,
+	ColorComponent,
 	DropdownComponent,
 	ExtraButtonComponent,
 	MomentFormatComponent,
+	ProgressBarComponent,
+	SearchComponent,
 	Setting,
+	SliderComponent,
+	TextAreaComponent,
 	TextComponent,
 	ToggleComponent,
 } from "obsidian";
@@ -31,6 +36,7 @@ interface ObsidianSettingProps {
 	className?: Parameters<Setting["setClass"]>[0];
 	disabled?: Parameters<Setting["setDisabled"]>[0];
 	heading?: boolean;
+	visible?: boolean;
 	slots?: {
 		info?: ReactNode;
 		name?: ReactNode;
@@ -51,6 +57,7 @@ const ObsidianSetting: FC<ObsidianSettingProps> = ({
 	className = "",
 	disabled = false,
 	heading = false,
+	visible = true,
 	slots: {
 		info: infoSlot,
 		name: nameSlot,
@@ -79,6 +86,13 @@ const ObsidianSetting: FC<ObsidianSettingProps> = ({
 		return obsidianSetting;
 	}, [containerEl, heading, obsidianSettingContainerEl]);
 
+	// Cleanup on unmount
+	useEffect(() => {
+		return () => {
+			obsidianSetting.clear();
+		};
+	}, [obsidianSetting]);
+
 	useEffect(() => {
 		const args =
 			typeof tooltip === "string"
@@ -101,6 +115,10 @@ const ObsidianSetting: FC<ObsidianSettingProps> = ({
 	useEffect(() => {
 		obsidianSetting.setDisabled(disabled);
 	}, [obsidianSetting, disabled]);
+
+	useEffect(() => {
+		obsidianSetting.setVisibility(visible);
+	}, [obsidianSetting, visible]);
 
 	const obsidianSettingSlotContext = useMemo(() => {
 		const context = {
@@ -187,7 +205,11 @@ const ObsidianSetting: FC<ObsidianSettingProps> = ({
 
 interface ObsidianSettingButtonProps {
 	children?: ReactNode;
+	className?: string;
+	disabled?: boolean;
 	icon?: Parameters<ButtonComponent["setIcon"]>[0];
+	cta?: boolean;
+	warning?: boolean;
 	tooltip?:
 		| Parameters<ButtonComponent["setTooltip"]>[0]
 		| {
@@ -198,7 +220,11 @@ interface ObsidianSettingButtonProps {
 }
 const Button: FC<ObsidianSettingButtonProps> = ({
 	children,
+	className,
+	disabled,
 	icon,
+	cta,
+	warning,
 	tooltip,
 	onClick,
 }) => {
@@ -244,7 +270,33 @@ const Button: FC<ObsidianSettingButtonProps> = ({
 					: ([tooltip.tooltip, tooltip.options] as const);
 			button.setTooltip(...args);
 		}
-	}, [button, onClick, icon, children]);
+
+		if (className !== undefined) {
+			button.setClass(className);
+		}
+
+		if (disabled !== undefined) {
+			button.setDisabled(disabled);
+		}
+
+		if (cta) {
+			button.setCta();
+		}
+
+		if (warning) {
+			button.setWarning();
+		}
+	}, [
+		button,
+		onClick,
+		icon,
+		children,
+		tooltip,
+		className,
+		disabled,
+		cta,
+		warning,
+	]);
 
 	return !button ? undefined : <>{createPortal(children, button.buttonEl)}</>;
 };
@@ -411,7 +463,7 @@ const MomentFormat: FC<ObsidianSettingMomentFormatProps> = ({
 		if (defaultFormat !== undefined)
 			momentFormat.setDefaultFormat(defaultFormat);
 		if (sampleEl) momentFormat.setSampleEl(sampleEl);
-	}, [momentFormat, onChange, value, placeholder, sampleEl]);
+	}, [momentFormat, onChange, value, placeholder, defaultFormat, sampleEl]);
 
 	return !momentFormat ? undefined : (
 		<>{createPortal(children, momentFormat.inputEl)}</>
@@ -459,13 +511,22 @@ const Text: FC<ObsidianSettingTextProps> = ({
 
 interface ObsidianSettingToggleProps {
 	children?: ReactNode;
+	disabled?: boolean;
 	onChange?: Parameters<ToggleComponent["onChange"]>[0];
 	value?: boolean;
+	tooltip?:
+		| Parameters<ToggleComponent["setTooltip"]>[0]
+		| {
+				tooltip: Parameters<ToggleComponent["setTooltip"]>[0];
+				options?: Parameters<ToggleComponent["setTooltip"]>[1];
+		  };
 }
 const Toggle: FC<ObsidianSettingToggleProps> = ({
 	children,
+	disabled,
 	onChange,
 	value,
+	tooltip,
 }) => {
 	const obsidianSettingSlot = useContext(ObsidianSettingSlotContext);
 
@@ -485,36 +546,280 @@ const Toggle: FC<ObsidianSettingToggleProps> = ({
 		if (!toggle) return;
 		if (onChange) toggle.onChange(onChange);
 		if (value !== undefined) toggle.setValue(value);
-	}, [toggle, onChange, value]);
+		if (disabled !== undefined) toggle.setDisabled(disabled);
+		if (tooltip !== undefined) {
+			const args =
+				typeof tooltip === "string"
+					? ([tooltip, undefined] as const)
+					: ([tooltip.tooltip, tooltip.options] as const);
+			toggle.setTooltip(...args);
+		}
+	}, [toggle, onChange, value, disabled, tooltip]);
 
 	return !toggle ? undefined : <>{createPortal(children, toggle.toggleEl)}</>;
 };
 
-type ObsidianSettingWithComponents = FC<ObsidianSettingProps> & {
-	Button: FC<ObsidianSettingButtonProps>;
-	Dropdown: FC<ObsidianSettingDropdownProps>;
-	ExtraButton: FC<ObsidianSettingExtraButtonProps>;
-	Container: FC<ObsidianSettingContainerProps>;
-	MomentFormat: FC<ObsidianSettingMomentFormatProps>;
-	Text: FC<ObsidianSettingTextProps>;
-	Toggle: FC<ObsidianSettingToggleProps>;
+interface ObsidianSettingColorProps {
+	children?: ReactNode;
+	disabled?: boolean;
+	onChange?: Parameters<ColorComponent["onChange"]>[0];
+	value?: string;
+}
+const Color: FC<ObsidianSettingColorProps> = ({
+	children,
+	disabled,
+	onChange,
+	value,
+}) => {
+	const obsidianSettingSlot = useContext(ObsidianSettingSlotContext);
+
+	const color = useMemo(() => {
+		if (!obsidianSettingSlot) return;
+		return new ColorComponent(obsidianSettingSlot.slotEl);
+	}, [obsidianSettingSlot]);
+
+	useEffect(() => {
+		if (!color) return;
+		return () => {
+			color.colorPickerEl?.remove();
+		};
+	}, [color]);
+
+	useEffect(() => {
+		if (!color) return;
+		if (onChange) color.onChange(onChange);
+		if (value !== undefined) color.setValue(value);
+		if (disabled !== undefined) color.setDisabled(disabled);
+	}, [color, onChange, value, disabled]);
+
+	return !color ? undefined : (
+		<>{createPortal(children, color.colorPickerEl)}</>
+	);
 };
 
-// 将ObsidianSetting转换为带有子组件的类型
-const ObsidianSettingComponent =
-	ObsidianSetting as ObsidianSettingWithComponents;
+interface ObsidianSettingProgressBarProps {
+	children?: ReactNode;
+	value?: number;
+	visible?: boolean;
+}
+const ProgressBar: FC<ObsidianSettingProgressBarProps> = ({
+	children,
+	value,
+	visible = true,
+}) => {
+	const obsidianSettingSlot = useContext(ObsidianSettingSlotContext);
 
-// 将子组件作为ObsidianSetting的静态属性
-ObsidianSettingComponent.Button = Button;
-ObsidianSettingComponent.Dropdown = Dropdown;
-ObsidianSettingComponent.ExtraButton = ExtraButton;
-ObsidianSettingComponent.Container = Container;
-ObsidianSettingComponent.MomentFormat = MomentFormat;
-ObsidianSettingComponent.Text = Text;
-ObsidianSettingComponent.Toggle = Toggle;
+	const progressBar = useMemo(() => {
+		if (!obsidianSettingSlot) return;
+		return new ProgressBarComponent(obsidianSettingSlot.slotEl);
+	}, [obsidianSettingSlot]);
 
-// 重新导出ObsidianSetting（现在包含所有子组件作为静态属性）
-export default ObsidianSettingComponent;
+	useEffect(() => {
+		if (!progressBar) return;
+		return () => {
+			progressBar.progressBar?.remove();
+		};
+	}, [progressBar]);
 
-// 同时导出ObsidianSetting本身，以便可以直接使用
-export { ObsidianSetting };
+	useEffect(() => {
+		if (!progressBar) return;
+		if (value !== undefined) progressBar.setValue(value);
+		progressBar.setVisibility(visible);
+	}, [progressBar, value, visible]);
+
+	return !progressBar ? undefined : (
+		<>{createPortal(children, progressBar.progressBar)}</>
+	);
+};
+
+interface ObsidianSettingSearchProps {
+	children?: ReactNode;
+	className?: string;
+	disabled?: boolean;
+	placeholder?: string;
+	onChange?: Parameters<SearchComponent["onChange"]>[0];
+	value?: string;
+}
+const Search: FC<ObsidianSettingSearchProps> = ({
+	children,
+	className,
+	disabled,
+	placeholder,
+	onChange,
+	value,
+}) => {
+	const obsidianSettingSlot = useContext(ObsidianSettingSlotContext);
+
+	const search = useMemo(() => {
+		if (!obsidianSettingSlot) return;
+		return new SearchComponent(obsidianSettingSlot.slotEl);
+	}, [obsidianSettingSlot]);
+
+	useEffect(() => {
+		if (!search) return;
+		return () => {
+			search.containerEl?.remove();
+		};
+	}, [search]);
+
+	useEffect(() => {
+		if (!search) return;
+		if (onChange) search.onChange(onChange);
+		if (value !== undefined) search.setValue(value);
+		if (placeholder !== undefined) search.setPlaceholder(placeholder);
+		if (disabled !== undefined) search.setDisabled(disabled);
+		if (className !== undefined) search.setClass(className);
+	}, [search, onChange, value, placeholder, disabled, className]);
+
+	return !search ? undefined : <>{createPortal(children, search.inputEl)}</>;
+};
+
+interface ObsidianSettingSliderProps {
+	children?: ReactNode;
+	disabled?: boolean;
+	dynamicTooltip?: boolean;
+	instant?: boolean;
+	limits?: {
+		min: number;
+		max: number;
+		step: number | "any";
+	};
+	onChange?: Parameters<SliderComponent["onChange"]>[0];
+	value?: number;
+}
+const Slider: FC<ObsidianSettingSliderProps> = ({
+	children,
+	disabled,
+	dynamicTooltip,
+	instant,
+	limits,
+	onChange,
+	value,
+}) => {
+	const obsidianSettingSlot = useContext(ObsidianSettingSlotContext);
+
+	const slider = useMemo(() => {
+		if (!obsidianSettingSlot) return;
+		const slider = new SliderComponent(obsidianSettingSlot.slotEl);
+		if (limits) {
+			slider.setLimits(limits.min, limits.max, limits.step);
+		}
+		return slider;
+	}, [obsidianSettingSlot, limits]);
+
+	useEffect(() => {
+		if (!slider) return;
+		return () => {
+			slider.sliderEl.remove();
+		};
+	}, [slider]);
+
+	useEffect(() => {
+		if (!slider) return;
+		if (onChange) slider.onChange(onChange);
+		if (value !== undefined) slider.setValue(value);
+		if (disabled !== undefined) slider.setDisabled(disabled);
+		if (dynamicTooltip) slider.setDynamicTooltip();
+		if (instant !== undefined) slider.setInstant(instant);
+	}, [slider, onChange, value, disabled, dynamicTooltip, instant]);
+
+	return !slider ? undefined : <>{createPortal(children, slider.sliderEl)}</>;
+};
+
+interface ObsidianSettingTextAreaProps {
+	children?: ReactNode;
+	disabled?: boolean;
+	placeholder?: string;
+	onChange?: Parameters<TextAreaComponent["onChange"]>[0];
+	value?: string;
+}
+const TextArea: FC<ObsidianSettingTextAreaProps> = ({
+	children,
+	disabled,
+	placeholder,
+	onChange,
+	value,
+}) => {
+	const obsidianSettingSlot = useContext(ObsidianSettingSlotContext);
+
+	const textArea = useMemo(() => {
+		if (!obsidianSettingSlot) return;
+		return new TextAreaComponent(obsidianSettingSlot.slotEl);
+	}, [obsidianSettingSlot]);
+
+	useEffect(() => {
+		if (!textArea) return;
+		return () => {
+			textArea.inputEl.remove();
+		};
+	}, [textArea]);
+
+	useEffect(() => {
+		if (!textArea) return;
+		if (onChange) textArea.onChange(onChange);
+		if (value !== undefined) textArea.setValue(value);
+		if (placeholder !== undefined) textArea.setPlaceholder(placeholder);
+		if (disabled !== undefined) textArea.setDisabled(disabled);
+	}, [textArea, onChange, value, placeholder, disabled]);
+
+	return !textArea ? undefined : (
+		<>{createPortal(children, textArea.inputEl)}</>
+	);
+};
+
+/**
+ * Main component type with all subcomponents
+ * 主组件类型，包含所有子组件
+ */
+type ObsidianSettingComponent = FC<ObsidianSettingProps> & {
+	Button: typeof Button;
+	Color: typeof Color;
+	Container: typeof Container;
+	Dropdown: typeof Dropdown;
+	ExtraButton: typeof ExtraButton;
+	MomentFormat: typeof MomentFormat;
+	ProgressBar: typeof ProgressBar;
+	Search: typeof Search;
+	Slider: typeof Slider;
+	Text: typeof Text;
+	TextArea: typeof TextArea;
+	Toggle: typeof Toggle;
+};
+
+const ObsidianSettingWithSubComponents = Object.assign(
+	ObsidianSetting as FC<ObsidianSettingProps>,
+	{
+		Button,
+		Color,
+		Container,
+		Dropdown,
+		ExtraButton,
+		MomentFormat,
+		ProgressBar,
+		Search,
+		Slider,
+		Text,
+		TextArea,
+		Toggle,
+	}
+) as ObsidianSettingComponent;
+
+export { ObsidianSettingWithSubComponents as ObsidianSetting };
+
+export default ObsidianSettingWithSubComponents;
+
+export type {
+	ObsidianSettingButtonProps,
+	ObsidianSettingColorProps,
+	ObsidianSettingContainerProps,
+	ObsidianSettingDropdownProps,
+	ObsidianSettingExtraButtonProps,
+	ObsidianSettingMomentFormatProps,
+	ObsidianSettingProgressBarProps,
+	ObsidianSettingProps,
+	ObsidianSettingSearchProps,
+	ObsidianSettingSliderProps,
+	ObsidianSettingTextAreaProps,
+	ObsidianSettingTextProps,
+	ObsidianSettingToggleProps,
+};

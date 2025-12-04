@@ -1,7 +1,7 @@
 import usePluginSettings from "@src/hook/usePluginSettings";
 import useSettingsStore from "@src/hook/useSettingsStore";
 import { FC, useState } from "react";
-import ObsidianSetting from "./ObsidianSetting";
+import { ObsidianSetting } from "./ObsidianSetting";
 
 type SettingsView = { type: "main" } | { type: "tool"; toolId: string };
 
@@ -13,9 +13,6 @@ export const Settings: FC = () => {
 	const [currentView, setCurrentView] = useState<SettingsView>({
 		type: "main",
 	});
-
-	const [headingEl, setHeadingEl] = useState<HTMLElement | null>(null);
-	const [gridEl, setGridEl] = useState<HTMLElement | null>(null);
 
 	const handleToolToggle = (toolId: string, enabled: boolean) => {
 		enabled
