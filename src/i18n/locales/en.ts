@@ -31,6 +31,10 @@ const translations: BaseMessage = {
 				space: "Space",
 			},
 		},
+		table_calculator: {
+			name: "Table Calculator",
+			desc: "Provide persistent formula calculations for markdown table data",
+		},
 	},
 	command: {
 		quick_path: {

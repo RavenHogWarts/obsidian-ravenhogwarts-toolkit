@@ -27,6 +27,11 @@
 		overflow-wrap: anywhere;
 	}
 
+	.setting-item-name {
+		display: flex;
+		gap: 8px;
+	}
+
 	.setting-item-control {
 		margin-left: auto;
 	}

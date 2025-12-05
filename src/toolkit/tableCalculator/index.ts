@@ -5,13 +5,13 @@ import { Settings } from "./Settings";
 import { DefaultSettings, ISettings } from "./types";
 
 @Toolkit({
-	id: "folder-templates",
-	name: t("settings.folder_templates.name"),
-	icon: "folder-cog",
+	id: "table-calculator",
+	name: t("settings.table_calculator.name"),
+	icon: "table",
 	version: "1.0.0",
-	description: t("settings.folder_templates.desc"),
+	description: t("settings.table_calculator.desc"),
 })
-export class FolderTemplates extends BaseTool {
+export class TableCalculator extends BaseTool {
 	getDefaultSettings(): ISettings {
 		return DefaultSettings;
 	}

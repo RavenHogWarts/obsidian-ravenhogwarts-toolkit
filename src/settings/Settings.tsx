@@ -1,6 +1,7 @@
 import usePluginSettings from "@src/hook/usePluginSettings";
 import useSettingsStore from "@src/hook/useSettingsStore";
-import { FC, useState } from "react";
+import { setIcon } from "obsidian";
+import { FC, useEffect, useRef, useState } from "react";
 import { ObsidianSetting } from "./ObsidianSetting";
 
 type SettingsView = { type: "main" } | { type: "tool"; toolId: string };
@@ -47,43 +48,65 @@ export const Settings: FC = () => {
 						}}
 						heading={true}
 					/>
-					{toolkit.map((tk) => (
-						<ObsidianSetting
-							className="mod-toggle rht__settings--grid-item"
-							key={tk.info.id}
-							slots={{
-								name: tk.info.name,
-								desc: (
-									<>
-										<span>V{tk.info.version}</span>
-										<br />
-										<span>{tk.info.description}</span>
-									</>
-								),
-								control: (
-									<>
-										<ObsidianSetting.ExtraButton
-											icon={"settings"}
-											onClick={() => {
-												handleOpenToolSettings(
-													tk.info.id
-												);
-											}}
-										/>
-										<ObsidianSetting.Toggle
-											value={
-												settings.toolkit[tk.info.id]
-													.enabled
-											}
-											onChange={(v) => {
-												handleToolToggle(tk.info.id, v);
-											}}
-										/>
-									</>
-								),
-							}}
-						/>
-					))}
+					{toolkit.map((tk) => {
+						const ToolIcon: FC = () => {
+							const iconRef = useRef<HTMLSpanElement>(null);
+
+							useEffect(() => {
+								if (iconRef.current && tk.info.icon) {
+									setIcon(iconRef.current, tk.info.icon);
+								}
+							}, []);
+
+							return <span ref={iconRef} />;
+						};
+
+						return (
+							<ObsidianSetting
+								className="mod-toggle rht__settings--grid-item"
+								key={tk.info.id}
+								slots={{
+									name: (
+										<>
+											<ToolIcon />
+											<span>{tk.info.name}</span>
+										</>
+									),
+									desc: (
+										<>
+											<span>V{tk.info.version}</span>
+											<br />
+											<span>{tk.info.description}</span>
+										</>
+									),
+									control: (
+										<>
+											<ObsidianSetting.ExtraButton
+												icon={"settings"}
+												onClick={() => {
+													handleOpenToolSettings(
+														tk.info.id
+													);
+												}}
+											/>
+											<ObsidianSetting.Toggle
+												value={
+													settings.toolkit[tk.info.id]
+														.enabled
+												}
+												onChange={(v) => {
+													handleToolToggle(
+														tk.info.id,
+														v
+													);
+												}}
+											/>
+										</>
+									),
+								}}
+							/>
+						);
+					})}
 				</ObsidianSetting.Container>
 			</>
 		);

@@ -30,6 +30,7 @@ export type BaseMessage = {
 				space: string;
 			}>;
 		}>;
+		table_calculator: SettingsItem<{}>;
 	};
 	command: {
 		quick_path: {

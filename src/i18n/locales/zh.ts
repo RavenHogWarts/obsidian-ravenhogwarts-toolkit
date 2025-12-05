@@ -30,6 +30,10 @@ const translations: BaseMessage = {
 				space: "空格",
 			},
 		},
+		table_calculator: {
+			name: "表格计算器",
+			desc: "为 markdown 表格数据提供持久化公式计算",
+		},
 	},
 	command: {
 		quick_path: {

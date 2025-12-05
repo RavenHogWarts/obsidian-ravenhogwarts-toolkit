@@ -39,16 +39,23 @@ export function Toolkit(info: IToolInfo) {
 			configurable: false,
 			enumerable: true,
 		});
+		Object.defineProperty(constructor.prototype, "icon", {
+			get() {
+				return info.icon;
+			},
+			configurable: false,
+			enumerable: true,
+		});
 		Object.defineProperty(constructor.prototype, "version", {
 			get() {
-				return info.version || "1.0.0";
+				return info.version;
 			},
 			configurable: false,
 			enumerable: true,
 		});
 		Object.defineProperty(constructor.prototype, "description", {
 			get() {
-				return info.description || "";
+				return info.description;
 			},
 			configurable: false,
 			enumerable: true,

@@ -8,6 +8,7 @@ import { DefaultSettings, ISettings } from "./types";
 @Toolkit({
 	id: "quick-path",
 	name: t("settings.quick_path.name"),
+	icon: "link",
 	version: "1.0.0",
 	description: t("settings.quick_path.desc"),
 })
