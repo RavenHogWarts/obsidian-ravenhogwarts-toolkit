@@ -24,9 +24,24 @@ export const Settings: FC<IToolSettingsProps<ISettings>> = ({
 							"settings.folder_templates.templatesFolderPath.desc"
 						),
 						control: (
-							<ObsidianSetting.Text
-								value={tool.settings.config.templatesFolderPath}
-							/>
+							<>
+								<ObsidianSetting.Text
+									value={
+										tool.settings.config.templatesFolderPath
+									}
+									onChange={(v) => {
+										settingsStore.updateToolSettingByPath(
+											tool.info.id,
+											"config.templatesFolderPath",
+											v
+										);
+									}}
+								/>
+								<ObsidianSetting.ExtraButton
+									icon={"reset"}
+									onClick={() => {}}
+								/>
+							</>
 						),
 					}}
 				/>
