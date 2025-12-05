@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState } from "react";
+import { FC, ReactNode } from "react";
 import ObsidianSetting from "./ObsidianSetting";
 
 interface ToolSettingsLayoutProps {
@@ -12,16 +12,10 @@ export const ToolSettingsLayout: FC<ToolSettingsLayoutProps> = ({
 	onBack,
 	children,
 }) => {
-	const [headingEl, setHeadingEl] = useState<HTMLElement | null>(null);
-
 	return (
 		<>
-			<div ref={setHeadingEl} className="rht__settings--heading" />
-			<div className="rht__settings--content">{children}</div>
-
-			{headingEl && (
+			<ObsidianSetting.Container className="rht__settings--heading">
 				<ObsidianSetting
-					containerEl={headingEl}
 					slots={{
 						name: toolName,
 						control: (
@@ -33,7 +27,9 @@ export const ToolSettingsLayout: FC<ToolSettingsLayoutProps> = ({
 					}}
 					heading={true}
 				/>
-			)}
+			</ObsidianSetting.Container>
+
+			<div className="rht__settings--content">{children}</div>
 		</>
 	);
 };

@@ -5,7 +5,9 @@ export interface ISettings extends IToolSettings {
 		templatesFolderPath: string;
 		ignoredFolders: string[];
 	};
-	data: IFolderTemplate[];
+	data: {
+		folderTemplates: IFolderTemplate[];
+	};
 }
 
 export interface IFolderTemplate {
@@ -17,8 +19,10 @@ export interface IFolderTemplate {
 export const DefaultSettings: ISettings = {
 	enabled: false,
 	config: {
-		templatesFolderPath: "",
+		templatesFolderPath: "templates",
 		ignoredFolders: [],
 	},
-	data: [],
+	data: {
+		folderTemplates: [],
+	},
 };
