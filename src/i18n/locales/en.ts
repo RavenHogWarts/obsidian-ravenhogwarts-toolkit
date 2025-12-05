@@ -4,26 +4,38 @@ import { BaseMessage } from "@src/i18n/types";
 const translations: BaseMessage = {
 	settings: {
 		folder_templates: {
-			name: "Folder Templates",
+			name: "Folder templates",
 			desc: "Apply templates seamlessly when creating new files in specified folders",
+			templatesFolderPath: {
+				name: "Templates folder path",
+				desc: "The folder where template files are stored, defaults to the same location as the official templates",
+			},
+			ignoredFolders: {
+				name: "Ignored folders",
+				desc: "Templates will not be applied automatically when creating files in these folders (including subfolders)",
+			},
+			folderTemplates: {
+				name: "Templates configuration",
+				desc: "",
+			},
 		},
 		quick_path: {
-			name: "Quick Path",
+			name: "Quick path",
 			desc: "Quickly get the path of a specified file/folder",
 			addEditorMenu: {
-				name: "Add Editor Menu",
+				name: "Add editor menu",
 				desc: "Add an option to paste the current file path in the editor menu",
 			},
 			addFileMenu: {
-				name: "Add File List Menu",
+				name: "Add file list menu",
 				desc: "Add an option to copy the file/folder path in the file list menu",
 			},
 			useAbsolutePath: {
-				name: "Absolute Path",
+				name: "Absolute path",
 				desc: "Use absolute path, starting from the root directory of the operating system",
 			},
 			pathSeparator: {
-				name: "Path Separator",
+				name: "Path separator",
 				desc: "Separator for multiple paths",
 				newline: "Newline",
 				comma: "Comma",
@@ -32,7 +44,7 @@ const translations: BaseMessage = {
 			},
 		},
 		table_calculator: {
-			name: "Table Calculator",
+			name: "Table calculator",
 			desc: "Provide persistent formula calculations for markdown table data",
 		},
 	},

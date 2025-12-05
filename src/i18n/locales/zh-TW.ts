@@ -5,6 +5,18 @@ const translations: BaseMessage = {
 		folder_templates: {
 			name: "文件夾模板",
 			desc: "在指定文件夾下創建新文件時，無感知應用模板",
+			templatesFolderPath: {
+				name: "模板文件夾位置",
+				desc: "存放模板文件的文件夾, 默認與官方模板位置相同",
+			},
+			ignoredFolders: {
+				name: "忽略文件夾",
+				desc: "在這些文件夾（包括子文件夾）中創建文件時不會自動應用模板",
+			},
+			folderTemplates: {
+				name: "模板配置",
+				desc: "",
+			},
 		},
 		quick_path: {
 			name: "快速路徑",

@@ -18,7 +18,11 @@ export type SettingsItem<T = Record<string, never>> = IBaseSettingsItem & T;
 // 定义翻译结构类型
 export type BaseMessage = {
 	settings: {
-		folder_templates: SettingsItem<{}>;
+		folder_templates: SettingsItem<{
+			templatesFolderPath: IBaseSettingsItem;
+			ignoredFolders: IBaseSettingsItem;
+			folderTemplates: SettingsItem<{}>;
+		}>;
 		quick_path: SettingsItem<{
 			addEditorMenu: IBaseSettingsItem;
 			addFileMenu: IBaseSettingsItem;
