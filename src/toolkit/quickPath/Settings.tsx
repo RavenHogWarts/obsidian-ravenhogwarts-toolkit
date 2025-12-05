@@ -1,15 +1,16 @@
-import usePluginSettings from "@src/hook/usePluginSettings";
 import useSettingsStore from "@src/hook/useSettingsStore";
 import { t } from "@src/i18n/i18n";
 import { IToolSettingsProps } from "@src/model/toolkit/ITool";
 import ObsidianSetting from "@src/settings/ObsidianSetting";
 import { ToolSettingsLayout } from "@src/settings/ToolSettingsLayout";
 import { FC } from "react";
-import { pathSeparators } from "./types";
+import { ISettings, pathSeparators } from "./types";
 
-export const Settings: FC<IToolSettingsProps> = ({ tool, onBack }) => {
+export const Settings: FC<IToolSettingsProps<ISettings>> = ({
+	tool,
+	onBack,
+}) => {
 	const settingsStore = useSettingsStore();
-	const settings = usePluginSettings(settingsStore);
 
 	return (
 		<ToolSettingsLayout toolName={tool.info.name} onBack={onBack}>
@@ -20,10 +21,7 @@ export const Settings: FC<IToolSettingsProps> = ({ tool, onBack }) => {
 						desc: t("settings.quick_path.addEditorMenu.desc"),
 						control: (
 							<ObsidianSetting.Toggle
-								value={
-									settings.toolkit[tool.info.id].config
-										.addEditorMenu
-								}
+								value={tool.settings.config.addEditorMenu}
 								onChange={(v) => {
 									settingsStore.updateToolSettingByPath(
 										tool.info.id,
@@ -42,10 +40,7 @@ export const Settings: FC<IToolSettingsProps> = ({ tool, onBack }) => {
 						desc: t("settings.quick_path.addFileMenu.desc"),
 						control: (
 							<ObsidianSetting.Toggle
-								value={
-									settings.toolkit[tool.info.id].config
-										.addFileMenu
-								}
+								value={tool.settings.config.addFileMenu}
 								onChange={(v) => {
 									settingsStore.updateToolSettingByPath(
 										tool.info.id,
@@ -64,10 +59,7 @@ export const Settings: FC<IToolSettingsProps> = ({ tool, onBack }) => {
 						desc: t("settings.quick_path.useAbsolutePath.desc"),
 						control: (
 							<ObsidianSetting.Toggle
-								value={
-									settings.toolkit[tool.info.id].config
-										.useAbsolutePath
-								}
+								value={tool.settings.config.useAbsolutePath}
 								onChange={(v) => {
 									settingsStore.updateToolSettingByPath(
 										tool.info.id,
@@ -86,10 +78,7 @@ export const Settings: FC<IToolSettingsProps> = ({ tool, onBack }) => {
 						desc: t("settings.quick_path.pathSeparator.desc"),
 						control: (
 							<ObsidianSetting.Dropdown
-								value={
-									settings.toolkit[tool.info.id].config
-										.pathSeparator
-								}
+								value={tool.settings.config.pathSeparator}
 								options={{
 									[pathSeparators.newline]: t(
 										"settings.quick_path.pathSeparator.newline"

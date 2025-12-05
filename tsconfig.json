@@ -10,7 +10,7 @@
 		"moduleResolution": "bundler",
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
-		"types": ["obsidian", "jest"],
+		"types": ["obsidian", "jest", "obsidian-typings"],
 		"importHelpers": true,
 		"isolatedModules": true,
 		"strictNullChecks": true,

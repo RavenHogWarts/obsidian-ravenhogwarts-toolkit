@@ -5,7 +5,10 @@ import { IToolSettings } from "@src/model/toolkit/IToolSettings";
 import { Component } from "obsidian";
 import { ComponentType } from "react";
 
-export abstract class BaseTool extends Component implements ITool {
+export abstract class BaseTool<TSettings extends IToolSettings = IToolSettings>
+	extends Component
+	implements ITool<TSettings>
+{
 	protected context: IPluginContext;
 	protected enabled: boolean = false;
 	protected errors: Error[] = [];
@@ -20,14 +23,14 @@ export abstract class BaseTool extends Component implements ITool {
 		return meta;
 	}
 
-	get settings(): IToolSettings {
+	get settings(): TSettings {
 		const settings = this.context._settingsStore.getToolSettings(
 			this.info.id
 		);
 		if (!settings) {
 			throw new Error(`Settings for tool ${this.info.id} not found.`);
 		}
-		return settings;
+		return settings as TSettings;
 	}
 
 	async initialize(context: IPluginContext): Promise<void> {
@@ -65,9 +68,11 @@ export abstract class BaseTool extends Component implements ITool {
 		this.errors = [];
 	}
 
-	abstract getDefaultSettings(): IToolSettings;
+	abstract getDefaultSettings(): TSettings;
 
-	abstract getSettingsComponent(): ComponentType<IToolSettingsProps>;
+	abstract getSettingsComponent(): ComponentType<
+		IToolSettingsProps<TSettings>
+	>;
 
 	protected addError(error: Error): void {
 		this.errors.push(error);

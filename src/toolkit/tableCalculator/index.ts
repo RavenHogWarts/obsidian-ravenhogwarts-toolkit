@@ -11,7 +11,7 @@ import { DefaultSettings, ISettings } from "./types";
 	version: "1.0.0",
 	description: t("settings.table_calculator.desc"),
 })
-export class TableCalculator extends BaseTool {
+export class TableCalculator extends BaseTool<ISettings> {
 	getDefaultSettings(): ISettings {
 		return DefaultSettings;
 	}

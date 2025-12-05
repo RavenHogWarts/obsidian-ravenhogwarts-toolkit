@@ -12,7 +12,7 @@ import { DefaultSettings, ISettings } from "./types";
 	version: "1.0.0",
 	description: t("settings.quick_path.desc"),
 })
-export class QuickPath extends BaseTool {
+export class QuickPath extends BaseTool<ISettings> {
 	private basePath: string;
 
 	getDefaultSettings(): ISettings {

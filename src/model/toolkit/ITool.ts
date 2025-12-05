@@ -4,19 +4,23 @@ import { IPluginContext } from "./IPluginContext";
 import { IToolInfo } from "./IToolInfo";
 import { IToolSettings } from "./IToolSettings";
 
-export interface IToolSettingsProps {
-	tool: ITool;
+export interface IToolSettingsProps<
+	TSettings extends IToolSettings = IToolSettings
+> {
+	tool: ITool<TSettings>;
 	onBack: () => void;
 }
 
-export interface ITool extends Component {
+export interface ITool<TSettings extends IToolSettings = IToolSettings>
+	extends Component {
 	readonly info: IToolInfo;
+	readonly settings: TSettings;
 
 	initialize(context: IPluginContext): Promise<void>;
 	onload(): Promise<void>;
 	onunload(): void;
 
-	getDefaultSettings(): IToolSettings;
+	getDefaultSettings(): TSettings;
 
 	isEnabled(): boolean;
 	setEnabled(enabled: boolean): void;
@@ -24,5 +28,5 @@ export interface ITool extends Component {
 	getErrors(): Error[];
 	clearErrors(): void;
 
-	getSettingsComponent(): ComponentType<IToolSettingsProps>;
+	getSettingsComponent(): ComponentType<IToolSettingsProps<TSettings>>;
 }
