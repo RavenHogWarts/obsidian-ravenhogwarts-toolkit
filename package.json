@@ -52,10 +52,13 @@
 		"typescript": "^5.9.3"
 	},
 	"dependencies": {
+		"@tanstack/react-virtual": "^3.13.12",
 		"dotenv": "^17.2.3",
 		"lucide-react": "^0.548.0",
+		"radix-ui": "^1.4.3",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
-		"reflect-metadata": "^0.2.2"
+		"reflect-metadata": "^0.2.2",
+		"uuid": "^13.0.0"
 	}
 }
