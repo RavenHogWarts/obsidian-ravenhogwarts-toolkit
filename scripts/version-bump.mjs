@@ -1,6 +1,5 @@
-#!/usr/bin/env node
-import { existsSync, readFileSync, writeFileSync } from "fs";
-import readline from "readline";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import readline from "node:readline";
 
 // 检查是否为直接调用模式
 const directVersion = process.argv[2];
@@ -194,8 +193,10 @@ function updateAllFiles(version, isBeta = false) {
 		// 2. 更新 manifest.json 或 manifest-beta.json
 		const minAppVersion = updateManifestJson(version, isBeta);
 
-		// 3. 更新 versions.json
-		updateVersionsJson(version, minAppVersion);
+		// 3. 更新 versions.json (仅非Beta版本)
+		if (!isBeta) {
+			updateVersionsJson(version, minAppVersion);
+		}
 
 		// 提示提交更改
 		if (isFirstRelease) {
@@ -205,9 +206,7 @@ function updateAllFiles(version, isBeta = false) {
 		}
 
 		if (isBeta) {
-			console.log(
-				`git add package.json manifest-beta.json versions.json`
-			);
+			console.log(`git add package.json manifest-beta.json`);
 		} else {
 			console.log(`git add package.json manifest.json versions.json`);
 		}

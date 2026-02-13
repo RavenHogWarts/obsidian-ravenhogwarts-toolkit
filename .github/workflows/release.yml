@@ -7,7 +7,6 @@ on:
 
 permissions:
     contents: write
-    discussions: write
 
 env:
     PLUGIN_ID: ravenhogwarts-toolkit # 插件ID
@@ -24,23 +23,44 @@ jobs:
             - name: Use Node.js
               uses: actions/setup-node@v3
               with:
-                  node-version: "18.x"
+                  node-version: "20.x"
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10
+
+            - name: Get pnpm store directory
+              id: pnpm-cache
+              shell: bash
+              run: |
+                  echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+            - name: Setup pnpm cache
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-store-
 
             - name: Prepare manifest
               id: prepare_manifest
               run: |
                   if [[ ${{ github.ref }} == *"beta"* ]]; then
+                    echo "📦 Using beta manifest"
                     cp manifest-beta.json manifest.json
+                  else
+                    echo "📦 Using stable manifest"
                   fi
 
             - name: Build
               id: build
               run: |
-                  npm install -g yarn
-                  yarn
-                  yarn run build --if-present
+                  pnpm install --frozen-lockfile
+                  pnpm run build
                   mkdir ${{ env.PLUGIN_ID }}
-                  cp main.js manifest.json styles.css ${{ env.PLUGIN_ID }}
+                  cp dist/main.js dist/manifest.json dist/styles.css ${{ env.PLUGIN_ID }}
                   zip -r ${{ env.PLUGIN_ID }}.zip ${{ env.PLUGIN_ID }}
                   ls
                   echo "tag_name=$(git tag --sort version:refname | tail -n 1)" >> $GITHUB_OUTPUT
@@ -54,15 +74,14 @@ jobs:
                   draft: false
                   prerelease: ${{ contains(github.ref, 'beta') }}
                   generate_release_notes: true
-                  discussion_category_name: "Announcements"
                   body: |
                       ${{ contains(github.ref, 'beta') && '🚧 This is a beta release' || '🎉 This is a stable release' }}
 
                       **Version:** ${{ github.ref_name }}
                   files: |
                       ${{ env.PLUGIN_ID }}.zip
-                      main.js
-                      manifest.json
-                      styles.css
+                      dist/main.js
+                      dist/manifest.json
+                      dist/styles.css
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
