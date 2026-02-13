@@ -1,4 +1,5 @@
 import { SettingsStoreContext } from "@src/context/SettingsStoreContext";
+import { ObsidianAppContext } from "@src/hook/obsidianAppContext";
 import RHTPlugin from "@src/main";
 import { PluginSettingTab as ObPluginSettingTab } from "obsidian";
 import { StrictMode } from "react";
@@ -19,11 +20,13 @@ export class PluginSettingTab extends ObPluginSettingTab {
 		this.root = createRoot(containerEl);
 		this.root.render(
 			<StrictMode>
-				<SettingsStoreContext.Provider
-					value={this.plugin.settingsStore}
-				>
-					<Settings />
-				</SettingsStoreContext.Provider>
+				<ObsidianAppContext.Provider value={this.plugin.app}>
+					<SettingsStoreContext.Provider
+						value={this.plugin.settingsStore}
+					>
+						<Settings />
+					</SettingsStoreContext.Provider>
+				</ObsidianAppContext.Provider>
 			</StrictMode>
 		);
 	}

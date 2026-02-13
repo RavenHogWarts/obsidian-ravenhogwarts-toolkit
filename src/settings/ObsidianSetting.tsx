@@ -767,10 +767,6 @@ const TextArea: FC<ObsidianSettingTextAreaProps> = ({
 	);
 };
 
-/**
- * Main component type with all subcomponents
- * 主组件类型，包含所有子组件
- */
 type ObsidianSettingComponent = FC<ObsidianSettingProps> & {
 	Button: typeof Button;
 	Color: typeof Color;

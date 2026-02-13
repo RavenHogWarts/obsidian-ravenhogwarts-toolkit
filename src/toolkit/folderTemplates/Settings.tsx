@@ -1,3 +1,4 @@
+import { FolderSuggestInput } from "@src/components/combobox/FolderSuggestInput";
 import useSettingsStore from "@src/hook/useSettingsStore";
 import { t } from "@src/i18n/i18n";
 import { IToolSettingsProps } from "@src/model/toolkit/ITool";
@@ -25,7 +26,7 @@ export const Settings: FC<IToolSettingsProps<ISettings>> = ({
 						),
 						control: (
 							<>
-								<ObsidianSetting.Text
+								<FolderSuggestInput
 									value={
 										tool.settings.config.templatesFolderPath
 									}
