@@ -1,4 +1,4 @@
-import { t } from "@src/i18n/i18n";
+import { LL } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
 import { normalizePath, TFile } from "obsidian";
@@ -9,10 +9,10 @@ import { findMatchingTemplate } from "./util/findMatchingTemplate";
 
 @Toolkit({
 	id: "folder-templates",
-	name: t("settings.folder_templates.name"),
+	name: LL.settings.folder_templates.name(),
 	icon: "folder-cog",
 	version: "1.0.0",
-	description: t("settings.folder_templates.desc"),
+	description: LL.settings.folder_templates.desc(),
 })
 export class FolderTemplates extends BaseTool<ISettings> {
 	private triggerOnFileCreationEvent: any;
@@ -41,13 +41,13 @@ export class FolderTemplates extends BaseTool<ISettings> {
 				this.info.id,
 				"config.templatesFolderPath",
 				// @ts-ignore
-				templatesPlugin.options.folder
+				templatesPlugin.options.folder,
 			);
 		} else {
 			this.context._settingsStore.updateToolSettingByPath(
 				this.info.id,
 				"config.templatesFolderPath",
-				this.getDefaultSettings().config.templatesFolderPath
+				this.getDefaultSettings().config.templatesFolderPath,
 			);
 		}
 	}
@@ -70,7 +70,7 @@ export class FolderTemplates extends BaseTool<ISettings> {
 				if (file instanceof TFile) {
 					this.handleFileCreate(file);
 				}
-			}
+			},
 		);
 	}
 
@@ -88,7 +88,7 @@ export class FolderTemplates extends BaseTool<ISettings> {
 
 		const matchTemplate = findMatchingTemplate(
 			file,
-			this.settings.data.folderTemplates
+			this.settings.data.folderTemplates,
 		);
 
 		if (!matchTemplate) {
@@ -99,8 +99,8 @@ export class FolderTemplates extends BaseTool<ISettings> {
 			this.context._app.vault.getAbstractFileByPath(
 				`${normalizePath(this.settings.config.templatesFolderPath)}/${
 					matchTemplate.templateFile
-				}`
-			) as TFile
+				}`,
+			) as TFile,
 		);
 
 		const engine = new TemplateProcessEngine();

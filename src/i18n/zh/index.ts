@@ -1,6 +1,6 @@
-import { BaseMessage } from "@src/i18n/types";
+import type { BaseTranslation } from "../i18n-types";
 
-const translations: BaseMessage = {
+const zh = {
 	settings: {
 		folder_templates: {
 			name: "文件夹模板",
@@ -69,6 +69,6 @@ const translations: BaseMessage = {
 			root_path_warning: "当前文件位于根目录，无法获取上级文件夹路径",
 		},
 	},
-};
+} satisfies BaseTranslation;
 
-export default translations;
+export default zh;

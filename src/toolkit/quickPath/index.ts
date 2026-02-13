@@ -1,4 +1,4 @@
-import { t } from "@src/i18n/i18n";
+import { LL } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
 import { Editor, Menu, normalizePath, TFile, TFolder } from "obsidian";
@@ -7,10 +7,10 @@ import { DefaultSettings, ISettings } from "./types";
 
 @Toolkit({
 	id: "quick-path",
-	name: t("settings.quick_path.name"),
+	name: LL.settings.quick_path.name(),
 	icon: "link",
 	version: "1.0.0",
-	description: t("settings.quick_path.desc"),
+	description: LL.settings.quick_path.desc(),
 })
 export class QuickPath extends BaseTool<ISettings> {
 	private basePath: string;
@@ -27,7 +27,7 @@ export class QuickPath extends BaseTool<ISettings> {
 		await super.onload();
 		this.basePath = this.context._app.vault.adapter.basePath.replace(
 			/\\/g,
-			"/"
+			"/",
 		);
 		this.registerCommands();
 		this.registerEventHandlers();
@@ -36,9 +36,7 @@ export class QuickPath extends BaseTool<ISettings> {
 	private registerCommands() {
 		this.context._plugin.addCommand({
 			id: "quick_path-copy_current_file_path",
-			name: `[${t("settings.quick_path.name")}] ${t(
-				"command.quick_path.copy_current_file_path"
-			)}`,
+			name: `[${LL.settings.quick_path.name()}] ${LL.command.quick_path.copy_current_file_path()}`,
 			callback: () => {
 				const activeFile = this.context._app.workspace.getActiveFile();
 				if (activeFile) {
@@ -50,9 +48,7 @@ export class QuickPath extends BaseTool<ISettings> {
 
 		this.context._plugin.addCommand({
 			id: "quick_path-copy_current_folder_path",
-			name: `[${t("settings.quick_path.name")}] ${t(
-				"command.quick_path.copy_current_folder_path"
-			)}`,
+			name: `[${LL.settings.quick_path.name()}] ${LL.command.quick_path.copy_current_folder_path()}`,
 			callback: () => {
 				const activeFile = this.context._app.workspace.getActiveFile();
 				const activeFolder =
@@ -61,7 +57,7 @@ export class QuickPath extends BaseTool<ISettings> {
 					this.copyToClipboard(activeFolder);
 				} else {
 					this.context.notice(
-						t("notice.quick_path.root_path_warning")
+						LL.notice.quick_path.root_path_warning(),
 					);
 				}
 			},
@@ -71,7 +67,7 @@ export class QuickPath extends BaseTool<ISettings> {
 	private unregisterCommands() {
 		this.context._plugin.removeCommand("quick_path-copy_current_file_path");
 		this.context._plugin.removeCommand(
-			"quick_path-copy_current_folder_path"
+			"quick_path-copy_current_folder_path",
 		);
 	}
 
@@ -84,15 +80,15 @@ export class QuickPath extends BaseTool<ISettings> {
 			this.registerEvent(
 				this.context._app.workspace.on(
 					"file-menu",
-					this.handleFileMenu.bind(this)
-				)
+					this.handleFileMenu.bind(this),
+				),
 			);
 
 			this.registerEvent(
 				this.context._app.workspace.on(
 					"files-menu",
-					this.handleFilesMenu.bind(this)
-				)
+					this.handleFilesMenu.bind(this),
+				),
 			);
 		}
 
@@ -100,8 +96,8 @@ export class QuickPath extends BaseTool<ISettings> {
 			this.registerEvent(
 				this.context._app.workspace.on(
 					"editor-menu",
-					this.handleEditorMenu.bind(this)
-				)
+					this.handleEditorMenu.bind(this),
+				),
 			);
 		}
 	}
@@ -111,7 +107,7 @@ export class QuickPath extends BaseTool<ISettings> {
 		if (file instanceof TFolder) {
 			menu.addItem((item) => {
 				item.setSection("info");
-				item.setTitle(t("menu.quick_path.copy_folder_path"));
+				item.setTitle(LL.menu.quick_path.copy_folder_path());
 				item.setIcon("copy");
 				item.onClick(() => {
 					const path = this.getPath(file);
@@ -121,7 +117,7 @@ export class QuickPath extends BaseTool<ISettings> {
 		} else {
 			menu.addItem((item) => {
 				item.setSection("info");
-				item.setTitle(t("menu.quick_path.copy_file_path"));
+				item.setTitle(LL.menu.quick_path.copy_file_path());
 				item.setIcon("copy");
 				item.onClick(() => {
 					const path = this.getPath(file);
@@ -134,7 +130,7 @@ export class QuickPath extends BaseTool<ISettings> {
 	private handleFilesMenu(menu: Menu, files: (TFile | TFolder)[]): void {
 		menu.addItem((item) => {
 			item.setSection("info");
-			item.setTitle(t("menu.quick_path.copy_files_path"));
+			item.setTitle(LL.menu.quick_path.copy_files_path());
 			item.setIcon("copy");
 			item.onClick(() => {
 				const path = files
@@ -149,7 +145,7 @@ export class QuickPath extends BaseTool<ISettings> {
 		// title,correction,spellcheck,open,selection-link,selection,selection.format,selection.paragraph,selection.paragraph.list,selection.paragraph.heading,selection.paragraph.block,selection.insert.basic,selection.insert.advanced,insert,clipboard,info,action,view,selection.format.basic,selection.format.advanced,selection.format.danger,danger
 		menu.addItem((item) => {
 			item.setSection("action");
-			item.setTitle(t("menu.quick_path.paste_current_file_path"));
+			item.setTitle(LL.menu.quick_path.paste_current_file_path());
 			item.setIcon("file-text");
 			item.onClick(() => {
 				const activeFile = this.context._app.workspace.getActiveFile();
@@ -161,7 +157,7 @@ export class QuickPath extends BaseTool<ISettings> {
 		});
 		menu.addItem((item) => {
 			item.setSection("action");
-			item.setTitle(t("menu.quick_path.paste_current_folder_path"));
+			item.setTitle(LL.menu.quick_path.paste_current_folder_path());
 			item.setIcon("folder");
 			item.onClick(() => {
 				const activeFile = this.context._app.workspace.getActiveFile();
@@ -171,7 +167,7 @@ export class QuickPath extends BaseTool<ISettings> {
 					editor.replaceSelection(activeFolder);
 				} else {
 					this.context.notice(
-						t("notice.quick_path.root_path_warning")
+						LL.notice.quick_path.root_path_warning(),
 					);
 				}
 			});
@@ -197,10 +193,10 @@ export class QuickPath extends BaseTool<ISettings> {
 		navigator.clipboard
 			.writeText(text)
 			.then(() => {
-				this.context.notice(t("notice.quick_path.copy_success"));
+				this.context.notice(LL.notice.quick_path.copy_success());
 			})
 			.catch((err) => {
-				this.context.notice(t("notice.quick_path.copy_failure"));
+				this.context.notice(LL.notice.quick_path.copy_failure());
 				throw err;
 			});
 	}

@@ -1,4 +1,4 @@
-import { t } from "@src/i18n/i18n";
+import { LL } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
 import { Settings } from "./Settings";
@@ -6,10 +6,10 @@ import { DefaultSettings, ISettings } from "./types";
 
 @Toolkit({
 	id: "table-calculator",
-	name: t("settings.table_calculator.name"),
+	name: LL.settings.table_calculator.name(),
 	icon: "table",
 	version: "1.0.0",
-	description: t("settings.table_calculator.desc"),
+	description: LL.settings.table_calculator.desc(),
 })
 export class TableCalculator extends BaseTool<ISettings> {
 	getDefaultSettings(): ISettings {

@@ -1,7 +1,7 @@
-import { BaseMessage } from "@src/i18n/types";
+import type { BaseTranslation } from "../i18n-types";
 
 // Remember [use sentence case in UI](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines#Use+sentence+case+in+UI)
-const translations: BaseMessage = {
+const en = {
 	settings: {
 		folder_templates: {
 			name: "Folder templates",
@@ -71,6 +71,6 @@ const translations: BaseMessage = {
 				"The current file is in the root directory, unable to get the parent folder path",
 		},
 	},
-};
+} satisfies BaseTranslation;
 
-export default translations;
+export default en;
