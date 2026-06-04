@@ -2,8 +2,7 @@
 // 统一的部署脚本：支持多种部署模式
 // 用法: node scripts/deploy.mjs [link|copy] [--vault-path=/path/to/vault]
 
-import dotenv from "dotenv";
-import fs from "fs-extra";
+import * as fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -42,7 +41,6 @@ function loadVaultPath() {
 		process.exit(0);
 	}
 
-	dotenv.config({ path: envPath });
 	const vaultPath = process.env.VAULT_PATH;
 
 	if (!vaultPath) {
@@ -73,7 +71,7 @@ function getPluginId() {
 	}
 
 	try {
-		const manifest = fs.readJsonSync(manifestFile);
+		const manifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
 		if (!manifest.id) {
 			throw new Error("manifest.json 中没有 id 字段");
 		}
@@ -185,7 +183,7 @@ async function deployLink(vaultPath, pluginId) {
 		const linkType = process.platform === "win32" ? "junction" : "dir";
 		fs.symlinkSync(distDir, targetPluginDir, linkType);
 		log.success(`软链接已创建: dist → ${pluginId}`);
-		
+
 		// 自动从备份恢复 data.json 到 dist/
 		const backupPath = path.join(backupDir, "data.json");
 		if (fs.existsSync(backupPath)) {
@@ -232,10 +230,13 @@ async function deployCopy(vaultPath, pluginId) {
 		try {
 			dataJsonContent = fs.readFileSync(dataJsonPath, "utf8");
 			log.info("已保存现有的 data.json");
-			
+
 			// 同时备份到 .backup/ 作为安全保障
 			fs.mkdirSync(backupDir, { recursive: true });
-			fs.writeFileSync(path.join(backupDir, "data.json"), dataJsonContent);
+			fs.writeFileSync(
+				path.join(backupDir, "data.json"),
+				dataJsonContent,
+			);
 			log.info("已备份到 .backup/data.json");
 		} catch (error) {
 			log.warn(`读取 data.json 失败: ${error.message}`);

@@ -1,6 +1,6 @@
-import builtins from "builtin-modules";
 import esbuild from "esbuild";
-import fs from "fs-extra";
+import * as fs from "node:fs";
+import { builtinModules } from "node:module";
 import path from "node:path";
 import process from "node:process";
 import postcss from "postcss";
@@ -33,7 +33,7 @@ const renamePlugin = () => ({
 
 			if (fs.existsSync(src)) {
 				try {
-					fs.moveSync(src, dest, { overwrite: true });
+					fs.renameSync(src, dest);
 				} catch (error) {
 					console.error("Failed to rename CSS file:", error);
 				}
@@ -67,7 +67,7 @@ const cssReBuild = () => ({
 				});
 
 				// 确保输出目录存在，如果不存在则创建
-				fs.ensureDirSync(outDir);
+				fs.mkdirSync(outDir, { recursive: true });
 
 				// 返回处理后的 CSS 内容
 				// contents: 处理后的 CSS 代码
@@ -94,7 +94,7 @@ const cssReBuild = () => ({
 // 复制 manifest.json 到输出目录
 function copyManifest() {
 	// 确保输出目录存在，如果不存在则创建
-	fs.ensureDirSync(outDir);
+	fs.mkdirSync(outDir, { recursive: true });
 
 	const src = path.join(process.cwd(), "manifest.json");
 	const dest = path.join(process.cwd(), outDir, "manifest.json");
@@ -162,7 +162,7 @@ const context = await esbuild.context({
 		"@lezer/common",
 		"@lezer/highlight",
 		"@lezer/lr",
-		...builtins,
+		...builtinModules,
 	],
 	format: "cjs",
 	target: "es2020",

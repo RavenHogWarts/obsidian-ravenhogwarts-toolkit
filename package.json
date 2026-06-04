@@ -4,18 +4,16 @@
 	"description": "A personal toolkit plugin (OTK) that integrates various Obsidian utilities, designed to enhance personal note-taking experience.",
 	"main": "main.js",
 	"scripts": {
-		"dev": "node scripts/deploy.mjs link && node scripts/esbuild.config.mjs dev",
-		"build": "tsc -noEmit -skipLibCheck && node scripts/esbuild.config.mjs prod && node scripts/deploy.mjs copy",
+		"dev": "node --env-file-if-exists=.env scripts/deploy.mjs link && node scripts/esbuild.config.mjs dev",
+		"build": "tsc -noEmit -skipLibCheck && node scripts/esbuild.config.mjs prod && node --env-file-if-exists=.env scripts/deploy.mjs copy",
 		"version": "pnpm run build && node scripts/version-bump.mjs && pnpm run changelog:u && pnpm i",
 		"changelog:u": "conventional-changelog -p angular -i CHANGELOG.md -s -u -n ./scripts/changelog-option.js",
 		"changelog:all": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0 -n ./scripts/changelog-option.js",
-		"lint": "eslint .",
-		"lint:fix": "eslint . --fix",
+		"lint": "eslint src/ styles/",
 		"i18n:typesafe": "typesafe-i18n",
 		"i18n:sync": "node scripts/sync-i18n.mjs",
 		"test": "jest",
-		"test:watch": "jest --watch",
-		"link:data": "node scripts/link-data.mjs"
+		"test:watch": "jest --watch"
 	},
 	"keywords": [
 		"Obsidian Plugin",
@@ -28,42 +26,35 @@
 	"engines": {
 		"node": ">=20.x"
 	},
-	"pnpm": {
-		"overrides": {
-			"@conventional-changelog/git-client": "^2.0.0"
-		}
-	},
 	"devDependencies": {
+		"@eslint/js": "^10.0.1",
 		"@types/jest": "^30.0.0",
 		"@types/node": "^24.9.2",
 		"@types/obsidian-typings": "npm:obsidian-typings@^4.68.0",
-		"@types/react": "^19.2.2",
-		"@types/react-dom": "^19.2.2",
-		"@typescript-eslint/eslint-plugin": "8.46.2",
-		"@typescript-eslint/parser": "^8.46.2",
-		"builtin-modules": "5.0.0",
-		"conventional-changelog-cli": "^5.0.0",
-		"dotenv": "^17.2.3",
-		"esbuild": "0.27.1",
-		"eslint": "^9.39.2",
-		"eslint-plugin-obsidianmd": "^0.1.9",
-		"fs-extra": "^11.3.2",
-		"globals": "^16.5.0",
-		"jest": "^30.2.0",
-		"obsidian": "^1.11.0",
-		"postcss": "^8.5.6",
-		"postcss-nesting": "^13.0.2",
-		"ts-jest": "^29.4.6",
+		"@types/react": "^18.3.29",
+		"@types/react-dom": "^18.3.7",
+		"conventional-changelog": "^7.2.0",
+		"conventional-changelog-angular": "^8.3.1",
+		"esbuild": "0.28.0",
+		"eslint": "^10.4.0",
+		"eslint-plugin-obsidianmd": "^0.3.0",
+		"globals": "^17.6.0",
+		"jest": "^30.4.2",
+		"obsidian": "^1.13.0",
+		"postcss": "^8.5.15",
+		"postcss-nesting": "^14.0.0",
+		"ts-jest": "^29.4.11",
 		"tslib": "2.8.1",
-		"typesafe-i18n": "^5.26.2",
-		"typescript": "^5.9.3"
+		"typesafe-i18n": "^5.27.1",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.60.0"
 	},
 	"dependencies": {
 		"@tanstack/react-virtual": "^3.13.12",
-		"lucide-react": "^0.548.0",
+		"lucide-react": "^1.17.0",
 		"radix-ui": "^1.4.3",
-		"react": "^19.2.0",
-		"react-dom": "^19.2.0",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1",
 		"reflect-metadata": "^0.2.2",
 		"uuid": "^13.0.0"
 	}
