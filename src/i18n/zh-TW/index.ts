@@ -1,6 +1,14 @@
 import type { BaseTranslation } from "../i18n-types";
 
 const zh_TW = {
+	common: {
+		enabled: "啟用",
+		enabledDesc: "開啟或關閉此工具",
+		noConfig: "此工具暫無可設定項",
+		add: "新增",
+		delete: "刪除",
+		reset: "重設",
+	},
 	settings: {
 		folder_templates: {
 			name: "文件夾模板",

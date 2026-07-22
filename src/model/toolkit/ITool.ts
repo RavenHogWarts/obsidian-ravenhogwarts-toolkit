@@ -1,15 +1,7 @@
-import { Component } from "obsidian";
-import { ComponentType } from "react";
+import { Component, type SettingDefinitionItem } from "obsidian";
 import { IPluginContext } from "./IPluginContext";
 import { IToolInfo } from "./IToolInfo";
 import { IToolSettings } from "./IToolSettings";
-
-export interface IToolSettingsProps<
-	TSettings extends IToolSettings = IToolSettings
-> {
-	tool: ITool<TSettings>;
-	onBack: () => void;
-}
 
 export interface ITool<TSettings extends IToolSettings = IToolSettings>
 	extends Component {
@@ -28,5 +20,5 @@ export interface ITool<TSettings extends IToolSettings = IToolSettings>
 	getErrors(): Error[];
 	clearErrors(): void;
 
-	getSettingsComponent(): ComponentType<IToolSettingsProps<TSettings>>;
+	getSettingItems(): SettingDefinitionItem[];
 }

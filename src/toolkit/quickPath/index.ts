@@ -1,9 +1,15 @@
 import { LL } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
-import { Editor, Menu, normalizePath, TFile, TFolder } from "obsidian";
-import { Settings } from "./Settings";
-import { DefaultSettings, ISettings } from "./types";
+import {
+	Editor,
+	Menu,
+	normalizePath,
+	TFile,
+	TFolder,
+	type SettingDefinitionItem,
+} from "obsidian";
+import { DefaultSettings, ISettings, pathSeparators } from "./types";
 
 @Toolkit({
 	id: "quick-path",
@@ -19,16 +25,67 @@ export class QuickPath extends BaseTool<ISettings> {
 		return DefaultSettings;
 	}
 
-	getSettingsComponent() {
-		return Settings;
+	getSettingItems(): SettingDefinitionItem[] {
+		const id = this.info.id;
+
+		return [
+			{
+				name: LL.settings.quick_path.addEditorMenu.name(),
+				desc: LL.settings.quick_path.addEditorMenu.desc(),
+				control: {
+					type: "toggle" as const,
+					key: `toolkit.${id}.config.addEditorMenu`,
+					defaultValue: DefaultSettings.config.addEditorMenu,
+				},
+			},
+			{
+				name: LL.settings.quick_path.addFileMenu.name(),
+				desc: LL.settings.quick_path.addFileMenu.desc(),
+				control: {
+					type: "toggle" as const,
+					key: `toolkit.${id}.config.addFileMenu`,
+					defaultValue: DefaultSettings.config.addFileMenu,
+				},
+			},
+			{
+				name: LL.settings.quick_path.useAbsolutePath.name(),
+				desc: LL.settings.quick_path.useAbsolutePath.desc(),
+				control: {
+					type: "toggle" as const,
+					key: `toolkit.${id}.config.useAbsolutePath`,
+					defaultValue: DefaultSettings.config.useAbsolutePath,
+				},
+			},
+			{
+				name: LL.settings.quick_path.pathSeparator.name(),
+				desc: LL.settings.quick_path.pathSeparator.desc(),
+				control: {
+					type: "dropdown" as const,
+					key: `toolkit.${id}.config.pathSeparator`,
+					defaultValue: DefaultSettings.config.pathSeparator,
+					options: {
+						[pathSeparators.newline]:
+							LL.settings.quick_path.pathSeparator.newline(),
+						[pathSeparators.comma]:
+							LL.settings.quick_path.pathSeparator.comma(),
+						[pathSeparators.semicolon]:
+							LL.settings.quick_path.pathSeparator.semicolon(),
+						[pathSeparators.space]:
+							LL.settings.quick_path.pathSeparator.space(),
+					},
+				},
+			},
+		];
 	}
 
 	async onload(): Promise<void> {
 		await super.onload();
-		this.basePath = this.context._app.vault.adapter.basePath.replace(
-			/\\/g,
-			"/",
-		);
+		// `basePath` is an undocumented property on the data adapter (desktop
+		// only, not in the public typings).
+		const adapter = this.context._app.vault.adapter as unknown as {
+			basePath: string;
+		};
+		this.basePath = adapter.basePath.replace(/\\/g, "/");
 		this.registerCommands();
 		this.registerEventHandlers();
 	}

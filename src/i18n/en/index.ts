@@ -2,6 +2,14 @@ import type { BaseTranslation } from "../i18n-types";
 
 // Remember [use sentence case in UI](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines#Use+sentence+case+in+UI)
 const en = {
+	common: {
+		enabled: "Enabled",
+		enabledDesc: "Turn this tool on or off",
+		noConfig: "This tool has no configurable options",
+		add: "Add",
+		delete: "Delete",
+		reset: "Reset",
+	},
 	settings: {
 		folder_templates: {
 			name: "Folder templates",

@@ -1,9 +1,13 @@
 import { LL } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
-import { normalizePath, TFile } from "obsidian";
+import {
+	normalizePath,
+	TFile,
+	type SettingDefinitionItem,
+	type SettingDefinitionList,
+} from "obsidian";
 import { TemplateProcessEngine } from "./service/TemplateProcessEngine";
-import { Settings } from "./Settings";
 import { DefaultSettings, ISettings } from "./types";
 import { findMatchingTemplate } from "./util/findMatchingTemplate";
 
@@ -15,14 +19,96 @@ import { findMatchingTemplate } from "./util/findMatchingTemplate";
 	description: LL.settings.folder_templates.desc(),
 })
 export class FolderTemplates extends BaseTool<ISettings> {
-	private triggerOnFileCreationEvent: any;
+	private triggerOnFileCreationEvent: unknown;
 
 	getDefaultSettings(): ISettings {
 		return DefaultSettings;
 	}
 
-	getSettingsComponent() {
-		return Settings;
+	getSettingItems(): SettingDefinitionItem[] {
+		const id = this.info.id;
+		const { folderTemplates } = this.settings.data;
+
+		const list: SettingDefinitionList = {
+			type: "list",
+			heading: LL.settings.folder_templates.folderTemplates.name(),
+			emptyState: LL.common.noConfig(),
+			addItem: {
+				name: LL.common.add(),
+				action: () => {
+					const updated = [
+						...folderTemplates,
+						{ folder: "", templateFile: "" },
+					];
+					void this.context._settingsStore.updateToolSettingByPath(
+						id,
+						"data.folderTemplates",
+						updated,
+					);
+					this.context._plugin.settingTab.update();
+				},
+			},
+			onDelete: (index: number) => {
+				const updated = [...folderTemplates];
+				updated.splice(index, 1);
+				void this.context._settingsStore.updateToolSettingByPath(
+					id,
+					"data.folderTemplates",
+					updated,
+				);
+				this.context._plugin.settingTab.update();
+			},
+			items: folderTemplates.map((entry, index) => ({
+				name: entry.folder || entry.templateFile || LL.common.add(),
+				render: (setting) => {
+					setting.addText((text) => {
+						text.setPlaceholder("folder/path")
+							.setValue(entry.folder)
+							.onChange((value) => {
+								const updated = [...folderTemplates];
+								updated[index] = {
+									...updated[index],
+									folder: normalizePath(value),
+								};
+								void this.context._settingsStore.updateToolSettingByPath(
+									id,
+									"data.folderTemplates",
+									updated,
+								);
+							});
+					});
+					setting.addText((text) => {
+						text.setPlaceholder("template-file.md")
+							.setValue(entry.templateFile)
+							.onChange((value) => {
+								const updated = [...folderTemplates];
+								updated[index] = {
+									...updated[index],
+									templateFile: value,
+								};
+								void this.context._settingsStore.updateToolSettingByPath(
+									id,
+									"data.folderTemplates",
+									updated,
+								);
+							});
+					});
+				},
+			})),
+		};
+
+		return [
+			{
+				name: LL.settings.folder_templates.templatesFolderPath.name(),
+				desc: LL.settings.folder_templates.templatesFolderPath.desc(),
+				control: {
+					type: "text" as const,
+					key: `toolkit.${id}.config.templatesFolderPath`,
+					defaultValue: DefaultSettings.config.templatesFolderPath,
+				},
+			},
+			list,
+		];
 	}
 
 	async onload(): Promise<void> {
@@ -34,13 +120,21 @@ export class FolderTemplates extends BaseTool<ISettings> {
 	}
 
 	private ensureTemplatesFolderPath(): void {
+		const internalPlugins = (
+			this.context._app as unknown as {
+				internalPlugins: {
+					getEnabledPluginById(id: string): {
+						options: { folder?: string };
+					} | null;
+				};
+			}
+		).internalPlugins;
 		const templatesPlugin =
-			this.context._app.internalPlugins.getEnabledPluginById("templates");
+			internalPlugins.getEnabledPluginById("templates");
 		if (templatesPlugin) {
 			this.context._settingsStore.updateToolSettingByPath(
 				this.info.id,
 				"config.templatesFolderPath",
-				// @ts-ignore
 				templatesPlugin.options.folder,
 			);
 		} else {
@@ -57,7 +151,6 @@ export class FolderTemplates extends BaseTool<ISettings> {
 			return;
 		}
 
-		// 使用 onLayoutReady 来确保事件在正确的时机注册（类似 Templater）
 		this.context._app.workspace.onLayoutReady(() => {
 			this.updateTriggerFileOnCreation();
 		});
@@ -66,9 +159,9 @@ export class FolderTemplates extends BaseTool<ISettings> {
 	private updateTriggerFileOnCreation(): void {
 		this.triggerOnFileCreationEvent = this.context._app.vault.on(
 			"create",
-			(file) => {
+			async (file) => {
 				if (file instanceof TFile) {
-					this.handleFileCreate(file);
+					await this.handleFileCreate(file);
 				}
 			},
 		);
@@ -108,10 +201,8 @@ export class FolderTemplates extends BaseTool<ISettings> {
 
 		await this.context._app.vault.process(file, (content) => {
 			if (content.trim().length > 0) {
-				// 文件非空，不处理
 				return content;
 			}
-			// 返回模板内容
 			return templateContent;
 		});
 	}

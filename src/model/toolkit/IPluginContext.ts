@@ -10,6 +10,7 @@ export interface IPluginContext {
 	readonly _settings: IPluginSettings;
 
 	notice(message: string): void;
+	refreshSettingTab(): void;
 	log(
 		level: "info" | "warn" | "error",
 		message: string,

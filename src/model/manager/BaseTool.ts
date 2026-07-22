@@ -1,9 +1,8 @@
 import { IPluginContext } from "@src/model/toolkit/IPluginContext";
-import { ITool, IToolSettingsProps } from "@src/model/toolkit/ITool";
+import { ITool } from "@src/model/toolkit/ITool";
 import { IToolInfo } from "@src/model/toolkit/IToolInfo";
 import { IToolSettings } from "@src/model/toolkit/IToolSettings";
-import { Component } from "obsidian";
-import { ComponentType } from "react";
+import { Component, type SettingDefinitionItem } from "obsidian";
 
 export abstract class BaseTool<TSettings extends IToolSettings = IToolSettings>
 	extends Component
@@ -70,9 +69,9 @@ export abstract class BaseTool<TSettings extends IToolSettings = IToolSettings>
 
 	abstract getDefaultSettings(): TSettings;
 
-	abstract getSettingsComponent(): ComponentType<
-		IToolSettingsProps<TSettings>
-	>;
+	getSettingItems(): SettingDefinitionItem[] {
+		return [];
+	}
 
 	protected addError(error: Error): void {
 		this.errors.push(error);
