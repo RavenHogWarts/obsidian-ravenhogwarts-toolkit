@@ -1,6 +1,6 @@
+import { LL } from "@src/i18n/i18n";
 import { App } from "obsidian";
 import { useState } from "react";
-import { LL } from "@src/i18n/i18n";
 import {
 	createScope,
 	FolderScope,
@@ -59,7 +59,7 @@ export function RuleCard({
 		<div className="rht-ft-card">
 			<div className="rht-ft-card-header">
 				<button
-					className="rht-ft-icon-btn"
+					className="rht-ft-icon-btn clickable-icon"
 					type="button"
 					aria-label={title}
 					aria-expanded={expanded}
@@ -91,7 +91,7 @@ export function RuleCard({
 						}
 					/>
 					<button
-						className="rht-ft-icon-btn"
+						className="rht-ft-icon-btn clickable-icon"
 						type="button"
 						aria-label={LL.common.moveUp()}
 						disabled={!onMoveUp}
@@ -100,7 +100,7 @@ export function RuleCard({
 						<Icon name="chevron-up" />
 					</button>
 					<button
-						className="rht-ft-icon-btn"
+						className="rht-ft-icon-btn clickable-icon"
 						type="button"
 						aria-label={LL.common.moveDown()}
 						disabled={!onMoveDown}
@@ -109,7 +109,7 @@ export function RuleCard({
 						<Icon name="chevron-down" />
 					</button>
 					<button
-						className="rht-ft-icon-btn rht-ft-danger"
+						className="rht-ft-icon-btn clickable-icon rht-ft-danger"
 						type="button"
 						aria-label={LL.common.delete()}
 						onClick={onDelete}
@@ -220,7 +220,7 @@ export function RuleCard({
 function ruleDisplayName(rule: IFolderTemplateRule): string {
 	const T = LL.settings.folder_templates;
 	const folder = rule.scopes.find(
-		(s): s is FolderScope => s.type === "FOLDER"
+		(s): s is FolderScope => s.type === "FOLDER",
 	);
 	if (folder && folder.path) return folder.path;
 	if (rule.scopes.some((s) => s.type === "ROOT")) return T.scopes.typeRoot();

@@ -1,5 +1,5 @@
-import { App } from "obsidian";
 import { LL } from "@src/i18n/i18n";
+import { App } from "obsidian";
 import { createScope, TemplateScope, TemplateScopeType } from "../types";
 import { Icon } from "./Icon";
 import { SuggestInput } from "./SuggestInput";
@@ -37,7 +37,10 @@ export function ScopeRow({ app, scope, onChange, onDelete }: Props) {
 				onChange={(e) =>
 					// 切换类型时按新类型重建字段，保留原 id
 					onChange(
-						createScope(e.target.value as TemplateScopeType, scope.id)
+						createScope(
+							e.target.value as TemplateScopeType,
+							scope.id,
+						),
 					)
 				}
 			>
@@ -88,7 +91,7 @@ export function ScopeRow({ app, scope, onChange, onDelete }: Props) {
 			)}
 
 			<button
-				className="rht-ft-icon-btn rht-ft-danger"
+				className="rht-ft-icon-btn clickable-icon rht-ft-danger"
 				type="button"
 				aria-label={LL.common.delete()}
 				onClick={onDelete}
