@@ -1,22 +1,30 @@
 import { LL } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
+import { IPluginContext } from "@src/model/toolkit/IPluginContext";
+import { reactSetting } from "@src/settings/reactSetting";
 import {
 	type EventRef,
 	normalizePath,
 	TFile,
 	type SettingDefinitionItem,
-	type SettingDefinitionList,
 } from "obsidian";
-import { TemplateProcessEngine } from "./service/TemplateProcessEngine";
-import { DefaultSettings, ISettings } from "./types";
-import { findMatchingTemplate } from "./util/findMatchingTemplate";
+import { createElement } from "react";
+import { findMatchingRule } from "./service/RuleMatcher";
+import { buildVariableContext } from "./service/variableContext";
+import { VariableEngine } from "./service/VariableEngine";
+import { RulesEditor } from "./settings/RulesEditor";
+import { DefaultSettings, IFolderTemplateRule, ISettings } from "./types";
+import { migrateSettings, needsMigration } from "./util/migrate";
+
+/** 文件名中不允许出现的字符 */
+const ILLEGAL_FILENAME_CHARS = /[\\/:*?"<>|#^[\]]/g;
 
 @Toolkit({
 	id: "folder-templates",
 	name: LL.settings.folder_templates.name(),
 	icon: "folder-cog",
-	version: "1.0.0",
+	version: "2.0.0",
 	description: LL.settings.folder_templates.desc(),
 })
 export class FolderTemplates extends BaseTool<ISettings> {
@@ -26,101 +34,61 @@ export class FolderTemplates extends BaseTool<ISettings> {
 		return DefaultSettings;
 	}
 
-	getSettingItems(): SettingDefinitionItem[] {
-		const id = this.info.id;
-		const { folderTemplates } = this.settings.data;
-
-		const list: SettingDefinitionList = {
-			type: "list",
-			heading: LL.settings.folder_templates.folderTemplates.name(),
-			emptyState: LL.common.noConfig(),
-			addItem: {
-				name: LL.common.add(),
-				action: () => {
-					const updated = [
-						...folderTemplates,
-						{ folder: "", templateFile: "" },
-					];
-					void this.context._settingsStore.updateToolSettingByPath(
-						id,
-						"data.folderTemplates",
-						updated,
-					);
-					this.context.refreshSettingTab();
-				},
-			},
-			onDelete: (index: number) => {
-				const updated = [...folderTemplates];
-				updated.splice(index, 1);
-				void this.context._settingsStore.updateToolSettingByPath(
-					id,
-					"data.folderTemplates",
-					updated,
-				);
-				this.context.refreshSettingTab();
-			},
-			items: folderTemplates.map((entry, index) => ({
-				name: entry.folder || entry.templateFile || LL.common.add(),
-				render: (setting) => {
-					setting.addText((text) => {
-						text.setPlaceholder("folder/path")
-							.setValue(entry.folder)
-							.onChange((value) => {
-								const updated = [...folderTemplates];
-								updated[index] = {
-									...updated[index],
-									folder: normalizePath(value),
-								};
-								void this.context._settingsStore.updateToolSettingByPath(
-									id,
-									"data.folderTemplates",
-									updated,
-								);
-							});
-					});
-					setting.addText((text) => {
-						text.setPlaceholder("template-file.md")
-							.setValue(entry.templateFile)
-							.onChange((value) => {
-								const updated = [...folderTemplates];
-								updated[index] = {
-									...updated[index],
-									templateFile: value,
-								};
-								void this.context._settingsStore.updateToolSettingByPath(
-									id,
-									"data.folderTemplates",
-									updated,
-								);
-							});
-					});
-				},
-			})),
-		};
-
-		return [
-			{
-				name: LL.settings.folder_templates.templatesFolderPath.name(),
-				desc: LL.settings.folder_templates.templatesFolderPath.desc(),
-				control: {
-					type: "text" as const,
-					key: `toolkit.${id}.config.templatesFolderPath`,
-					defaultValue: DefaultSettings.config.templatesFolderPath,
-				},
-			},
-			list,
-		];
+	async initialize(context: IPluginContext): Promise<void> {
+		// 迁移必须在 loadToolSettings 的默认值合并之前执行，
+		// 否则旧结构的 data.folderTemplates 会被合并逻辑丢弃
+		const raw = context._settingsStore.getToolSettings("folder-templates");
+		if (raw && needsMigration(raw)) {
+			await context._settingsStore.updateSettingByPath(
+				"toolkit.folder-templates",
+				migrateSettings(raw)
+			);
+		}
+		await super.initialize(context);
 	}
+
+	// ---- 事件处理 ----
 
 	async onload(): Promise<void> {
 		await super.onload();
-
-		this.ensureTemplatesFolderPath();
-
 		this.registerEventHandlers();
 	}
 
-	private ensureTemplatesFolderPath(): void {
+	onunload(): void {
+		this.unregisterEventHandlers();
+		super.onunload();
+	}
+
+	private registerEventHandlers(): void {
+		if (!this.isEnabled()) {
+			return;
+		}
+		// onLayoutReady 之后注册，避开 vault 初始化时的批量 create 事件
+		this.context._app.workspace.onLayoutReady(() => {
+			this.triggerOnFileCreationEvent = this.context._app.vault.on(
+				"create",
+				async (file) => {
+					if (file instanceof TFile) {
+						await this.handleFileCreate(file);
+					}
+				}
+			);
+		});
+	}
+
+	private unregisterEventHandlers(): void {
+		if (this.triggerOnFileCreationEvent) {
+			this.context._app.vault.offref(this.triggerOnFileCreationEvent);
+			this.triggerOnFileCreationEvent = undefined;
+		}
+	}
+
+	/** 模板相对路径的基准目录：用户配置 > 官方 Templates 插件配置 > "templates" */
+	private getTemplatesBasePath(): string {
+		const configured = this.settings.config.templatesFolderPath;
+		if (configured && configured.trim() !== "") {
+			return normalizePath(configured);
+		}
 		const internalPlugins = (
 			this.context._app as unknown as {
 				internalPlugins: {
@@ -130,90 +98,136 @@ export class FolderTemplates extends BaseTool<ISettings> {
 				};
 			}
 		).internalPlugins;
-		const templatesPlugin =
-			internalPlugins.getEnabledPluginById("templates");
-		if (templatesPlugin) {
-			void this.context._settingsStore.updateToolSettingByPath(
-				this.info.id,
-				"config.templatesFolderPath",
-				templatesPlugin.options.folder,
-			);
-		} else {
-			void this.context._settingsStore.updateToolSettingByPath(
-				this.info.id,
-				"config.templatesFolderPath",
-				this.getDefaultSettings().config.templatesFolderPath,
-			);
-		}
+		const templatesPlugin = internalPlugins.getEnabledPluginById("templates");
+		const folder = templatesPlugin?.options?.folder;
+		return normalizePath(folder && folder.trim() !== "" ? folder : "templates");
 	}
 
-	private registerEventHandlers(): void {
-		if (!this.isEnabled()) {
-			return;
-		}
-
-		this.context._app.workspace.onLayoutReady(() => {
-			this.updateTriggerFileOnCreation();
-		});
-	}
-
-	private updateTriggerFileOnCreation(): void {
-		this.triggerOnFileCreationEvent = this.context._app.vault.on(
-			"create",
-			async (file) => {
-				if (file instanceof TFile) {
-					await this.handleFileCreate(file);
-				}
-			},
-		);
-	}
-
-	private unregisterEventHandlers(): void {
-		if (this.triggerOnFileCreationEvent) {
-			this.context._app.vault.offref(
-				this.triggerOnFileCreationEvent,
-			);
-			this.triggerOnFileCreationEvent = undefined;
-		}
+	private resolveTemplateFile(templateFile: string): TFile | null {
+		const path = templateFile.includes("/")
+			? normalizePath(templateFile)
+			: `${this.getTemplatesBasePath()}/${templateFile}`;
+		const file = this.context._app.vault.getAbstractFileByPath(path);
+		return file instanceof TFile ? file : null;
 	}
 
 	private async handleFileCreate(file: TFile): Promise<void> {
-		if (file.extension !== "md") {
+		if (!this.isEnabled() || file.extension !== "md") {
 			return;
 		}
 
-		const matchTemplate = findMatchingTemplate(
-			file,
-			this.settings.data.folderTemplates,
+		const rule = findMatchingRule(this.settings.data.rules, {
+			parentPath: file.parent?.path ?? "",
+			basename: file.basename,
+		});
+		if (!rule) {
+			return;
+		}
+
+		const templateFile = this.resolveTemplateFile(rule.templateFile);
+		if (!templateFile) {
+			this.context.log(
+				"warn",
+				`Template file not found: ${rule.templateFile}`,
+				this.info.id
+			);
+			return;
+		}
+
+		try {
+			if (rule.renameFormat && rule.renameFormat.trim() !== "") {
+				await this.applyRename(file, rule.renameFormat);
+			}
+			await this.applyTemplate(file, templateFile, rule);
+		} catch (error) {
+			this.addError(error as Error);
+			this.context.log(
+				"error",
+				"Failed to apply folder template",
+				this.info.id,
+				error
+			);
+		}
+	}
+
+	/** 先重命名再填充模板，使模板中的 ${notename} 反映新文件名 */
+	private async applyRename(file: TFile, format: string): Promise<void> {
+		const engine = new VariableEngine(
+			buildVariableContext(this.context._app, file)
 		);
-
-		if (!matchTemplate) {
+		const rendered = engine
+			.render(format)
+			.replace(ILLEGAL_FILENAME_CHARS, "")
+			.trim();
+		if (!rendered || rendered === file.basename) {
 			return;
 		}
 
-		const templatePath = `${normalizePath(this.settings.config.templatesFolderPath)}/${matchTemplate.templateFile}`;
-		const templateFile =
-			this.context._app.vault.getAbstractFileByPath(templatePath);
-		if (!(templateFile instanceof TFile)) {
-			return;
+		const parent = file.parent?.path ?? "";
+		const prefix = parent === "" || parent === "/" ? "" : `${parent}/`;
+		let target = `${prefix}${rendered}.${file.extension}`;
+		let index = 0;
+		while (this.context._app.vault.getAbstractFileByPath(target)) {
+			index += 1;
+			target = `${prefix}${rendered}-${String(index).padStart(2, "0")}.${file.extension}`;
 		}
+		await this.context._app.fileManager.renameFile(file, target);
+	}
 
-		const matchedTemplateContent =
-			await this.context._app.vault.read(templateFile);
-
-		const engine = new TemplateProcessEngine();
-		const templateContent = await engine.process(matchedTemplateContent);
+	private async applyTemplate(
+		file: TFile,
+		templateFile: TFile,
+		rule: IFolderTemplateRule
+	): Promise<void> {
+		const raw = await this.context._app.vault.read(templateFile);
+		const engine = new VariableEngine(
+			buildVariableContext(this.context._app, file)
+		);
+		const rendered = engine.render(raw);
 
 		await this.context._app.vault.process(file, (content) => {
-			if (content.trim().length > 0) {
-				return content;
+			if (content.trim().length === 0) {
+				return rendered;
 			}
-			return templateContent;
+			if (rule.applyMode === "prepend") {
+				return `${rendered}\n${content}`;
+			}
+			return content;
 		});
 	}
 
-	onunload(): void {
-		this.unregisterEventHandlers();
-		super.onunload();
+	// ---- 设置界面 ----
+
+	getSettingItems(): SettingDefinitionItem[] {
+		const id = this.info.id;
+		const T = LL.settings.folder_templates;
+
+		return [
+			{
+				name: T.templatesFolderPath.name(),
+				desc: T.templatesFolderPath.desc(),
+				control: {
+					type: "folder" as const,
+					key: `toolkit.${id}.config.templatesFolderPath`,
+					defaultValue: "",
+				},
+			},
+			// 规则编辑器为 React 岛：本地状态 + 异步落盘，不触发 settingTab.update()，
+			// 因而避免整页重渲染（修复删除、选模板文件、改匹配条件"重载"三个问题）。
+			reactSetting(T.rules.name(), () =>
+				createElement(RulesEditor, {
+					app: this.context._app,
+					initialRules: this.settings.data.rules,
+					getTemplatesBasePath: () => this.getTemplatesBasePath(),
+					persist: (rules: IFolderTemplateRule[]) => {
+						void this.context._settingsStore.updateToolSettingByPath(
+							this.info.id,
+							"data.rules",
+							rules
+						);
+					},
+				})
+			),
+		];
 	}
 }

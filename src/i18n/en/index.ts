@@ -9,6 +9,8 @@ const en = {
 		add: "Add",
 		delete: "Delete",
 		reset: "Reset",
+		moveUp: "Move up",
+		moveDown: "Move down",
 	},
 	settings: {
 		folder_templates: {
@@ -16,15 +18,37 @@ const en = {
 			desc: "Apply templates seamlessly when creating new files in specified folders",
 			templatesFolderPath: {
 				name: "Templates folder path",
-				desc: "The folder where template files are stored, defaults to the same location as the official templates",
+				desc: "The folder where template files are stored; leave empty to follow the official templates plugin configuration",
 			},
-			ignoredFolders: {
-				name: "Ignored folders",
-				desc: "Templates will not be applied automatically when creating files in these folders (including subfolders)",
+			rules: {
+				name: "Template rules",
+				unnamed: "New rule",
+				enabledDesc: "Turn this rule on or off",
+				templateFile: {
+					name: "Template file",
+					desc: "Template applied when the rule matches; supports date, time and variable expressions",
+				},
+				applyMode: {
+					name: "Apply mode",
+					desc: "What to do when the file already has content",
+					emptyOnly: "Empty files only",
+					prepend: "Prepend to content",
+				},
+				renameFormat: {
+					name: "Rename format",
+					desc: "Rename the file on creation using this template, supports variable expressions; leave empty to disable",
+				},
 			},
-			folderTemplates: {
-				name: "Templates configuration",
-				desc: "",
+			scopes: {
+				name: "Match conditions",
+				empty: "The rule will not take effect without match conditions",
+				typeFolder: "Folder",
+				typeExcludeFolder: "Exclude folder",
+				typeFilenamePattern: "Filename regex",
+				typeRoot: "Vault root",
+				pathPlaceholder: "folder/path",
+				patternPlaceholder: "^\\d+-\\d+",
+				includeSubfolders: "Include subfolders",
 			},
 		},
 		quick_path: {

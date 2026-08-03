@@ -31,3 +31,4 @@ Thumbs.db
 .env
 dist
 .backup/
+legacy

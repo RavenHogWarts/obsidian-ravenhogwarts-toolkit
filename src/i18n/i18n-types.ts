@@ -40,6 +40,14 @@ type RootTranslation = {
 		 * 重​置
 		 */
 		reset: string
+		/**
+		 * 上​移
+		 */
+		moveUp: string
+		/**
+		 * 下​移
+		 */
+		moveDown: string
 	}
 	settings: {
 		folder_templates: {
@@ -57,26 +65,99 @@ type RootTranslation = {
 				 */
 				name: string
 				/**
-				 * 存​放​模​板​文​件​的​文​件​夹​,​ ​默​认​与​官​方​模​板​位​置​相​同
+				 * 存​放​模​板​文​件​的​文​件​夹​；​留​空​时​跟​随​官​方​模​板​插​件​配​置
 				 */
 				desc: string
 			}
-			ignoredFolders: {
+			rules: {
 				/**
-				 * 忽​略​文​件​夹
+				 * 模​板​规​则
 				 */
 				name: string
 				/**
-				 * 在​这​些​文​件​夹​（​包​括​子​文​件​夹​）​中​创​建​文​件​时​不​会​自​动​应​用​模​板
+				 * 新​规​则
 				 */
-				desc: string
+				unnamed: string
+				/**
+				 * 开​启​或​关​闭​此​规​则
+				 */
+				enabledDesc: string
+				templateFile: {
+					/**
+					 * 模​板​文​件
+					 */
+					name: string
+					/**
+					 * 命​中​规​则​后​应​用​的​模​板​；​支​持​日​期​、​时​间​等​变​量​表​达​式
+					 */
+					desc: string
+				}
+				applyMode: {
+					/**
+					 * 应​用​方​式
+					 */
+					name: string
+					/**
+					 * 文​件​已​有​内​容​时​的​处​理​策​略
+					 */
+					desc: string
+					/**
+					 * 仅​空​文​件
+					 */
+					emptyOnly: string
+					/**
+					 * 插​入​到​开​头
+					 */
+					prepend: string
+				}
+				renameFormat: {
+					/**
+					 * 重​命​名​模​板
+					 */
+					name: string
+					/**
+					 * 创​建​时​按​模​板​重​命​名​文​件​，​支​持​变​量​表​达​式​；​留​空​表​示​不​重​命​名
+					 */
+					desc: string
+				}
 			}
-			folderTemplates: {
+			scopes: {
 				/**
-				 * 模​板​配​置
+				 * 匹​配​条​件
 				 */
 				name: string
-				desc: string
+				/**
+				 * 无​匹​配​条​件​时​规​则​不​会​生​效
+				 */
+				empty: string
+				/**
+				 * 文​件​夹
+				 */
+				typeFolder: string
+				/**
+				 * 排​除​文​件​夹
+				 */
+				typeExcludeFolder: string
+				/**
+				 * 文​件​名​正​则
+				 */
+				typeFilenamePattern: string
+				/**
+				 * 根​目​录
+				 */
+				typeRoot: string
+				/**
+				 * f​o​l​d​e​r​/​p​a​t​h
+				 */
+				pathPlaceholder: string
+				/**
+				 * ^​\​d​+​-​\​d​+
+				 */
+				patternPlaceholder: string
+				/**
+				 * 包​含​子​文​件​夹
+				 */
+				includeSubfolders: string
 			}
 		}
 		quick_path: {
@@ -236,6 +317,14 @@ export type TranslationFunctions = {
 		 * 重置
 		 */
 		reset: () => LocalizedString
+		/**
+		 * 上移
+		 */
+		moveUp: () => LocalizedString
+		/**
+		 * 下移
+		 */
+		moveDown: () => LocalizedString
 	}
 	settings: {
 		folder_templates: {
@@ -253,26 +342,99 @@ export type TranslationFunctions = {
 				 */
 				name: () => LocalizedString
 				/**
-				 * 存放模板文件的文件夹, 默认与官方模板位置相同
+				 * 存放模板文件的文件夹；留空时跟随官方模板插件配置
 				 */
 				desc: () => LocalizedString
 			}
-			ignoredFolders: {
+			rules: {
 				/**
-				 * 忽略文件夹
+				 * 模板规则
 				 */
 				name: () => LocalizedString
 				/**
-				 * 在这些文件夹（包括子文件夹）中创建文件时不会自动应用模板
+				 * 新规则
 				 */
-				desc: () => LocalizedString
+				unnamed: () => LocalizedString
+				/**
+				 * 开启或关闭此规则
+				 */
+				enabledDesc: () => LocalizedString
+				templateFile: {
+					/**
+					 * 模板文件
+					 */
+					name: () => LocalizedString
+					/**
+					 * 命中规则后应用的模板；支持日期、时间等变量表达式
+					 */
+					desc: () => LocalizedString
+				}
+				applyMode: {
+					/**
+					 * 应用方式
+					 */
+					name: () => LocalizedString
+					/**
+					 * 文件已有内容时的处理策略
+					 */
+					desc: () => LocalizedString
+					/**
+					 * 仅空文件
+					 */
+					emptyOnly: () => LocalizedString
+					/**
+					 * 插入到开头
+					 */
+					prepend: () => LocalizedString
+				}
+				renameFormat: {
+					/**
+					 * 重命名模板
+					 */
+					name: () => LocalizedString
+					/**
+					 * 创建时按模板重命名文件，支持变量表达式；留空表示不重命名
+					 */
+					desc: () => LocalizedString
+				}
 			}
-			folderTemplates: {
+			scopes: {
 				/**
-				 * 模板配置
+				 * 匹配条件
 				 */
 				name: () => LocalizedString
-				desc: () => LocalizedString
+				/**
+				 * 无匹配条件时规则不会生效
+				 */
+				empty: () => LocalizedString
+				/**
+				 * 文件夹
+				 */
+				typeFolder: () => LocalizedString
+				/**
+				 * 排除文件夹
+				 */
+				typeExcludeFolder: () => LocalizedString
+				/**
+				 * 文件名正则
+				 */
+				typeFilenamePattern: () => LocalizedString
+				/**
+				 * 根目录
+				 */
+				typeRoot: () => LocalizedString
+				/**
+				 * folder/path
+				 */
+				pathPlaceholder: () => LocalizedString
+				/**
+				 * ^\d+-\d+
+				 */
+				patternPlaceholder: () => LocalizedString
+				/**
+				 * 包含子文件夹
+				 */
+				includeSubfolders: () => LocalizedString
 			}
 		}
 		quick_path: {

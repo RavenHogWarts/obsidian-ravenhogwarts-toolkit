@@ -8,6 +8,8 @@ const zh_TW = {
 		add: "新增",
 		delete: "刪除",
 		reset: "重設",
+		moveUp: "上移",
+		moveDown: "下移",
 	},
 	settings: {
 		folder_templates: {
@@ -15,15 +17,37 @@ const zh_TW = {
 			desc: "在指定文件夾下創建新文件時，無感知應用模板",
 			templatesFolderPath: {
 				name: "模板文件夾位置",
-				desc: "存放模板文件的文件夾, 默認與官方模板位置相同",
+				desc: "存放模板文件的文件夾；留空時跟隨官方模板插件配置",
 			},
-			ignoredFolders: {
-				name: "忽略文件夾",
-				desc: "在這些文件夾（包括子文件夾）中創建文件時不會自動應用模板",
+			rules: {
+				name: "模板規則",
+				unnamed: "新規則",
+				enabledDesc: "開啟或關閉此規則",
+				templateFile: {
+					name: "模板文件",
+					desc: "命中規則後應用的模板；支持日期、時間等變量表達式",
+				},
+				applyMode: {
+					name: "應用方式",
+					desc: "文件已有內容時的處理策略",
+					emptyOnly: "僅空文件",
+					prepend: "插入到開頭",
+				},
+				renameFormat: {
+					name: "重命名模板",
+					desc: "創建時按模板重命名文件，支持變量表達式；留空表示不重命名",
+				},
 			},
-			folderTemplates: {
-				name: "模板配置",
-				desc: "",
+			scopes: {
+				name: "匹配條件",
+				empty: "無匹配條件時規則不會生效",
+				typeFolder: "文件夾",
+				typeExcludeFolder: "排除文件夾",
+				typeFilenamePattern: "文件名正則",
+				typeRoot: "根目錄",
+				pathPlaceholder: "folder/path",
+				patternPlaceholder: "^\\d+-\\d+",
+				includeSubfolders: "包含子文件夾",
 			},
 		},
 		quick_path: {

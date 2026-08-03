@@ -1,0 +1,162 @@
+/* Folder templates — React rules editor (mounted via reactSetting bridge). */
+
+/* Host row: let the React island span the full setting width. */
+.rht-react-host {
+	display: block;
+	width: 100%;
+	padding: 0;
+	border-top: none;
+}
+
+.rht-ft-rules {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+}
+
+.rht-ft-rules-head,
+.rht-ft-scopes-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+}
+
+.rht-ft-rules-title {
+	font-weight: var(--font-semibold);
+}
+
+/* Rule card */
+.rht-ft-card {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background: var(--background-secondary);
+}
+
+.rht-ft-card-header {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-1);
+	padding: var(--size-4-1) var(--size-4-2);
+}
+
+.rht-ft-card-title {
+	flex: 1;
+	min-width: 0;
+	cursor: pointer;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.rht-ft-card-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-1);
+}
+
+.rht-ft-card-body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-3);
+	padding: var(--size-4-2) var(--size-4-3) var(--size-4-3);
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+/* Fields */
+.rht-ft-field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+}
+
+.rht-ft-field-label {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+
+.rht-ft-input,
+.rht-ft-select {
+	width: 100%;
+}
+
+/* Scopes */
+.rht-ft-scopes {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+}
+
+.rht-ft-scope-row {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--size-4-2);
+}
+
+.rht-ft-scope-row .rht-ft-input,
+.rht-ft-scope-row .rht-ft-select {
+	flex: 1;
+	width: auto;
+	min-width: 120px;
+}
+
+.rht-ft-check {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	white-space: nowrap;
+	font-size: var(--font-ui-smaller);
+}
+
+/* Buttons */
+.rht-ft-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--size-2-2);
+	background: transparent;
+	box-shadow: none;
+	color: var(--text-muted);
+	cursor: pointer;
+}
+
+.rht-ft-icon-btn:hover:not(:disabled) {
+	color: var(--text-normal);
+	background: var(--background-modifier-hover);
+}
+
+.rht-ft-icon-btn:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.rht-ft-icon-btn.rht-ft-danger:hover:not(:disabled) {
+	color: var(--text-error);
+}
+
+.rht-ft-text-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	cursor: pointer;
+}
+
+.rht-ft-empty {
+	padding: var(--size-2-2) 0;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+
+.rht-ft-warn {
+	color: var(--text-warning);
+}
+
+.rht-ft-icon {
+	display: inline-flex;
+}
+
+.rht-ft-icon svg {
+	width: var(--icon-s);
+	height: var(--icon-s);
+}
