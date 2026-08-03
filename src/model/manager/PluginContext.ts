@@ -31,6 +31,10 @@ export class PluginContext implements IPluginContext {
 		new Notice(message);
 	}
 
+	refreshSettingTab(): void {
+		this.plugin.settingTab?.update();
+	}
+
 	log(
 		level: "info" | "warn" | "error",
 		message: string,

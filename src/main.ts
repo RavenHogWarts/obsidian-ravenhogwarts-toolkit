@@ -13,6 +13,7 @@ export default class RHTPlugin extends Plugin {
 	readonly settingsStore = new SettingsStore(this);
 	toolkitManager: ToolkitManager;
 	pluginContext: PluginContext;
+	settingTab: PluginSettingTab | undefined;
 
 	async onload() {
 		await this.settingsStore.loadSettings();
@@ -23,7 +24,8 @@ export default class RHTPlugin extends Plugin {
 		await this.registerToolkit();
 		await this.toolkitManager.loadEnabledToolkit();
 
-		this.addSettingTab(new PluginSettingTab(this));
+		this.settingTab = new PluginSettingTab(this);
+		this.addSettingTab(this.settingTab);
 	}
 
 	onunload() {

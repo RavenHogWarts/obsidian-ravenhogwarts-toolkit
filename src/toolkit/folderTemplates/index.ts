@@ -2,6 +2,7 @@ import { LL } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
 import {
+	type EventRef,
 	normalizePath,
 	TFile,
 	type SettingDefinitionItem,
@@ -19,7 +20,7 @@ import { findMatchingTemplate } from "./util/findMatchingTemplate";
 	description: LL.settings.folder_templates.desc(),
 })
 export class FolderTemplates extends BaseTool<ISettings> {
-	private triggerOnFileCreationEvent: unknown;
+	private triggerOnFileCreationEvent: EventRef | undefined;
 
 	getDefaultSettings(): ISettings {
 		return DefaultSettings;
@@ -45,7 +46,7 @@ export class FolderTemplates extends BaseTool<ISettings> {
 						"data.folderTemplates",
 						updated,
 					);
-					this.context._plugin.settingTab.update();
+					this.context.refreshSettingTab();
 				},
 			},
 			onDelete: (index: number) => {
@@ -56,7 +57,7 @@ export class FolderTemplates extends BaseTool<ISettings> {
 					"data.folderTemplates",
 					updated,
 				);
-				this.context._plugin.settingTab.update();
+				this.context.refreshSettingTab();
 			},
 			items: folderTemplates.map((entry, index) => ({
 				name: entry.folder || entry.templateFile || LL.common.add(),
@@ -132,13 +133,13 @@ export class FolderTemplates extends BaseTool<ISettings> {
 		const templatesPlugin =
 			internalPlugins.getEnabledPluginById("templates");
 		if (templatesPlugin) {
-			this.context._settingsStore.updateToolSettingByPath(
+			void this.context._settingsStore.updateToolSettingByPath(
 				this.info.id,
 				"config.templatesFolderPath",
 				templatesPlugin.options.folder,
 			);
 		} else {
-			this.context._settingsStore.updateToolSettingByPath(
+			void this.context._settingsStore.updateToolSettingByPath(
 				this.info.id,
 				"config.templatesFolderPath",
 				this.getDefaultSettings().config.templatesFolderPath,
@@ -169,7 +170,9 @@ export class FolderTemplates extends BaseTool<ISettings> {
 
 	private unregisterEventHandlers(): void {
 		if (this.triggerOnFileCreationEvent) {
-			this.context._app.vault.offref(this.triggerOnFileCreationEvent);
+			this.context._app.vault.offref(
+				this.triggerOnFileCreationEvent,
+			);
 			this.triggerOnFileCreationEvent = undefined;
 		}
 	}
@@ -188,13 +191,15 @@ export class FolderTemplates extends BaseTool<ISettings> {
 			return;
 		}
 
-		const matchedTemplateContent = await this.context._app.vault.read(
-			this.context._app.vault.getAbstractFileByPath(
-				`${normalizePath(this.settings.config.templatesFolderPath)}/${
-					matchTemplate.templateFile
-				}`,
-			) as TFile,
-		);
+		const templatePath = `${normalizePath(this.settings.config.templatesFolderPath)}/${matchTemplate.templateFile}`;
+		const templateFile =
+			this.context._app.vault.getAbstractFileByPath(templatePath);
+		if (!(templateFile instanceof TFile)) {
+			return;
+		}
+
+		const matchedTemplateContent =
+			await this.context._app.vault.read(templateFile);
 
 		const engine = new TemplateProcessEngine();
 		const templateContent = await engine.process(matchedTemplateContent);
