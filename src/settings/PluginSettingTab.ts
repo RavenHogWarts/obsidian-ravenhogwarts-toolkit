@@ -9,6 +9,7 @@ import {
 
 export class PluginSettingTab extends ObPluginSettingTab {
 	plugin: RHTPlugin;
+	icon: string = "gavel";
 
 	constructor(plugin: RHTPlugin) {
 		super(plugin.app, plugin);
