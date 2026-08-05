@@ -85,6 +85,22 @@ export function createScope(
 	}
 }
 
+/**
+ * 切换 scope 类型时构造新 scope，并尽量保留与旧类型同名的字段值。
+ * 目前仅 `path` 在 FOLDER / EXCLUDE_FOLDER 间通用；其余字段各类型独有，不迁移。
+ * id 始终沿用旧值，保证 React key 稳定。
+ */
+export function migrateScope(
+	prev: TemplateScope,
+	nextType: TemplateScopeType
+): TemplateScope {
+	const next = createScope(nextType, prev.id);
+	if ("path" in prev && "path" in next) {
+		next.path = prev.path;
+	}
+	return next;
+}
+
 export function createRule(): IFolderTemplateRule {
 	return {
 		id: generateId(),

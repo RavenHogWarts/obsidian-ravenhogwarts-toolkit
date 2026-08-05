@@ -10,6 +10,7 @@ import {
 	type SettingDefinitionItem,
 } from "obsidian";
 import { createElement } from "react";
+import { shouldApplyRule } from "./service/applyPolicy";
 import { findMatchingRule } from "./service/RuleMatcher";
 import { buildVariableContext } from "./service/variableContext";
 import { VariableEngine } from "./service/VariableEngine";
@@ -29,6 +30,8 @@ const ILLEGAL_FILENAME_CHARS = /[\\/:*?"<>|#^[\]]/g;
 })
 export class FolderTemplates extends BaseTool<ISettings> {
 	private triggerOnFileCreationEvent: EventRef | undefined;
+	/** 本会话内已处理过的文件路径，避免同一文件被重复套用模板（重入/重复 create 事件） */
+	private readonly processedPaths = new Set<string>();
 
 	getDefaultSettings(): ISettings {
 		return DefaultSettings;
@@ -81,6 +84,7 @@ export class FolderTemplates extends BaseTool<ISettings> {
 			this.context._app.vault.offref(this.triggerOnFileCreationEvent);
 			this.triggerOnFileCreationEvent = undefined;
 		}
+		this.processedPaths.clear();
 	}
 
 	/** 模板相对路径的基准目录：用户配置 > 官方 Templates 插件配置 > "templates" */
@@ -116,6 +120,12 @@ export class FolderTemplates extends BaseTool<ISettings> {
 			return;
 		}
 
+		// 同一路径本会话只处理一次，避免重复 create 事件或重入导致的反复套用
+		if (this.processedPaths.has(file.path)) {
+			return;
+		}
+		this.processedPaths.add(file.path);
+
 		const rule = findMatchingRule(this.settings.data.rules, {
 			parentPath: file.parent?.path ?? "",
 			basename: file.basename,
@@ -134,9 +144,18 @@ export class FolderTemplates extends BaseTool<ISettings> {
 			return;
 		}
 
+		// 先判定整条规则是否应作用于该文件：empty-only 模式下非空文件应完全不动
+		// （既不套模板也不重命名），避免出现"改了名却没套模板"的割裂行为。
+		const content = await this.context._app.vault.read(file);
+		if (!shouldApplyRule(rule.applyMode, content.trim().length === 0)) {
+			return;
+		}
+
 		try {
 			if (rule.renameFormat && rule.renameFormat.trim() !== "") {
 				await this.applyRename(file, rule.renameFormat);
+				// 重命名后 file.path 已更新，标记新路径避免其触发的事件再次处理
+				this.processedPaths.add(file.path);
 			}
 			await this.applyTemplate(file, templateFile, rule);
 		} catch (error) {

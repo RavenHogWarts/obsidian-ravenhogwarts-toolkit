@@ -27,3 +27,27 @@ export function buildVariableContext(app: App, file: TFile): IVariableContext {
 		frontmatter: app.metadataCache.getFileCache(file)?.frontmatter ?? {},
 	};
 }
+
+/**
+ * 构建用于设置界面预览的变量上下文（不依赖真实 App / TFile）。
+ * 用占位的笔记名与文件夹，让用户在填写 renameFormat 时即时看到渲染效果。
+ */
+export function buildPreviewContext(
+	notename = "Untitled",
+	folderPath = "notes"
+): IVariableContext {
+	const now = moment();
+	const segments = folderPath.split("/").filter(Boolean);
+	return {
+		notename,
+		folder: segments[segments.length - 1] ?? "",
+		folderPath,
+		now,
+		date: now.format("YYYY-MM-DD"),
+		time: now.format("HH:mm"),
+		year: now.format("YYYY"),
+		yearMonth: now.format("YYYYMM"),
+		timestamp: Date.now(),
+		frontmatter: {},
+	};
+}

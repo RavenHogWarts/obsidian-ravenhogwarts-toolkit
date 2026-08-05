@@ -1,6 +1,8 @@
 import { LL } from "@src/i18n/i18n";
 import { App } from "obsidian";
 import { useState } from "react";
+import { VariableEngine } from "../service/VariableEngine";
+import { buildPreviewContext } from "../service/variableContext";
 import {
 	createScope,
 	FolderScope,
@@ -11,6 +13,7 @@ import {
 import { Icon } from "./Icon";
 import { ScopeRow } from "./ScopeRow";
 import { SuggestInput } from "./SuggestInput";
+import { VariableHint } from "./VariableHint";
 
 interface Props {
 	app: App;
@@ -68,14 +71,26 @@ export function RuleCard({
 					<Icon name={expanded ? "chevron-down" : "chevron-right"} />
 				</button>
 				<span
-					className="rht-ft-card-title"
+					className="rht-ft-card-title-wrap"
 					onClick={() => setExpanded((v) => !v)}
 				>
-					{title}
-					{hasWarning && (
-						<span className="rht-ft-warn" aria-hidden="true">
-							{" "}
-							●
+					<span className="rht-ft-card-title">
+						{title}
+						{hasWarning && (
+							<span
+								className="rht-ft-warn"
+								role="img"
+								aria-label={T.rules.warnNoTemplate()}
+								title={T.rules.warnNoTemplate()}
+							>
+								{" "}
+								●
+							</span>
+						)}
+					</span>
+					{!expanded && (
+						<span className="rht-ft-card-summary">
+							{ruleSummary(rule)}
 						</span>
 					)}
 				</span>
@@ -186,7 +201,15 @@ export function RuleCard({
 								})
 							}
 						/>
+						{renamePreview(rule.renameFormat) && (
+							<span className="rht-ft-preview">
+								{T.rules.renamePreview()}
+								<code>{renamePreview(rule.renameFormat)}</code>
+							</span>
+						)}
 					</label>
+
+					<VariableHint />
 
 					<div className="rht-ft-scopes">
 						<div className="rht-ft-scopes-head">
@@ -233,4 +256,28 @@ function ruleDisplayName(rule: IFolderTemplateRule): string {
 	if (rule.scopes.some((s) => s.type === "ROOT")) return T.scopes.typeRoot();
 	if (rule.templateFile) return rule.templateFile;
 	return T.rules.unnamed();
+}
+
+/** 折叠态摘要：条件数 · 模板 · 应用模式，便于不展开也能看清配置。 */
+function ruleSummary(rule: IFolderTemplateRule): string {
+	const T = LL.settings.folder_templates;
+	const parts: string[] = [];
+	parts.push(`${rule.scopes.length} ${T.rules.scopesUnit()}`);
+	if (rule.templateFile) parts.push(rule.templateFile);
+	parts.push(
+		rule.applyMode === "empty-only"
+			? T.rules.applyMode.emptyOnly()
+			: T.rules.applyMode.prepend(),
+	);
+	return parts.join(" · ");
+}
+
+/** 用占位上下文渲染 renameFormat，给出实时样例；空串或渲染失败返回空。 */
+function renamePreview(format: string): string {
+	if (!format || format.trim() === "") return "";
+	try {
+		return new VariableEngine(buildPreviewContext()).render(format);
+	} catch {
+		return "";
+	}
 }

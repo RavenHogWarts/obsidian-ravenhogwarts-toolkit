@@ -1,4 +1,4 @@
-import type { BaseTranslation } from '../i18n-types'
+import type { BaseTranslation } from "../i18n-types";
 
 const en = {
 	common: {
@@ -23,6 +23,10 @@ const en = {
 				name: "Template rules",
 				unnamed: "New rule",
 				enabledDesc: "Turn this rule on or off",
+				addFirst: "Create your first rule",
+				scopesUnit: "conditions",
+				warnNoTemplate: "No template file set for this rule",
+				renamePreview: "Preview: ",
 				templateFile: {
 					name: "Template file",
 					desc: "Template applied when the rule matches; supports date, time and variable expressions",
@@ -47,7 +51,24 @@ const en = {
 				typeRoot: "Vault root",
 				pathPlaceholder: "folder/path",
 				patternPlaceholder: "^\\d+-\\d+",
+				patternInvalid: "Invalid regular expression",
 				includeSubfolders: "Include subfolders",
+			},
+			variables: {
+				title: "Available variables",
+				legacy: "Legacy {date} / {time} syntax is still supported.",
+				clickToCopy: "Click to copy",
+				copied: "Copied",
+				notename: "Note name",
+				folder: "Parent folder name",
+				folderPath: "Parent folder path",
+				date: "Current date (YYYY-MM-DD)",
+				time: "Current time (HH:mm)",
+				year: "Current year",
+				yearMonth: "Year and month (YYYYMM)",
+				timestamp: "Millisecond timestamp",
+				now: "Custom moment format",
+				frontmatter: "Frontmatter field value",
 			},
 		},
 		quick_path: {
@@ -94,7 +115,8 @@ const en = {
 		quick_path: {
 			copy_success: "Path copied to clipboard",
 			copy_failure: "Failed to copy path",
-			root_path_warning: "The current file is in the root directory, unable to get the parent folder path",
+			root_path_warning:
+				"The current file is in the root directory, unable to get the parent folder path",
 		},
 	},
 } satisfies BaseTranslation;

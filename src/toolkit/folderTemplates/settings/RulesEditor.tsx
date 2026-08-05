@@ -67,7 +67,20 @@ export function RulesEditor({
 			</div>
 
 			{rules.length === 0 ? (
-				<div className="rht-ft-empty">{LL.common.noConfig()}</div>
+				<div className="rht-ft-empty-state">
+					<Icon name="folder-cog" />
+					<span className="rht-ft-empty-state-text">
+						{LL.common.noConfig()}
+					</span>
+					<button
+						className="rht-ft-text-btn mod-cta"
+						type="button"
+						onClick={addRule}
+					>
+						<Icon name="plus" />
+						{T.rules.addFirst()}
+					</button>
+				</div>
 			) : (
 				rules.map((rule, i) => (
 					<RuleCard

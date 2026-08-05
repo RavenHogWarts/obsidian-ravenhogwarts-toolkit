@@ -1,4 +1,4 @@
-import type { BaseTranslation } from '../i18n-types'
+import type { BaseTranslation } from "../i18n-types";
 
 const zh_TW = {
 	common: {
@@ -23,6 +23,10 @@ const zh_TW = {
 				name: "模板規則",
 				unnamed: "新規則",
 				enabledDesc: "開啟或關閉此規則",
+				addFirst: "創建第一條規則",
+				scopesUnit: "個條件",
+				warnNoTemplate: "此規則未設置模板文件",
+				renamePreview: "預覽：",
 				templateFile: {
 					name: "模板文件",
 					desc: "命中規則後應用的模板；支持日期、時間等變量表達式",
@@ -47,7 +51,24 @@ const zh_TW = {
 				typeRoot: "根目錄",
 				pathPlaceholder: "folder/path",
 				patternPlaceholder: "^\\d+-\\d+",
+				patternInvalid: "無效的正則表達式",
 				includeSubfolders: "包含子文件夾",
+			},
+			variables: {
+				title: "可用變量",
+				legacy: "仍兼容舊版 {date} / {time} 語法。",
+				clickToCopy: "點擊複製",
+				copied: "已複製",
+				notename: "筆記名",
+				folder: "上級文件夾名",
+				folderPath: "上級文件夾路徑",
+				date: "當前日期（YYYY-MM-DD）",
+				time: "當前時間（HH:mm）",
+				year: "當前年份",
+				yearMonth: "年月（YYYYMM）",
+				timestamp: "毫秒時間戳",
+				now: "自定義 moment 格式",
+				frontmatter: "frontmatter 字段值",
 			},
 		},
 		quick_path: {

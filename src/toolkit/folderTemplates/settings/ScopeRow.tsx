@@ -1,6 +1,6 @@
 import { LL } from "@src/i18n/i18n";
 import { App } from "obsidian";
-import { createScope, TemplateScope, TemplateScopeType } from "../types";
+import { migrateScope, TemplateScope, TemplateScopeType } from "../types";
 import { Icon } from "./Icon";
 import { SuggestInput } from "./SuggestInput";
 
@@ -17,6 +17,17 @@ const SCOPE_TYPES: TemplateScopeType[] = [
 	"FILENAME_PATTERN",
 	"ROOT",
 ];
+
+/** 非空且无法编译为正则时返回 true，用于即时校验提示。 */
+function isInvalidRegex(pattern: string): boolean {
+	if (!pattern) return false;
+	try {
+		new RegExp(pattern);
+		return false;
+	} catch {
+		return true;
+	}
+}
 
 /** 单条匹配条件（scope）：类型下拉 + 类型相关字段。 */
 export function ScopeRow({ app, scope, onChange, onDelete }: Props) {
@@ -35,11 +46,11 @@ export function ScopeRow({ app, scope, onChange, onDelete }: Props) {
 				className="rht-ft-select dropdown"
 				value={scope.type}
 				onChange={(e) =>
-					// 切换类型时按新类型重建字段，保留原 id
+					// 切换类型时按新类型重建字段，保留原 id 并尽量迁移同名字段（path）
 					onChange(
-						createScope(
+						migrateScope(
+							scope,
 							e.target.value as TemplateScopeType,
-							scope.id,
 						),
 					)
 				}
@@ -78,16 +89,28 @@ export function ScopeRow({ app, scope, onChange, onDelete }: Props) {
 			)}
 
 			{scope.type === "FILENAME_PATTERN" && (
-				<input
-					type="text"
-					className="rht-ft-input"
-					spellCheck={false}
-					value={scope.pattern}
-					placeholder={T.patternPlaceholder()}
-					onChange={(e) =>
-						onChange({ ...scope, pattern: e.target.value })
-					}
-				/>
+				<div className="rht-ft-pattern">
+					<input
+						type="text"
+						className={`rht-ft-input${
+							isInvalidRegex(scope.pattern)
+								? " rht-ft-invalid"
+								: ""
+						}`}
+						spellCheck={false}
+						value={scope.pattern}
+						placeholder={T.patternPlaceholder()}
+						aria-invalid={isInvalidRegex(scope.pattern)}
+						onChange={(e) =>
+							onChange({ ...scope, pattern: e.target.value })
+						}
+					/>
+					{isInvalidRegex(scope.pattern) && (
+						<span className="rht-ft-error">
+							{T.patternInvalid()}
+						</span>
+					)}
+				</div>
 			)}
 
 			<button
