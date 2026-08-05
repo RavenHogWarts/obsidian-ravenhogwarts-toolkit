@@ -81,14 +81,21 @@ export function RuleCard({
 				</span>
 
 				<div className="rht-ft-card-actions">
-					<input
-						type="checkbox"
-						className="rht-ft-toggle"
+					<div
+						className={`checkbox-container ${rule.enabled ? "is-enabled" : ""}`}
+						role="switch"
+						aria-checked={rule.enabled}
 						aria-label={T.rules.enabledDesc()}
-						checked={rule.enabled}
-						onChange={(e) =>
-							onChange({ ...rule, enabled: e.target.checked })
+						tabIndex={0}
+						onClick={() =>
+							onChange({ ...rule, enabled: !rule.enabled })
 						}
+						onKeyDown={(e) => {
+							if (e.key === " " || e.key === "Enter") {
+								e.preventDefault();
+								onChange({ ...rule, enabled: !rule.enabled });
+							}
+						}}
 					/>
 					<button
 						className="rht-ft-icon-btn clickable-icon"
