@@ -226,16 +226,6 @@ type RootTranslation = {
 				space: string
 			}
 		}
-		table_calculator: {
-			/**
-			 * 表​格​计​算​器
-			 */
-			name: string
-			/**
-			 * 为​ ​m​a​r​k​d​o​w​n​ ​表​格​数​据​提​供​持​久​化​公​式​计​算
-			 */
-			desc: string
-		}
 	}
 	command: {
 		quick_path: {
@@ -502,16 +492,6 @@ export type TranslationFunctions = {
 				 */
 				space: () => LocalizedString
 			}
-		}
-		table_calculator: {
-			/**
-			 * 表格计算器
-			 */
-			name: () => LocalizedString
-			/**
-			 * 为 markdown 表格数据提供持久化公式计算
-			 */
-			desc: () => LocalizedString
 		}
 	}
 	command: {

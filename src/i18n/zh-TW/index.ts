@@ -1,4 +1,4 @@
-import type { BaseTranslation } from "../i18n-types";
+import type { BaseTranslation } from '../i18n-types'
 
 const zh_TW = {
 	common: {
@@ -73,10 +73,6 @@ const zh_TW = {
 				semicolon: "分號",
 				space: "空格",
 			},
-		},
-		table_calculator: {
-			name: "表格計算器",
-			desc: "為 markdown 表格數據提供持久化公式計算",
 		},
 	},
 	command: {

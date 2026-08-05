@@ -1,6 +1,5 @@
-import type { BaseTranslation } from "../i18n-types";
+import type { BaseTranslation } from '../i18n-types'
 
-// Remember [use sentence case in UI](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines#Use+sentence+case+in+UI)
 const en = {
 	common: {
 		enabled: "Enabled",
@@ -75,10 +74,6 @@ const en = {
 				space: "Space",
 			},
 		},
-		table_calculator: {
-			name: "Table calculator",
-			desc: "Provide persistent formula calculations for markdown table data",
-		},
 	},
 	command: {
 		quick_path: {
@@ -99,8 +94,7 @@ const en = {
 		quick_path: {
 			copy_success: "Path copied to clipboard",
 			copy_failure: "Failed to copy path",
-			root_path_warning:
-				"The current file is in the root directory, unable to get the parent folder path",
+			root_path_warning: "The current file is in the root directory, unable to get the parent folder path",
 		},
 	},
 } satisfies BaseTranslation;
