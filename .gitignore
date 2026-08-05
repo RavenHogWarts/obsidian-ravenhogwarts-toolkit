@@ -33,3 +33,7 @@ dist
 .backup/
 legacy
 dev
+
+# ai
+.workbuddy-ai
+.zcode
