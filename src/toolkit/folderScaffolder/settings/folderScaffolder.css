@@ -64,24 +64,6 @@
 	border-radius: var(--radius-s);
 }
 
-.rht-fs-chevron {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	color: var(--text-muted);
-	flex-shrink: 0;
-	transition: transform var(--anim-duration-fast) ease-in-out;
-}
-
-.rht-fs-chevron.is-collapsed {
-	transform: rotate(-90deg);
-}
-
-.rht-fs-chevron .rht-fs-icon svg {
-	width: var(--icon-s);
-	height: var(--icon-s);
-}
-
 .rht-fs-check {
 	display: flex;
 	align-items: center;
@@ -95,6 +77,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 2px;
+	cursor: pointer;
 }
 
 .rht-fs-card-title {
@@ -164,7 +147,8 @@
 	color: var(--text-muted);
 	cursor: pointer;
 	border-radius: var(--radius-s);
-	transition: background-color var(--anim-duration-fast) ease-in-out,
+	transition:
+		background-color var(--anim-duration-fast) ease-in-out,
 		color var(--anim-duration-fast) ease-in-out;
 }
 
@@ -303,8 +287,7 @@
 		to right,
 		transparent 0,
 		transparent calc(var(--rht-fs-indent) - 1px),
-		var(--background-modifier-border-hover)
-			calc(var(--rht-fs-indent) - 1px),
+		var(--background-modifier-border-hover) calc(var(--rht-fs-indent) - 1px),
 		var(--background-modifier-border-hover) var(--rht-fs-indent)
 	);
 	background-repeat: no-repeat;

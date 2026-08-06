@@ -59,7 +59,7 @@ function flattenTree(root: EditableNode): FlatRow[] {
 
 export function StructureTreeEditor({ snapshot, onChange }: Props) {
 	const [root, setRoot] = useState<EditableNode>(() =>
-		buildEditableTree(snapshot)
+		buildEditableTree(snapshot),
 	);
 	/**
 	 * 最近一次由本组件回写出去的 flat 快照。用于区分「自己的编辑回流」与
@@ -98,7 +98,9 @@ export function StructureTreeEditor({ snapshot, onChange }: Props) {
 		<div className="rht-fs-tree">
 			<div className="rht-fs-tree-head">
 				<div className="rht-fs-tree-head-text">
-					<span className="rht-fs-tree-title">{T.structure.name()}</span>
+					<span className="rht-fs-tree-title">
+						{T.structure.name()}
+					</span>
 					<span className="rht-fs-tree-hint">{T.dragHint()}</span>
 				</div>
 				<button
@@ -123,13 +125,23 @@ export function StructureTreeEditor({ snapshot, onChange }: Props) {
 							node={node}
 							depth={depth}
 							root={root}
-							onRename={(id, name) => apply(renameNode(root, id, name))}
+							onRename={(id, name) =>
+								apply(renameNode(root, id, name))
+							}
 							onAddChild={(id) => apply(addChild(root, id))}
 							onRemove={(id) => apply(removeNode(root, id))}
-							onIndent={(id) => apply(indentNode(root, id) ?? root)}
-							onOutdent={(id) => apply(outdentNode(root, id) ?? root)}
-							onMoveUp={(id) => apply(moveSiblingUp(root, id) ?? root)}
-							onMoveDown={(id) => apply(moveSiblingDown(root, id) ?? root)}
+							onIndent={(id) =>
+								apply(indentNode(root, id) ?? root)
+							}
+							onOutdent={(id) =>
+								apply(outdentNode(root, id) ?? root)
+							}
+							onMoveUp={(id) =>
+								apply(moveSiblingUp(root, id) ?? root)
+							}
+							onMoveDown={(id) =>
+								apply(moveSiblingDown(root, id) ?? root)
+							}
 						/>
 					))}
 				</ul>
@@ -263,7 +275,7 @@ function TreeRow({
 				/>
 				<span className="rht-fs-tree-move">
 					<button
-						className="rht-fs-icon-btn"
+						className="rht-fs-icon-btn clickable-icon"
 						type="button"
 						onClick={() => {
 							onIndent(node.id);
@@ -276,7 +288,7 @@ function TreeRow({
 						<Icon name="corner-down-right" />
 					</button>
 					<button
-						className="rht-fs-icon-btn"
+						className="rht-fs-icon-btn clickable-icon"
 						type="button"
 						onClick={() => {
 							onOutdent(node.id);
@@ -289,7 +301,7 @@ function TreeRow({
 						<Icon name="corner-up-left" />
 					</button>
 					<button
-						className="rht-fs-icon-btn"
+						className="rht-fs-icon-btn clickable-icon"
 						type="button"
 						onClick={() => {
 							onMoveUp(node.id);
@@ -302,7 +314,7 @@ function TreeRow({
 						<Icon name="arrow-up" />
 					</button>
 					<button
-						className="rht-fs-icon-btn"
+						className="rht-fs-icon-btn clickable-icon"
 						type="button"
 						onClick={() => {
 							onMoveDown(node.id);
@@ -317,7 +329,7 @@ function TreeRow({
 				</span>
 				<span className="rht-fs-tree-actions">
 					<button
-						className="rht-fs-icon-btn"
+						className="rht-fs-icon-btn clickable-icon"
 						type="button"
 						onClick={() => onAddChild(node.id)}
 						aria-label={T.addFolder()}
@@ -326,7 +338,7 @@ function TreeRow({
 						<Icon name="folder-plus" />
 					</button>
 					<button
-						className="rht-fs-icon-btn rht-fs-danger"
+						className="rht-fs-icon-btn clickable-icon rht-fs-danger"
 						type="button"
 						onClick={() => onRemove(node.id)}
 						aria-label={LL.common.delete()}
@@ -358,7 +370,11 @@ function removeNode(root: EditableNode, id: string): EditableNode {
 }
 
 /** 重命名 id 节点 */
-function renameNode(root: EditableNode, id: string, name: string): EditableNode {
+function renameNode(
+	root: EditableNode,
+	id: string,
+	name: string,
+): EditableNode {
 	const next = cloneEditable(root);
 	const target = findNode(next, id);
 	if (target) target.name = name;
@@ -377,10 +393,7 @@ interface SiblingContext {
 	parentIndex: number;
 }
 
-function siblingContext(
-	root: EditableNode,
-	id: string
-): SiblingContext | null {
+function siblingContext(root: EditableNode, id: string): SiblingContext | null {
 	const parent = findParent(root, id);
 	if (!parent) return null;
 	const index = parent.children.findIndex((c) => c.id === id);
@@ -391,7 +404,7 @@ function siblingContext(
 		grandparent = findParent(root, parent.id);
 		if (grandparent) {
 			parentIndex = grandparent.children.findIndex(
-				(c) => c.id === parent.id
+				(c) => c.id === parent.id,
 			);
 		}
 	}
@@ -402,10 +415,7 @@ function siblingContext(
  * 缩进：成为「上一个同级兄弟」的末子节点。
  * index === 0（没有上一个兄弟）→ 返回 null（不可缩进）。
  */
-function indentNode(
-	root: EditableNode,
-	id: string
-): EditableNode | null {
+function indentNode(root: EditableNode, id: string): EditableNode | null {
 	const next = cloneEditable(root);
 	const ctx = siblingContext(next, id);
 	if (!ctx || ctx.index <= 0) return null;
@@ -419,10 +429,7 @@ function indentNode(
  * 外缩：成为父节点的下一个同级兄弟（提到父级一层）。
  * 父为根 → 返回 null（不可外缩）。
  */
-function outdentNode(
-	root: EditableNode,
-	id: string
-): EditableNode | null {
+function outdentNode(root: EditableNode, id: string): EditableNode | null {
 	const next = cloneEditable(root);
 	const ctx = siblingContext(next, id);
 	if (!ctx || !ctx.grandparent || ctx.parentIndex < 0) return null;
@@ -432,10 +439,7 @@ function outdentNode(
 }
 
 /** 上移：在当前父的 children 内与前一个兄弟交换。已在最前 → null。 */
-function moveSiblingUp(
-	root: EditableNode,
-	id: string
-): EditableNode | null {
+function moveSiblingUp(root: EditableNode, id: string): EditableNode | null {
 	const next = cloneEditable(root);
 	const ctx = siblingContext(next, id);
 	if (!ctx || ctx.index <= 0) return null;
@@ -445,10 +449,7 @@ function moveSiblingUp(
 }
 
 /** 下移：在当前父的 children 内与后一个兄弟交换。已在最后 → null。 */
-function moveSiblingDown(
-	root: EditableNode,
-	id: string
-): EditableNode | null {
+function moveSiblingDown(root: EditableNode, id: string): EditableNode | null {
 	const next = cloneEditable(root);
 	const ctx = siblingContext(next, id);
 	if (!ctx || ctx.index >= ctx.parent.children.length - 1) return null;
@@ -487,10 +488,7 @@ function cloneEditable(node: EditableNode): EditableNode {
 	};
 }
 
-function findNode(
-	root: EditableNode,
-	id: string
-): EditableNode | undefined {
+function findNode(root: EditableNode, id: string): EditableNode | undefined {
 	if (root.id === id) return root;
 	for (const c of root.children) {
 		const found = findNode(c, id);
@@ -500,10 +498,7 @@ function findNode(
 }
 
 /** 返回 children 中包含 id 的直接父节点（找不到返回 null） */
-function findParent(
-	root: EditableNode,
-	id: string
-): EditableNode | null {
+function findParent(root: EditableNode, id: string): EditableNode | null {
 	for (const c of root.children) {
 		if (c.id === id) return root;
 		const found = findParent(c, id);

@@ -116,30 +116,41 @@ function TemplateCard({
 		<div className="rht-fs-card">
 			<div className="rht-fs-card-header">
 				<button
-					className="rht-fs-card-toggle"
+					className="rht-fs-icon-btn clickable-icon"
 					type="button"
 					aria-expanded={!collapsed}
-					aria-label={collapsed ? T.templateCard.expand() : T.templateCard.collapse()}
-					title={collapsed ? T.templateCard.expand() : T.templateCard.collapse()}
+					aria-label={
+						collapsed
+							? T.templateCard.expand()
+							: T.templateCard.collapse()
+					}
+					title={
+						collapsed
+							? T.templateCard.expand()
+							: T.templateCard.collapse()
+					}
 					onClick={() => setCollapsed((c) => !c)}
 				>
-					<span
-						className={`rht-fs-chevron${collapsed ? " is-collapsed" : ""}`}
-					>
-						<Icon name="chevron-down" />
-					</span>
-					<div className="rht-fs-card-title-wrap">
-						<span className="rht-fs-card-title">{name}</span>
-						<span className="rht-fs-card-summary">
-							{T.templateCard.subDirs({ count: template.snapshot.length })}
-						</span>
-					</div>
+					<Icon name={collapsed ? "chevron-right" : "chevron-down"} />
 				</button>
+				<span
+					className="rht-fs-card-title-wrap"
+					onClick={() => setCollapsed((c) => !c)}
+				>
+					<span className="rht-fs-card-title">{name}</span>
+					<span className="rht-fs-card-summary">
+						{T.templateCard.subDirs({
+							count: template.snapshot.length,
+						})}
+					</span>
+				</span>
 				<label className="rht-fs-check">
 					<input
 						type="checkbox"
 						checked={template.enabled}
-						onChange={(e) => onChange({ enabled: e.target.checked })}
+						onChange={(e) =>
+							onChange({ enabled: e.target.checked })
+						}
 						aria-label={T.templateCard.enabledDesc()}
 					/>
 				</label>
@@ -195,7 +206,9 @@ function TemplateCard({
 									app={app}
 									value={template.sourceFolder}
 									placeholder={T.templateCard.sourceField.name()}
-									onChange={(v) => onChange({ sourceFolder: v })}
+									onChange={(v) =>
+										onChange({ sourceFolder: v })
+									}
 								/>
 								<button
 									className="rht-fs-text-btn mod-cta"

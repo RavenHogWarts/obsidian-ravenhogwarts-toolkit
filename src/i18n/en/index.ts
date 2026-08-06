@@ -1,4 +1,4 @@
-import type { BaseTranslation } from '../i18n-types'
+import type { BaseTranslation } from "../i18n-types";
 
 const en = {
 	common: {
@@ -119,19 +119,21 @@ const en = {
 				subDirs: "{count} subfolders",
 				structure: {
 					name: "Folder structure",
-					empty: "No folders yet. Click \"Add root folder\" to start building.",
+					empty: 'No folders yet. Click "Add root folder" to start building.',
 				},
 				addRootFolder: "Add root folder",
 				addFolder: "Add subfolder",
 				newFolderName: "New folder",
 				indent: "Indent",
 				outdent: "Outdent",
-			renameHint: "Double-click to rename",
-			dragHint: "Use buttons or Tab / Shift+Tab / Alt+↑↓ to reorder and nest",
-			collapse: "Collapse",
-			expand: "Expand",
-			importFromVault: "Import from vault",
-				importFromVaultDesc: "Optional: read a structure from an existing folder to fill in below (manual edits still apply)",
+				renameHint: "Double-click to rename",
+				dragHint:
+					"Use buttons or Tab / Shift+Tab / Alt+↑↓ to reorder and nest",
+				collapse: "Collapse",
+				expand: "Expand",
+				importFromVault: "Import from vault",
+				importFromVaultDesc:
+					"Optional: read a structure from an existing folder to fill in below (manual edits still apply)",
 			},
 		},
 	},
@@ -153,12 +155,12 @@ const en = {
 			paste_current_file_path: "Paste current file path",
 			paste_current_folder_path: "Paste current folder path",
 		},
-	folder_scaffolder: {
-		create_from_template: "Create structure from template",
-		copy_structure: "Copy this folder structure",
-		paste_structure: "Paste folder structure",
-		save_as_template: "Save this structure as a template",
-	},
+		folder_scaffolder: {
+			create_from_template: "Create structure from template",
+			copy_structure: "Copy this folder structure",
+			paste_structure: "Paste folder structure",
+			save_as_template: "Save this structure as a template",
+		},
 	},
 	modal: {
 		folder_scaffolder: {
@@ -166,8 +168,9 @@ const en = {
 			select_template: "Select template",
 			target_parent: "Target location",
 			target_parent_desc: "The structure will be cloned into this folder",
-			new_folder_name: "New folder name (optional)",
-			new_folder_name_desc: "Leave empty to clone subfolders directly into the target",
+			new_folder_name: "Wrapper folder (optional)",
+			new_folder_name_desc:
+				"Add an additional folder layer around the cloned structure",
 			confirm: "Create",
 			save_template_title: "Save as template",
 			template_name: "Template name",
@@ -178,17 +181,21 @@ const en = {
 		quick_path: {
 			copy_success: "Path copied to clipboard",
 			copy_failure: "Failed to copy path",
-			root_path_warning: "The current file is in the root directory, unable to get the parent folder path",
+			root_path_warning:
+				"The current file is in the root directory, unable to get the parent folder path",
 		},
 		folder_scaffolder: {
 			no_template: "No templates available, add one in settings first",
 			copied: "Copied {count} subfolders to the clipboard",
-			clipboard_empty: "Clipboard is empty, copy a folder structure first",
-			empty_structure: "This folder has no subfolders, nothing to save as a template",
+			clipboard_empty:
+				"Clipboard is empty, copy a folder structure first",
+			empty_structure:
+				"This folder has no subfolders, nothing to save as a template",
 			template_saved: "Saved as a template",
 			created: "Created {count} folders",
 			create_failed: "Failed to create structure",
-			paste_invalid: "No recognizable folder structure found in the clipboard",
+			paste_invalid:
+				"No recognizable folder structure found in the clipboard",
 			pasted: "Pasted {count} folders",
 		},
 	},

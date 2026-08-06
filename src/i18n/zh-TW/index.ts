@@ -1,4 +1,4 @@
-import type { BaseTranslation } from '../i18n-types'
+import type { BaseTranslation } from "../i18n-types";
 
 const zh_TW = {
 	common: {
@@ -126,12 +126,13 @@ const zh_TW = {
 				newFolderName: "新增資料夾",
 				indent: "縮排",
 				outdent: "取消縮排",
-			renameHint: "雙擊重新命名",
-			dragHint: "用按鈕或 Tab / Shift+Tab / Alt+↑↓ 調整層級與順序",
-			collapse: "收起",
-			expand: "展開",
-			importFromVault: "從 vault 匯入",
-				importFromVaultDesc: "選填：從一個現有資料夾讀取結構填入下方（不影響手動編輯）",
+				renameHint: "雙擊重新命名",
+				dragHint: "用按鈕或 Tab / Shift+Tab / Alt+↑↓ 調整層級與順序",
+				collapse: "收起",
+				expand: "展開",
+				importFromVault: "從 vault 匯入",
+				importFromVaultDesc:
+					"選填：從一個現有資料夾讀取結構填入下方（不影響手動編輯）",
 			},
 		},
 	},
@@ -153,12 +154,12 @@ const zh_TW = {
 			paste_current_file_path: "粘貼當前文件路徑",
 			paste_current_folder_path: "粘貼當前目錄路徑",
 		},
-	folder_scaffolder: {
-		create_from_template: "從範本建立結構",
-		copy_structure: "複製此資料夾結構",
-		paste_structure: "貼上資料夾結構",
-		save_as_template: "將此結構儲存為範本",
-	},
+		folder_scaffolder: {
+			create_from_template: "從範本建立結構",
+			copy_structure: "複製此資料夾結構",
+			paste_structure: "貼上資料夾結構",
+			save_as_template: "將此結構儲存為範本",
+		},
 	},
 	modal: {
 		folder_scaffolder: {
@@ -166,8 +167,8 @@ const zh_TW = {
 			select_template: "選擇範本",
 			target_parent: "目標位置",
 			target_parent_desc: "結構將複製到此資料夾下",
-			new_folder_name: "新資料夾名稱（可選）",
-			new_folder_name_desc: "留空則直接在目標位置下複製子目錄",
+			new_folder_name: "包裝資料夾（可選）",
+			new_folder_name_desc: "在結構外層再加一層資料夾",
 			confirm: "建立",
 			save_template_title: "儲存為範本",
 			template_name: "範本名稱",

@@ -512,11 +512,11 @@ type RootTranslation = {
 			 */
 			target_parent_desc: string
 			/**
-			 * 新​文​件​夹​名​（​可​选​）
+			 * 包​裹​文​件​夹​（​可​选​）
 			 */
 			new_folder_name: string
 			/**
-			 * 留​空​则​直​接​在​目​标​位​置​下​克​隆​子​目​录
+			 * 在​结​构​外​层​在​加​一​层​文​件​夹
 			 */
 			new_folder_name_desc: string
 			/**
@@ -1090,11 +1090,11 @@ export type TranslationFunctions = {
 			 */
 			target_parent_desc: () => LocalizedString
 			/**
-			 * 新文件夹名（可选）
+			 * 包裹文件夹（可选）
 			 */
 			new_folder_name: () => LocalizedString
 			/**
-			 * 留空则直接在目标位置下克隆子目录
+			 * 在结构外层在加一层文件夹
 			 */
 			new_folder_name_desc: () => LocalizedString
 			/**
