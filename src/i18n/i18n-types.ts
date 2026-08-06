@@ -965,11 +965,19 @@ export type TranslationFunctions = {
 				 */
 				newFolderName: () => LocalizedString
 				/**
+				 * 缩进
+				 */
+				indent: () => LocalizedString
+				/**
+				 * 外缩
+				 */
+				outdent: () => LocalizedString
+				/**
 				 * 双击重命名
 				 */
 				renameHint: () => LocalizedString
 				/**
-				 * 拖拽调整位置或层级
+				 * 用按钮或 Tab / Shift+Tab / Alt+↑↓ 调整层级与顺序
 				 */
 				dragHint: () => LocalizedString
 				/**

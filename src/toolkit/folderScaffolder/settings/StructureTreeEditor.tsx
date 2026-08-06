@@ -1,26 +1,10 @@
-import {
-	DndContext,
-	DragEndEvent,
-	DragOverlay,
-	DragStartEvent,
-	PointerSensor,
-	closestCenter,
-	useSensor,
-	useSensors,
-} from "@dnd-kit/core";
-import {
-	SortableContext,
-	useSortable,
-	verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { LL } from "@src/i18n/i18n";
 import { useEffect, useRef, useState } from "react";
 import { flatPathsFromTree, TreeNode } from "../service/StructureBuilder";
 import { Icon } from "./Icon";
 
 /**
- * 可编辑树节点。相比 service 层的纯 TreeNode，多一个稳定 id（用于 DnD 与 React key）。
+ * 可编辑树节点。相比 service 层的纯 TreeNode，多一个稳定 id（用于 React key）。
  * path 是派生量（每次树变更后由 recomputePaths 重算），不作为身份。
  */
 export interface EditableNode {
@@ -31,14 +15,6 @@ export interface EditableNode {
 	children: EditableNode[];
 }
 
-/** 拖拽落点三态：成为目标的同级（前/后）或子节点 */
-export type DropPosition = "before" | "after" | "inside";
-
-interface DropIndicator {
-	id: string;
-	position: DropPosition;
-}
-
 interface Props {
 	/** 模板的 flat 相对路径快照 */
 	snapshot: string[];
@@ -47,20 +23,40 @@ interface Props {
 }
 
 /**
- * 模板结构的可视化树编辑器（React 岛）：
- * - 嵌套树形展示（竖向引导线 + 横向连接线，纯 CSS）；
- * - 每个节点名称为常驻输入框，失焦/回车即重命名；每节点可加子文件夹、删除；
- * - 拖拽手柄移动节点，支持三态落点：
- *   · before / after —— 与目标成为同级，插到目标前/后（调整顺序）；
- *   · inside        —— 成为目标的子节点（调整层级）；
- *   禁止拖入自身或自身后代（否则形成环）。
- *
- * 内部以带 id 的 EditableNode 树为唯一状态来源；每次变更后 flatPathsFromTree
- * 回写 snapshot。snapshot 外部变化时重建树（id 重新生成）。
+ * 模板结构的可视化树编辑器（React 岛），outliner 式交互：
+ * - 整棵树拍平为「单一有序列表 + 每行的 depth」渲染。缩进纯属视觉（depth × 缩进量），
+ *   移动逻辑仍基于树。
+ * - 四件事全部用显式按钮 + 键盘快捷键，一键确定、无层级歧义：
+ *   · 创建       ——「添加子文件夹」（行内）/「添加根文件夹」（头部）
+ *   · 创建子集   ——同上
+ *   · 移动层级   ——缩进（Indent）/ 外缩（Outdent）
+ *   · 移动顺序   ——上移 / 下移（仅当前父内换序，不跨层）
+ *   缩进：成为「上一个同级兄弟」的末子节点；外缩：提到父节点的下一个同级。
+ * - 快捷键（input 聚焦时）：Tab=缩进、Shift+Tab=外缩、Alt+↑/↓=上下移；
+ *   Enter=提交重命名、Esc=还原。操作后保持焦点。
  *
  * 数据流：root 集中在顶层组件，所有变更经纯 helper（接收 root + id）产出新 root，
- * 子组件只负责派发动作（onRename/onAddChild/onRemove），不持有树状态。
+ * 子组件只负责派发动作，不持有树状态。
  */
+
+/** 树 → 拍平有序列表（前序遍历，父先于子），记录每行深度用于缩进 */
+interface FlatRow {
+	node: EditableNode;
+	depth: number;
+}
+
+function flattenTree(root: EditableNode): FlatRow[] {
+	const out: FlatRow[] = [];
+	const walk = (node: EditableNode, depth: number) => {
+		for (const child of node.children) {
+			out.push({ node: child, depth });
+			if (child.children.length > 0) walk(child, depth + 1);
+		}
+	};
+	walk(root, 0);
+	return out;
+}
+
 export function StructureTreeEditor({ snapshot, onChange }: Props) {
 	const [root, setRoot] = useState<EditableNode>(() =>
 		buildEditableTree(snapshot)
@@ -71,16 +67,7 @@ export function StructureTreeEditor({ snapshot, onChange }: Props) {
 	 * 才认为是外部改动并重建树，避免每次按键都重建、打断编辑态。
 	 */
 	const lastEmitted = useRef<string[]>(snapshot);
-	const sensors = useSensors(
-		useSensor(PointerSensor, { activationConstraint: { distance: 4 } })
-	);
 	const T = LL.settings.folder_scaffolder.templateCard;
-
-	// 拖拽过程态：当前落点指示（用于高亮）、被拖节点（用于 DragOverlay）
-	const [dropIndicator, setDropIndicator] = useState<DropIndicator | null>(
-		null
-	);
-	const [activeId, setActiveId] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (!sameFlatPaths(snapshot, lastEmitted.current)) {
@@ -104,66 +91,16 @@ export function StructureTreeEditor({ snapshot, onChange }: Props) {
 		apply(next);
 	};
 
-	/** 由拖拽事件解析落点（over 节点 + before/after/inside） */
-	const resolveDrop = (
-		event: DragEndEvent
-	): { overId: string; position: DropPosition } | null => {
-		const { active, over } = event;
-		if (!over || active.id === over.id) return null;
-		const overRect = over.rect;
-		const activator = event.activatorEvent as PointerEvent;
-		// 光标真实 Y = 抓取点 Y + 位移；PointerSensor 的 activatorEvent 即按下时的指针事件
-		const pointerY =
-			typeof activator?.clientY === "number"
-				? activator.clientY + event.delta.y
-				: overRect.top + overRect.height / 2;
-		// 上半 25% → before；下半 25% → after；中间 50% → inside
-		const threshold = overRect.height * 0.25;
-		const relativeY = pointerY - overRect.top;
-		let position: DropPosition;
-		if (relativeY < threshold) position = "before";
-		else if (relativeY > overRect.height - threshold) position = "after";
-		else position = "inside";
-		return { overId: String(over.id), position };
-	};
-
-	const handleDragStart = (event: DragStartEvent) => {
-		setActiveId(String(event.active.id));
-	};
-
-	const handleDragOver = (event: DragEndEvent) => {
-		const drop = resolveDrop(event);
-		setDropIndicator(drop ? { id: drop.overId, position: drop.position } : null);
-	};
-
-	const handleDragEnd = (event: DragEndEvent) => {
-		const drop = resolveDrop(event);
-		const activeIdStr = String(event.active.id);
-		setActiveId(null);
-		setDropIndicator(null);
-		if (!drop) return;
-		// 禁止拖入自身或自身后代（否则形成环）
-		if (isDescendant(root, activeIdStr, drop.overId)) return;
-		const next = moveNode(
-			cloneEditable(root),
-			activeIdStr,
-			drop.overId,
-			drop.position
-		);
-		if (next) apply(next);
-	};
-
-	const handleDragCancel = () => {
-		setActiveId(null);
-		setDropIndicator(null);
-	};
-
-	const activeNode = activeId ? findNode(root, activeId) : undefined;
+	// 拍平后统一渲染
+	const rows = flattenTree(root);
 
 	return (
 		<div className="rht-fs-tree">
 			<div className="rht-fs-tree-head">
-				<span className="rht-fs-tree-title">{T.structure.name()}</span>
+				<div className="rht-fs-tree-head-text">
+					<span className="rht-fs-tree-title">{T.structure.name()}</span>
+					<span className="rht-fs-tree-hint">{T.dragHint()}</span>
+				</div>
 				<button
 					className="rht-fs-text-btn mod-cta"
 					type="button"
@@ -174,118 +111,80 @@ export function StructureTreeEditor({ snapshot, onChange }: Props) {
 				</button>
 			</div>
 
-			{root.children.length === 0 ? (
-				<div className="rht-fs-tree-empty">{T.structure.empty()}</div>
+			{rows.length === 0 ? (
+				<div className="rht-fs-tree-empty">
+					<span>{T.structure.empty()}</span>
+				</div>
 			) : (
-				<DndContext
-					sensors={sensors}
-					collisionDetection={closestCenter}
-					onDragStart={handleDragStart}
-					onDragOver={handleDragOver}
-					onDragEnd={handleDragEnd}
-					onDragCancel={handleDragCancel}
-				>
-					<NodeList
-						parent={root}
-						dropIndicator={dropIndicator}
-						onRename={(id, name) => apply(renameNode(root, id, name))}
-						onAddChild={(id) => apply(addChild(root, id))}
-						onRemove={(id) => apply(removeNode(root, id))}
-					/>
-					<DragOverlay>
-						{activeNode ? (
-							<div className="rht-fs-tree-line rht-fs-tree-overlay">
-								<Icon name="folder" />
-								<span className="rht-fs-tree-overlay-name">
-									{activeNode.name}
-								</span>
-							</div>
-						) : null}
-					</DragOverlay>
-				</DndContext>
+				<ul className="rht-fs-tree-list">
+					{rows.map(({ node, depth }) => (
+						<TreeRow
+							key={node.id}
+							node={node}
+							depth={depth}
+							root={root}
+							onRename={(id, name) => apply(renameNode(root, id, name))}
+							onAddChild={(id) => apply(addChild(root, id))}
+							onRemove={(id) => apply(removeNode(root, id))}
+							onIndent={(id) => apply(indentNode(root, id) ?? root)}
+							onOutdent={(id) => apply(outdentNode(root, id) ?? root)}
+							onMoveUp={(id) => apply(moveSiblingUp(root, id) ?? root)}
+							onMoveDown={(id) => apply(moveSiblingDown(root, id) ?? root)}
+						/>
+					))}
+				</ul>
 			)}
 		</div>
 	);
 }
 
-// ---- 递归渲染：一层子节点列表 ----
+// ---- 单个节点行（拍平渲染，depth 控制缩进） ----
 
-interface NodeListProps {
-	parent: EditableNode;
-	dropIndicator: DropIndicator | null;
-	onRename: (id: string, name: string) => void;
-	onAddChild: (id: string) => void;
-	onRemove: (id: string) => void;
-}
-
-function NodeList({
-	parent,
-	dropIndicator,
-	onRename,
-	onAddChild,
-	onRemove,
-}: NodeListProps) {
-	const ids = parent.children.map((c) => c.id);
-	return (
-		<SortableContext items={ids} strategy={verticalListSortingStrategy}>
-			<ul className="rht-fs-tree-list">
-				{parent.children.map((child) => (
-					<NodeRow
-						key={child.id}
-						node={child}
-						dropIndicator={
-							dropIndicator?.id === child.id
-								? dropIndicator.position
-								: null
-						}
-						onRename={onRename}
-						onAddChild={onAddChild}
-						onRemove={onRemove}
-					/>
-				))}
-			</ul>
-		</SortableContext>
-	);
-}
-
-// ---- 递归渲染：单个节点行 ----
-
-interface NodeRowProps {
+interface TreeRowProps {
 	node: EditableNode;
-	dropIndicator: DropPosition | null;
+	depth: number;
+	root: EditableNode;
 	onRename: (id: string, name: string) => void;
 	onAddChild: (id: string) => void;
 	onRemove: (id: string) => void;
+	onIndent: (id: string) => void;
+	onOutdent: (id: string) => void;
+	onMoveUp: (id: string) => void;
+	onMoveDown: (id: string) => void;
 }
 
-function NodeRow({
+function TreeRow({
 	node,
-	dropIndicator,
+	depth,
+	root,
 	onRename,
 	onAddChild,
 	onRemove,
-}: NodeRowProps) {
+	onIndent,
+	onOutdent,
+	onMoveUp,
+	onMoveDown,
+}: TreeRowProps) {
 	const T = LL.settings.folder_scaffolder.templateCard;
-	const {
-		attributes,
-		listeners,
-		setNodeRef,
-		transform,
-		transition,
-		isDragging,
-	} = useSortable({ id: node.id });
 	// 常驻输入框：本地草稿驱动输入，仅在失焦/回车时回写树，避免每次按键重建树打断焦点
 	const [draft, setDraft] = useState(node.name);
+	const inputRef = useRef<HTMLInputElement>(null);
 
-	// 外部改动（拖拽、导入刷新等）导致的 name 变化同步进草稿
+	// 外部改动（结构操作、导入刷新等）导致的 name 变化同步进草稿
 	useEffect(() => {
 		setDraft(node.name);
 	}, [node.name]);
 
-	const style = {
-		transform: CSS.Transform.toString(transform),
-		transition,
+	// 一次性结构操作（缩进/外缩/移动）后，node.name 不变 → 草稿不变；
+	// 但 React 重渲后 input DOM 可能失焦，故操作后主动回焦，保证连续键盘操作流畅。
+	const keepFocus = () => {
+		window.requestAnimationFrame(() => inputRef.current?.focus());
 	};
+
+	const style = {
+		// 把 depth 透传为 CSS 变量，供缩进 / 连接线定位使用
+		"--row-depth": depth,
+	} as React.CSSProperties;
 
 	const commitName = () => {
 		const trimmed = draft.trim();
@@ -296,44 +195,126 @@ function NodeRow({
 		}
 	};
 
-	const dropClass = dropIndicator
-		? ` drop-${dropIndicator}`
-		: "";
+	// 四项操作的可用性（用于按钮 disabled 灰显）
+	const ctx = siblingContext(root, node.id);
+	const canIndent = !!ctx && ctx.index > 0;
+	const canOutdent = !!ctx && ctx.parent.id !== "__root__";
+	const canMoveUp = !!ctx && ctx.index > 0;
+	const canMoveDown = !!ctx && ctx.index < ctx.parent.children.length - 1;
+
+	/**
+	 * 键盘快捷键（input 聚焦时，对齐 Logseq/Workflowy 肌肉记忆）：
+	 * Tab/Shift+Tab 缩进外缩，Alt+↑/↓ 上下移，Enter 提交，Esc 还原。
+	 * 结构操作后 keepFocus() 让连续操作不打断。
+	 */
+	const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			commitName();
+			e.currentTarget.blur();
+			return;
+		}
+		if (e.key === "Escape") {
+			e.preventDefault();
+			setDraft(node.name);
+			e.currentTarget.blur();
+			return;
+		}
+		if (e.key === "Tab") {
+			e.preventDefault();
+			if (e.shiftKey) {
+				if (canOutdent) {
+					onOutdent(node.id);
+					keepFocus();
+				}
+			} else {
+				if (canIndent) {
+					onIndent(node.id);
+					keepFocus();
+				}
+			}
+			return;
+		}
+		if (e.altKey && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+			e.preventDefault();
+			if (e.key === "ArrowUp" && canMoveUp) {
+				onMoveUp(node.id);
+				keepFocus();
+			} else if (e.key === "ArrowDown" && canMoveDown) {
+				onMoveDown(node.id);
+				keepFocus();
+			}
+		}
+	};
 
 	return (
-		<li ref={setNodeRef} className="rht-fs-tree-row" style={style}>
-			<div
-				className={`rht-fs-tree-line${isDragging ? " is-dragging" : ""}${dropClass}`}
-			>
-				<button
-					className="rht-fs-tree-handle"
-					type="button"
-					aria-label={T.dragHint()}
-					title={T.dragHint()}
-					{...attributes}
-					{...listeners}
-				>
-					<Icon name="grip-vertical" />
-				</button>
+		<li className="rht-fs-tree-row" style={style}>
+			<div className={`rht-fs-tree-line${depth > 0 ? " is-nested" : ""}`}>
 				<Icon name="folder" />
 				<input
+					ref={inputRef}
 					className="rht-fs-tree-input"
 					spellCheck={false}
 					value={draft}
 					aria-label={T.renameHint()}
 					onChange={(e) => setDraft(e.target.value)}
 					onBlur={commitName}
-					onKeyDown={(e) => {
-						if (e.key === "Enter") {
-							commitName();
-							e.currentTarget.blur();
-						}
-						if (e.key === "Escape") {
-							setDraft(node.name);
-							e.currentTarget.blur();
-						}
-					}}
+					onKeyDown={onKeyDown}
 				/>
+				<span className="rht-fs-tree-move">
+					<button
+						className="rht-fs-icon-btn"
+						type="button"
+						onClick={() => {
+							onIndent(node.id);
+							keepFocus();
+						}}
+						disabled={!canIndent}
+						aria-label={T.indent()}
+						title={T.indent()}
+					>
+						<Icon name="corner-down-right" />
+					</button>
+					<button
+						className="rht-fs-icon-btn"
+						type="button"
+						onClick={() => {
+							onOutdent(node.id);
+							keepFocus();
+						}}
+						disabled={!canOutdent}
+						aria-label={T.outdent()}
+						title={T.outdent()}
+					>
+						<Icon name="corner-up-left" />
+					</button>
+					<button
+						className="rht-fs-icon-btn"
+						type="button"
+						onClick={() => {
+							onMoveUp(node.id);
+							keepFocus();
+						}}
+						disabled={!canMoveUp}
+						aria-label={LL.common.moveUp()}
+						title={LL.common.moveUp()}
+					>
+						<Icon name="arrow-up" />
+					</button>
+					<button
+						className="rht-fs-icon-btn"
+						type="button"
+						onClick={() => {
+							onMoveDown(node.id);
+							keepFocus();
+						}}
+						disabled={!canMoveDown}
+						aria-label={LL.common.moveDown()}
+						title={LL.common.moveDown()}
+					>
+						<Icon name="arrow-down" />
+					</button>
+				</span>
 				<span className="rht-fs-tree-actions">
 					<button
 						className="rht-fs-icon-btn"
@@ -355,15 +336,6 @@ function NodeRow({
 					</button>
 				</span>
 			</div>
-			{node.children.length > 0 && (
-				<NodeList
-					parent={node}
-					dropIndicator={null}
-					onRename={onRename}
-					onAddChild={onAddChild}
-					onRemove={onRemove}
-				/>
-			)}
 		</li>
 	);
 }
@@ -394,36 +366,95 @@ function renameNode(root: EditableNode, id: string, name: string): EditableNode 
 }
 
 /**
- * 把 activeId 节点移动到 overId 处。
- * - position === "inside"：作为 overId 的最后一个子节点；
- * - position === "before"/"after"：作为 overId 的同级，插到其前/后。
- * 调用方需先保证 activeId 不是 overId 的后代（避免成环）。
+ * id 的「兄弟上下文」：直接父、在父中的下标、祖父、父在祖父中的下标。
+ * 所有缩进/外缩/换序操作的判定与执行都以此为统一基础，避免重复遍历。
+ * 找不到（id 不在树中）返回 null。
  */
-function moveNode(
+interface SiblingContext {
+	parent: EditableNode;
+	index: number;
+	grandparent: EditableNode | null;
+	parentIndex: number;
+}
+
+function siblingContext(
 	root: EditableNode,
-	activeId: string,
-	overId: string,
-	position: DropPosition
-): EditableNode | null {
-	// 从原父摘除（原地修改 root，返回被摘除子树）
-	const subtree = detach(root, activeId);
-	if (!subtree) return null;
-	const target = findNode(root, overId);
-	if (!target) return null; // overId 已被摘除（属于 active 子树）→ 不移动
-
-	if (position === "inside") {
-		target.children.push(subtree);
-		return root;
+	id: string
+): SiblingContext | null {
+	const parent = findParent(root, id);
+	if (!parent) return null;
+	const index = parent.children.findIndex((c) => c.id === id);
+	if (index < 0) return null;
+	let grandparent: EditableNode | null = null;
+	let parentIndex = -1;
+	if (parent.id !== "__root__") {
+		grandparent = findParent(root, parent.id);
+		if (grandparent) {
+			parentIndex = grandparent.children.findIndex(
+				(c) => c.id === parent.id
+			);
+		}
 	}
+	return { parent, index, grandparent, parentIndex };
+}
 
-	// before / after：找到 overId 的父节点与下标，插入同级
-	const parent = findParent(root, overId);
-	if (!parent) return null; // 理论上不会发生（root 不会被拖拽）
-	const idx = parent.children.findIndex((c) => c.id === overId);
-	if (idx < 0) return null;
-	const insertAt = position === "before" ? idx : idx + 1;
-	parent.children.splice(insertAt, 0, subtree);
-	return root;
+/**
+ * 缩进：成为「上一个同级兄弟」的末子节点。
+ * index === 0（没有上一个兄弟）→ 返回 null（不可缩进）。
+ */
+function indentNode(
+	root: EditableNode,
+	id: string
+): EditableNode | null {
+	const next = cloneEditable(root);
+	const ctx = siblingContext(next, id);
+	if (!ctx || ctx.index <= 0) return null;
+	const subtree = ctx.parent.children.splice(ctx.index, 1)[0];
+	const prevSibling = ctx.parent.children[ctx.index - 1];
+	prevSibling.children.push(subtree);
+	return next;
+}
+
+/**
+ * 外缩：成为父节点的下一个同级兄弟（提到父级一层）。
+ * 父为根 → 返回 null（不可外缩）。
+ */
+function outdentNode(
+	root: EditableNode,
+	id: string
+): EditableNode | null {
+	const next = cloneEditable(root);
+	const ctx = siblingContext(next, id);
+	if (!ctx || !ctx.grandparent || ctx.parentIndex < 0) return null;
+	const subtree = ctx.parent.children.splice(ctx.index, 1)[0];
+	ctx.grandparent.children.splice(ctx.parentIndex + 1, 0, subtree);
+	return next;
+}
+
+/** 上移：在当前父的 children 内与前一个兄弟交换。已在最前 → null。 */
+function moveSiblingUp(
+	root: EditableNode,
+	id: string
+): EditableNode | null {
+	const next = cloneEditable(root);
+	const ctx = siblingContext(next, id);
+	if (!ctx || ctx.index <= 0) return null;
+	const arr = ctx.parent.children;
+	[arr[ctx.index - 1], arr[ctx.index]] = [arr[ctx.index], arr[ctx.index - 1]];
+	return next;
+}
+
+/** 下移：在当前父的 children 内与后一个兄弟交换。已在最后 → null。 */
+function moveSiblingDown(
+	root: EditableNode,
+	id: string
+): EditableNode | null {
+	const next = cloneEditable(root);
+	const ctx = siblingContext(next, id);
+	if (!ctx || ctx.index >= ctx.parent.children.length - 1) return null;
+	const arr = ctx.parent.children;
+	[arr[ctx.index], arr[ctx.index + 1]] = [arr[ctx.index + 1], arr[ctx.index]];
+	return next;
 }
 
 // ---- 底层树工具 ----
@@ -481,23 +512,6 @@ function findParent(
 	return null;
 }
 
-/** 从树中摘除 id 节点（返回被摘除的子树），原地修改 root */
-function detach(
-	root: EditableNode,
-	id: string
-): EditableNode | null {
-	for (let i = 0; i < root.children.length; i++) {
-		if (root.children[i].id === id) {
-			return root.children.splice(i, 1)[0];
-		}
-	}
-	for (const c of root.children) {
-		const found = detach(c, id);
-		if (found) return found;
-	}
-	return null;
-}
-
 function removeFromParent(root: EditableNode, id: string): void {
 	const idx = root.children.findIndex((c) => c.id === id);
 	if (idx >= 0) {
@@ -505,20 +519,6 @@ function removeFromParent(root: EditableNode, id: string): void {
 		return;
 	}
 	for (const c of root.children) removeFromParent(c, id);
-}
-
-/** overId 是否是 activeId 的（含自身）后代 —— 用于禁止循环拖拽 */
-function isDescendant(
-	root: EditableNode,
-	activeId: string,
-	overId: string
-): boolean {
-	const active = findNode(root, activeId);
-	if (!active) return false;
-	if (activeId === overId) return true;
-	const contains = (node: EditableNode, id: string): boolean =>
-		node.id === id || node.children.some((c) => contains(c, id));
-	return contains(active, overId);
 }
 
 /** 递归重算每个节点的 path（相对 root） */
