@@ -1,63 +1,49 @@
-import { rootLogger } from "@src/core/services/Log";
+import { PluginContext } from "@src/model/manager/PluginContext";
+import { ToolkitManager } from "@src/model/manager/ToolkitManager";
+import { toolkitRegistry } from "@src/model/manager/ToolkitRegistry";
+import { IPluginSettings } from "@src/settings/IPluginSettings";
+import { PluginSettingTab } from "@src/settings/PluginSettingTab";
+import SettingsStore from "@src/settings/SettingsStore";
+import "@src/toolkit";
+import "@styles/styles";
 import { Plugin } from "obsidian";
-import RavenHogwartsToolkitSettingTab from "./components/settings/SettingsTab";
-import { IRavenHogwartsToolkitConfig } from "./core/interfaces/types";
-import { BaseManager } from "./core/services/BaseManager";
-import { PluginManager } from "./core/services/PluginManager";
-import { FolderTemplatesManager } from "./toolkit/folderTemplates/manager/FolderTemplatesManager";
-import { QuickPathManager } from "./toolkit/quickPath/manager/QuickPathManager";
-import { TableEnhancementsManager } from "./toolkit/tableEnhancements/manager/TableEnhancementsManager";
 
-export default class RavenHogwartsToolkitPlugin extends Plugin {
-	public pluginManager: PluginManager;
-	registeredMenus: Record<string, Set<string>> = {};
+export default class RHTPlugin extends Plugin {
+	settings: IPluginSettings;
+	readonly settingsStore = new SettingsStore(this);
+	toolkitManager: ToolkitManager;
+	pluginContext: PluginContext;
+	settingTab: PluginSettingTab | undefined;
 
 	async onload() {
-		try {
-			// 初始化插件管理器
-			this.pluginManager = new PluginManager(this);
-			await this.pluginManager.initialize();
+		await this.settingsStore.loadSettings();
 
-			// 注册工具模块
-			await this.registerToolkit();
+		this.pluginContext = new PluginContext(this);
+		this.toolkitManager = new ToolkitManager(this.pluginContext);
 
-			// 注册设置页面
-			this.addSettingTab(
-				new RavenHogwartsToolkitSettingTab(this.app, this)
-			);
-		} catch (e) {
-			rootLogger.error("Plugin load error", e);
-			rootLogger.notice("Plugin load error: " + e.message);
+		await this.registerToolkit();
+		await this.toolkitManager.loadEnabledToolkit();
+
+		this.settingTab = new PluginSettingTab(this);
+		this.addSettingTab(this.settingTab);
+	}
+
+	onunload() {
+		if (this.toolkitManager) {
+			this.toolkitManager.unloadToolkit();
 		}
 	}
 
-	async onunload() {
-		try {
-			await this.pluginManager?.unload();
-			rootLogger.info("Plugin unloaded successfully");
-		} catch (error) {
-			rootLogger.error("Plugin unload error:", error);
-		}
+	async saveSettings() {
+		await this.saveData(this.settings);
 	}
 
 	private async registerToolkit() {
-		const managers = {
-			tableEnhancements: TableEnhancementsManager,
-			quickPath: QuickPathManager,
-			folderTemplates: FolderTemplatesManager,
-		};
-		await this.pluginManager.registerManagers(managers);
-	}
-
-	async updateSettings(newSettings: Partial<IRavenHogwartsToolkitConfig>) {
-		await this.pluginManager.updateSettings(newSettings);
-	}
-
-	getManager<T extends BaseManager<any>>(moduleId: string): T | undefined {
-		return this.pluginManager.getManager<T>(moduleId);
-	}
-
-	get settings(): IRavenHogwartsToolkitConfig {
-		return this.pluginManager.pluginSettings;
+		const toolkit = toolkitRegistry.getAll();
+		for (const tk of toolkit) {
+			const tool = new tk();
+			this.toolkitManager.registerTool(tool);
+			await tool.initialize(this.pluginContext);
+		}
 	}
 }

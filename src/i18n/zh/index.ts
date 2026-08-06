@@ -1,0 +1,193 @@
+import type { BaseTranslation } from "../i18n-types";
+
+const zh = {
+	common: {
+		enabled: "启用",
+		enabledDesc: "开启或关闭此工具",
+		noConfig: "此工具暂无可配置项",
+		add: "添加",
+		delete: "删除",
+		reset: "重置",
+		moveUp: "上移",
+		moveDown: "下移",
+	},
+	settings: {
+		folder_templates: {
+			name: "文件夹模板",
+			desc: "在指定文件夹下创建新文件时，无感知应用模板",
+			templatesFolderPath: {
+				name: "模板文件夹位置",
+				desc: "存放模板文件的文件夹；留空时跟随官方模板插件配置",
+			},
+			rules: {
+				name: "模板规则",
+				unnamed: "新规则",
+				enabledDesc: "开启或关闭此规则",
+				addFirst: "创建第一条规则",
+				scopesUnit: "个条件",
+				warnNoTemplate: "此规则未设置模板文件",
+				renamePreview: "预览：",
+				templateFile: {
+					name: "模板文件",
+					desc: "命中规则后应用的模板；支持日期、时间等变量表达式",
+				},
+				applyMode: {
+					name: "应用方式",
+					desc: "文件已有内容时的处理策略",
+					emptyOnly: "仅空文件",
+					prepend: "插入到开头",
+				},
+				renameFormat: {
+					name: "重命名模板",
+					desc: "创建时按模板重命名文件，支持变量表达式；留空表示不重命名",
+				},
+			},
+			scopes: {
+				name: "匹配条件",
+				empty: "无匹配条件时规则不会生效",
+				typeFolder: "文件夹",
+				typeExcludeFolder: "排除文件夹",
+				typeFilenamePattern: "文件名正则",
+				typeRoot: "根目录",
+				pathPlaceholder: "folder/path",
+				patternPlaceholder: "^\\d+-\\d+",
+				patternInvalid: "无效的正则表达式",
+				includeSubfolders: "包含子文件夹",
+			},
+			variables: {
+				title: "可用变量",
+				legacy: "仍兼容旧版 {date} / {time} 语法。",
+				clickToCopy: "点击复制",
+				copied: "已复制",
+				notename: "笔记名",
+				folder: "上级文件夹名",
+				folderPath: "上级文件夹路径",
+				date: "当前日期（YYYY-MM-DD）",
+				time: "当前时间（HH:mm）",
+				year: "当前年份",
+				yearMonth: "年月（YYYYMM）",
+				timestamp: "毫秒时间戳",
+				now: "自定义 moment 格式",
+				frontmatter: "frontmatter 字段值",
+			},
+		},
+		quick_path: {
+			name: "快速路径",
+			desc: "快速获取指定文件/文件夹的路径",
+			addEditorMenu: {
+				name: "添加编辑器菜单",
+				desc: "在编辑器菜单中添加粘贴当前文件路径的选项",
+			},
+			addFileMenu: {
+				name: "添加文件列表菜单",
+				desc: "在文件列表菜单中添加复制文件/文件夹路径的选项",
+			},
+			useAbsolutePath: {
+				name: "绝对路径",
+				desc: "使用绝对路径，即从操作系统根目录开始的路径",
+			},
+			pathSeparator: {
+				name: "分隔符",
+				desc: "多个路径的分隔符",
+				newline: "换行",
+				comma: "逗号",
+				semicolon: "分号",
+				space: "空格",
+			},
+		},
+		folder_scaffolder: {
+			name: "文件夹脚手架",
+			desc: "克隆文件夹的目录结构，支持临时复制/粘贴与存为模板",
+			templates: { name: "结构模板" },
+			templateCard: {
+				unnamed: "未命名模板",
+				enabledDesc: "开启或关闭此模板",
+				addFirst: "创建第一个模板",
+				nameField: { name: "名称", desc: "在命令与菜单中显示" },
+				sourceField: {
+					name: "来源文件夹",
+					desc: "快照来源（仅展示/刷新用）",
+				},
+				refresh: "刷新快照",
+				refreshed: "已从来源刷新 {count} 个子目录",
+				sourceNotFound: "来源文件夹不存在，无法刷新",
+				subDirs: "{count} 个子目录",
+				structure: {
+					name: "文件夹结构",
+					empty: "还没有文件夹，点击「添加根文件夹」开始搭建",
+				},
+				addRootFolder: "添加根文件夹",
+				addFolder: "添加子文件夹",
+				newFolderName: "新建文件夹",
+				indent: "缩进",
+				outdent: "外缩",
+				renameHint: "双击重命名",
+				dragHint: "用按钮或 Tab / Shift+Tab / Alt+↑↓ 调整层级与顺序",
+				collapse: "收起",
+				expand: "展开",
+				importFromVault: "从 vault 导入",
+				importFromVaultDesc:
+					"可选：从一个已有文件夹读取结构填充下方（不影响手动编辑）",
+			},
+		},
+	},
+	command: {
+		quick_path: {
+			copy_current_file_path: "复制当前文件路径",
+			copy_current_folder_path: "复制当前目录路径",
+		},
+		folder_scaffolder: {
+			create_from_template: "从模板创建结构",
+			paste_structure: "粘贴结构到当前目录",
+		},
+	},
+	menu: {
+		quick_path: {
+			copy_file_path: "复制文件路径",
+			copy_files_path: "复制多个路径",
+			copy_folder_path: "复制目录路径",
+			paste_current_file_path: "粘贴当前文件路径",
+			paste_current_folder_path: "粘贴当前目录路径",
+		},
+		folder_scaffolder: {
+			create_from_template: "从模版创建结构",
+			copy_structure: "复制此文件夹结构",
+			paste_structure: "粘贴文件夹结构",
+			save_as_template: "将此结构存为模板",
+		},
+	},
+	modal: {
+		folder_scaffolder: {
+			scaffold_title: "从模板创建结构",
+			select_template: "选择模板",
+			target_parent: "目标位置",
+			target_parent_desc: "结构将克隆到此文件夹下",
+			new_folder_name: "包裹文件夹（可选）",
+			new_folder_name_desc: "在结构外层在加一层文件夹",
+			confirm: "创建",
+			save_template_title: "存为模板",
+			template_name: "模板名称",
+			save: "保存",
+		},
+	},
+	notice: {
+		quick_path: {
+			copy_success: "路径已复制到剪贴板",
+			copy_failure: "复制路径失败",
+			root_path_warning: "当前文件位于根目录，无法获取上级文件夹路径",
+		},
+		folder_scaffolder: {
+			no_template: "没有可用的模板，请先在设置中添加",
+			copied: "已复制 {count} 个子目录到剪贴板",
+			clipboard_empty: "剪贴板为空，请先复制一个文件夹结构",
+			empty_structure: "该文件夹没有子目录，无需存为模板",
+			template_saved: "已保存为模板",
+			created: "已创建 {count} 个文件夹",
+			create_failed: "创建结构失败",
+			paste_invalid: "剪贴板中未找到可识别的文件夹结构",
+			pasted: "已粘贴 {count} 个文件夹",
+		},
+	},
+} satisfies BaseTranslation;
+
+export default zh;

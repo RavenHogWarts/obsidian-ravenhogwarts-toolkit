@@ -1,0 +1,163 @@
+name: Version Bump Pre-check
+
+# 当PR被标记为版本更新时进行全面的预检查
+on:
+  pull_request:
+    types: [labeled, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  version-bump-precheck:
+    if: contains(github.event.pull_request.labels.*.name, 'version-bump')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22.x"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Prepare manifest
+        id: prepare_manifest
+        run: |
+          if [[ ${{ github.ref }} == *"beta"* ]]; then
+            echo "📦 Using beta manifest"
+            cp manifest-beta.json manifest.json
+          else
+            echo "📦 Using stable manifest"
+          fi
+
+      - name: Run comprehensive checks
+        id: checks
+        run: |
+          echo "🔍 Starting comprehensive pre-version-bump checks..."
+
+          # 使用与 release 一致的构建方法
+          echo "📝 Building plugin..."
+          pnpm install --frozen-lockfile
+          if pnpm run build; then
+            echo "✅ Build successful"
+            echo "build_check=✅" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Build failed"
+            echo "build_check=❌" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          # 构建产物检查
+          echo "📦 Verifying build artifacts..."
+          required_files=("dist/main.js" "dist/manifest.json" "dist/styles.css")
+          missing_files=()
+
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              missing_files+=("$file")
+            fi
+          done
+
+          if [ ${#missing_files[@]} -eq 0 ]; then
+            echo "✅ All required build artifacts found"
+            echo "artifacts_check=✅" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Missing build artifacts: ${missing_files[*]}"
+            echo "artifacts_check=❌" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          # 版本一致性检查
+          echo "🔢 Checking version consistency..."
+          package_version=$(node -p "require('./package.json').version")
+          manifest_version=$(node -p "require('./dist/manifest.json').version")
+
+          echo "Package.json version: $package_version"
+          echo "Manifest.json version: $manifest_version"
+
+          if [ "$package_version" = "$manifest_version" ]; then
+            echo "✅ Version consistency check passed"
+            echo "version_check=✅" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Version mismatch between package.json and manifest.json"
+            echo "version_check=❌" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Generate check report
+        if: always()
+        run: |
+          echo "📊 Pre-version-bump Check Report"
+          echo "================================="
+          echo "Build: ${{ steps.checks.outputs.build_check }}"
+          echo "Build Artifacts: ${{ steps.checks.outputs.artifacts_check }}"
+          echo "Version Consistency: ${{ steps.checks.outputs.version_check }}"
+
+      - name: Find previous precheck comment
+        if: always()
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: "## Version Bump Pre-check"
+
+      - name: Create or update success comment
+        if: success()
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## Version Bump Pre-check Passed!
+
+            All checks have completed successfully. This PR is ready for version bump.
+
+            ### Check Results:
+            - ${{ steps.checks.outputs.build_check }} Build & Compilation
+            - ${{ steps.checks.outputs.artifacts_check }} Build Artifacts
+            - ${{ steps.checks.outputs.version_check }} Version Consistency
+
+            You can now safely proceed with version bump and release.
+
+      - name: Create or update failure comment
+        if: failure()
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## Version Bump Pre-check Failed!
+
+            Some checks have failed. Please review and fix the issues before proceeding with version bump.
+
+            ### Check Results:
+            - ${{ steps.checks.outputs.build_check || '❓' }} Build & Compilation
+            - ${{ steps.checks.outputs.artifacts_check || '❓' }} Build Artifacts
+            - ${{ steps.checks.outputs.version_check || '❓' }} Version Consistency
+
+            Please check the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for detailed error information.

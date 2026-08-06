@@ -1,0 +1,460 @@
+/* Folder scaffolder — React templates editor (mounted via reactSetting bridge). */
+
+.rht-fs-templates {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-3);
+}
+
+/* ---- Section header ----------------------------------------------------- */
+.rht-fs-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+	padding-bottom: var(--size-4-1);
+	border-bottom: 1px solid var(--background-modifier-border);
+	margin-bottom: var(--size-2-2);
+}
+
+.rht-fs-title {
+	font-weight: var(--font-semibold);
+	font-size: var(--font-ui-medium);
+}
+
+/* ---- Template card ------------------------------------------------------ */
+.rht-fs-card {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background: var(--background-secondary);
+	overflow: hidden;
+}
+
+.rht-fs-card-header {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-1);
+	padding: var(--size-4-2) var(--size-4-3);
+}
+
+/* 可折叠：整条头部（除勾选/删除）可点击展开收起 */
+.rht-fs-card-toggle {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	flex: 1;
+	min-width: 0;
+	padding: 0;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	color: var(--text-normal);
+	cursor: pointer;
+	text-align: left;
+	border-radius: var(--radius-s);
+}
+
+.rht-fs-card-toggle:hover .rht-fs-card-title {
+	color: var(--text-normal);
+}
+
+.rht-fs-card-toggle:focus-visible {
+	outline: 2px solid var(--interactive-accent);
+	outline-offset: 2px;
+	border-radius: var(--radius-s);
+}
+
+.rht-fs-check {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	white-space: nowrap;
+}
+
+.rht-fs-card-title-wrap {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	cursor: pointer;
+}
+
+.rht-fs-card-title {
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-weight: var(--font-medium);
+}
+
+.rht-fs-card-summary {
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+
+.rht-fs-card-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-1);
+}
+
+.rht-fs-card-body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-3);
+	padding: var(--size-4-3);
+	border-top: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+}
+
+/* ---- Fields ------------------------------------------------------------- */
+.rht-fs-field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+}
+
+.rht-fs-field-label {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	font-weight: var(--font-medium);
+}
+
+.rht-fs-field-desc {
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+}
+
+.rht-fs-input {
+	width: 100%;
+}
+
+/* ---- Buttons ------------------------------------------------------------ */
+.rht-fs-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--icon-button-size);
+	height: var(--icon-button-size);
+	padding: 0;
+	background: transparent;
+	box-shadow: none;
+	color: var(--text-muted);
+	cursor: pointer;
+	border-radius: var(--radius-s);
+	transition:
+		background-color var(--anim-duration-fast) ease-in-out,
+		color var(--anim-duration-fast) ease-in-out;
+}
+
+.rht-fs-icon-btn:hover {
+	color: var(--text-normal);
+	background: var(--background-modifier-hover);
+}
+
+.rht-fs-icon-btn.rht-fs-danger:hover {
+	color: var(--text-error);
+}
+
+.rht-fs-text-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	cursor: pointer;
+}
+
+.rht-fs-icon {
+	display: inline-flex;
+}
+
+.rht-fs-icon svg {
+	width: var(--icon-s);
+	height: var(--icon-s);
+}
+
+/* ---- Empty state -------------------------------------------------------- */
+.rht-fs-empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--size-4-3);
+	padding: var(--size-4-8) 0;
+	color: var(--text-muted);
+	text-align: center;
+	border: 1px dashed var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background: var(--background-secondary);
+}
+
+.rht-fs-empty-state .rht-fs-icon svg {
+	width: var(--icon-l);
+	height: var(--icon-l);
+	color: var(--text-faint);
+}
+
+.rht-fs-empty-state-text {
+	font-size: var(--font-ui-smaller);
+}
+
+/* ---- Visual structure tree editor --------------------------------------- */
+.rht-fs-tree {
+	--rht-fs-indent: 22px;
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	padding: var(--size-4-3);
+	background: var(--background-secondary);
+}
+
+.rht-fs-tree-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-3);
+	padding-bottom: var(--size-4-2);
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.rht-fs-tree-head-text {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-1);
+	min-width: 0;
+	flex: 1;
+}
+
+.rht-fs-tree-title {
+	font-weight: var(--font-semibold);
+	font-size: var(--font-ui-small);
+	color: var(--text-normal);
+	letter-spacing: 0.01em;
+}
+
+.rht-fs-tree-hint {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-faint);
+	line-height: 1.5;
+}
+
+.rht-fs-tree-empty {
+	padding: var(--size-4-6) var(--size-4-2);
+	text-align: center;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-faint);
+	border: 1px dashed var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	background: var(--background-primary);
+}
+
+/* 拍平后的单一列表（前序遍历，缩进纯视觉） */
+.rht-fs-tree-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+}
+
+.rht-fs-tree-row {
+	position: relative;
+	list-style: none;
+}
+
+/* ---- Tree line（每节点的可交互行） ----------------------------------- */
+.rht-fs-tree-line {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	/* 缩进：基础内边距 + depth × 缩进量（--row-depth 由组件按层级透传） */
+	padding: var(--size-2-2)
+		calc(var(--size-2-3) + var(--rht-fs-indent) * var(--row-depth, 0))
+		var(--size-2-2)
+		calc(var(--size-2-3) + var(--rht-fs-indent) * var(--row-depth, 0));
+	border-radius: var(--radius-s);
+	/* 行不再可拖（outliner 按钮驱动层级/顺序）：默认光标 */
+	cursor: default;
+	/* 左侧各祖先层级的竖向引导线（纯 CSS 背景，绘制在行左槽） */
+	background-image: repeating-linear-gradient(
+		to right,
+		transparent 0,
+		transparent calc(var(--rht-fs-indent) - 1px),
+		var(--background-modifier-border-hover) calc(var(--rht-fs-indent) - 1px),
+		var(--background-modifier-border-hover) var(--rht-fs-indent)
+	);
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-size: calc(var(--rht-fs-indent) * var(--row-depth, 0)) 100%;
+	transition: background-color var(--anim-duration-fast) ease-in-out;
+}
+
+/* 嵌套行：从最后一个竖向引导线连一条短横线到文件夹图标 */
+.rht-fs-tree-line.is-nested::before {
+	content: "";
+	position: absolute;
+	left: calc(var(--rht-fs-indent) * var(--row-depth, 0));
+	top: 50%;
+	width: var(--size-2-2);
+	height: 1px;
+	background: var(--background-modifier-border-hover);
+}
+
+.rht-fs-tree-line:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+/* 选中态：整行高亮（弱于编辑态，强于 hover），表明该行已选中、快捷键针对此行生效 */
+.rht-fs-tree-row.is-selected > .rht-fs-tree-line {
+	background-color: var(--background-modifier-hover);
+}
+
+.rht-fs-tree-row.is-selected > .rht-fs-tree-line:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+/* 文件夹图标：作为视觉锚点，颜色稍强 */
+.rht-fs-tree-line > .rht-fs-icon {
+	color: var(--text-muted);
+	flex-shrink: 0;
+	transition: color var(--anim-duration-fast) ease-in-out;
+}
+
+.rht-fs-tree-line:hover > .rht-fs-icon,
+.rht-fs-tree-row.is-selected > .rht-fs-tree-line > .rht-fs-icon {
+	color: var(--interactive-accent);
+}
+
+/* ---- Inline rename input --------------------------------------------- */
+/*
+ * 双态 input：
+ * - 只读（选中态）：看起来像普通文字，无边框/背景，光标 default，点击仅选中该行。
+ * - .is-editing（重命名态）：恢复输入框外观，聚焦描边，提示进入编辑。
+ */
+.rht-fs-tree-input {
+	flex: 1;
+	min-width: 0;
+	/* 把右侧两组按钮推到行尾：名称吃掉中间所有剩余空间 */
+	margin-right: auto;
+	height: auto;
+	padding: var(--size-2-1) var(--size-2-2);
+	font-size: inherit;
+	background: transparent;
+	border: 1px solid transparent;
+	border-radius: var(--radius-s);
+	box-shadow: none;
+	/* 只读态不显示文本光标，避免误导为可编辑 */
+	cursor: default;
+}
+
+.rht-fs-tree-input:focus {
+	outline: none;
+}
+
+/* 选中态（只读聚焦）：仅名称区文字加粗着色，无输入框感 */
+.rht-fs-tree-row.is-selected > .rht-fs-tree-line .rht-fs-tree-input:not(.is-editing) {
+	color: var(--text-normal);
+	font-weight: var(--font-medium);
+}
+
+/* 编辑态：恢复输入框外观 + 聚焦描边 */
+.rht-fs-tree-input.is-editing {
+	cursor: text;
+	background: var(--background-primary);
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 1px var(--interactive-accent);
+}
+
+.rht-fs-tree-input.is-editing:hover {
+	border-color: var(--interactive-accent);
+}
+
+/*
+ * 行内操作按钮区分两组，避免六个按钮挤成一团：
+ *  - .rht-fs-tree-move：层级/顺序（缩进/外缩/上移/下移），左侧靠近名称，弱化色
+ *  - .rht-fs-tree-actions：增删（加子/删除），右端，删除项危险色
+ * 两组都用相同间距的图标按钮，中间留出弹性间距让名称区呼吸。
+ * hover/focus 行时整体浮现。
+ */
+.rht-fs-tree-move,
+.rht-fs-tree-actions {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	flex-shrink: 0;
+	opacity: 0;
+	transition: opacity var(--anim-duration-fast) ease-in-out;
+}
+
+.rht-fs-tree-move {
+	/* 层级/顺序操作贴近名称，用更弱的颜色，降低视觉权重 */
+	color: var(--text-faint);
+}
+
+.rht-fs-tree-move .rht-fs-icon-btn:hover {
+	color: var(--text-muted);
+}
+
+.rht-fs-tree-line:hover .rht-fs-tree-move,
+.rht-fs-tree-line:focus-within .rht-fs-tree-move,
+.rht-fs-tree-line:hover .rht-fs-tree-actions,
+.rht-fs-tree-line:focus-within .rht-fs-tree-actions {
+	opacity: 1;
+}
+
+/* 禁用态：不可用操作（如首个兄弟不可缩进、根级不可外缩）灰显并屏蔽交互 */
+.rht-fs-icon-btn:disabled {
+	opacity: 0.3;
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
+/* ---- Import from vault (collapsible helper) -------------------------- */
+.rht-fs-import {
+	border-top: 1px dashed var(--background-modifier-border);
+	padding-top: var(--size-4-2);
+}
+
+.rht-fs-import-summary {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	cursor: pointer;
+	user-select: none;
+}
+
+.rht-fs-import-summary:hover {
+	color: var(--text-normal);
+}
+
+.rht-fs-import-body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+	padding-top: var(--size-2-2);
+}
+
+.rht-fs-import-row {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+}
+
+.rht-fs-import-row .rht-fs-input {
+	flex: 1;
+	min-width: 0;
+}
+
+.rht-fs-import-row .rht-fs-text-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
