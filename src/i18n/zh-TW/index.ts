@@ -1,4 +1,4 @@
-import type { BaseTranslation } from "../i18n-types";
+import type { BaseTranslation } from '../i18n-types'
 
 const zh_TW = {
 	common: {
@@ -95,11 +95,52 @@ const zh_TW = {
 				space: "空格",
 			},
 		},
+		folder_scaffolder: {
+			name: "資料夾鷹架",
+			desc: "複製資料夾的目錄結構，支援臨時複製/貼上與儲存為範本",
+			templates: {
+				name: "結構範本",
+			},
+			templateCard: {
+				unnamed: "未命名範本",
+				enabledDesc: "開啟或關閉此範本",
+				addFirst: "建立第一個範本",
+				nameField: {
+					name: "名稱",
+					desc: "在命令與選單中顯示",
+				},
+				sourceField: {
+					name: "來源資料夾",
+					desc: "快照來源（僅展示/刷新用）",
+				},
+				refresh: "刷新快照",
+				refreshed: "已從來源刷新 {count} 個子目錄",
+				sourceNotFound: "來源資料夾不存在，無法刷新",
+				subDirs: "{count} 個子目錄",
+				structure: {
+					name: "資料夾結構",
+					empty: "還沒有資料夾，點擊「新增根資料夾」開始搭建",
+				},
+				addRootFolder: "新增根資料夾",
+				addFolder: "新增子資料夾",
+				newFolderName: "新增資料夾",
+			renameHint: "雙擊重新命名",
+			dragHint: "拖曳調整位置或層級",
+			collapse: "收起",
+			expand: "展開",
+			importFromVault: "從 vault 匯入",
+				importFromVaultDesc: "選填：從一個現有資料夾讀取結構填入下方（不影響手動編輯）",
+			},
+		},
 	},
 	command: {
 		quick_path: {
 			copy_current_file_path: "複製當前文件路徑",
 			copy_current_folder_path: "複製當前目錄路徑",
+		},
+		folder_scaffolder: {
+			create_from_template: "從範本建立結構",
+			paste_structure: "貼上結構到當前目錄",
 		},
 	},
 	menu: {
@@ -110,12 +151,43 @@ const zh_TW = {
 			paste_current_file_path: "粘貼當前文件路徑",
 			paste_current_folder_path: "粘貼當前目錄路徑",
 		},
+	folder_scaffolder: {
+		create_from_template: "從範本建立結構",
+		copy_structure: "複製此資料夾結構",
+		paste_structure: "貼上資料夾結構",
+		save_as_template: "將此結構儲存為範本",
+	},
+	},
+	modal: {
+		folder_scaffolder: {
+			scaffold_title: "從範本建立結構",
+			select_template: "選擇範本",
+			target_parent: "目標位置",
+			target_parent_desc: "結構將複製到此資料夾下",
+			new_folder_name: "新資料夾名稱（可選）",
+			new_folder_name_desc: "留空則直接在目標位置下複製子目錄",
+			confirm: "建立",
+			save_template_title: "儲存為範本",
+			template_name: "範本名稱",
+			save: "儲存",
+		},
 	},
 	notice: {
 		quick_path: {
 			copy_success: "路徑已複製到剪貼板",
 			copy_failure: "複製路徑失敗",
 			root_path_warning: "當前文件位於根目錄，無法獲取上級文件夾路徑",
+		},
+		folder_scaffolder: {
+			no_template: "沒有可用的範本，請先在設定中新增",
+			copied: "已複製 {count} 個子目錄到剪貼簿",
+			clipboard_empty: "剪貼簿為空，請先複製一個資料夾結構",
+			empty_structure: "此資料夾沒有子目錄，無需儲存為範本",
+			template_saved: "已儲存為範本",
+			created: "已建立 {count} 個資料夾",
+			create_failed: "建立結構失敗",
+			paste_invalid: "剪貼簿中未找到可辨識的資料夾結構",
+			pasted: "已貼上 {count} 個資料夾",
 		},
 	},
 } satisfies BaseTranslation;

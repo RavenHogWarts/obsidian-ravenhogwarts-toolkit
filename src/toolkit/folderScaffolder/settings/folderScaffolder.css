@@ -1,0 +1,418 @@
+/* Folder scaffolder — React templates editor (mounted via reactSetting bridge). */
+
+.rht-fs-templates {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+}
+
+.rht-fs-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+}
+
+.rht-fs-title {
+	font-weight: var(--font-semibold);
+}
+
+/* Template card */
+.rht-fs-card {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background: var(--background-secondary);
+}
+
+.rht-fs-card-header {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-1);
+	padding: var(--size-4-1) var(--size-4-2);
+}
+
+/* 可折叠：整条头部（除勾选/删除）可点击展开收起 */
+.rht-fs-card-toggle {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-1);
+	flex: 1;
+	min-width: 0;
+	padding: 0;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	color: var(--text-normal);
+	cursor: pointer;
+	text-align: left;
+}
+
+.rht-fs-card-toggle:hover .rht-fs-card-title {
+	color: var(--text-normal);
+}
+
+.rht-fs-card-toggle:focus-visible {
+	outline: 2px solid var(--interactive-accent);
+	outline-offset: 2px;
+	border-radius: var(--radius-s);
+}
+
+.rht-fs-chevron {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-muted);
+	flex-shrink: 0;
+	transition: transform var(--anim-duration-fast) ease-in-out;
+}
+
+.rht-fs-chevron.is-collapsed {
+	transform: rotate(-90deg);
+}
+
+.rht-fs-chevron .rht-fs-icon svg {
+	width: var(--icon-xs);
+	height: var(--icon-xs);
+}
+
+.rht-fs-check {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	white-space: nowrap;
+}
+
+.rht-fs-card-title-wrap {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.rht-fs-card-title {
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.rht-fs-card-summary {
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+
+.rht-fs-card-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-1);
+}
+
+.rht-fs-card-body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-3);
+	padding: var(--size-4-2) var(--size-4-3) var(--size-4-3);
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+/* Fields */
+.rht-fs-field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+}
+
+.rht-fs-field-label {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+
+.rht-fs-field-desc {
+	color: var(--text-faint);
+}
+
+.rht-fs-input {
+	width: 100%;
+}
+
+/* Buttons */
+.rht-fs-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--size-2-2);
+	background: transparent;
+	box-shadow: none;
+	color: var(--text-muted);
+	cursor: pointer;
+}
+
+.rht-fs-icon-btn:hover {
+	color: var(--text-normal);
+	background: var(--background-modifier-hover);
+}
+
+.rht-fs-icon-btn.rht-fs-danger:hover {
+	color: var(--text-error);
+}
+
+.rht-fs-text-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	cursor: pointer;
+}
+
+.rht-fs-icon {
+	display: inline-flex;
+}
+
+.rht-fs-icon svg {
+	width: var(--icon-s);
+	height: var(--icon-s);
+}
+
+/* Empty state */
+.rht-fs-empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--size-4-2);
+	padding: var(--size-4-6) 0;
+	color: var(--text-muted);
+	text-align: center;
+}
+
+.rht-fs-empty-state .rht-fs-icon svg {
+	width: var(--icon-l);
+	height: var(--icon-l);
+	color: var(--text-faint);
+}
+
+.rht-fs-empty-state-text {
+	font-size: var(--font-ui-smaller);
+}
+
+/* ---- Visual structure tree editor ---- */
+.rht-fs-tree {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	padding: var(--size-4-2);
+	background: var(--background-primary);
+}
+
+.rht-fs-tree-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+}
+
+.rht-fs-tree-title {
+	font-size: var(--font-ui-smaller);
+	font-weight: var(--font-semibold);
+	color: var(--text-muted);
+}
+
+.rht-fs-tree-empty {
+	padding: var(--size-4-4) var(--size-4-2);
+	text-align: center;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-faint);
+}
+
+/* 顶层列表：无缩进、无引导线 */
+.rht-fs-tree-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* 嵌套列表：左内边距让出层级空间，竖向引导线 */
+.rht-fs-tree-row > .rht-fs-tree-list {
+	position: relative;
+	margin-left: calc(var(--size-4-3) + 2px);
+	padding-left: var(--size-4-3);
+	border-left: 1px solid var(--background-modifier-border);
+}
+
+.rht-fs-tree-row {
+	position: relative;
+	list-style: none;
+}
+
+/* 每个子节点行前的横向连接线（从竖线引到节点） */
+.rht-fs-tree-row > .rht-fs-tree-list > .rht-fs-tree-row > .rht-fs-tree-line::before {
+	content: "";
+	position: absolute;
+	left: calc(var(--size-4-3) * -1);
+	top: 50%;
+	width: var(--size-4-3);
+	height: 1px;
+	background: var(--background-modifier-border);
+}
+
+.rht-fs-tree-line {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	padding: var(--size-2-1) var(--size-2-2);
+	border-radius: var(--radius-s);
+}
+
+.rht-fs-tree-line:hover {
+	background: var(--background-modifier-hover);
+}
+
+.rht-fs-tree-line.is-dragging {
+	opacity: 0.5;
+	background: var(--background-modifier-active-hover);
+}
+
+/* 拖拽落点指示（before/after 用上下内描边，inside 用整框高亮，避免与连接线伪元素冲突） */
+.rht-fs-tree-line.drop-before {
+	box-shadow: inset 0 2px 0 0 var(--interactive-accent);
+}
+
+.rht-fs-tree-line.drop-after {
+	box-shadow: inset 0 -2px 0 0 var(--interactive-accent);
+}
+
+.rht-fs-tree-line.drop-inside {
+	box-shadow: inset 0 0 0 1px var(--interactive-accent);
+	background: var(--background-modifier-active-hover);
+}
+
+/* DragOverlay：被拖节点跟随光标 */
+.rht-fs-tree-overlay {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	width: max-content;
+	max-width: 100%;
+	padding: var(--size-2-1) var(--size-4-2);
+	background: var(--background-secondary);
+	border: 1px solid var(--interactive-accent);
+	border-radius: var(--radius-s);
+	box-shadow: var(--shadow-s);
+	cursor: grabbing;
+	color: var(--text-normal);
+}
+
+.rht-fs-tree-overlay-name {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rht-fs-tree-handle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	background: transparent;
+	box-shadow: none;
+	color: var(--text-faint);
+	cursor: grab;
+	touch-action: none;
+}
+
+.rht-fs-tree-handle:hover {
+	color: var(--text-muted);
+}
+
+.rht-fs-tree-handle:active {
+	cursor: grabbing;
+}
+
+.rht-fs-tree-line > .rht-fs-icon {
+	color: var(--text-muted);
+	flex-shrink: 0;
+}
+
+.rht-fs-tree-input {
+	flex: 1;
+	min-width: 0;
+	height: auto;
+	padding: var(--size-2-1) var(--size-2-2);
+	font-size: inherit;
+	background: transparent;
+	border: 1px solid transparent;
+	box-shadow: none;
+}
+
+.rht-fs-tree-input:hover {
+	border-color: var(--background-modifier-border);
+}
+
+.rht-fs-tree-input:focus {
+	background: var(--background-primary);
+	border-color: var(--interactive-accent);
+	box-shadow: 0 0 0 1px var(--interactive-accent);
+}
+
+.rht-fs-tree-actions {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-1);
+	opacity: 0;
+	flex-shrink: 0;
+}
+
+.rht-fs-tree-line:hover .rht-fs-tree-actions,
+.rht-fs-tree-line:focus-within .rht-fs-tree-actions {
+	opacity: 1;
+}
+
+/* ---- Import from vault (collapsible helper) ---- */
+.rht-fs-import {
+	border-top: 1px solid var(--background-modifier-border);
+	padding-top: var(--size-4-2);
+}
+
+.rht-fs-import-summary {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	cursor: pointer;
+	user-select: none;
+}
+
+.rht-fs-import-summary:hover {
+	color: var(--text-normal);
+}
+
+.rht-fs-import-body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+	padding-top: var(--size-2-2);
+}
+
+.rht-fs-import-row {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+}
+
+.rht-fs-import-row .rht-fs-input {
+	flex: 1;
+	min-width: 0;
+}
+
+.rht-fs-import-row .rht-fs-text-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
