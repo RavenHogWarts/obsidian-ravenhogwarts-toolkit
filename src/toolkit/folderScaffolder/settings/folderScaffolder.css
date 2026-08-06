@@ -311,6 +311,15 @@
 	background-color: var(--background-modifier-hover);
 }
 
+/* 选中态：整行高亮（弱于编辑态，强于 hover），表明该行已选中、快捷键针对此行生效 */
+.rht-fs-tree-row.is-selected > .rht-fs-tree-line {
+	background-color: var(--background-modifier-hover);
+}
+
+.rht-fs-tree-row.is-selected > .rht-fs-tree-line:hover {
+	background-color: var(--background-modifier-hover);
+}
+
 /* 文件夹图标：作为视觉锚点，颜色稍强 */
 .rht-fs-tree-line > .rht-fs-icon {
 	color: var(--text-muted);
@@ -318,11 +327,17 @@
 	transition: color var(--anim-duration-fast) ease-in-out;
 }
 
-.rht-fs-tree-line:hover > .rht-fs-icon {
+.rht-fs-tree-line:hover > .rht-fs-icon,
+.rht-fs-tree-row.is-selected > .rht-fs-tree-line > .rht-fs-icon {
 	color: var(--interactive-accent);
 }
 
 /* ---- Inline rename input --------------------------------------------- */
+/*
+ * 双态 input：
+ * - 只读（选中态）：看起来像普通文字，无边框/背景，光标 default，点击仅选中该行。
+ * - .is-editing（重命名态）：恢复输入框外观，聚焦描边，提示进入编辑。
+ */
 .rht-fs-tree-input {
 	flex: 1;
 	min-width: 0;
@@ -335,17 +350,30 @@
 	border: 1px solid transparent;
 	border-radius: var(--radius-s);
 	box-shadow: none;
-	cursor: text;
-}
-
-.rht-fs-tree-input:hover {
-	border-color: var(--background-modifier-border);
+	/* 只读态不显示文本光标，避免误导为可编辑 */
+	cursor: default;
 }
 
 .rht-fs-tree-input:focus {
+	outline: none;
+}
+
+/* 选中态（只读聚焦）：仅名称区文字加粗着色，无输入框感 */
+.rht-fs-tree-row.is-selected > .rht-fs-tree-line .rht-fs-tree-input:not(.is-editing) {
+	color: var(--text-normal);
+	font-weight: var(--font-medium);
+}
+
+/* 编辑态：恢复输入框外观 + 聚焦描边 */
+.rht-fs-tree-input.is-editing {
+	cursor: text;
 	background: var(--background-primary);
 	border-color: var(--interactive-accent);
 	box-shadow: 0 0 0 1px var(--interactive-accent);
+}
+
+.rht-fs-tree-input.is-editing:hover {
+	border-color: var(--interactive-accent);
 }
 
 /*

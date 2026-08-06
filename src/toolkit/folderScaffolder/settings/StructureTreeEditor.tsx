@@ -32,11 +32,15 @@ interface Props {
  *   · 移动层级   ——缩进（Indent）/ 外缩（Outdent）
  *   · 移动顺序   ——上移 / 下移（仅当前父内换序，不跨层）
  *   缩进：成为「上一个同级兄弟」的末子节点；外缩：提到父节点的下一个同级。
- * - 快捷键（input 聚焦时）：Tab=缩进、Shift+Tab=外缩、Alt+↑/↓=上下移；
- *   Enter=提交重命名、Esc=还原。操作后保持焦点。
+ * - 双态交互（选中态 / 编辑态）：
+ *   · 单击行 → 选中该行（input 变只读并聚焦，快捷键立即可用，无需进入编辑）
+ *   · 双击 input / Enter（选中态）→ 进入重命名编辑态
+ *   · Enter（编辑态）→ 提交并回到选中态；Esc → 还原并回到选中态
+ *   · 快捷键（只读或可编辑 input 聚焦时）：Tab=缩进、Shift+Tab=外缩、
+ *     Alt+↑/↓=上下移。结构操作后保持焦点，连续操作不打断。
  *
  * 数据流：root 集中在顶层组件，所有变更经纯 helper（接收 root + id）产出新 root，
- * 子组件只负责派发动作，不持有树状态。
+ * 子组件只负责派发动作，不持有树状态。selectedId/editingId 同样集中在顶层。
  */
 
 /** 树 → 拍平有序列表（前序遍历，父先于子），记录每行深度用于缩进 */
@@ -61,6 +65,10 @@ export function StructureTreeEditor({ snapshot, onChange }: Props) {
 	const [root, setRoot] = useState<EditableNode>(() =>
 		buildEditableTree(snapshot),
 	);
+	/** 当前选中行（只读 input 聚焦即选中，快捷键针对此行生效） */
+	const [selectedId, setSelectedId] = useState<string | null>(null);
+	/** 当前处于重命名编辑态的行（双击/Enter 进入，Enter 提交 / Esc 还原退出） */
+	const [editingId, setEditingId] = useState<string | null>(null);
 	/**
 	 * 最近一次由本组件回写出去的 flat 快照。用于区分「自己的编辑回流」与
 	 * 「外部改动」（如从 vault 导入刷新）：只有当传入 snapshot 与之不同，
@@ -118,33 +126,49 @@ export function StructureTreeEditor({ snapshot, onChange }: Props) {
 					<span>{T.structure.empty()}</span>
 				</div>
 			) : (
-				<ul className="rht-fs-tree-list">
-					{rows.map(({ node, depth }) => (
-						<TreeRow
-							key={node.id}
-							node={node}
-							depth={depth}
-							root={root}
-							onRename={(id, name) =>
-								apply(renameNode(root, id, name))
-							}
-							onAddChild={(id) => apply(addChild(root, id))}
-							onRemove={(id) => apply(removeNode(root, id))}
-							onIndent={(id) =>
-								apply(indentNode(root, id) ?? root)
-							}
-							onOutdent={(id) =>
-								apply(outdentNode(root, id) ?? root)
-							}
-							onMoveUp={(id) =>
-								apply(moveSiblingUp(root, id) ?? root)
-							}
-							onMoveDown={(id) =>
-								apply(moveSiblingDown(root, id) ?? root)
-							}
-						/>
-					))}
-				</ul>
+					<ul className="rht-fs-tree-list">
+						{rows.map(({ node, depth }) => (
+							<TreeRow
+								key={node.id}
+								node={node}
+								depth={depth}
+								root={root}
+								selected={selectedId === node.id}
+								editing={editingId === node.id}
+								onSelect={(id) => {
+									setSelectedId(id);
+									setEditingId(null);
+								}}
+								onStartRename={(id) => {
+									setSelectedId(id);
+									setEditingId(id);
+								}}
+								onEndRename={() => setEditingId(null)}
+								onRename={(id, name) => {
+									apply(renameNode(root, id, name));
+									setEditingId(null);
+								}}
+								onAddChild={(id) => apply(addChild(root, id))}
+								onRemove={(id) => {
+									if (selectedId === id) setSelectedId(null);
+									if (editingId === id) setEditingId(null);
+									apply(removeNode(root, id));
+								}}
+								onIndent={(id) =>
+									apply(indentNode(root, id) ?? root)
+								}
+								onOutdent={(id) =>
+									apply(outdentNode(root, id) ?? root)
+								}
+								onMoveUp={(id) =>
+									apply(moveSiblingUp(root, id) ?? root)
+								}
+								onMoveDown={(id) =>
+									apply(moveSiblingDown(root, id) ?? root)
+								}
+							/>
+						))}
+					</ul>
 			)}
 		</div>
 	);
@@ -156,6 +180,16 @@ interface TreeRowProps {
 	node: EditableNode;
 	depth: number;
 	root: EditableNode;
+	/** 是否处于选中态（只读 input 聚焦，快捷键针对此行生效） */
+	selected: boolean;
+	/** 是否处于重命名编辑态（input 可编辑） */
+	editing: boolean;
+	/** 单击行：选中此行（退出其它行的编辑态） */
+	onSelect: (id: string) => void;
+	/** 双击 / Enter（选中态）：进入重命名编辑态 */
+	onStartRename: (id: string) => void;
+	/** 编辑态因失焦退出（非提交）：回到选中态 */
+	onEndRename: () => void;
 	onRename: (id: string, name: string) => void;
 	onAddChild: (id: string) => void;
 	onRemove: (id: string) => void;
@@ -169,6 +203,11 @@ function TreeRow({
 	node,
 	depth,
 	root,
+	selected,
+	editing,
+	onSelect,
+	onStartRename,
+	onEndRename,
 	onRename,
 	onAddChild,
 	onRemove,
@@ -187,6 +226,17 @@ function TreeRow({
 		setDraft(node.name);
 	}, [node.name]);
 
+	// 进入编辑态时主动聚焦 input 并全选，便于整体替换
+	useEffect(() => {
+		if (editing) {
+			const el = inputRef.current;
+			if (el) {
+				el.focus();
+				el.select();
+			}
+		}
+	}, [editing]);
+
 	// 一次性结构操作（缩进/外缩/移动）后，node.name 不变 → 草稿不变；
 	// 但 React 重渲后 input DOM 可能失焦，故操作后主动回焦，保证连续键盘操作流畅。
 	const keepFocus = () => {
@@ -202,8 +252,9 @@ function TreeRow({
 		const trimmed = draft.trim();
 		if (trimmed && trimmed !== node.name) {
 			onRename(node.id, trimmed);
-		} else if (!trimmed) {
-			setDraft(node.name); // 空名回退到原值
+		} else {
+			if (!trimmed) setDraft(node.name); // 空名回退到原值
+			onEndRename(); // 无变更也退出编辑态
 		}
 	};
 
@@ -215,21 +266,28 @@ function TreeRow({
 	const canMoveDown = !!ctx && ctx.index < ctx.parent.children.length - 1;
 
 	/**
-	 * 键盘快捷键（input 聚焦时，对齐 Logseq/Workflowy 肌肉记忆）：
-	 * Tab/Shift+Tab 缩进外缩，Alt+↑/↓ 上下移，Enter 提交，Esc 还原。
+	 * 键盘快捷键（input 聚焦时即生效，不区分只读/可编辑，对齐 Logseq/Workflowy 肌肉记忆）：
+	 * - 选中态（只读）：Tab/Shift+Tab 缩进外缩，Alt+↑/↓ 上下移，Enter 进入重命名，Esc 取消选中。
+	 * - 编辑态：Enter 提交重命名，Esc 还原并回到选中态；Tab/Alt+↑↓ 同样可做结构操作。
+	 * 只读态下 Tab 必须 preventDefault，否则会触发浏览器默认焦点跳转。
 	 * 结构操作后 keepFocus() 让连续操作不打断。
 	 */
 	const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === "Enter") {
 			e.preventDefault();
-			commitName();
-			e.currentTarget.blur();
+			if (editing) {
+				commitName();
+			} else {
+				onStartRename(node.id);
+			}
 			return;
 		}
 		if (e.key === "Escape") {
 			e.preventDefault();
-			setDraft(node.name);
-			e.currentTarget.blur();
+			if (editing) {
+				setDraft(node.name);
+				onEndRename();
+			}
 			return;
 		}
 		if (e.key === "Tab") {
@@ -260,18 +318,44 @@ function TreeRow({
 	};
 
 	return (
-		<li className="rht-fs-tree-row" style={style}>
-			<div className={`rht-fs-tree-line${depth > 0 ? " is-nested" : ""}`}>
+		<li
+			className={`rht-fs-tree-row${selected ? " is-selected" : ""}${editing ? " is-editing" : ""}`}
+			style={style}
+		>
+			<div
+				className={`rht-fs-tree-line${depth > 0 ? " is-nested" : ""}`}
+				/* 单击行任意位置：选中此行（若在编辑态则先提交） */
+				onMouseDown={(e) => {
+					// 点击按钮/输入框自身不触发行选中（由其各自 handler 处理）
+					const target = e.target as HTMLElement;
+					if (
+						target.closest("button") ||
+						target === inputRef.current
+					)
+						return;
+					if (!selected) onSelect(node.id);
+				}}
+			>
 				<Icon name="folder" />
 				<input
 					ref={inputRef}
-					className="rht-fs-tree-input"
+					className={`rht-fs-tree-input${editing ? " is-editing" : ""}`}
 					spellCheck={false}
+					/* 选中态：input 只读，显示名称但聚焦后即可用快捷键调整层级/顺序；
+					 * 编辑态：可编辑名称。readOnly 让光标不闪、不响应字符输入。 */
+					readOnly={!editing}
 					value={draft}
 					aria-label={T.renameHint()}
 					onChange={(e) => setDraft(e.target.value)}
-					onBlur={commitName}
+					onFocus={() => {
+						if (!editing) onSelect(node.id);
+					}}
+					onBlur={() => {
+						if (editing) commitName();
+					}}
 					onKeyDown={onKeyDown}
+					/* 双击进入重命名编辑态 */
+					onDoubleClick={() => onStartRename(node.id)}
 				/>
 				<span className="rht-fs-tree-move">
 					<button
