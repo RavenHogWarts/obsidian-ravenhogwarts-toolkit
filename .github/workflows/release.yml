@@ -9,8 +9,6 @@ permissions:
     contents: write
     id-token: write
     attestations: write
-env:
-    PLUGIN_ID: ravenhogwarts-toolkit # 插件ID
 
 jobs:
     build:
