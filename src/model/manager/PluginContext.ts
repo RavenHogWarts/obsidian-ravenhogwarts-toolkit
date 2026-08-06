@@ -1,7 +1,7 @@
 import RHTPlugin from "@src/main";
 import { IPluginSettings } from "@src/settings/IPluginSettings";
 import SettingsStore from "@src/settings/SettingsStore";
-import { Menu, Notice } from "obsidian";
+import { Menu, MenuItem, Notice } from "obsidian";
 import { IPluginContext } from "../toolkit/IPluginContext";
 
 export class PluginContext implements IPluginContext {
@@ -11,6 +11,12 @@ export class PluginContext implements IPluginContext {
 	 * 菜单是一次性对象（关闭即弃），WeakMap 让其被 GC 时自动清理，无需手动失效。
 	 */
 	private readonly submenuCache = new WeakMap<Menu, Menu>();
+	/**
+	 * 每个 `Menu` 实例上「上一次添加条目的工具 id」。
+	 * 工具切换时插入分割线，使不同工具之间在子菜单内清晰分隔，
+	 * 同一工具的连续条目则紧挨在一起、无分割线。
+	 */
+	private readonly lastToolIdByMenu = new WeakMap<Menu, string>();
 
 	constructor(plugin: RHTPlugin) {
 		this.plugin = plugin;
@@ -56,6 +62,22 @@ export class PluginContext implements IPluginContext {
 		});
 		this.submenuCache.set(menu, submenu);
 		return submenu;
+	}
+
+	addToolkitMenuItem(
+		menu: Menu,
+		toolId: string,
+		configure: (item: MenuItem) => void,
+		section = "action",
+	): void {
+		const submenu = this.getToolkitSubmenu(menu, section);
+		// 切换到不同工具时插入分割线；首个工具或同工具连续条目不插。
+		const lastToolId = this.lastToolIdByMenu.get(menu);
+		if (lastToolId !== undefined && lastToolId !== toolId) {
+			submenu.addSeparator();
+		}
+		this.lastToolIdByMenu.set(menu, toolId);
+		submenu.addItem(configure);
 	}
 
 	log(

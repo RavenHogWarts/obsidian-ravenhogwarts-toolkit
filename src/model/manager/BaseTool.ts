@@ -115,6 +115,8 @@ export abstract class BaseTool<TSettings extends IToolSettings = IToolSettings>
 	 * 向右键菜单添加一条归属于本插件的菜单项。
 	 * 所有工具的条目会聚合到统一的 "插件名 ▸ ..." 子菜单下，
 	 * 从而在原生菜单中天然区分归属、且不随工具增多而膨胀。
+	 * 自动按工具分组：切换工具时插入分割线，同工具连续条目不插（见
+	 * {@link IPluginContext.addToolkitMenuItem}）。
 	 * @param menu 事件回调收到的菜单实例
 	 * @param configure 配置菜单项（标题、图标、点击回调等）
 	 * @param section 首个调用者决定子菜单父项所在的 section
@@ -124,8 +126,7 @@ export abstract class BaseTool<TSettings extends IToolSettings = IToolSettings>
 		configure: (item: MenuItem) => void,
 		section = "action"
 	): void {
-		const submenu = this.context.getToolkitSubmenu(menu, section);
-		submenu.addItem(configure);
+		this.context.addToolkitMenuItem(menu, this.info.id, configure, section);
 	}
 
 	protected async updateConfig<T>(key: string, value: T): Promise<void> {

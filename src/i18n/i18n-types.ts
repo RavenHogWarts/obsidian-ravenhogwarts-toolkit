@@ -395,11 +395,19 @@ type RootTranslation = {
 				 */
 				newFolderName: string
 				/**
+				 * 缩​进
+				 */
+				indent: string
+				/**
+				 * 外​缩
+				 */
+				outdent: string
+				/**
 				 * 双​击​重​命​名
 				 */
 				renameHint: string
 				/**
-				 * 拖​拽​调​整​位​置​或​层​级
+				 * 用​按​钮​或​ ​T​a​b​ ​/​ ​S​h​i​f​t​+​T​a​b​ ​/​ ​A​l​t​+​↑​↓​ ​调​整​层​级​与​顺​序
 				 */
 				dragHint: string
 				/**

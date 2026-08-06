@@ -98,18 +98,17 @@ export class FolderScaffolder extends BaseTool<ISettings> {
 		if (!(file instanceof TFolder)) {
 			return; // 仅文件夹右键菜单
 		}
-		const submenu = this.context.getToolkitSubmenu(menu);
 		const T = LL.menu.folder_scaffolder;
 
 		// ① 从模版创建结构（打开 modal，默认克隆到右键文件夹下）
-		submenu.addItem((item) => {
+		this.addToolkitMenuItem(menu, (item) => {
 			item.setTitle(T.create_from_template());
 			item.setIcon("folder-tree");
 			item.onClick(() => this.openCreateModal(file.path));
 		});
 
 		// ② 复制此文件夹结构（写入系统剪贴板，带专属标识）
-		submenu.addItem((item) => {
+		this.addToolkitMenuItem(menu, (item) => {
 			item.setTitle(T.copy_structure());
 			item.setIcon("copy");
 			item.onClick(() => this.copyStructure(file));
@@ -117,7 +116,7 @@ export class FolderScaffolder extends BaseTool<ISettings> {
 
 		// ③ 粘贴文件夹结构（仅当会话缓存有结构时显示；点击解析真实剪贴板）
 		if (this.lastCopied && this.lastCopied.length > 0) {
-			submenu.addItem((item) => {
+			this.addToolkitMenuItem(menu, (item) => {
 				item.setTitle(T.paste_structure());
 				item.setIcon("clipboard-paste");
 				item.onClick(async () => {
@@ -127,8 +126,7 @@ export class FolderScaffolder extends BaseTool<ISettings> {
 		}
 
 		// ④ 存为模板（保留）
-		submenu.addSeparator();
-		submenu.addItem((item) => {
+		this.addToolkitMenuItem(menu, (item) => {
 			item.setTitle(T.save_as_template());
 			item.setIcon("bookmark-plus");
 			item.onClick(() => this.saveAsTemplate(file));

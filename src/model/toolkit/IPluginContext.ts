@@ -1,7 +1,7 @@
 import RHTPlugin from "@src/main";
 import { IPluginSettings } from "@src/settings/IPluginSettings";
 import SettingsStore from "@src/settings/SettingsStore";
-import { App, Menu } from "obsidian";
+import { App, Menu, MenuItem } from "obsidian";
 
 export interface IPluginContext {
 	readonly _app: App;
@@ -19,6 +19,23 @@ export interface IPluginContext {
 	 * @param section 首个调用者决定父级所在的 section（后续调用忽略此参数）。
 	 */
 	getToolkitSubmenu(menu: Menu, section?: string): Menu;
+
+	/**
+	 * 向右键菜单的统一子菜单添加一条归属于指定工具的菜单项。
+	 * 自动按 `toolId` 分组：同一工具的连续条目紧挨在一起、不插分割线；
+	 * 切换到另一个工具时，先在子菜单里插入一条分割线再添加条目，
+	 * 从而让不同工具之间在视觉上清晰分隔。
+	 * @param menu 事件回调收到的菜单实例
+	 * @param toolId 归属工具 id（用于跨工具分割线判定）
+	 * @param configure 配置菜单项（标题、图标、点击回调等）
+	 * @param section 首个调用者决定子菜单父项所在的 section
+	 */
+	addToolkitMenuItem(
+		menu: Menu,
+		toolId: string,
+		configure: (item: MenuItem) => void,
+		section?: string,
+	): void;
 	log(
 		level: "info" | "warn" | "error",
 		message: string,
