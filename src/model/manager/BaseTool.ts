@@ -2,7 +2,13 @@ import { IPluginContext } from "@src/model/toolkit/IPluginContext";
 import { ITool } from "@src/model/toolkit/ITool";
 import { IToolInfo } from "@src/model/toolkit/IToolInfo";
 import { IToolSettings } from "@src/model/toolkit/IToolSettings";
-import { Component, type SettingDefinitionItem } from "obsidian";
+import {
+	Command,
+	Component,
+	Menu,
+	MenuItem,
+	type SettingDefinitionItem,
+} from "obsidian";
 
 export abstract class BaseTool<TSettings extends IToolSettings = IToolSettings>
 	extends Component
@@ -11,6 +17,8 @@ export abstract class BaseTool<TSettings extends IToolSettings = IToolSettings>
 	protected context: IPluginContext;
 	protected enabled: boolean = false;
 	protected errors: Error[] = [];
+	/** 本工具已注册的命令 id（已作用域化），用于卸载时统一移除。 */
+	private readonly registeredCommandIds: string[] = [];
 
 	get info(): IToolInfo {
 		const meta = (this as any).toolkitMeta;
@@ -75,6 +83,48 @@ export abstract class BaseTool<TSettings extends IToolSettings = IToolSettings>
 
 	protected addError(error: Error): void {
 		this.errors.push(error);
+	}
+
+	/**
+	 * 注册一条命令，自动完成两件所有工具都需要的事：
+	 * 1. 命令 id 以 `工具id-` 作用域化，避免跨工具冲突；
+	 * 2. 命令名统一加 `[工具名] ` 前缀，便于在命令面板中区分归属与搜索。
+	 * 传入的 `command.id`/`command.name` 只需写业务本身，无需再手拼前缀。
+	 * 记录已注册的 id，`unregisterCommands()` 会一并移除。
+	 */
+	protected registerCommand(command: Command): void {
+		const scopedId = `${this.info.id}-${command.id}`;
+		this.context._plugin.addCommand({
+			...command,
+			id: scopedId,
+			name: `[${this.info.name}] ${command.name}`,
+		});
+		this.registeredCommandIds.push(scopedId);
+	}
+
+	/** 移除本工具通过 {@link registerCommand} 注册的全部命令。 */
+	protected unregisterCommands(): void {
+		for (const id of this.registeredCommandIds) {
+			this.context._plugin.removeCommand(id);
+		}
+		this.registeredCommandIds.length = 0;
+	}
+
+	/**
+	 * 向右键菜单添加一条归属于本插件的菜单项。
+	 * 所有工具的条目会聚合到统一的 "插件名 ▸ ..." 子菜单下，
+	 * 从而在原生菜单中天然区分归属、且不随工具增多而膨胀。
+	 * @param menu 事件回调收到的菜单实例
+	 * @param configure 配置菜单项（标题、图标、点击回调等）
+	 * @param section 首个调用者决定子菜单父项所在的 section
+	 */
+	protected addToolkitMenuItem(
+		menu: Menu,
+		configure: (item: MenuItem) => void,
+		section = "action"
+	): void {
+		const submenu = this.context.getToolkitSubmenu(menu, section);
+		submenu.addItem(configure);
 	}
 
 	protected async updateConfig<T>(key: string, value: T): Promise<void> {

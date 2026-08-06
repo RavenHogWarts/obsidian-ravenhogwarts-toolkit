@@ -32,3 +32,4 @@ Thumbs.db
 dist
 .backup/
 legacy
+dev

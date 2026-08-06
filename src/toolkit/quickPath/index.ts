@@ -91,9 +91,9 @@ export class QuickPath extends BaseTool<ISettings> {
 	}
 
 	private registerCommands() {
-		this.context._plugin.addCommand({
-			id: "quick_path-copy_current_file_path",
-			name: `[${LL.settings.quick_path.name()}] ${LL.command.quick_path.copy_current_file_path()}`,
+		this.registerCommand({
+			id: "copy_current_file_path",
+			name: LL.command.quick_path.copy_current_file_path(),
 			callback: () => {
 				const activeFile = this.context._app.workspace.getActiveFile();
 				if (activeFile) {
@@ -103,9 +103,9 @@ export class QuickPath extends BaseTool<ISettings> {
 			},
 		});
 
-		this.context._plugin.addCommand({
-			id: "quick_path-copy_current_folder_path",
-			name: `[${LL.settings.quick_path.name()}] ${LL.command.quick_path.copy_current_folder_path()}`,
+		this.registerCommand({
+			id: "copy_current_folder_path",
+			name: LL.command.quick_path.copy_current_folder_path(),
 			callback: () => {
 				const activeFile = this.context._app.workspace.getActiveFile();
 				const activeFolder =
@@ -119,13 +119,6 @@ export class QuickPath extends BaseTool<ISettings> {
 				}
 			},
 		});
-	}
-
-	private unregisterCommands() {
-		this.context._plugin.removeCommand("quick_path-copy_current_file_path");
-		this.context._plugin.removeCommand(
-			"quick_path-copy_current_folder_path",
-		);
 	}
 
 	private registerEventHandlers(): void {
@@ -160,10 +153,8 @@ export class QuickPath extends BaseTool<ISettings> {
 	}
 
 	private handleFileMenu(menu: Menu, file: TFile | TFolder): void {
-		// title,open,action-primary,action,info,view,system,danger
 		if (file instanceof TFolder) {
-			menu.addItem((item) => {
-				item.setSection("info");
+			this.addToolkitMenuItem(menu, (item) => {
 				item.setTitle(LL.menu.quick_path.copy_folder_path());
 				item.setIcon("copy");
 				item.onClick(() => {
@@ -172,8 +163,7 @@ export class QuickPath extends BaseTool<ISettings> {
 				});
 			});
 		} else {
-			menu.addItem((item) => {
-				item.setSection("info");
+			this.addToolkitMenuItem(menu, (item) => {
 				item.setTitle(LL.menu.quick_path.copy_file_path());
 				item.setIcon("copy");
 				item.onClick(() => {
@@ -185,8 +175,7 @@ export class QuickPath extends BaseTool<ISettings> {
 	}
 
 	private handleFilesMenu(menu: Menu, files: (TFile | TFolder)[]): void {
-		menu.addItem((item) => {
-			item.setSection("info");
+		this.addToolkitMenuItem(menu, (item) => {
 			item.setTitle(LL.menu.quick_path.copy_files_path());
 			item.setIcon("copy");
 			item.onClick(() => {
@@ -199,9 +188,7 @@ export class QuickPath extends BaseTool<ISettings> {
 	}
 
 	private handleEditorMenu(menu: Menu, editor: Editor): void {
-		// title,correction,spellcheck,open,selection-link,selection,selection.format,selection.paragraph,selection.paragraph.list,selection.paragraph.heading,selection.paragraph.block,selection.insert.basic,selection.insert.advanced,insert,clipboard,info,action,view,selection.format.basic,selection.format.advanced,selection.format.danger,danger
-		menu.addItem((item) => {
-			item.setSection("action");
+		this.addToolkitMenuItem(menu, (item) => {
 			item.setTitle(LL.menu.quick_path.paste_current_file_path());
 			item.setIcon("file-text");
 			item.onClick(() => {
@@ -212,8 +199,7 @@ export class QuickPath extends BaseTool<ISettings> {
 				}
 			});
 		});
-		menu.addItem((item) => {
-			item.setSection("action");
+		this.addToolkitMenuItem(menu, (item) => {
 			item.setTitle(LL.menu.quick_path.paste_current_folder_path());
 			item.setIcon("folder");
 			item.onClick(() => {
