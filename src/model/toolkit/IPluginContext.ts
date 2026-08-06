@@ -23,6 +23,6 @@ export interface IPluginContext {
 		level: "info" | "warn" | "error",
 		message: string,
 		id?: string,
-		...args: any[]
+		...args: unknown[]
 	): void;
 }

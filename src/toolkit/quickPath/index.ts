@@ -3,8 +3,11 @@ import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
 import {
 	Editor,
+	MarkdownFileInfo,
+	MarkdownView,
 	Menu,
 	normalizePath,
+	TAbstractFile,
 	TFile,
 	TFolder,
 	type SettingDefinitionItem,
@@ -128,16 +131,14 @@ export class QuickPath extends BaseTool<ISettings> {
 
 		if (this.settings.config.addFileMenu) {
 			this.registerEvent(
-				this.context._app.workspace.on(
-					"file-menu",
-					this.handleFileMenu.bind(this),
+				this.context._app.workspace.on("file-menu", (menu, file) =>
+					this.handleFileMenu(menu, file),
 				),
 			);
 
 			this.registerEvent(
-				this.context._app.workspace.on(
-					"files-menu",
-					this.handleFilesMenu.bind(this),
+				this.context._app.workspace.on("files-menu", (menu, files) =>
+					this.handleFilesMenu(menu, files),
 				),
 			);
 		}
@@ -146,13 +147,13 @@ export class QuickPath extends BaseTool<ISettings> {
 			this.registerEvent(
 				this.context._app.workspace.on(
 					"editor-menu",
-					this.handleEditorMenu.bind(this),
+					(menu, editor, info) => this.handleEditorMenu(menu, editor, info),
 				),
 			);
 		}
 	}
 
-	private handleFileMenu(menu: Menu, file: TFile | TFolder): void {
+	private handleFileMenu(menu: Menu, file: TAbstractFile): void {
 		if (file instanceof TFolder) {
 			this.addToolkitMenuItem(menu, (item) => {
 				item.setTitle(LL.menu.quick_path.copy_folder_path());
@@ -174,7 +175,7 @@ export class QuickPath extends BaseTool<ISettings> {
 		}
 	}
 
-	private handleFilesMenu(menu: Menu, files: (TFile | TFolder)[]): void {
+	private handleFilesMenu(menu: Menu, files: TAbstractFile[]): void {
 		this.addToolkitMenuItem(menu, (item) => {
 			item.setTitle(LL.menu.quick_path.copy_files_path());
 			item.setIcon("copy");
@@ -187,7 +188,11 @@ export class QuickPath extends BaseTool<ISettings> {
 		});
 	}
 
-	private handleEditorMenu(menu: Menu, editor: Editor): void {
+	private handleEditorMenu(
+		menu: Menu,
+		editor: Editor,
+		info: MarkdownView | MarkdownFileInfo,
+	): void {
 		this.addToolkitMenuItem(menu, (item) => {
 			item.setTitle(LL.menu.quick_path.paste_current_file_path());
 			item.setIcon("file-text");
@@ -217,13 +222,13 @@ export class QuickPath extends BaseTool<ISettings> {
 		});
 	}
 
-	private getPath(file: TFile | TFolder): string {
+	private getPath(file: TAbstractFile): string {
 		return this.settings.config.useAbsolutePath
 			? normalizePath(`${this.basePath}/${file.path}`)
 			: normalizePath(file.path);
 	}
 
-	private getParentPath(file: TFile | TFolder): string | null {
+	private getParentPath(file: TAbstractFile): string | null {
 		const path = this.getPath(file);
 		const lastSlashIndex = path.lastIndexOf("/");
 		if (lastSlashIndex === -1) {

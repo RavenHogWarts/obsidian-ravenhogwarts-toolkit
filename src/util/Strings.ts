@@ -65,19 +65,20 @@ export class Strings {
         return false;
     }
 
-    static safeToLowerCaseString(value: any) {
+    static safeToLowerCaseString(value: unknown): string {
         if (value === undefined || value === null) {
             return "";
         }
 
-        if (value.toLowerCase) {
+        if (typeof value === "string") {
             return value.toLowerCase();
         }
 
-        if (value.toString) {
-            return value.toString().toLowerCase();
+        if (typeof value === "number" || typeof value === "boolean") {
+            return String(value).toLowerCase();
         }
 
-        return value + "";
+        // For objects, return empty string to avoid meaningless [object Object]
+        return "";
     }
 }

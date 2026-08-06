@@ -20,6 +20,8 @@ function stringifyValue(value: unknown): string | null {
 		return String(value);
 	}
 	if (typeof value === "object") {
+		// Auto-generated objects may not have meaningful toString - converting to string for backward compatibility
+		// eslint-disable-next-line @typescript-eslint/no-base-to-string -- Intentional conversion for template rendering
 		const str = String(value);
 		return str === "[object Object]" ? null : str;
 	}

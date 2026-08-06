@@ -52,8 +52,8 @@ export class FolderTemplates extends BaseTool<ISettings> {
 
 	// ---- 事件处理 ----
 
-	async onload(): Promise<void> {
-		await super.onload();
+	onload(): void {
+		super.onload();
 		this.registerEventHandlers();
 	}
 

@@ -1,5 +1,5 @@
 export interface IToolSettings {
 	enabled: boolean;
-	config: Record<string, any>;
-	data?: Record<string, any>;
+	config: Record<string, unknown>;
+	data?: Record<string, unknown>;
 }

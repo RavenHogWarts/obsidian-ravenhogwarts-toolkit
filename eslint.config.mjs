@@ -47,6 +47,16 @@ export default defineConfig([
 			"@typescript-eslint/no-unused-expressions": "off",
 		},
 	},
+	{
+		files: ["src/i18n/**/*"],
+		rules: {
+			"eslint-comments/no-unlimited-disable": "off",
+			"eslint-comments/disable-enable-pair": "off",
+			"eslint-comments/no-restricted-disable": "off",
+			"@typescript-eslint/no-empty-object-type": "off",
+			"no-irregular-whitespace": "off",
+		},
+	},
 	globalIgnores([
 		"node_modules",
 		"dist",

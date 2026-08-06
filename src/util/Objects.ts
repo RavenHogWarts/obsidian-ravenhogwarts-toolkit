@@ -1,9 +1,9 @@
 export class Objects {
-	static exists(obj: any): boolean {
+	static exists(obj: unknown): boolean {
 		return obj !== null && obj !== undefined;
 	}
 
-	static isNullOrUndefined(obj: any): boolean {
+	static isNullOrUndefined(obj: unknown): boolean {
 		return obj === null || obj === undefined;
 	}
 }

@@ -18,15 +18,15 @@ export function Toolkit(info: IToolInfo) {
 		registry.register(info.id, constructor);
 
 		Object.defineProperty(constructor.prototype, "toolkitMeta", {
-			get: () => {
-				return Reflect.getMetadata(TOOLKIT_META, constructor);
+			get(): IToolInfo {
+				return Reflect.getMetadata(TOOLKIT_META, constructor) as IToolInfo;
 			},
 			configurable: false,
 			enumerable: false,
 		});
 
 		Object.defineProperty(constructor.prototype, "id", {
-			get() {
+			get(): string {
 				return info.id;
 			},
 			configurable: false,

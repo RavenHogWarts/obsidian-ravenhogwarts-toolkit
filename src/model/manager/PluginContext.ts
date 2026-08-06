@@ -52,9 +52,7 @@ export class PluginContext implements IPluginContext {
 			item.setTitle(this.plugin.manifest.name);
 			item.setIcon("wand");
 			// setSubmenu 在运行时存在，但未包含在 obsidian 的公开类型里。
-			submenu = (
-				item as unknown as { setSubmenu(): Menu }
-			).setSubmenu();
+			submenu = (item as unknown as { setSubmenu(): Menu }).setSubmenu();
 		});
 		this.submenuCache.set(menu, submenu);
 		return submenu;
@@ -64,11 +62,11 @@ export class PluginContext implements IPluginContext {
 		level: "info" | "warn" | "error",
 		message: string,
 		id?: string,
-		...args: any[]
+		...args: unknown[]
 	): void {
 		console[level](
 			`[${id ?? this.plugin.manifest.id}] ${message}`,
-			...args
+			...args,
 		);
 	}
 }

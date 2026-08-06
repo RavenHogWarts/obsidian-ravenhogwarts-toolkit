@@ -64,8 +64,8 @@ export default class SettingsStore {
 		}
 
 		// 基元或数组：类型不匹配或未提供则回退到默认值
-		const isArrayDefault = Array.isArray(defaults as unknown);
-		const isArraySaved = Array.isArray(saved as unknown);
+		const isArrayDefault = Array.isArray(defaults);
+		const isArraySaved = Array.isArray(saved);
 		if (
 			saved === undefined ||
 			(typeof defaults !== typeof saved && !isArrayDefault) ||
@@ -77,7 +77,7 @@ export default class SettingsStore {
 	}
 
 	async loadSettings() {
-		const saved = await this.#plugin.loadData();
+		const saved = (await this.#plugin.loadData()) as unknown;
 		const merged = this.#mergeWithDefaults(saved ?? {}, DEFAULT_SETTINGS);
 
 		if (
@@ -107,7 +107,9 @@ export default class SettingsStore {
 	 */
 	async updateSettingByPath<T>(path: string, value: T) {
 		// 创建设置的深拷贝
-		const newSettings = JSON.parse(JSON.stringify(this.#plugin.settings));
+		const newSettings = JSON.parse(
+			JSON.stringify(this.#plugin.settings)
+		) as IPluginSettings;
 		const pathParts = path.split(".");
 		let current: unknown = newSettings;
 

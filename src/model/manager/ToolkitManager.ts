@@ -131,7 +131,7 @@ export class ToolkitManager {
 
 	unloadToolkit(): void {
 		for (const id of this.toolkit.keys()) {
-			this.unloadTool(id);
+			void this.unloadTool(id);
 		}
 	}
 }

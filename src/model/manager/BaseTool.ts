@@ -21,7 +21,8 @@ export abstract class BaseTool<TSettings extends IToolSettings = IToolSettings>
 	private readonly registeredCommandIds: string[] = [];
 
 	get info(): IToolInfo {
-		const meta = (this as any).toolkitMeta;
+		// Access decorator-injected metadata (no safe typed alternative available)
+		const meta = Reflect.getMetadata(Symbol.for("toolkit:meta"), this.constructor) as IToolInfo | undefined;
 		if (!meta) {
 			throw new Error(
 				`Tool ${this.constructor.name} is missing @Toolkit decorator`
@@ -49,7 +50,7 @@ export abstract class BaseTool<TSettings extends IToolSettings = IToolSettings>
 		);
 	}
 
-	async onload(): Promise<void> {
+	onload(): void {
 		super.onload();
 		this.enabled = true;
 	}

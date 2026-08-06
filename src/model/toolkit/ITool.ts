@@ -9,7 +9,7 @@ export interface ITool<TSettings extends IToolSettings = IToolSettings>
 	readonly settings: TSettings;
 
 	initialize(context: IPluginContext): Promise<void>;
-	onload(): Promise<void>;
+	onload(): void;
 	onunload(): void;
 
 	getDefaultSettings(): TSettings;
