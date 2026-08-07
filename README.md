@@ -7,12 +7,13 @@ A personal toolkit plugin (OTK) that integrates various Obsidian utilities, desi
 ![GitHub Socialify](https://socialify.git.ci/RavenHogWarts/obsidian-ravenhogwarts-toolkit/image?description=1&font=Rokkitt&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating+Cogs&pulls=1&stargazers=1&theme=Auto)
 
 ## Installation
-### Manual Installation
+### Community plugin market installation
 
-1. Download the latest release
-2. Copy `main.js`, `styles.css`, and `manifest.json` to your vault's plugins folder: `<vault>/.obsidian/plugins/ravenhogwarts-toolkit/`
-3. Reload Obsidian
-4. Enable the plugin in Settings → Community Plugins
+[Click to install](obsidian://show-plugin?id=ravenhogwarts-toolkit), or:
+
+1. Open Obsidian and go to `Settings > Community Plugins`.
+2. Search for "RavenHogwarts Toolkit".
+3. Click "Install".
 
 ### BRAT (Recommended for Beta Users)
 1. Install [BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin
