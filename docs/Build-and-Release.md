@@ -70,13 +70,13 @@
 
 ## CI / GitHub Actions
 
-**目录：** `.github/workflows/`
+**目录：** `.github/workflows/`。当前仅有两个工作流：`release.yml` 与 `pr-title.yml`。
 
 ### `release.yml` —— 发布
 
 触发：push 到 `master`。采用单工作流两段式：
 
-**job 1 `release-please`**：解析自上次发布以来的 commit，维护一个「Release PR」——PR 内含 `package.json` / `manifest.json` 版本号更新与 `CHANGELOG.md` 追加。只要不合并此 PR，就不会真正发版。
+**job 1 `release-please`**：调用 `googleapis/release-please-action@v4`，解析自上次发布以来的 commit，维护一个「Release PR」——PR 内含 `package.json` / `manifest.json` 版本号更新与 `CHANGELOG.md` 追加。只要不合并此 PR，就不会真正发版。配置来自 `release-please-config.json` 与 `.release-please-manifest.json`（后者记录当前已发布版本）。
 
 **job 2 `publish`**（仅当 Release PR 合并、Release 被创建时执行）：
 
@@ -89,16 +89,50 @@
 
 ### `pr-title.yml` —— PR 标题校验
 
-触发：PR 开启 / 编辑 / 同步。用 `action-semantic-pull-request` 校验 PR 标题符合 Conventional Commits。因为采用 **squash merge**，合并后的 commit message 即 PR 标题，release-please 靠它推断版本，故标题必须规范。
+触发：PR 开启 / 编辑 / 同步。用 `amannn/action-semantic-pull-request@v5` 校验 PR 标题符合 Conventional Commits。因为采用 **squash merge**，合并后的 commit message 即 PR 标题，release-please 靠它推断版本，故标题必须规范。
 
-### `pr-ci.yml` —— PR 检查
+## release-please 所需权限与仓库设置
 
-触发：面向 `master` 的 PR。跑 `lint` + `test` + `build`，在合并前暴露问题。
+release-please 用默认的 `GITHUB_TOKEN` 运行（`release.yml` 里 `token: ${{ secrets.GITHUB_TOKEN }}`），无需额外配置 PAT。但要让它正常开 Release PR、打 tag、建 Release，以及让 `publish` 段生成溯源，必须满足以下两类前置条件。
+
+### 1. 工作流 `permissions` 块（已在 `release.yml` 顶层声明）
+
+```yaml
+permissions:
+    contents: write        # 提交版本号变更、创建 tag 与 GitHub Release、回写 versions.json
+    pull-requests: write   # 创建 / 更新 Release PR
+    id-token: write        # attest-build-provenance 申请 Sigstore OIDC 签名证书
+    attestations: write    # 写入构建产物 attestation（溯源）
+```
+
+| 权限 | 谁需要 | 用途 |
+| --- | --- | --- |
+| `contents: write` | release-please + publish | release-please 推送版本号提交、打 tag、建 Release；publish 段回写 `versions.json` 并 `gh release upload` |
+| `pull-requests: write` | release-please | 创建与更新 Release PR |
+| `id-token: write` | `attest-build-provenance` | 申请 OIDC token 以换取 Sigstore 签名证书 |
+| `attestations: write` | `attest-build-provenance` | 持久化产物溯源 attestation |
+
+> 这四项写在工作流**顶层**，对两个 job 同时生效。`attest-build-provenance` 官方只要求 `contents: read`，而顶层已给到 `contents: write`（超集），故无需在 job 内再单独声明。若把权限收窄到 job 级，则 `release-please` job 至少需要 `contents: write` + `pull-requests: write`，`publish` job 至少需要 `contents: write` + `id-token: write` + `attestations: write`。
+
+### 2. 仓库设置：允许 Actions 创建 PR
+
+必须在 **Settings → Actions → General → Workflow permissions** 勾选 **「Allow GitHub Actions to create and approve pull requests」**。否则即使有 `pull-requests: write`，release-please 也会因权限被拒而无法开出 Release PR（组织级仓库还需在组织的 Actions 设置里放开同一项）。
+
+### 3. 递归工作流的已知限制
+
+GitHub 有意规定：由默认 `GITHUB_TOKEN` 触发的事件（如 release-please 推的提交、开的 PR、打的 tag）**不会再触发其它工作流**，以防无限递归。带来两个实际影响：
+
+- Release PR 上**不会**自动跑其它 `pull_request` 工作流（本仓库的 `pr-title.yml` 因此不会在 Release PR 上运行）——这没问题，因为 Release PR 由机器人生成、标题本就规范。
+- `publish` 段回写 `versions.json` 的提交刻意带上 `[skip ci]`，进一步确保不会再次触发 `release.yml`。
+
+> 若将来希望在 Release PR 上跑 CI 检查，需改用 PAT 或 GitHub App token（写入 Actions secret 后替换 `token:` 字段），默认 `GITHUB_TOKEN` 做不到这一点。
 
 ## 发布流程
 
+> 首次在新仓库启用前，先确认已按上文《release-please 所需权限与仓库设置》勾选「Allow GitHub Actions to create and approve pull requests」，否则第 3 步开不出 Release PR。
+
 1. 在 feature 分支开发；若用到新版本 Obsidian API，手动改 `manifest.json` 的 `minAppVersion`。
-2. 开 PR（**标题遵循 Conventional Commits**），CI 通过后 **squash merge** 到 `master`。
+2. 开 PR（**标题遵循 Conventional Commits**，由 `pr-title.yml` 校验），**squash merge** 到 `master`。
 3. release-please 自动开出/更新 Release PR（可连续合并多个功能 PR，累积到同一个 Release PR）。
 4. 需要发版时，合并该 Release PR → 自动打 tag、创建 Release、构建上传三件套、回写 `versions.json`。
 
