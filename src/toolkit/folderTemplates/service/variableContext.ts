@@ -1,5 +1,5 @@
 import { App, moment, TFile } from "obsidian";
-import { IVariableContext } from "./VariableEngine";
+import { IMomentLike, IVariableContext } from "./VariableEngine";
 
 /**
  * 从笔记文件构建变量上下文。
@@ -13,7 +13,7 @@ import { IVariableContext } from "./VariableEngine";
  * - ${frontmatter.xxx}（新建文件时通常为空，仅对已有缓存的文件有值）
  */
 export function buildVariableContext(app: App, file: TFile): IVariableContext {
-	const now = moment();
+	const now: IMomentLike = moment();
 	return {
 		notename: file.basename,
 		folder: file.parent?.name ?? "",
@@ -36,7 +36,7 @@ export function buildPreviewContext(
 	notename = "Untitled",
 	folderPath = "notes"
 ): IVariableContext {
-	const now = moment();
+	const now: IMomentLike = moment();
 	const segments = folderPath.split("/").filter(Boolean);
 	return {
 		notename,
