@@ -1,10 +1,10 @@
-# Contributing to RavenHogwarts's Toolkit English Version
+# Contributing to RavenHogwarts Toolkit English Version
 
-Thank you for your interest in contributing to RavenHogwarts's Toolkit! This document provides guidelines and instructions for contributing to this project.
+Thank you for your interest in contributing to RavenHogwarts Toolkit! This document provides guidelines and instructions for contributing to this project.
 
 ## Table of Contents
 
-- [Contributing to RavenHogwarts's Toolkit English Version](#contributing-to-ravenhogwartss-toolkit-english-version)
+- [Contributing to RavenHogwarts Toolkit English Version](#contributing-to-ravenhogwarts-toolkit-english-version)
   - [Table of Contents](#table-of-contents)
   - [Code of Conduct](#code-of-conduct)
   - [Getting Started](#getting-started)
