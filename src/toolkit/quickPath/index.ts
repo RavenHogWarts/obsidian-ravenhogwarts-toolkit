@@ -8,7 +8,6 @@ import {
 	Menu,
 	normalizePath,
 	TAbstractFile,
-	TFile,
 	TFolder,
 	type SettingDefinitionItem,
 } from "obsidian";
@@ -81,8 +80,8 @@ export class QuickPath extends BaseTool<ISettings> {
 		];
 	}
 
-	async onload(): Promise<void> {
-		await super.onload();
+	onload(): void {
+		super.onload();
 		// `basePath` is an undocumented property on the data adapter (desktop
 		// only, not in the public typings).
 		const adapter = this.context._app.vault.adapter as unknown as {
