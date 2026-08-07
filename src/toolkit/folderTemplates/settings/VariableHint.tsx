@@ -1,5 +1,5 @@
 import { LL } from "@src/i18n/i18n";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Icon } from "./Icon";
 import { VariableToken } from "./VariableToken";
 
@@ -65,16 +65,18 @@ export function VariableHint() {
 			</button>
 			{open && (
 				<div className="rht-ft-varhint-body">
-					<ul className="rht-ft-varhint-list">
+					<dl className="rht-ft-varhint-list">
 						{VARIABLES.map((v) => (
-							<li key={v.token}>
-								<VariableToken token={v.token} />
-								<span className="rht-ft-varhint-desc">
+							<Fragment key={v.token}>
+								<dt className="rht-ft-varhint-term">
+									<VariableToken token={v.token} />
+								</dt>
+								<dd className="rht-ft-varhint-desc">
 									{v.desc()}
-								</span>
-							</li>
+								</dd>
+							</Fragment>
 						))}
-					</ul>
+					</dl>
 					<div className="rht-ft-varhint-legacy">
 						{T.legacy({
 							date: "{{date}}",

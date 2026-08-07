@@ -215,14 +215,15 @@
 .rht-ft-varhint-list {
 	margin: 0;
 	padding: 0;
-	list-style: none;
 	display: grid;
 	grid-template-columns: auto 1fr;
 	gap: var(--size-2-1) var(--size-4-2);
 }
 
-.rht-ft-varhint-list li {
-	display: contents;
+.rht-ft-varhint-term {
+	margin: 0;
+	display: flex;
+	align-items: center;
 }
 
 .rht-ft-varhint-token {
@@ -250,6 +251,8 @@
 }
 
 .rht-ft-varhint-desc {
+	margin: 0;
+	align-self: center;
 	font-size: var(--font-ui-smaller);
 	color: var(--text-muted);
 }
