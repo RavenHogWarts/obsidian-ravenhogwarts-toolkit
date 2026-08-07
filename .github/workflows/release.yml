@@ -1,26 +1,41 @@
-name: Release Obsidian plugin
+name: Release
 
 on:
     push:
-        tags:
-            - "[0-9]+.[0-9]+.[0-9]+*" # 匹配类似 1.0.0 或 1.0.0-beta.1 的格式
+        branches: [master]
 
 permissions:
     contents: write
+    pull-requests: write
     id-token: write
     attestations: write
 
 jobs:
-    build:
-        runs-on: ubuntu-22.04
+    release-please:
+        runs-on: ubuntu-latest
+        outputs:
+            release_created: ${{ steps.release.outputs.release_created }}
+            tag_name: ${{ steps.release.outputs.tag_name }}
+        steps:
+            - uses: googleapis/release-please-action@v4
+              id: release
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  config-file: release-please-config.json
+                  manifest-file: .release-please-manifest.json
 
+    publish:
+        needs: release-please
+        if: ${{ needs.release-please.outputs.release_created == 'true' }}
+        runs-on: ubuntu-22.04
         steps:
             - uses: actions/checkout@v4
               with:
-                  fetch-depth: 0 # 获取完整的git历史
+                  ref: master
+                  fetch-depth: 0
 
             - name: Use Node.js
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: "22.x"
 
@@ -43,22 +58,21 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-pnpm-store-
 
-            - name: Prepare manifest
-              id: prepare_manifest
-              run: |
-                  if [[ ${{ github.ref }} == *"beta"* ]]; then
-                    echo "📦 Using beta manifest"
-                    cp manifest-beta.json manifest.json
-                  else
-                    echo "📦 Using stable manifest"
-                  fi
-
-            - name: Build
-              id: build
+            - name: Install & build
               run: |
                   pnpm install --frozen-lockfile
                   pnpm run build
-                  echo "tag_name=$(git tag --sort version:refname | tail -n 1)" >> $GITHUB_OUTPUT
+
+            - name: Sync versions.json
+              run: |
+                  node scripts/sync-versions.mjs
+                  if ! git diff --quiet versions.json; then
+                    git config user.name "github-actions[bot]"
+                    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                    git add versions.json
+                    git commit -m "chore: sync versions.json [skip ci]"
+                    git push
+                  fi
 
             - name: Generate artifact attestation
               uses: actions/attest-build-provenance@v2
@@ -68,22 +82,9 @@ jobs:
                       dist/manifest.json
                       dist/styles.css
 
-            - name: Create Release
-              id: create_release
-              uses: softprops/action-gh-release@v2
-              with:
-                  tag_name: ${{ github.ref_name }}
-                  name: ${{ github.ref_name }}
-                  draft: false
-                  prerelease: ${{ contains(github.ref, 'beta') }}
-                  generate_release_notes: true
-                  body: |
-                      ${{ contains(github.ref, 'beta') && '🚧 This is a beta release' || '🎉 This is a stable release' }}
-
-                      **Version:** ${{ github.ref_name }}
-                  files: |
-                      dist/main.js
-                      dist/manifest.json
-                      dist/styles.css
+            - name: Upload release assets
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  gh release upload "${{ needs.release-please.outputs.tag_name }}" \
+                    dist/main.js dist/manifest.json dist/styles.css --clobber
