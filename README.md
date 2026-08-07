@@ -1,5 +1,5 @@
 [中文](README_ZH.md) | English
-# RavenHogwarts's Toolkit
+# RavenHogwarts Toolkit
 > Also known as **OTK** (Obsidian Toolkit)
 
 A personal toolkit plugin (OTK) that integrates various Obsidian utilities, designed to enhance personal note-taking experience.

@@ -1,6 +1,6 @@
 # 架构总览
 
-本文档描述 RavenHogwarts's Toolkit（OTK）插件的运行时架构，是其他所有文档的基础。
+本文档描述 RavenHogwarts Toolkit（OTK）插件的运行时架构，是其他所有文档的基础。
 
 ## 一句话概览
 

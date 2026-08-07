@@ -1,6 +1,6 @@
-# RavenHogwarts's Toolkit (OTK) — 技术文档
+# RavenHogwarts Toolkit (OTK) — 技术文档
 
-本目录包含 **RavenHogwarts's Toolkit** Obsidian 插件（又称 **OTK** / Obsidian Toolkit）的技术文档。
+本目录包含 **RavenHogwarts Toolkit** Obsidian 插件（又称 **OTK** / Obsidian Toolkit）的技术文档。
 
 本插件采用**基于注册表的"插件中的插件"架构**：一个轻量宿主外壳（host shell）在运行时负责加载、管理、卸载一组相互独立的"工具"（tool）。每个工具通过装饰器自我注册，并遵循统一的生命周期、设置模型与 UI 契约。
 
