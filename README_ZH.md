@@ -7,12 +7,13 @@
 ![GitHub Socialify](https://socialify.git.ci/RavenHogWarts/obsidian-ravenhogwarts-toolkit/image?description=1&font=Rokkitt&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating+Cogs&pulls=1&stargazers=1&theme=Auto)
 
 ## 安装
-### 手动安装
+### 社区插件市场安装
 
-1. 下载最新版本
-2. 将 `main.js`, `styles.css`, 和 `manifest.json` 复制到你的笔记库的 `plugins` 文件夹中：`<vault>/.obsidian/plugins/ravenhogwarts-toolkit/`
-3. 重新加载Obsidian
-4. 在设置中启用插件
+[点击安装](obsidian://show-plugin?id=ravenhogwarts-toolkit)，或按以下步骤操作：
+
+1. 打开 Obsidian 并前往 `设置 > 第三方插件`。
+2. 搜索 “RavenHogwarts Toolkit”。
+3. 点击 “安装”。
 
 ### BRAT（推荐测试版用户使用）
 1. 安装 [BRAT](https://github.com/TfTHacker/obsidian42-brat) 插件
