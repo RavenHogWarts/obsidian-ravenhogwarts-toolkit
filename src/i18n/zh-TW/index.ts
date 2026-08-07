@@ -96,7 +96,7 @@ const zh_TW = {
 			},
 		},
 		folder_scaffolder: {
-			name: "資料夾鷹架",
+			name: "目錄框架克隆",
 			desc: "複製資料夾的目錄結構，支援臨時複製/貼上與儲存為範本",
 			templates: {
 				name: "結構範本",

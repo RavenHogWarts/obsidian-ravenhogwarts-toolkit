@@ -888,7 +888,7 @@ export type TranslationFunctions = {
 		}
 		folder_scaffolder: {
 			/**
-			 * 文件夹脚手架
+			 * 目录框架克隆
 			 */
 			name: () => LocalizedString
 			/**
