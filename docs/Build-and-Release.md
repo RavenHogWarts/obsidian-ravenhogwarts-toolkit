@@ -14,7 +14,8 @@
 | `pnpm test` / `pnpm run test:watch` | 运行 Jest 单元测试。 |
 | `pnpm run i18n:typesafe` | 运行 typesafe-i18n 代码生成器（类型绑定）。 |
 | `pnpm run i18n:sync` | 以基准语言同步各语言包的键结构。 |
-| `pnpm run version` | 构建后交互式选择并升级版本号（见下文）。 |
+
+> 版本升级、CHANGELOG、tag 与 Release 均由 **release-please** 自动完成（见下文），不再有手动的版本脚本。
 
 ## esbuild 配置
 
@@ -52,30 +53,20 @@
 
 ## 版本号管理
 
-**文件：** `scripts/version-bump.mjs`，`MAKEFILE`
+版本号发布完全交给 [release-please](https://github.com/googleapis/release-please)，基于 [Conventional Commits](https://www.conventionalcommits.org/) 自动推断（`feat` → minor，`fix` → patch，`feat!` / `BREAKING CHANGE` → major）。
 
-OTK 维护两套 manifest：
+**配置文件：** `release-please-config.json`、`.release-please-manifest.json`
 
-- `manifest.json` —— 正式版。
-- `manifest-beta.json` —— Beta 版（BRAT 用户使用）。
+版本号散落在 4 处，各自负责人：
 
-`pnpm run version`（通常由 `npm version` 钩子触发）会先构建，再交互式选择版本类型（主版本 / 次版本 / 补丁 / 自定义 / Beta），随后同步更新：
+| 文件 | 字段 | 由谁改 | 何时 |
+| --- | --- | --- | --- |
+| `package.json` | `version` | release-please | 合并 Release PR 时 |
+| `manifest.json` | `version` | release-please（`extra-files` jsonpath） | 合并 Release PR 时 |
+| `manifest.json` | `minAppVersion` | **维护者手动** | 需要提升最低 Obsidian 版本时（开发分支内改，随 PR 合入） |
+| `versions.json` | `版本号 → minAppVersion` 映射 | CI 脚本 `sync-versions.mjs` | 发布后自动追加 |
 
-1. `package.json` 的 `version`。
-2. 对应的 `manifest.json` 或 `manifest-beta.json`。
-3. （仅正式版）`versions.json` 追加 `版本号 → minAppVersion` 映射。
-
-也支持直接传参：`node scripts/version-bump.mjs 1.5.0`。
-
-**打 tag 与推送**用 `MAKEFILE`：
-
-```bash
-make release v=1.5.0        # 正式版：git tag + push
-make beta   v=1.5.0-beta.1  # Beta 版
-make del    v=1.5.0         # 删除某版本 tag
-```
-
-> tag 前缀已配置为空（`.npmrc` 中 `tag-version-prefix=""`）。
+> `minAppVersion` 是唯一需要手动维护的版本字段。只在真正用到新版本 Obsidian API 时修改，无变化则保持不动。release-please 的 jsonpath 精确匹配 `$.version`，不会碰它。
 
 ## CI / GitHub Actions
 
@@ -83,43 +74,35 @@ make del    v=1.5.0         # 删除某版本 tag
 
 ### `release.yml` —— 发布
 
-触发：推送形如 `1.0.0` 或 `1.0.0-beta.1` 的 tag。
+触发：push 到 `master`。采用单工作流两段式：
 
-1. Checkout（完整历史）。
+**job 1 `release-please`**：解析自上次发布以来的 commit，维护一个「Release PR」——PR 内含 `package.json` / `manifest.json` 版本号更新与 `CHANGELOG.md` 追加。只要不合并此 PR，就不会真正发版。
+
+**job 2 `publish`**（仅当 Release PR 合并、Release 被创建时执行）：
+
+1. Checkout `master`（此时版本号已是新值）。
 2. Node 22 + pnpm 11，缓存 pnpm store。
-3. **准备 manifest**：若 tag 含 `beta`，把 `manifest-beta.json` 复制为 `manifest.json`；否则用正式 manifest。
-4. `pnpm install --frozen-lockfile` + `pnpm run build`。
-5. **生成构建产物溯源**（`actions/attest-build-provenance@v2`），对 `dist/main.js`、`dist/manifest.json`、`dist/styles.css` 三个产物签名。
-6. 用 `softprops/action-gh-release@v2` 创建 Release：
-   - tag 含 `beta` → 标记为 prerelease。
-   - 自动生成 release notes。
-   - 附带上述三个产物文件。
+3. `pnpm install --frozen-lockfile` + `pnpm run build`。
+4. **同步 `versions.json`**：`node scripts/sync-versions.mjs` 读取 `manifest.json` 的 `version` 与 `minAppVersion` 追加映射，有变化则用 `github-actions[bot]` 提交并推回 `master`（`[skip ci]` 防递归）。
+5. **生成构建产物溯源**（`actions/attest-build-provenance@v2`）。
+6. `gh release upload` 把 `dist/main.js`、`dist/manifest.json`、`dist/styles.css` 上传到 Release。
 
-### `precheck.yml` —— 版本发布前预检
+### `pr-title.yml` —— PR 标题校验
 
-触发：PR 被打上 `version-bump` 标签时。
+触发：PR 开启 / 编辑 / 同步。用 `action-semantic-pull-request` 校验 PR 标题符合 Conventional Commits。因为采用 **squash merge**，合并后的 commit message 即 PR 标题，release-please 靠它推断版本，故标题必须规范。
 
-执行与 release 一致的构建方式，然后校验：
-- 构建成功；
-- 三个必需产物（`dist/main.js`、`dist/manifest.json`、`dist/styles.css`）齐全；
-- `package.json` 与 `dist/manifest.json` 的版本号一致。
+### `pr-ci.yml` —— PR 检查
 
-结果以评论形式贴在 PR 上（成功/失败各一套模板），失败时 CI 退出码非零。
+触发：面向 `master` 的 PR。跑 `lint` + `test` + `build`，在合并前暴露问题。
 
-## 发布流程（正式版/Beta 版）
+## 发布流程
 
-**正式版：**
+1. 在 feature 分支开发；若用到新版本 Obsidian API，手动改 `manifest.json` 的 `minAppVersion`。
+2. 开 PR（**标题遵循 Conventional Commits**），CI 通过后 **squash merge** 到 `master`。
+3. release-please 自动开出/更新 Release PR（可连续合并多个功能 PR，累积到同一个 Release PR）。
+4. 需要发版时，合并该 Release PR → 自动打 tag、创建 Release、构建上传三件套、回写 `versions.json`。
 
-1. 在分支上完成开发，PR 合入。
-2. `pnpm run version` → 选择版本类型 → 脚本更新 `package.json`、`manifest.json`、`versions.json`。
-3. 按脚本提示提交：`git add package.json manifest.json versions.json` → `git commit`。
-4. `make release v=<版本号>` 推送 tag → 触发 `release.yml` 自动构建并发布 Release。
-
-**Beta 版：**
-
-1. `pnpm run version` → 选择 Beta（或自定义 `x.y.z-beta.n`）→ 更新 `package.json`、`manifest-beta.json`。
-2. 提交：`git add package.json manifest-beta.json` → `git commit`。
-3. `make beta v=<版本号>` 推送 tag → CI 检测到 `beta` 自动用 beta manifest 并标记 prerelease。
+> tag 无 `v` 前缀（如 `2.1.0`），与历史一致。
 
 ## 产物结构
 
@@ -131,4 +114,4 @@ manifest.json    ← 插件清单（id、版本、minAppVersion 等）
 styles.css       ← PostCSS 处理后的样式
 ```
 
-用户手动安装时，把三者放入 `<vault>/.obsidian/plugins/ravenhogwarts-toolkit/` 并在 Obsidian 中启用即可；Beta 用户推荐通过 BRAT 安装。
+用户手动安装时，把三者放入 `<vault>/.obsidian/plugins/ravenhogwarts-toolkit/` 并在 Obsidian 中启用即可。

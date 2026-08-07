@@ -1,0 +1,66 @@
+{
+	"$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+	"include-v-in-tag": false,
+	"include-component-in-tag": false,
+	"packages": {
+		".": {
+			"release-type": "node",
+			"changelog-path": "CHANGELOG.md",
+			"extra-files": [
+				{
+					"type": "json",
+					"path": "manifest.json",
+					"jsonpath": "$.version"
+				}
+			],
+			"changelog-sections": [
+				{
+					"type": "feat",
+					"section": "✨ 新增功能 (Features)",
+					"hidden": false
+				},
+				{
+					"type": "fix",
+					"section": "🐛 问题修复 (Bug Fixes)",
+					"hidden": false
+				},
+				{
+					"type": "perf",
+					"section": "⚡ 性能优化 (Performance)",
+					"hidden": false
+				},
+				{
+					"type": "refactor",
+					"section": "♻️ 重构 (Refactor)",
+					"hidden": false
+				},
+				{
+					"type": "docs",
+					"section": "📝 文档 (Documentation)",
+					"hidden": false
+				},
+				{
+					"type": "chore",
+					"section": "🛠 杂项 (Chore)",
+					"hidden": true
+				},
+				{
+					"type": "style",
+					"section": "🎨 代码风格 (Styles)",
+					"hidden": true
+				},
+				{
+					"type": "test",
+					"section": "✅ 测试 (Tests)",
+					"hidden": true
+				},
+				{
+					"type": "build",
+					"section": "📦 构建 (Build)",
+					"hidden": true
+				},
+				{ "type": "ci", "section": "🤖 CI", "hidden": true }
+			]
+		}
+	}
+}
