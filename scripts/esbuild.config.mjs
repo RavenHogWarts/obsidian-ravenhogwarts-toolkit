@@ -91,6 +91,38 @@ const cssReBuild = () => ({
 	},
 });
 
+/**
+ * React DOM 脚本注入消除插件
+ *
+ * React 19 的 react-dom 内置了「资源提升（resource hoisting）」机制：
+ * ReactDOM.preinit / preinitModule，以及在 React 树里渲染 <script async src>
+ * 时，会通过 document.createElement("script") 动态注入脚本标签。
+ *
+ * 这三条路径在 Obsidian 插件里永远不会被触发（本插件从不调用 preinit，
+ * 也从不在 JSX 中渲染 <script>），但它们通过 reconciler dispatch 可达，
+ * esbuild 无法 tree-shake，最终打包产物里残留 createElement("script")，
+ * 会被 Obsidian 插件审查规则判定为「动态脚本注入」。
+ *
+ * 此插件在打包时把 react-dom 源码中的这几处 createElement("script")
+ * 改写为 createElement("template")。<template> 是惰性、不会执行内容的元素，
+ * 因此即便这些死代码在极端情况下被命中，也不会加载或执行任何外部脚本。
+ * @returns {Object} esbuild 插件对象
+ */
+const stripReactScriptInjection = () => ({
+	name: "strip-react-script-injection",
+	setup(build) {
+		build.onLoad({ filter: /react-dom.*\.js$/ }, async (args) => {
+			const code = await fs.promises.readFile(args.path, "utf8");
+			// 兼容单/双引号，防止未来 react-dom 小版本改动引号风格导致漏替换
+			const patched = code.replace(
+				/createElement\((["'])script\1\)/g,
+				'createElement("template")',
+			);
+			return { contents: patched, loader: "js" };
+		});
+	},
+});
+
 // 复制 manifest.json 到输出目录
 function copyManifest() {
 	// 确保输出目录存在，如果不存在则创建
@@ -147,7 +179,7 @@ const context = await esbuild.context({
 	},
 	entryPoints: ["src/main.ts"],
 	bundle: true,
-	plugins: [renamePlugin(), cssReBuild()],
+	plugins: [renamePlugin(), cssReBuild(), stripReactScriptInjection()],
 	external: [
 		"obsidian",
 		"electron",
