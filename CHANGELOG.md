@@ -4,6 +4,19 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [2.0.1](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.0.0...2.0.1) (2026-08-07)
+
+
+### 🐛 问题修复 (Bug Fixes)
+
+* error or any typed value ([b3a73b6](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/b3a73b60070a7413c9cca53f80178491dd25ffb7))
+* Unexpected browser feature "css-display-contents" ([d00772f](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/d00772f770b3e4067acce807537c065193a3ff10))
+
+
+### 📝 文档 (Documentation)
+
+* 补充版本变动记录文档 ([1c1bf4a](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/1c1bf4ab038cee8eee00da6fe92b0227824381ac))
+
 ## [未发布]
 
 ## [2.0.0] - 2026-08-07
