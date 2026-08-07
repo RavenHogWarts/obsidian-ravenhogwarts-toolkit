@@ -17,7 +17,7 @@ interface Props {
 	persist: (templates: IStructureTemplate[]) => void;
 }
 
-/** 文件夹脚手架「结构模板」编辑器（React 岛）：增删、命名、来源选择、刷新快照。 */
+/** 目录框架克隆「结构模板」编辑器（React 岛）：增删、命名、来源选择、刷新快照。 */
 export function TemplatesEditor({ app, initialTemplates, persist }: Props) {
 	const [templates, setTemplates] =
 		useState<IStructureTemplate[]>(initialTemplates);

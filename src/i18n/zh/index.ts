@@ -96,7 +96,7 @@ const zh = {
 			},
 		},
 		folder_scaffolder: {
-			name: "文件夹脚手架",
+			name: "目录框架克隆",
 			desc: "克隆文件夹的目录结构，支持临时复制/粘贴与存为模板",
 			templates: { name: "结构模板" },
 			templateCard: {
