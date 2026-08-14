@@ -4,6 +4,20 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [2.0.2](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.0.1...2.0.2) (2026-08-14)
+
+
+### 🐛 问题修复 (Bug Fixes)
+
+* ROOT 改为恒命中（整库兜底），收窄交给同规则内的 EXCLUDE_FOLDER / FILENAME_PATTERN（AND 组合） ([1501469](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/1501469fab9b474338c645cf35f382e9b9eb464b))
+* 文件夹联想移除 / ([adf224f](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/adf224fbe9fac43685bd49fde8e4ed9e7b7ec87b))
+
+
+### 📝 文档 (Documentation)
+
+* 更新社区安装链接 ([0bc4136](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/0bc4136ecbeba7103df183792d2e6ae76150fa7a))
+* 补全开发文档 ([303319f](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/303319f2efcff00ad42e5020e2b2b10b6e5ba2d4))
+
 ## [2.0.1](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.0.0...2.0.1) (2026-08-07)
 
 
