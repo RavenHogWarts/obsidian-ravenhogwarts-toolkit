@@ -58,22 +58,32 @@ export class FileSuggest extends AbstractInputSuggest<TFile> {
 	}
 }
 
+export interface FolderSuggestOptions {
+	/** 是否在联想中包含 vault 根目录；默认 true */
+	includeRoot?: boolean;
+}
+
 /**
- * 文件夹路径联想输入。命中后回传文件夹路径（含根目录）。
+ * 文件夹路径联想输入。命中后回传文件夹路径。
+ * 通过 `options.includeRoot: false` 可排除 vault 根目录（其 path 为 "/"，
+ * 归一化后为空串）：FOLDER 作用域填根目录不会命中，整库范围应改用 ROOT 作用域，
+ * 故不把根目录列入候选，避免两种写法语义重复。
  */
 export class FolderSuggest extends AbstractInputSuggest<TFolder> {
 	constructor(
 		app: App,
 		inputEl: HTMLInputElement,
-		private readonly onSelectPath: (path: string) => void
+		private readonly onSelectPath: (path: string) => void,
+		private readonly options: FolderSuggestOptions = {}
 	) {
 		super(app, inputEl);
 	}
 
 	protected getSuggestions(query: string): TFolder[] {
 		const q = query.toLowerCase();
+		const includeRoot = this.options.includeRoot ?? true;
 		return this.app.vault
-			.getAllFolders(true)
+			.getAllFolders(includeRoot)
 			.filter((folder) => folder.path.toLowerCase().includes(q));
 	}
 
