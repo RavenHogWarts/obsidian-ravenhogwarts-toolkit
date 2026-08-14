@@ -104,7 +104,7 @@ describe("findMatchingRule", () => {
 		).toBeNull();
 	});
 
-	it("matches ROOT only at vault root", () => {
+	it("matches ROOT anywhere in the vault (whole-vault fallback)", () => {
 		const r = rule([{ id: nextId(), type: "ROOT" }]);
 		expect(findMatchingRule([r], { parentPath: "/", basename: "x" })).toBe(
 			r
@@ -114,7 +114,48 @@ describe("findMatchingRule", () => {
 		);
 		expect(
 			findMatchingRule([r], { parentPath: "notes", basename: "x" })
+		).toBe(r);
+		expect(
+			findMatchingRule([r], { parentPath: "notes/daily/2026", basename: "x" })
+		).toBe(r);
+	});
+
+	it("narrows ROOT with EXCLUDE_FOLDER scopes", () => {
+		const r = rule([
+			{ id: nextId(), type: "ROOT" },
+			{ id: nextId(), type: "EXCLUDE_FOLDER", path: "_global" },
+			{ id: nextId(), type: "EXCLUDE_FOLDER", path: "Archives" },
+		]);
+		expect(findMatchingRule([r], { parentPath: "", basename: "x" })).toBe(r);
+		expect(findMatchingRule([r], { parentPath: "Tasks", basename: "x" })).toBe(
+			r
+		);
+		expect(
+			findMatchingRule([r], {
+				parentPath: "_global/_Templates",
+				basename: "x",
+			})
 		).toBeNull();
+		expect(
+			findMatchingRule([r], { parentPath: "Archives", basename: "x" })
+		).toBeNull();
+	});
+
+	it("lets an earlier FOLDER rule win over a ROOT fallback rule", () => {
+		const daily = rule([folderScope("Daily")]);
+		const fallback = rule([{ id: nextId(), type: "ROOT" }]);
+		expect(
+			findMatchingRule([daily, fallback], {
+				parentPath: "Daily",
+				basename: "x",
+			})
+		).toBe(daily);
+		expect(
+			findMatchingRule([daily, fallback], {
+				parentPath: "Notes",
+				basename: "x",
+			})
+		).toBe(fallback);
 	});
 
 	it("matches FILENAME_PATTERN against basename and rejects invalid regex", () => {

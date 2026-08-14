@@ -65,7 +65,9 @@ interface IFolderTemplateRule {
 | `FOLDER` | 文件父目录等于 `path`，或（`includeSubfolders` 时）位于其下 | `path`、`includeSubfolders` |
 | `EXCLUDE_FOLDER` | 文件**不在** `path` 之下（空 path = 永不排除） | `path` |
 | `FILENAME_PATTERN` | 文件 basename 匹配 JS 正则 `pattern`（非法正则 → 不命中、不抛错） | `pattern` |
-| `ROOT` | 文件位于 vault 根目录 | — |
+| `ROOT` | 恒命中（整库兜底）：vault 内任意位置的新建文件都算命中，靠同规则内的 `EXCLUDE_FOLDER` / `FILENAME_PATTERN` 收窄 | — |
+
+> **`FOLDER` 的 path 不接受根目录。** 空 path（或 `/`，`normalize` 后同为 `""`）永不命中——整库范围应当用 `ROOT` 表达，故文件夹联想（`FolderSuggest`，`includeRoot: false`）不再列出根目录，避免两种写法语义重复。
 
 `types.ts` 提供 `createScope(type)` / `createRule()` 工厂函数，使设置 UI 在用户新增一行时能构造出结构完备的空对象。
 
@@ -179,7 +181,7 @@ interface IFolderTemplateRule {
 该工具从扁平的 `folderTemplates[]` 列表演进而为规则/作用域模型。`needsMigration(saved)` 检查 `config.version`（v0 中缺失）。`migrateSettings()`：
 
 - 把每条旧 `{ folder, templateFile, fileNameRule }` 转为一条规则：
-  - 空/`/` 文件夹 → `ROOT` 作用域；否则 `FOLDER`（含子文件夹）。
+  - 空/`/` 文件夹 → `ROOT` 作用域（v0 中 `/` 模板即对所有文件夹生效的兜底项，`ROOT` 与之语义一致）；否则 `FOLDER`（含子文件夹）。
   - `config.ignoredFolders`（此前是无效配置）→ 作为 `EXCLUDE_FOLDER` 作用域追加到每条规则，使其终于生效。
   - `fileNameRule` → `renameFormat`。
 - **按文件夹路径长度降序排序规则**（根目录最后），复现旧优先级，因为新匹配器是按数组顺序首个命中即返回。
