@@ -48,7 +48,9 @@ const en = {
 				typeFolder: "Folder",
 				typeExcludeFolder: "Exclude folder",
 				typeFilenamePattern: "Filename regex",
-				typeRoot: "Vault root",
+				typeRoot: "Vault root (all subfolders)",
+				rootHint:
+					"Matches the whole vault, narrowed only by exclude conditions; keep such fallback rules last in the list",
 				pathPlaceholder: "folder/path",
 				patternPlaceholder: "^\\d+-\\d+",
 				patternInvalid: "Invalid regular expression",

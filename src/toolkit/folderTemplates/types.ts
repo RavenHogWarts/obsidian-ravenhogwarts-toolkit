@@ -51,7 +51,10 @@ export interface FilenamePatternScope extends BaseScope {
 	pattern: string;
 }
 
-/** 仅匹配 vault 根目录下创建的文件 */
+/**
+ * 根目录（整库兜底）：vault 内任意位置的新建文件都命中。
+ * 需要收窄范围时，在同一规则内追加 EXCLUDE_FOLDER / FILENAME_PATTERN 作用域。
+ */
 export interface RootScope extends BaseScope {
 	type: "ROOT";
 }

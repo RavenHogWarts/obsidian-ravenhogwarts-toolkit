@@ -159,9 +159,13 @@ type RootTranslation = {
 				 */
 				typeFilenamePattern: string
 				/**
-				 * 根​目​录
+				 * 根​目​录​（​含​所​有​子​文​件​夹​）
 				 */
 				typeRoot: string
+				/**
+				 * 整​库​生​效​，​仅​被​排​除​条​件​收​窄​；​作​为​兜​底​建​议​放​在​规​则​列​表​末​尾
+				 */
+				rootHint: string
 				/**
 				 * f​o​l​d​e​r​/​p​a​t​h
 				 */
@@ -308,7 +312,7 @@ type RootTranslation = {
 		}
 		folder_scaffolder: {
 			/**
-			 * 文​件​夹​脚​手​架
+			 * 目​录​框​架​克​隆
 			 */
 			name: string
 			/**
@@ -741,9 +745,13 @@ export type TranslationFunctions = {
 				 */
 				typeFilenamePattern: () => LocalizedString
 				/**
-				 * 根目录
+				 * 根目录（含所有子文件夹）
 				 */
 				typeRoot: () => LocalizedString
+				/**
+				 * 整库生效，仅被排除条件收窄；作为兜底建议放在规则列表末尾
+				 */
+				rootHint: () => LocalizedString
 				/**
 				 * folder/path
 				 */

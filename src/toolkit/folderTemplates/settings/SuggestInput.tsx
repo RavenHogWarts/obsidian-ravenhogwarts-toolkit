@@ -52,8 +52,12 @@ export function SuggestInput({
 							baseFolder: () => baseFolderRef.current?.() ?? "",
 						}
 					)
-				: new FolderSuggest(app, el, (path) =>
-						onChangeRef.current(path)
+				: new FolderSuggest(
+						app,
+						el,
+						(path) => onChangeRef.current(path),
+						// 根目录不作为 FOLDER/EXCLUDE_FOLDER 的候选：整库范围用 ROOT 作用域表达
+						{ includeRoot: false }
 					);
 		return () => suggest.close();
 	}, [app, kind]);
