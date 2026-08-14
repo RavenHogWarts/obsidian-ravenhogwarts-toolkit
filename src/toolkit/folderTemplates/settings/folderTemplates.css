@@ -117,6 +117,12 @@
 	min-width: 120px;
 }
 
+/* ROOT 作用域说明文字：占据剩余宽度，过长时换行而不挤走删除按钮 */
+.rht-ft-scope-row .rht-ft-preview {
+	flex: 1;
+	min-width: 120px;
+}
+
 .rht-ft-check {
 	display: flex;
 	align-items: center;

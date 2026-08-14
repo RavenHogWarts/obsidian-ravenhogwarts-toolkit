@@ -88,6 +88,10 @@ export function ScopeRow({ app, scope, onChange, onDelete }: Props) {
 				</label>
 			)}
 
+			{scope.type === "ROOT" && (
+				<span className="rht-ft-preview">{T.rootHint()}</span>
+			)}
+
 			{scope.type === "FILENAME_PATTERN" && (
 				<div className="rht-ft-pattern">
 					<input

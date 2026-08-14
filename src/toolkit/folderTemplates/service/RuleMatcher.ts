@@ -39,8 +39,11 @@ function matchScope(scope: TemplateScope, info: IFileInfo): boolean {
 				return false;
 			}
 		}
+		// 「根目录」= 整库兜底：vault 内任意位置都命中，需要收窄时靠同规则内的
+		// EXCLUDE_FOLDER / FILENAME_PATTERN（AND 组合）排除。
+		// 与 v0 行为一致：旧版 folder="/" 的模板即是对所有文件夹生效的兜底项。
 		case "ROOT":
-			return parent === "";
+			return true;
 	}
 }
 
