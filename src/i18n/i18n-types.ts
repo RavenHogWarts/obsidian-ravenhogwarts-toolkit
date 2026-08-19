@@ -432,6 +432,63 @@ type RootTranslation = {
 				importFromVaultDesc: string
 			}
 		}
+		plugin_order: {
+			/**
+			 * 插​件​加​载​顺​序
+			 */
+			name: string
+			/**
+			 * 把​指​定​的​插​件​保​持​在​ ​c​o​m​m​u​n​i​t​y​-​p​l​u​g​i​n​s​.​j​s​o​n​ ​数​组​最​前​，​控​制​其​最​先​加​载
+			 */
+			desc: string
+			priority_plugins: {
+				/**
+				 * 优​先​加​载​的​插​件
+				 */
+				name: string
+				/**
+				 * 仅​调​整​顺​序​、​绝​不​增​删​条​目​；​未​启​用​/​未​安​装​的​以​徽​标​标​注​。​修​改​对​当​前​会​话​无​效​，​下​次​启​动​生​效​。​与​ ​c​u​s​t​o​m​-​i​c​o​n​s​ ​的​「​始​终​最​先​加​载​」​同​时​启​用​时​，​请​在​列​表​中​包​含​ ​c​u​s​t​o​m​-​s​i​d​e​b​a​r​-​i​c​o​n​s​。
+				 */
+				desc: string
+				/**
+				 * 输​入​插​件​名​或​ ​I​D​ ​搜​索​添​加​…
+				 */
+				search_placeholder: string
+				/**
+				 * 暂​无​优​先​插​件​，​在​上​方​搜​索​添​加
+				 */
+				empty: string
+				/**
+				 * {​c​o​u​n​t​}​ ​个
+				 * @param {unknown} count
+				 */
+				count: RequiredParams<'count'>
+				status: {
+					/**
+					 * 已​启​用
+					 */
+					enabled: string
+					/**
+					 * 已​安​装​未​启​用
+					 */
+					disabled: string
+					/**
+					 * 未​安​装
+					 */
+					missing: string
+				}
+			}
+			apply_now: {
+				/**
+				 * 立​即​应​用​并​刷​新​缓​存
+				 */
+				name: string
+				/**
+				 * 读​取​已​安​装​插​件​（​无​论​是​否​启​用​）​刷​新​缓​存​，​并​立​即​按​当​前​列​表​重​排​加​载​顺​序
+				 */
+				desc: string
+			}
+		}
 	}
 	command: {
 		quick_path: {
@@ -453,6 +510,12 @@ type RootTranslation = {
 			 * 粘​贴​结​构​到​当​前​目​录
 			 */
 			paste_structure: string
+		}
+		plugin_order: {
+			/**
+			 * 立​即​应​用​插​件​排​序
+			 */
+			apply: string
 		}
 	}
 	menu: {
@@ -555,6 +618,16 @@ type RootTranslation = {
 			 * 当​前​文​件​位​于​根​目​录​，​无​法​获​取​上​级​文​件​夹​路​径
 			 */
 			root_path_warning: string
+		}
+		plugin_order: {
+			/**
+			 * 已​重​排​插​件​加​载​顺​序​（​下​次​启​动​生​效​）
+			 */
+			applied: string
+			/**
+			 * c​o​m​m​u​n​i​t​y​-​p​l​u​g​i​n​s​.​j​s​o​n​ ​结​构​异​常​，​已​跳​过
+			 */
+			invalid: string
 		}
 		folder_scaffolder: {
 			/**
@@ -1014,6 +1087,62 @@ export type TranslationFunctions = {
 				importFromVaultDesc: () => LocalizedString
 			}
 		}
+		plugin_order: {
+			/**
+			 * 插件加载顺序
+			 */
+			name: () => LocalizedString
+			/**
+			 * 把指定的插件保持在 community-plugins.json 数组最前，控制其最先加载
+			 */
+			desc: () => LocalizedString
+			priority_plugins: {
+				/**
+				 * 优先加载的插件
+				 */
+				name: () => LocalizedString
+				/**
+				 * 仅调整顺序、绝不增删条目；未启用/未安装的以徽标标注。修改对当前会话无效，下次启动生效。与 custom-icons 的「始终最先加载」同时启用时，请在列表中包含 custom-sidebar-icons。
+				 */
+				desc: () => LocalizedString
+				/**
+				 * 输入插件名或 ID 搜索添加…
+				 */
+				search_placeholder: () => LocalizedString
+				/**
+				 * 暂无优先插件，在上方搜索添加
+				 */
+				empty: () => LocalizedString
+				/**
+				 * {count} 个
+				 */
+				count: (arg: { count: unknown }) => LocalizedString
+				status: {
+					/**
+					 * 已启用
+					 */
+					enabled: () => LocalizedString
+					/**
+					 * 已安装未启用
+					 */
+					disabled: () => LocalizedString
+					/**
+					 * 未安装
+					 */
+					missing: () => LocalizedString
+				}
+			}
+			apply_now: {
+				/**
+				 * 立即应用并刷新缓存
+				 */
+				name: () => LocalizedString
+				/**
+				 * 读取已安装插件（无论是否启用）刷新缓存，并立即按当前列表重排加载顺序
+				 */
+				desc: () => LocalizedString
+			}
+		}
 	}
 	command: {
 		quick_path: {
@@ -1035,6 +1164,12 @@ export type TranslationFunctions = {
 			 * 粘贴结构到当前目录
 			 */
 			paste_structure: () => LocalizedString
+		}
+		plugin_order: {
+			/**
+			 * 立即应用插件排序
+			 */
+			apply: () => LocalizedString
 		}
 	}
 	menu: {
@@ -1137,6 +1272,16 @@ export type TranslationFunctions = {
 			 * 当前文件位于根目录，无法获取上级文件夹路径
 			 */
 			root_path_warning: () => LocalizedString
+		}
+		plugin_order: {
+			/**
+			 * 已重排插件加载顺序（下次启动生效）
+			 */
+			applied: () => LocalizedString
+			/**
+			 * community-plugins.json 结构异常，已跳过
+			 */
+			invalid: () => LocalizedString
 		}
 		folder_scaffolder: {
 			/**

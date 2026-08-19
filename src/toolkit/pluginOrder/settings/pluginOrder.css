@@ -1,0 +1,148 @@
+/* Plugin order — React priority list editor (mounted via reactSetting bridge). */
+
+.rht-po-editor {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+}
+
+.rht-po-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+}
+
+.rht-po-title {
+	font-weight: var(--font-semibold);
+}
+
+.rht-po-count {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.rht-po-add-input {
+	width: 100%;
+}
+
+/* Priority row */
+.rht-po-row {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	padding: var(--size-4-1) var(--size-4-2);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background: var(--background-secondary);
+}
+
+.rht-po-order {
+	color: var(--text-faint);
+	font-variant-numeric: tabular-nums;
+	min-width: 1.2em;
+	text-align: right;
+}
+
+.rht-po-name-wrap {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.rht-po-name {
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.rht-po-id {
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+/* Status badge: enabled / installed-but-disabled / missing */
+.rht-po-badge {
+	flex-shrink: 0;
+	padding: 1px var(--size-4-2);
+	border-radius: var(--radius-s);
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	background: var(--background-modifier-hover);
+}
+
+.rht-po-badge.rht-po-enabled {
+	color: var(--text-on-accent);
+	background: var(--interactive-accent);
+}
+
+.rht-po-badge.rht-po-missing {
+	color: var(--text-error);
+	background: var(--background-modifier-error-hover);
+}
+
+.rht-po-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-1);
+	flex-shrink: 0;
+}
+
+.rht-po-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--size-2-1) var(--size-2-1);
+	border-radius: var(--radius-s);
+	color: var(--text-muted);
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	cursor: pointer;
+	height: auto;
+}
+
+.rht-po-icon-btn:hover:not(:disabled) {
+	color: var(--text-normal);
+	background: var(--background-modifier-hover);
+}
+
+.rht-po-icon-btn:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
+.rht-po-icon-btn.rht-po-danger:hover:not(:disabled) {
+	color: var(--text-error);
+}
+
+.rht-po-icon {
+	display: inline-flex;
+}
+
+.rht-po-empty {
+	padding: var(--size-4-4) var(--size-4-2);
+	text-align: center;
+	color: var(--text-muted);
+	border: 1px dashed var(--background-modifier-border);
+	border-radius: var(--radius-m);
+}
+
+/* Suggestion popover entries (rendered outside the island, by PluginSuggest) */
+.rht-po-suggest-name {
+	display: inline-block;
+	margin-right: var(--size-4-3);
+}
+
+.rht-po-suggest-id {
+	display: inline-block;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}

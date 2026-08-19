@@ -136,6 +136,26 @@ const zh_TW = {
 					"選填：從一個現有資料夾讀取結構填入下方（不影響手動編輯）",
 			},
 		},
+		plugin_order: {
+			name: "插件載入順序",
+			desc: "把指定的插件保持在 community-plugins.json 陣列最前，控制其最先載入",
+			priority_plugins: {
+				name: "優先載入的插件",
+				desc: "僅調整順序、絕不增刪條目；未啟用/未安裝的以徽標標註。修改對當前工作階段無效，下次啟動生效。與 custom-icons 的「始終最先載入」同時啟用時，請在列表中包含 custom-sidebar-icons。",
+				search_placeholder: "輸入插件名或 ID 搜尋新增…",
+				empty: "暫無優先插件，在上方搜尋新增",
+				count: "{count} 個",
+				status: {
+					enabled: "已啟用",
+					disabled: "已安裝未啟用",
+					missing: "未安裝",
+				},
+			},
+			apply_now: {
+				name: "立即套用並重新整理快取",
+				desc: "讀取已安裝插件（無論是否啟用）重新整理快取，並立即按當前列表重排載入順序",
+			},
+		},
 	},
 	command: {
 		quick_path: {
@@ -145,6 +165,9 @@ const zh_TW = {
 		folder_scaffolder: {
 			create_from_template: "從範本建立結構",
 			paste_structure: "貼上結構到當前目錄",
+		},
+		plugin_order: {
+			apply: "立即套用插件排序",
 		},
 	},
 	menu: {
@@ -181,6 +204,10 @@ const zh_TW = {
 			copy_success: "路徑已複製到剪貼板",
 			copy_failure: "複製路徑失敗",
 			root_path_warning: "當前文件位於根目錄，無法獲取上級文件夾路徑",
+		},
+		plugin_order: {
+			applied: "已重排插件載入順序（下次啟動生效）",
+			invalid: "community-plugins.json 結構異常，已跳過",
 		},
 		folder_scaffolder: {
 			no_template: "沒有可用的範本，請先在設定中新增",
