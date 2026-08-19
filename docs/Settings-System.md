@@ -126,7 +126,7 @@ getSettingDefinitions()
 两种情形：
 
 1. **`toolkit.<id>.enabled`** → 路由到 `toolkitManager.enableTool(id)` / `disableTool(id)`（既持久化**又**加载/卸载工具），随后 `this.update()` 重渲染。
-2. **其他任意键** → 直接写入 `plugin.settings`，再 `saveSettings()`。（非 enabled 的配置无需重载工具。）
+2. **其他任意键** → 统一路由到 `settingsStore.updateSettingByPath(key, value)`（持久化**并通知订阅者**；非 enabled 的配置无需重载工具）。工具可通过 `settingsStore.store.subscribe` 感知设置页的修改（plugin-order 的"配置变更自动 enforce"依赖此行为）。
 
 ## 控件类型（`SettingControl`）
 

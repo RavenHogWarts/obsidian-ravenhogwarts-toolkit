@@ -37,7 +37,7 @@
 				{
 					"type": "docs",
 					"section": "📝 文档 (Documentation)",
-					"hidden": false
+					"hidden": true
 				},
 				{
 					"type": "chore",
