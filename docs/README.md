@@ -12,6 +12,7 @@
 | [工具开发指南](./Toolkit-Development-Guide.md) | 工具作者 | 从零编写一个新工具的完整步骤：`@Toolkit` 装饰器、`BaseTool`、生命周期钩子、命令与菜单注册。 |
 | [设置系统](./Settings-System.md) | 所有开发者 | 设置的存储、合并、更新机制；Obsidian 1.13 声明式设置 API；React "孤岛" 桥接。 |
 | [工具详解：Folder Templates](./Tool-Folder-Templates.md) | 工具作者 / 维护者 | 最复杂工具的深度剖析：规则匹配、作用域、应用策略、变量引擎与受控表达式求值器。 |
+| [工具详解：Plugin Order](./Tool-Plugin-Order.md) | 工具作者 / 维护者 | 插件加载顺序控制：重排机制、已安装插件缓存、三态反馈与安全规则。 |
 | [构建与发布](./Build-and-Release.md) | 维护者 | esbuild 构建流水线、部署脚本、版本号管理、GitHub Actions 发布流程。 |
 | [国际化指南](./i18n-Guide.md) | 所有贡献者 | `typesafe-i18n` 配置、语言包文件与同步工作流。 |
 | [测试指南](./Testing-Guide.md) | 所有贡献者 | Jest 配置、测试约定、obsidian 运行时桩，以及 service 层"可测试性"设计模式。 |
@@ -23,6 +24,7 @@
 | **Folder Templates** | `folder-templates` | 在指定文件夹创建新文件时自动套用模板，可选重命名与变量渲染。 |
 | **Folder Scaffolder** | `folder-scaffolder` | 复制/粘贴文件夹结构、存为模板并一键克隆整套目录骨架。 |
 | **Quick Path** | `quick-path` | 快速获取文件/文件夹路径，复制到剪贴板或粘贴到编辑器。 |
+| **Plugin Order** | `plugin-order` | 控制指定插件优先加载：把已启用的配置插件保持在 community-plugins.json 最前。 |
 
 ## 快速上手
 
