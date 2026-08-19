@@ -131,6 +131,26 @@ const zh = {
 					"可选：从一个已有文件夹读取结构填充下方（不影响手动编辑）",
 			},
 		},
+		plugin_order: {
+			name: "插件加载顺序",
+			desc: "把指定的插件保持在 community-plugins.json 数组最前，控制其最先加载",
+			priority_plugins: {
+				name: "优先加载的插件",
+				desc: "仅调整顺序、绝不增删条目；未启用/未安装的以徽标标注。修改对当前会话无效，下次启动生效。与 custom-icons 的「始终最先加载」同时启用时，请在列表中包含 custom-sidebar-icons。",
+				search_placeholder: "输入插件名或 ID 搜索添加…",
+				empty: "暂无优先插件，在上方搜索添加",
+				count: "{count} 个",
+				status: {
+					enabled: "已启用",
+					disabled: "已安装未启用",
+					missing: "未安装",
+				},
+			},
+			apply_now: {
+				name: "立即应用并刷新缓存",
+				desc: "读取已安装插件（无论是否启用）刷新缓存，并立即按当前列表重排加载顺序",
+			},
+		},
 	},
 	command: {
 		quick_path: {
@@ -140,6 +160,9 @@ const zh = {
 		folder_scaffolder: {
 			create_from_template: "从模板创建结构",
 			paste_structure: "粘贴结构到当前目录",
+		},
+		plugin_order: {
+			apply: "立即应用插件排序",
 		},
 	},
 	menu: {
@@ -176,6 +199,10 @@ const zh = {
 			copy_success: "路径已复制到剪贴板",
 			copy_failure: "复制路径失败",
 			root_path_warning: "当前文件位于根目录，无法获取上级文件夹路径",
+		},
+		plugin_order: {
+			applied: "已重排插件加载顺序（下次启动生效）",
+			invalid: "community-plugins.json 结构异常，已跳过",
 		},
 		folder_scaffolder: {
 			no_template: "没有可用的模板，请先在设置中添加",

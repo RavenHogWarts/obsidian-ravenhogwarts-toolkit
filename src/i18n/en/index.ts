@@ -138,6 +138,26 @@ const en = {
 					"Optional: read a structure from an existing folder to fill in below (manual edits still apply)",
 			},
 		},
+		plugin_order: {
+			name: "Plugin load order",
+			desc: "Keeps the specified plugins at the front of the community-plugins.json array so they load first",
+			priority_plugins: {
+				name: "Priority plugins",
+				desc: "Only reorders entries, never adds or removes any; disabled/uninstalled ones are marked with a badge. Takes effect on the next restart, not in the current session. When enabled alongside custom-icons' \"load first\" option, include custom-sidebar-icons in this list.",
+				search_placeholder: "Search by plugin name or ID to add…",
+				empty: "No priority plugins yet — search above to add one",
+				count: "{count}",
+				status: {
+					enabled: "Enabled",
+					disabled: "Installed, disabled",
+					missing: "Not installed",
+				},
+			},
+			apply_now: {
+				name: "Apply now and refresh cache",
+				desc: "Reads installed plugins (enabled or not) to refresh the cache, then reorders the load order per the current list",
+			},
+		},
 	},
 	command: {
 		quick_path: {
@@ -147,6 +167,9 @@ const en = {
 		folder_scaffolder: {
 			create_from_template: "Create structure from template",
 			paste_structure: "Paste structure into current folder",
+		},
+		plugin_order: {
+			apply: "Apply plugin order now",
 		},
 	},
 	menu: {
@@ -185,6 +208,10 @@ const en = {
 			copy_failure: "Failed to copy path",
 			root_path_warning:
 				"The current file is in the root directory, unable to get the parent folder path",
+		},
+		plugin_order: {
+			applied: "Plugin load order updated (effective on next restart)",
+			invalid: "community-plugins.json has an unexpected structure, skipped",
 		},
 		folder_scaffolder: {
 			no_template: "No templates available, add one in settings first",
