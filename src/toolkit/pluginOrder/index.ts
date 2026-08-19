@@ -75,21 +75,9 @@ export default class PluginOrderTool extends BaseTool<ISettings> {
 		//    #schedulePluginChangeEnforce 等文件写盘后再 enforce。重排不改集合成员，
 		//    不与该事件形成循环（computePluginOrder 幂等）。
 		this.registerEvent(
-			this.context._app.plugins.on("changed", () => {
-				// [诊断日志] 确认监听确实被触发；在 Obsidian 里 toggle 任一插件即应打印此行
-				this.context.log(
-					"info",
-					"app.plugins 'changed' 触发 → 待写盘后 enforce",
-					"plugin-order"
-				);
-				this.#schedulePluginChangeEnforce();
-			})
-		);
-		// [诊断日志] 确认监听已注册（onload 时打印一次）
-		this.context.log(
-			"info",
-			"已注册 app.plugins 'changed' 监听",
-			"plugin-order"
+			this.context._app.plugins.on("changed", () =>
+				this.#schedulePluginChangeEnforce()
+			)
 		);
 
 		// 3) 启动即 enforce 一次（静默：刷新缓存 + 修正顺序）
@@ -143,11 +131,15 @@ export default class PluginOrderTool extends BaseTool<ISettings> {
 		];
 	}
 
-	/** 串行执行，避免并发读写交错；所有入口（onload/订阅/命令/action/changed）共用 */
+	/**
+	 * 串行执行，避免并发读写交错；onload/订阅/命令/action 共用。
+	 * changed 事件走 {@link #schedulePluginChangeEnforce}（需先等写盘）。
+	 * `reason` 仅用于失败告警定位，正常路径不产生日志。
+	 */
 	#enqueueEnforce(options?: { withNotice?: boolean; reason?: string }): void {
 		const reason = options?.reason ?? "manual";
 		this.#enforceChain = this.#enforceChain
-			.then(() => this.#enforce(options?.withNotice === true, reason))
+			.then(() => this.#enforce(options?.withNotice === true))
 			.catch((error: unknown) => {
 				const message = error instanceof Error ? error.message : String(error);
 				this.context.log(
@@ -176,7 +168,7 @@ export default class PluginOrderTool extends BaseTool<ISettings> {
 				if (!this.enabled) return; // 卸载后不再动作
 				await this.#waitForConfigSettled();
 				if (!this.enabled) return; // 等待期间可能被卸载
-				await this.#enforce(false, "plugin-changed");
+				await this.#enforce(false);
 			})
 			.catch((error: unknown) => {
 				this.#pluginChangePending = false;
@@ -217,36 +209,15 @@ export default class PluginOrderTool extends BaseTool<ISettings> {
 			} catch {
 				// 读取/解析失败：当作未就绪，继续等
 			}
-			if (settled) {
-				// [诊断日志] 文件已反映本次启停，可安全 enforce
-				this.context.log(
-					"info",
-					`config 已写盘（等待 ~${attempt * 200}ms）→ enforce`,
-					"plugin-order"
-				);
-				return;
-			}
+			if (settled) return; // 文件已反映本次启停，可安全 enforce
 			await sleep(200);
 		}
-		// [诊断日志] 兜底：等太久仍尝试 enforce（best-effort）
-		this.context.log(
-			"warn",
-			"config 写盘等待超时（~6s），仍尝试 enforce",
-			"plugin-order"
-		);
+		// 超时兜底：等太久（~6s）仍尽力 enforce（best-effort，不打扰）
 	}
 
-	async #enforce(withNotice: boolean, reason = "unknown"): Promise<void> {
+	async #enforce(withNotice: boolean): Promise<void> {
 		const orderedIds = sanitizeIds(this.settings.config.priorityPlugins);
-		if (orderedIds.length === 0) {
-			// [诊断日志] 空列表：什么都不做（changed 频繁触发时靠这条快速确认已短路）
-			this.context.log(
-				"info",
-				`enforce 跳过：优先列表为空 (reason=${reason})`,
-				"plugin-order"
-			);
-			return; // 空配置：静默无操作
-		}
+		if (orderedIds.length === 0) return; // 空配置：静默无操作
 
 		const { configDir, adapter } = this.context._app.vault;
 
@@ -265,60 +236,19 @@ export default class PluginOrderTool extends BaseTool<ISettings> {
 		try {
 			enabledIds = JSON.parse(await adapter.read(configPath));
 		} catch {
-			this.context.log(
-				"warn",
-				`enforce 跳过：读取/解析 ${configPath} 失败 (reason=${reason})`,
-				"plugin-order"
-			);
 			if (withNotice) this.context.notice(LL.notice.plugin_order.invalid());
 			return;
-		}
-
-		// [诊断日志] 打印决策输入：优先项在文件数组中的实际下标（-1 = 不在文件中，
-		//   即未启用/未安装）。这是判断"为何 unchanged"的关键：
-		//   · 目标插件此刻下标已是 0 → 本次读到的确实已满足（可能稍后被其他写入者覆盖）；
-		//   · 下标为 -1 → 读早了，文件尚未反映刚发生的启用（读-写竞争）；
-		//   · 下标 > 0（尤其在末尾）→ 应当 reordered，若仍报 unchanged 则是判定逻辑问题。
-		if (Array.isArray(enabledIds)) {
-			const fileArr = enabledIds as unknown[];
-			const positions = orderedIds
-				.map((id) => `${id}@${fileArr.indexOf(id)}`)
-				.join(", ");
-			this.context.log(
-				"info",
-				`enforce 决策 (reason=${reason})：文件长度=${fileArr.length}，优先项位置=[${positions}]`,
-				"plugin-order"
-			);
 		}
 
 		// 3) 计算并写回（差异才写；结构异常不动文件；unchanged 不打扰）
 		const outcome = computePluginOrder(enabledIds, orderedIds);
 		if (outcome.status === "skipped-invalid") {
-			this.context.log(
-				"warn",
-				`enforce 跳过：community-plugins.json 结构异常 (reason=${reason})`,
-				"plugin-order"
-			);
 			if (withNotice) this.context.notice(LL.notice.plugin_order.invalid());
 			return;
 		}
 		if (outcome.status === "reordered") {
 			await adapter.write(configPath, JSON.stringify(outcome.nextIds));
-			// [诊断日志] 真正改动了文件——这行出现即说明监听→重排链路完整生效
-			this.context.log(
-				"info",
-				`enforce 已重排 community-plugins.json (reason=${reason})`,
-				"plugin-order",
-				outcome.nextIds
-			);
 			if (withNotice) this.context.notice(LL.notice.plugin_order.applied());
-		} else {
-			// [诊断日志] 顺序已满足，无需写文件（幂等短路，也是防循环的关键）
-			this.context.log(
-				"info",
-				`enforce 无需改动：顺序已满足 (reason=${reason})`,
-				"plugin-order"
-			);
 		}
 	}
 }
