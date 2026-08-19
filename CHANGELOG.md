@@ -4,6 +4,24 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [2.1.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.0.2...2.1.0) (2026-08-19)
+
+
+### ✨ 新增功能 (Features)
+
+* 实现 插件加载顺序 工具 ([6510241](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/65102413d8dbdff4beefcc860d0fd56450873a99))
+
+
+### ⚡ 性能优化 (Performance)
+
+* 移除使用 scanInstalledPlugins ([ad84144](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/ad841444dbeef065b015dada1079417c90787b90))
+* 统一走 SettingsStore ([92ca4bd](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/92ca4bdbc728a36c04158d231d9b301ad61f918a))
+
+
+### ♻️ 重构 (Refactor)
+
+* 移除log debug ([5a65b80](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/5a65b8064828dabd3af343d0f0dbeabd8a99accc))
+
 ## [2.0.2](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.0.1...2.0.2) (2026-08-14)
 
 
