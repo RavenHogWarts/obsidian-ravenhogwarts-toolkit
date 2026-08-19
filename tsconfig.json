@@ -11,7 +11,8 @@
 		"emitDecoratorMetadata": true,
 		"types": [
 			"obsidian",
-			"jest"
+			"jest",
+			"@obsidian-typings/obsidian-catalyst-latest"
 		],
 		"importHelpers": true,
 		"isolatedModules": true,
