@@ -221,12 +221,8 @@ export default class PluginOrderTool extends BaseTool<ISettings> {
 
 		const { configDir, adapter } = this.context._app.vault;
 
-		// 1) 刷新已安装插件缓存（无论是否启用：运行时 manifests 主路径 / 目录扫描兜底）
-		const installed = await collectInstalledPlugins(
-			this.context._app,
-			adapter,
-			configDir
-		);
+		// 1) 刷新已安装插件缓存（无论是否启用：运行时 app.plugins.manifests，内置 API）
+		const installed = collectInstalledPlugins(this.context._app);
 		await this.updateData("installedPlugins", installed);
 		await this.updateData("installedPluginsCachedAt", Date.now());
 
