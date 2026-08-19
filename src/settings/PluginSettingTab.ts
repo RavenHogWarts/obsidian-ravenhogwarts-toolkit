@@ -71,17 +71,16 @@ export class PluginSettingTab extends ObPluginSettingTab {
 			return;
 		}
 
-		const parts = key.split(".");
-		const settings = this.plugin.settings;
-		let current: unknown = settings;
-		for (let i = 0; i < parts.length - 1; i++) {
-			if (current == null || typeof current !== "object") return;
-			current = (current as Record<string, unknown>)[parts[i]];
+		// config/data 键统一走 SettingsStore：写入路径归一（删除原先手写的
+		// 路径遍历），且写入后通知订阅者——工具可通过
+		// `settingsStore.store.subscribe` 感知设置页的修改（plugin-order 依赖此行为）
+		try {
+			await this.plugin.settingsStore.updateSettingByPath(key, value);
+		} catch {
+			this.plugin.pluginContext.log(
+				"warn",
+				`setControlValue: invalid setting path ${key}`
+			);
 		}
-		if (current != null && typeof current === "object") {
-			(current as Record<string, unknown>)[parts[parts.length - 1]] =
-				value;
-		}
-		await this.plugin.saveSettings();
 	}
 }
