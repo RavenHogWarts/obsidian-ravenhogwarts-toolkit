@@ -4,6 +4,13 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [2.1.2](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.1.1...2.1.2) (2026-09-11)
+
+
+### 🐛 问题修复 (Bug Fixes)
+
+* **folder-templates:** 补全等待新建文件初始打开的核心实现 ([79b8d5d](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/79b8d5d8ec376e1c86f4517f44b7486b378c01aa))
+
 ## [2.1.1](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.1.0...2.1.1) (2026-09-11)
 
 
