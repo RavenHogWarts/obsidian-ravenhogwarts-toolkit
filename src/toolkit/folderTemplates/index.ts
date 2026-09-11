@@ -84,9 +84,9 @@ export class FolderTemplates extends BaseTool<ISettings> {
 		this.context._app.workspace.onLayoutReady(() => {
 			this.triggerOnFileCreationEvent = this.context._app.vault.on(
 				"create",
-				async (file) => {
+				(file) => {
 					if (file instanceof TFile) {
-						await this.handleFileCreate(file);
+						void this.handleFileCreate(file);
 					}
 				}
 			);
@@ -176,7 +176,16 @@ export class FolderTemplates extends BaseTool<ISettings> {
 
 		// 先判定整条规则是否应作用于该文件：empty-only 模式下非空文件应完全不动
 		// （既不套模板也不重命名），避免出现"改了名却没套模板"的割裂行为。
-		const content = await this.context._app.vault.read(file);
+		// 此处仅为判定而非修改，cachedRead 优先读内存缓存即可；新建空笔记在
+		// 落盘前磁盘上不存在（Obsidian 先建索引后写文件），读取失败按空内容处理
+		// ——未落盘的新笔记本就是空的，且后续 vault.process 回调会以真实内容
+		// 重新校验，不会因此丢数据。
+		let content = "";
+		try {
+			content = await this.context._app.vault.cachedRead(file);
+		} catch {
+			// 文件尚未落盘或已被删除：视为空文件，交由后续流程处理
+		}
 		if (!shouldApplyRule(rule.applyMode, content.trim().length === 0)) {
 			return;
 		}
