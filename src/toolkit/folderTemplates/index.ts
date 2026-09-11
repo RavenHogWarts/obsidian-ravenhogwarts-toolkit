@@ -5,6 +5,7 @@ import { IPluginContext } from "@src/model/toolkit/IPluginContext";
 import { reactSetting } from "@src/settings/reactSetting";
 import {
 	type EventRef,
+	MarkdownView,
 	normalizePath,
 	TFile,
 	type SettingDefinitionItem,
@@ -46,6 +47,11 @@ export class FolderTemplates extends BaseTool<ISettings> {
 	 */
 	private readonly processedCtimes = new Map<string, number>();
 	private static readonly INFLIGHT_TTL_MS = 10000;
+	/** 等待新建文件初始打开的轮询间隔与总超时（见 waitForInitialOpen） */
+	private static readonly OPEN_WAIT_INTERVAL_MS = 50;
+	private static readonly OPEN_WAIT_TIMEOUT_MS = 2000;
+	/** 编辑器持有文件后的额外静置，确保 setState→loadFile 的读取链走完 */
+	private static readonly OPEN_SETTLE_DELAY_MS = 100;
 
 	getDefaultSettings(): ISettings {
 		return DefaultSettings;
@@ -174,6 +180,18 @@ export class FolderTemplates extends BaseTool<ISettings> {
 			return;
 		}
 
+		// 等 Obsidian 对新建文件的初始打开流程走完再动手（详见 waitForInitialOpen）。
+		// 判定与套用放在等待之后：等待期间用户若已输入内容，下面的空文件判定
+		// 能拿到最新缓存，避免对已非空的文件重命名。
+		const opened = await this.waitForInitialOpen(file);
+		if (
+			!opened &&
+			!(await this.context._app.vault.adapter.exists(file.path))
+		) {
+			// 等待期间文件已被删除：放弃处理
+			return;
+		}
+
 		// 先判定整条规则是否应作用于该文件：empty-only 模式下非空文件应完全不动
 		// （既不套模板也不重命名），避免出现"改了名却没套模板"的割裂行为。
 		// 此处仅为判定而非修改，cachedRead 优先读内存缓存即可；新建空笔记在
@@ -216,6 +234,52 @@ export class FolderTemplates extends BaseTool<ISettings> {
 				this.processedCtimes.delete(key);
 			}
 		}
+	}
+
+	/**
+	 * 等待 Obsidian 完成对新建文件的初始打开。
+	 *
+	 * 新建笔记的内部流水线（createAbstractFile → afterCreate → openFile →
+	 * setState → loadFile）在 create 事件之后才异步推进，而 loadFile 持有按
+	 * 创建时路径（如「未命名.md」）的磁盘读取请求。若在 loadFile 读盘之前就
+	 * 完成重命名，旧路径已不存在，loadFile 会抛 ENOENT，且编辑器停留在旧
+	 * 文件名上。因此重命名/套模板必须等到「文件已落盘 且 已被某个 Markdown
+	 * 编辑器视图持有」，再静置一小段时间让 setState→loadFile 的 promise 链
+	 * 走完。
+	 *
+	 * 超时返回 false（后台/批量创建等不会有编辑器打开的场景）——此时不存在
+	 * 即将发生的 loadFile，立即应用规则是安全的。
+	 */
+	private async waitForInitialOpen(file: TFile): Promise<boolean> {
+		const deadline = Date.now() + FolderTemplates.OPEN_WAIT_TIMEOUT_MS;
+		while (Date.now() < deadline) {
+			if (
+				(await this.context._app.vault.adapter.exists(file.path)) &&
+				this.isHeldByEditor(file)
+			) {
+				await FolderTemplates.sleep(
+					FolderTemplates.OPEN_SETTLE_DELAY_MS
+				);
+				return true;
+			}
+			await FolderTemplates.sleep(FolderTemplates.OPEN_WAIT_INTERVAL_MS);
+		}
+		return false;
+	}
+
+	/** 文件是否已被某个 Markdown 编辑器视图持有（初始打开已进入编辑器阶段）。 */
+	private isHeldByEditor(file: TFile): boolean {
+		let held = false;
+		this.context._app.workspace.iterateAllLeaves((leaf) => {
+			if (leaf.view instanceof MarkdownView && leaf.view.file === file) {
+				held = true;
+			}
+		});
+		return held;
+	}
+
+	private static sleep(ms: number): Promise<void> {
+		return new Promise((resolve) => window.setTimeout(resolve, ms));
 	}
 
 	/** 先重命名再填充模板，使模板中的 ${notename} 反映新文件名 */
