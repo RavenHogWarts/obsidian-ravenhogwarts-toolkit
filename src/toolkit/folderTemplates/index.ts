@@ -177,9 +177,9 @@ export class FolderTemplates extends BaseTool<ISettings> {
 		// 先判定整条规则是否应作用于该文件：empty-only 模式下非空文件应完全不动
 		// （既不套模板也不重命名），避免出现"改了名却没套模板"的割裂行为。
 		// 此处仅为判定而非修改，cachedRead 优先读内存缓存即可；新建空笔记在
-		// 落盘前磁盘上不存在（Obsidian 先建索引后写文件），读取失败按空内容处理
-		// ——未落盘的新笔记本就是空的，且后续 vault.process 回调会以真实内容
-		// 重新校验，不会因此丢数据。
+		// 落盘前磁盘上可能不存在（Obsidian 先建索引后写文件），读取失败按空内容
+		// 处理——未落盘的新笔记本就是空的，且后续 vault.process 回调会以真实
+		// 内容重新校验，不会因此丢数据。
 		let content = "";
 		try {
 			content = await this.context._app.vault.cachedRead(file);
