@@ -4,6 +4,14 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [2.1.1](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.1.0...2.1.1) (2026-09-11)
+
+
+### 🐛 问题修复 (Bug Fixes)
+
+* **folder-templates:** 修复新建笔记预读未落盘文件抛出的未捕获 ENOENT ([c2bb48c](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/c2bb48cee89a78ed58a5013e9fbbc8cb37579dc9))
+* **folder-templates:** 等待新建文件初始打开完成后再应用规则 ([9d03bcd](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/9d03bcd66cc2c436baac6addf116dbd94a84a0be))
+
 ## [2.1.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.0.2...2.1.0) (2026-08-19)
 
 
