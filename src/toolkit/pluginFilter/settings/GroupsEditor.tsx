@@ -2,7 +2,7 @@ import { LL } from "@src/i18n/i18n";
 import type { IInstalledPluginEntry } from "@src/toolkit/pluginOrder/types";
 import type { App } from "obsidian";
 import { useEffect, useRef, useState } from "react";
-import { createGroupId } from "../service/groups";
+import { createGroupId, sortMembersForDisplay } from "../service/groups";
 import type { IPluginGroup } from "../types";
 import { Icon } from "./Icon";
 import { PluginSuggest } from "./PluginSuggest";
@@ -235,12 +235,14 @@ function GroupCard({
 		>
 			<div className="rht-pf-group-head">
 				<button
-					className="rht-pf-collapse clickable-icon"
+					className={`rht-pf-collapse clickable-icon${
+						collapsed ? " is-collapsed" : ""
+					}`}
 					type="button"
 					aria-label={collapsed ? T.expand() : T.collapse()}
 					onClick={() => setCollapsed((v) => !v)}
 				>
-					<Icon name={collapsed ? "chevron-right" : "chevron-down"} />
+					<Icon name="chevron-down" />
 				</button>
 				<input
 					ref={nameRef}
@@ -296,7 +298,10 @@ function GroupCard({
 						<div className="rht-pf-empty">{T.empty_members()}</div>
 					) : (
 						<div className="rht-pf-members">
-							{group.pluginIds.map((id) => {
+							{sortMembersForDisplay(group.pluginIds, (id) =>
+								installed.find((entry) => entry.id === id)
+									?.name
+							).map((id) => {
 								const name = installed.find(
 									(entry) => entry.id === id,
 								)?.name;

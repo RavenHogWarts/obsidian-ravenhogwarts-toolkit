@@ -2,6 +2,7 @@ import { LL } from "@src/i18n/i18n";
 import type { IInstalledPluginEntry } from "@src/toolkit/pluginOrder/types";
 import type { App } from "obsidian";
 import { useEffect, useRef, useState } from "react";
+import { sortMembersForDisplay } from "../service/groups";
 import { Icon } from "./Icon";
 import { PluginSuggest } from "./PluginSuggest";
 import "./pluginFilter.css";
@@ -66,12 +67,14 @@ export function GuardEditor({
 
 	return (
 		<div className="rht-pf-guard">
-			<div className="rht-pf-empty">{T.hint()}</div>
+			<div className="rht-pf-guard-hint">{T.hint()}</div>
 			{ids.length === 0 ? (
 				<div className="rht-pf-empty">{T.empty()}</div>
 			) : (
 				<div className="rht-pf-members">
-					{ids.map((id) => {
+					{sortMembersForDisplay(ids, (id) =>
+						installed.find((entry) => entry.id === id)?.name
+					).map((id) => {
 						const name = installed.find(
 							(entry) => entry.id === id,
 						)?.name;

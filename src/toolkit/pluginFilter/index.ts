@@ -20,6 +20,8 @@ import {
 	isHiddenByGroup,
 	normalizeGroups,
 	normalizeStringList,
+	sortGroupsById,
+	sortMembersForDisplay,
 } from "./service/groups";
 import { GroupsEditor } from "./settings/GroupsEditor";
 import { GuardEditor } from "./settings/GuardEditor";
@@ -453,7 +455,7 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 				});
 			});
 		}
-		const groups = this.settings.config.groups;
+		const groups = sortGroupsById(this.settings.config.groups);
 		if (groups.length > 0) {
 			menu.addSeparator();
 			const selection = this.#selection;
@@ -720,7 +722,8 @@ class BatchDisableConfirmModal extends Modal {
 		});
 
 		const list = this.contentEl.createDiv("otk-pf-confirm-list");
-		for (const id of this.#guarded) {
+		// 勾选行按显示名排序（与设置页 chips 的排序语义一致）
+		for (const id of sortMembersForDisplay(this.#guarded, this.nameOf)) {
 			const label = list.createEl("label", {
 				cls: "otk-pf-confirm-row",
 			});
