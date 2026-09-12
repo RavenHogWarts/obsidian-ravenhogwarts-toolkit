@@ -7,6 +7,16 @@ export function createGroupId(): string {
 		.slice(2, 8)}`;
 }
 
+/** 规范化字符串 id 列表：只留非空字符串、去重保序（抵御手改 data.json） */
+export function normalizeStringList(value: unknown): string[] {
+	if (!Array.isArray(value)) return [];
+	return [
+		...new Set(
+			value.filter((x): x is string => typeof x === "string" && x !== "")
+		),
+	];
+}
+
 /**
  * 规范化存储的分组（抵御手改 data.json 的脏数据）：
  * 丢非法项、id 去重、空名字兜底为 `fallbackName`、组内成员去重保序、剔除空串。
@@ -23,22 +33,13 @@ export function normalizeGroups(
 		const record = entry as Record<string, unknown>;
 		const id = typeof record.id === "string" ? record.id : "";
 		if (id === "" || seenIds.has(id)) continue;
-		const rawIds = Array.isArray(record.pluginIds)
-			? record.pluginIds
-			: [];
 		result.push({
 			id,
 			name:
 				typeof record.name === "string" && record.name.trim() !== ""
 					? record.name
 					: fallbackName,
-			pluginIds: [
-				...new Set(
-					rawIds.filter(
-						(x): x is string => typeof x === "string" && x !== ""
-					)
-				),
-			],
+			pluginIds: normalizeStringList(record.pluginIds),
 		});
 		seenIds.add(id);
 	}

@@ -165,12 +165,19 @@ const en = {
 			action_tooltip: "Bulk-toggle the filtered plugins",
 			action_enable: "Enable all ({count})",
 			action_disable: "Disable all ({count})",
-			confirm_self_title: "Batch disable includes this plugin",
-			confirm_self_desc:
-				"The batch-disable targets include this plugin (RavenHogwarts Toolkit). Disabling it makes the filter and bulk actions unavailable immediately. Disable it too?",
-			confirm_include_self: "Include this plugin",
-			confirm_exclude_self: "Exclude this plugin",
+			confirm_title: "Batch disable includes protected plugins",
+			confirm_desc:
+				"The plugins below are on the disable protection list and may affect your setup if disabled. Checked ones will be disabled; uncheck to skip.",
+			confirm_run: "Disable selected ({count})",
+			confirm_self_badge: "this plugin",
 			confirm_cancel: "Cancel",
+			guard: {
+				name: "Disable protection list",
+				hint: "A confirmation dialog appears when a batch disable includes these plugins (each can be excluded); this plugin (RavenHogwarts Toolkit) is always protected and needs no entry.",
+				empty: "No protected plugins — search below to add",
+				search_placeholder: "Search plugins by name or ID…",
+				remove_member: "Remove",
+			},
 			groups: {
 				name: "Plugin groups",
 				desc: "Group plugins your way; groups appear in the filter menu, and one plugin can join multiple groups",

@@ -254,11 +254,6 @@
 	font-size: var(--font-ui-smaller);
 }
 
-.rht-pf-suggest-id {
-	color: var(--text-muted);
-	font-size: var(--font-ui-smaller);
-}
-
 /* 过滤规则：状态类挂在列表容器 .setting-items 上，与原生搜索的显隐天然 AND 叠加。
    [data-plugin-id] 限定只作用于插件行——tab 内原生开关行（如"自动检查插件更新"）
    同样是 .setting-item.mod-toggle 但没有 data-plugin-id，必须排除，否则会被误隐藏。 */
@@ -278,4 +273,53 @@
 /* 分组过滤：JS 按成员关系给非成员行挂此类（数据关系无法用容器状态类表达） */
 .setting-item.otk-pf-group-hidden {
 	display: none;
+}
+
+/* ── 禁用保护清单编辑器 ────────────────────────────────────────── */
+
+.rht-pf-guard {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+}
+
+/* ── 批量禁用确认框：保护插件勾选列表 ──────────────────────────── */
+
+.otk-pf-confirm-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-1);
+	max-height: 240px;
+	overflow-y: auto;
+	margin-bottom: var(--size-2-2);
+}
+
+.otk-pf-confirm-row {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	padding: var(--size-2-1) var(--size-2-2);
+	border-radius: var(--radius-s);
+	background: var(--background-secondary);
+	cursor: var(--cursor);
+}
+
+.otk-pf-confirm-row:hover {
+	background: var(--background-modifier-hover);
+}
+
+.otk-pf-confirm-name {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.otk-pf-confirm-badge {
+	color: var(--text-accent);
+	font-size: var(--font-ui-smaller);
+	border: 1px solid var(--text-accent);
+	border-radius: 999px;
+	padding: 0 var(--size-2-1);
+	white-space: nowrap;
 }

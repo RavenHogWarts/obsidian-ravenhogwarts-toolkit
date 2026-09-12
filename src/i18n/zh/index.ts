@@ -158,12 +158,19 @@ const zh = {
 			action_tooltip: "批量操作筛选中的插件",
 			action_enable: "一键启用 ({count})",
 			action_disable: "一键禁用 ({count})",
-			confirm_self_title: "批量禁用包含本插件",
-			confirm_self_desc:
-				"本次批量禁用的目标中包含本插件（RavenHogwarts Toolkit）。禁用后筛选与批量操作将立即不可用，是否一并禁用？",
-			confirm_include_self: "一并禁用",
-			confirm_exclude_self: "排除本插件",
+			confirm_title: "批量禁用包含受保护的插件",
+			confirm_desc:
+				"以下插件在禁用保护清单中，禁用后可能影响使用。勾选的将被一并禁用，取消勾选则跳过。",
+			confirm_run: "禁用所选 ({count})",
+			confirm_self_badge: "本插件",
 			confirm_cancel: "取消",
+			guard: {
+				name: "禁用保护清单",
+				hint: "一键禁用的目标中包含这些插件时会先弹窗确认（可逐个排除）；本插件（RavenHogwarts Toolkit）始终受保护，无需添加。",
+				empty: "暂无保护插件，在下方搜索添加",
+				search_placeholder: "输入插件名或 ID 搜索添加…",
+				remove_member: "移除",
+			},
 			groups: {
 				name: "插件分组",
 				desc: "为插件建立分组；分组会出现在筛选菜单中，同一插件可属于多个分组",

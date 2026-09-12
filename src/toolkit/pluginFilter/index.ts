@@ -5,6 +5,7 @@ import type { IPluginContext } from "@src/model/toolkit/IPluginContext";
 import { reactSetting } from "@src/settings/reactSetting";
 import { collectInstalledPlugins } from "@src/toolkit/pluginOrder/service/pluginInventory";
 import {
+	ButtonComponent,
 	Menu,
 	Modal,
 	Setting,
@@ -15,8 +16,13 @@ import {
 } from "obsidian";
 import { createElement } from "react";
 import { computeCounts, pickTargets } from "./service/filterCore";
-import { isHiddenByGroup, normalizeGroups } from "./service/groups";
+import {
+	isHiddenByGroup,
+	normalizeGroups,
+	normalizeStringList,
+} from "./service/groups";
 import { GroupsEditor } from "./settings/GroupsEditor";
+import { GuardEditor } from "./settings/GuardEditor";
 import {
 	DefaultSettings,
 	FILTER_STATES,
@@ -81,23 +87,25 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 	}
 
 	async initialize(context: IPluginContext): Promise<void> {
-		// 规范化存储的分组（抵御手改 data.json 的脏数据）
+		// 规范化存储的分组与保护清单（抵御手改 data.json 的脏数据）
 		const raw = context._settingsStore.settings.toolkit[this.info.id] as
-			| { config?: { groups?: unknown } }
+			| { config?: { groups?: unknown; protectedIds?: unknown } }
 			| undefined;
 		if (raw?.config) {
 			raw.config.groups = normalizeGroups(
 				raw.config.groups,
 				LL.settings.plugin_filter.groups.unnamed()
 			);
+			raw.config.protectedIds = normalizeStringList(
+				raw.config.protectedIds
+			);
 		}
 		await super.initialize(context);
 	}
 
 	getSettingItems(): SettingDefinitionItem[] {
-		// 分组编辑器为 React 岛：添加/删除分组、行内改名、成员 chips 增删
-		// （AbstractInputSuggest 联想添加）；本地状态 + 异步落盘，
-		// 不触发 settingTab.update()（不整页重渲染）。
+		// 两个 React 岛：分组编辑器 + 禁用保护清单编辑器。
+		// 本地状态 + 异步落盘，不触发 settingTab.update()（不整页重渲染）。
 		return [
 			reactSetting(LL.settings.plugin_filter.groups.name(), () =>
 				createElement(GroupsEditor, {
@@ -107,6 +115,17 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 						collectInstalledPlugins(this.context._app),
 					persist: (groups) => {
 						void this.updateConfig("groups", groups);
+					},
+				})
+			),
+			reactSetting(LL.settings.plugin_filter.guard.name(), () =>
+				createElement(GuardEditor, {
+					app: this.context._app,
+					initialIds: this.settings.config.protectedIds,
+					getInstalledPlugins: () =>
+						collectInstalledPlugins(this.context._app),
+					persist: (ids) => {
+						void this.updateConfig("protectedIds", ids);
 					},
 				})
 			),
@@ -495,8 +514,8 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 	}
 
 	/**
-	 * 批量禁用守卫：目标集中含 OTK 自身时弹确认框（可排除本插件）；
-	 * 其余情况直接执行。
+	 * 批量禁用守卫：目标命中保护清单（含 OTK 自身，始终隐式保护）时弹确认框
+	 * （可逐个排除）；其余情况直接执行。
 	 */
 	#applyEnableState(
 		visible: { id: string; enabled: boolean }[],
@@ -507,18 +526,26 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 		if (this.#batchRunning) return;
 
 		const selfId = this.context._plugin.manifest.id;
-		if (!enable && targets.includes(selfId)) {
-			new BatchDisableSelfModal(this.context._app, (includeSelf) => {
-				if (!includeSelf) {
-					void this.#runBatch(
-						targets.filter((id) => id !== selfId),
-						false
-					);
-					return;
-				}
-				void this.#runBatch(targets, false);
-			}).open();
-			return;
+		if (!enable) {
+			const guards = new Set([
+				...this.settings.config.protectedIds,
+				selfId,
+			]);
+			const guarded = targets.filter((id) => guards.has(id));
+			if (guarded.length > 0) {
+				const installed = collectInstalledPlugins(this.context._app);
+				const nameOf = (id: string) =>
+					installed.find((entry) => entry.id === id)?.name ?? id;
+				new BatchDisableConfirmModal(
+					this.context._app,
+					targets,
+					guarded,
+					nameOf,
+					selfId,
+					(finalTargets) => void this.#runBatch(finalTargets, false)
+				).open();
+				return;
+			}
 		}
 		void this.#runBatch(targets, enable);
 	}
@@ -647,46 +674,98 @@ function sampleIds(tabs: unknown[]): string {
 }
 
 /**
- * 批量禁用包含 OTK 自身时的确认框：
- * 「排除本插件」（默认安全项）／「一并禁用」（warning）／取消（Esc/关闭）。
+ * 批量禁用确认框：目标命中保护清单（含 OTK 自身，始终隐式保护）时弹出。
+ * 命中的保护插件逐行列出，**默认勾选（一并禁用）**，可逐个取消勾选排除；
+ * 「禁用所选 (N)」的 N = 最终批次大小（未受保护目标 + 勾选的保护插件），随勾选实时更新。
  */
-class BatchDisableSelfModal extends Modal {
-	#onConfirm: (includeSelf: boolean) => void;
+class BatchDisableConfirmModal extends Modal {
+	/** 勾选的保护插件（默认全选 = 一并禁用） */
+	#checked: Set<string>;
+	/** 未受保护的目标（始终禁用，不出现勾选行） */
+	#rest: string[];
+	/** 命中保护清单的目标（勾选行，可逐个排除） */
+	#guarded: string[];
+	/** 「禁用所选」按钮引用（勾选变化时实时更新计数文案） */
+	#runButton: ButtonComponent | null = null;
 
-	constructor(app: App, onConfirm: (includeSelf: boolean) => void) {
+	constructor(
+		app: App,
+		targets: string[],
+		guarded: string[],
+		private readonly nameOf: (id: string) => string,
+		private readonly selfId: string,
+		private readonly onConfirm: (finalTargets: string[]) => void
+	) {
 		super(app);
-		this.#onConfirm = onConfirm;
+		this.#guarded = guarded;
+		this.#rest = targets.filter((id) => !guarded.includes(id));
+		this.#checked = new Set(guarded);
+	}
+
+	#batchSize(): number {
+		return this.#rest.length + this.#checked.size;
+	}
+
+	#refreshRunLabel(): void {
+		this.#runButton?.setButtonText(
+			LL.settings.plugin_filter.confirm_run({ count: this.#batchSize() })
+		);
 	}
 
 	onOpen(): void {
-		this.titleEl.setText(LL.settings.plugin_filter.confirm_self_title());
+		this.titleEl.setText(LL.settings.plugin_filter.confirm_title());
 		this.contentEl.createEl("p", {
-			text: LL.settings.plugin_filter.confirm_self_desc(),
+			text: LL.settings.plugin_filter.confirm_desc(),
 			cls: "mod-muted",
 		});
+
+		const list = this.contentEl.createDiv("otk-pf-confirm-list");
+		for (const id of this.#guarded) {
+			const label = list.createEl("label", {
+				cls: "otk-pf-confirm-row",
+			});
+			const checkbox = label.createEl("input", { type: "checkbox" });
+			checkbox.checked = true;
+			checkbox.onchange = () => {
+				if (checkbox.checked) {
+					this.#checked.add(id);
+				} else {
+					this.#checked.delete(id);
+				}
+				this.#refreshRunLabel();
+			};
+			label.createSpan({
+				cls: "otk-pf-confirm-name",
+				text: this.nameOf(id),
+			});
+			if (id === this.selfId) {
+				label.createSpan({
+					cls: "otk-pf-confirm-badge",
+					text: LL.settings.plugin_filter.confirm_self_badge(),
+				});
+			}
+			label.setAttribute("title", id);
+		}
+
 		new Setting(this.contentEl)
 			.addButton((button) =>
 				button
 					.setButtonText(LL.settings.plugin_filter.confirm_cancel())
 					.onClick(() => this.close())
 			)
-			.addButton((button) =>
-				button
-					.setButtonText(LL.settings.plugin_filter.confirm_exclude_self())
+			.addButton((button) => {
+				this.#runButton = button
 					.setCta()
+					.setButtonText(
+						LL.settings.plugin_filter.confirm_run({
+							count: this.#batchSize(),
+						})
+					)
 					.onClick(() => {
 						this.close();
-						this.#onConfirm(false);
-					})
-			)
-			.addButton((button) =>
-				button
-					.setButtonText(LL.settings.plugin_filter.confirm_include_self())
-					.setDestructive()
-					.onClick(() => {
-						this.close();
-						this.#onConfirm(true);
-					})
-			);
+						this.onConfirm([...this.#rest, ...this.#checked]);
+					});
+				return button;
+			});
 	}
 }
