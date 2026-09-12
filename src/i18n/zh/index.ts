@@ -155,6 +155,15 @@ const zh = {
 			name: "插件筛选",
 			desc: "在第三方插件设置页按启用状态筛选插件列表",
 			tooltip: "插件筛选：{label}",
+			action_tooltip: "批量操作筛选中的插件",
+			action_enable: "一键启用 ({count})",
+			action_disable: "一键禁用 ({count})",
+			confirm_self_title: "批量禁用包含本插件",
+			confirm_self_desc:
+				"本次批量禁用的目标中包含本插件（RavenHogwarts Toolkit）。禁用后筛选与批量操作将立即不可用，是否一并禁用？",
+			confirm_include_self: "一并禁用",
+			confirm_exclude_self: "排除本插件",
+			confirm_cancel: "取消",
 			all: "全部 ({count})",
 			enabled: "已启用 ({count})",
 			disabled: "已禁用 ({count})",
@@ -211,6 +220,10 @@ const zh = {
 		plugin_order: {
 			applied: "已重排插件加载顺序（下次启动生效）",
 			invalid: "community-plugins.json 结构异常，已跳过",
+		},
+		plugin_filter: {
+			enabled_n: "已启用 {count} 个插件",
+			disabled_n: "已禁用 {count} 个插件",
 		},
 		folder_scaffolder: {
 			no_template: "没有可用的模板，请先在设置中添加",

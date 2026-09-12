@@ -162,6 +162,15 @@ const en = {
 			name: "Plugin filter",
 			desc: "Filter the installed-plugin list by enabled state in the Community plugins settings",
 			tooltip: "Plugin filter: {label}",
+			action_tooltip: "Bulk-toggle the filtered plugins",
+			action_enable: "Enable all ({count})",
+			action_disable: "Disable all ({count})",
+			confirm_self_title: "Batch disable includes this plugin",
+			confirm_self_desc:
+				"The batch-disable targets include this plugin (RavenHogwarts Toolkit). Disabling it makes the filter and bulk actions unavailable immediately. Disable it too?",
+			confirm_include_self: "Include this plugin",
+			confirm_exclude_self: "Exclude this plugin",
+			confirm_cancel: "Cancel",
 			all: "All ({count})",
 			enabled: "Enabled ({count})",
 			disabled: "Disabled ({count})",
@@ -220,6 +229,10 @@ const en = {
 		plugin_order: {
 			applied: "Plugin load order updated (effective on next restart)",
 			invalid: "community-plugins.json has an unexpected structure, skipped",
+		},
+		plugin_filter: {
+			enabled_n: "Enabled {count} plugins",
+			disabled_n: "Disabled {count} plugins",
 		},
 		folder_scaffolder: {
 			no_template: "No templates available, add one in settings first",

@@ -3,11 +3,14 @@ import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
 import {
 	Menu,
+	Modal,
+	Setting,
 	setIcon,
+	type App,
 	type SettingDefinitionItem,
 	type SettingTab,
 } from "obsidian";
-import { computeCounts } from "./service/filterCore";
+import { computeCounts, pickTargets } from "./service/filterCore";
 import {
 	DefaultSettings,
 	FILTER_STATES,
@@ -22,6 +25,8 @@ const DEBUG = true;
 
 /** 筛选按钮图标（恒定；有激活筛选时按钮高亮） */
 const BUTTON_ICON = "filter";
+/** 批量操作按钮图标 */
+const ACTION_ICON = "zap";
 
 /**
  * plugin-filter：在社区插件设置页头（"重新加载插件 / 打开插件文件夹"同排）注入
@@ -55,6 +60,8 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 	#lastCountsKey = "";
 	/** rAF 去抖：合并一次渲染的成批 childList 突变 */
 	#refreshQueued = false;
+	/** 批量启停执行中（防菜单重入并发批次） */
+	#batchRunning = false;
 	/** 有界轮询定时器（onload 期 resolve 失败时的兜底；成功即自停） */
 	#retryTimer: number | null = null;
 	#attempts = 0;
@@ -212,20 +219,30 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 			return;
 		}
 		// 幂等：单次渲染内可能多次进入（attach 补刷 + 突变回调）
-		if (control.querySelector(":scope > [data-otk-plugin-filter]")) {
-			return;
+		if (!control.querySelector(":scope > [data-otk-plugin-filter]")) {
+			const button = control.createDiv(
+				"clickable-icon extra-setting-button otk-pf-btn"
+			);
+			button.setAttribute("data-otk-plugin-filter", "");
+			button.setAttribute("tabindex", "0");
+			button.setAttribute("aria-label", this.#buttonLabel());
+			setIcon(button, BUTTON_ICON);
+			if (!this.#injectLogged) {
+				this.#injectLogged = true;
+				this.#debug("filter button injected into header control");
+			}
 		}
-
-		const button = control.createDiv(
-			"clickable-icon extra-setting-button otk-pf-btn"
-		);
-		button.setAttribute("data-otk-plugin-filter", "");
-		button.setAttribute("tabindex", "0");
-		button.setAttribute("aria-label", this.#buttonLabel());
-		setIcon(button, BUTTON_ICON);
-		if (!this.#injectLogged) {
-			this.#injectLogged = true;
-			this.#debug("filter button injected into header control");
+		if (!control.querySelector(":scope > [data-otk-plugin-actions]")) {
+			const action = control.createDiv(
+				"clickable-icon extra-setting-button"
+			);
+			action.setAttribute("data-otk-plugin-actions", "");
+			action.setAttribute("tabindex", "0");
+			action.setAttribute(
+				"aria-label",
+				LL.settings.plugin_filter.action_tooltip()
+			);
+			setIcon(action, ACTION_ICON);
 		}
 	}
 
@@ -317,13 +334,138 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 		menu.showAtMouseEvent(evt);
 	}
 
+	/** 当前筛选可见的插件行（含原生搜索的显隐效果；隐藏行不计入批量操作） */
+	#collectVisiblePlugins(): { id: string; enabled: boolean }[] {
+		const container = this.#tab?.containerEl;
+		if (!container) return [];
+		return Array.from(
+			container.querySelectorAll<HTMLElement>(
+				".setting-items > .setting-item.mod-toggle[data-plugin-id]"
+			),
+			(el) => ({
+				// offsetParent 为 null ⇔ display:none（被筛选/搜索隐藏的行）
+				visible: el.offsetParent !== null,
+				id: el.getAttribute("data-plugin-id") ?? "",
+				enabled:
+					el
+						.querySelector(".checkbox-container")
+						?.classList.contains("is-enabled") ?? false,
+			})
+		).filter((item) => item.visible && item.id !== "");
+	}
+
+	#openActionsMenu(evt: MouseEvent): void {
+		if (this.#batchRunning) return;
+		const visible = this.#collectVisiblePlugins();
+		const menu = new Menu();
+		menu.addItem((item) => {
+			const count = pickTargets(visible, true).length;
+			item.setTitle(LL.settings.plugin_filter.action_enable({ count }));
+			item.onClick(() => void this.#applyEnableState(visible, true));
+		});
+		menu.addItem((item) => {
+			const count = pickTargets(visible, false).length;
+			item.setTitle(LL.settings.plugin_filter.action_disable({ count }));
+			item.onClick(() => void this.#applyEnableState(visible, false));
+		});
+		menu.showAtMouseEvent(evt);
+	}
+
+	/**
+	 * 批量禁用守卫：目标集中含 OTK 自身时弹确认框（可排除本插件）；
+	 * 其余情况直接执行。
+	 */
+	#applyEnableState(
+		visible: { id: string; enabled: boolean }[],
+		enable: boolean,
+	): void {
+		const targets = pickTargets(visible, enable);
+		if (targets.length === 0) return;
+		if (this.#batchRunning) return;
+
+		const selfId = this.context._plugin.manifest.id;
+		if (!enable && targets.includes(selfId)) {
+			new BatchDisableSelfModal(this.context._app, (includeSelf) => {
+				if (!includeSelf) {
+					void this.#runBatch(
+						targets.filter((id) => id !== selfId),
+						false
+					);
+					return;
+				}
+				void this.#runBatch(targets, false);
+			}).open();
+			return;
+		}
+		void this.#runBatch(targets, enable);
+	}
+
+	/**
+	 * 串行批量启停（逐个 await，避免并发写 community-plugins.json 竞争）。
+	 * 目标 = 打开菜单时快照的可见插件中未处于目标状态者；执行中列表重渲染
+	 * 不影响本次操作范围。OTK 自身排到最后处理：全部禁用时其余插件先完成，
+	 * 本工具最后卸载，避免批次中途中断。单条失败不中断批次。
+	 */
+	async #runBatch(targets: string[], enable: boolean): Promise<void> {
+		if (targets.length === 0) return;
+		if (this.#batchRunning) return;
+		this.#batchRunning = true;
+		const selfId = this.context._plugin.manifest.id;
+		if (!enable) {
+			// 自禁排最后（启用方向 OTK 已在运行、必不在目标集）
+			targets.sort((a, b) =>
+				a === selfId ? 1 : b === selfId ? -1 : 0
+			);
+		}
+		const verb = enable
+			? LL.notice.plugin_filter.enabled_n
+			: LL.notice.plugin_filter.disabled_n;
+		this.#debug(`batch ${enable ? "enable" : "disable"}: ${targets.length} plugins`);
+		let done = 0;
+		try {
+			const plugins = this.context._app.plugins;
+			for (const id of targets) {
+				if (!enable && id === selfId && !this.enabled) break;
+				try {
+					if (enable) {
+						await plugins.enablePluginAndSave(id);
+					} else {
+						await plugins.disablePluginAndSave(id);
+					}
+					done++;
+				} catch (error) {
+					const message =
+						error instanceof Error ? error.message : String(error);
+					this.context.log(
+						"warn",
+						`batch ${enable ? "enable" : "disable"} failed for ${id}: ${message}`,
+						"plugin-filter"
+					);
+				}
+			}
+		} finally {
+			this.#batchRunning = false;
+		}
+		// OTK 自身被禁用时工具已卸载，context 通知不再有意义；其余情况汇报结果
+		if (this.enabled) {
+			this.context.notice(verb({ count: done }));
+			this.#debug(`batch done: ${done}/${targets.length}`);
+		}
+	}
+
 	#handleClick(evt: MouseEvent): void {
 		const target = evt.target;
-		const button =
+		const el =
 			target instanceof Element
-				? target.closest<HTMLElement>("[data-otk-plugin-filter]")
+				? target.closest<HTMLElement>(
+						"[data-otk-plugin-filter], [data-otk-plugin-actions]"
+					)
 				: null;
-		if (button) this.#openFilterMenu(evt);
+		if (el?.hasAttribute("data-otk-plugin-filter")) {
+			this.#openFilterMenu(evt);
+		} else if (el?.hasAttribute("data-otk-plugin-actions")) {
+			this.#openActionsMenu(evt);
+		}
 		// 行内开关 / 「更多选项」菜单启停后计数可能变化；rAF 合并连续点击
 		window.requestAnimationFrame(() => this.#refreshCounts());
 	}
@@ -353,6 +495,7 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 		this.#observer?.disconnect();
 		this.#observer = null;
 		tab.containerEl.querySelector("[data-otk-plugin-filter]")?.remove();
+		tab.containerEl.querySelector("[data-otk-plugin-actions]")?.remove();
 		tab.containerEl
 			.querySelectorAll(
 				".setting-items.otk-pf-state-enabled, .setting-items.otk-pf-state-disabled"
@@ -374,4 +517,49 @@ function sampleIds(tabs: unknown[]): string {
 	return Array.from(tabs, (t) => String((t as { id?: unknown })?.id))
 		.slice(0, 12)
 		.join(",");
+}
+
+/**
+ * 批量禁用包含 OTK 自身时的确认框：
+ * 「排除本插件」（默认安全项）／「一并禁用」（warning）／取消（Esc/关闭）。
+ */
+class BatchDisableSelfModal extends Modal {
+	#onConfirm: (includeSelf: boolean) => void;
+
+	constructor(app: App, onConfirm: (includeSelf: boolean) => void) {
+		super(app);
+		this.#onConfirm = onConfirm;
+	}
+
+	onOpen(): void {
+		this.titleEl.setText(LL.settings.plugin_filter.confirm_self_title());
+		this.contentEl.createEl("p", {
+			text: LL.settings.plugin_filter.confirm_self_desc(),
+			cls: "mod-muted",
+		});
+		new Setting(this.contentEl)
+			.addButton((button) =>
+				button
+					.setButtonText(LL.settings.plugin_filter.confirm_cancel())
+					.onClick(() => this.close())
+			)
+			.addButton((button) =>
+				button
+					.setButtonText(LL.settings.plugin_filter.confirm_exclude_self())
+					.setCta()
+					.onClick(() => {
+						this.close();
+						this.#onConfirm(false);
+					})
+			)
+			.addButton((button) =>
+				button
+					.setButtonText(LL.settings.plugin_filter.confirm_include_self())
+					.setDestructive()
+					.onClick(() => {
+						this.close();
+						this.#onConfirm(true);
+					})
+			);
+	}
 }

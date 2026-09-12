@@ -160,6 +160,15 @@ const zh_TW = {
 			name: "外掛篩選",
 			desc: "在第三方外掛起始頁按啟用狀態篩選外掛清單",
 			tooltip: "外掛篩選：{label}",
+			action_tooltip: "批次操作篩選中的外掛",
+			action_enable: "一鍵啟用 ({count})",
+			action_disable: "一鍵停用 ({count})",
+			confirm_self_title: "批量停用包含本外掛",
+			confirm_self_desc:
+				"本次批量停用的目標中包含本外掛（RavenHogwarts Toolkit）。停用後篩選與批次操作將立即不可用，是否一併停用？",
+			confirm_include_self: "一併停用",
+			confirm_exclude_self: "排除本外掛",
+			confirm_cancel: "取消",
 			all: "全部 ({count})",
 			enabled: "已啟用 ({count})",
 			disabled: "已停用 ({count})",
@@ -216,6 +225,10 @@ const zh_TW = {
 		plugin_order: {
 			applied: "已重排插件載入順序（下次啟動生效）",
 			invalid: "community-plugins.json 結構異常，已跳過",
+		},
+		plugin_filter: {
+			enabled_n: "已啟用 {count} 個外掛",
+			disabled_n: "已停用 {count} 個外掛",
 		},
 		folder_scaffolder: {
 			no_template: "沒有可用的範本，請先在設定中新增",

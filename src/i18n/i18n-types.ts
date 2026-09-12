@@ -504,6 +504,40 @@ type RootTranslation = {
 			 */
 			tooltip: RequiredParams<'label'>
 			/**
+			 * 批​量​操​作​筛​选​中​的​插​件
+			 */
+			action_tooltip: string
+			/**
+			 * 一​键​启​用​ ​(​{​c​o​u​n​t​}​)
+			 * @param {unknown} count
+			 */
+			action_enable: RequiredParams<'count'>
+			/**
+			 * 一​键​禁​用​ ​(​{​c​o​u​n​t​}​)
+			 * @param {unknown} count
+			 */
+			action_disable: RequiredParams<'count'>
+			/**
+			 * 批​量​禁​用​包​含​本​插​件
+			 */
+			confirm_self_title: string
+			/**
+			 * 本​次​批​量​禁​用​的​目​标​中​包​含​本​插​件​（​R​a​v​e​n​H​o​g​w​a​r​t​s​ ​T​o​o​l​k​i​t​）​。​禁​用​后​筛​选​与​批​量​操​作​将​立​即​不​可​用​，​是​否​一​并​禁​用​？
+			 */
+			confirm_self_desc: string
+			/**
+			 * 一​并​禁​用
+			 */
+			confirm_include_self: string
+			/**
+			 * 排​除​本​插​件
+			 */
+			confirm_exclude_self: string
+			/**
+			 * 取​消
+			 */
+			confirm_cancel: string
+			/**
 			 * 全​部​ ​(​{​c​o​u​n​t​}​)
 			 * @param {unknown} count
 			 */
@@ -658,6 +692,18 @@ type RootTranslation = {
 			 * c​o​m​m​u​n​i​t​y​-​p​l​u​g​i​n​s​.​j​s​o​n​ ​结​构​异​常​，​已​跳​过
 			 */
 			invalid: string
+		}
+		plugin_filter: {
+			/**
+			 * 已​启​用​ ​{​c​o​u​n​t​}​ ​个​插​件
+			 * @param {unknown} count
+			 */
+			enabled_n: RequiredParams<'count'>
+			/**
+			 * 已​禁​用​ ​{​c​o​u​n​t​}​ ​个​插​件
+			 * @param {unknown} count
+			 */
+			disabled_n: RequiredParams<'count'>
 		}
 		folder_scaffolder: {
 			/**
@@ -1187,6 +1233,38 @@ export type TranslationFunctions = {
 			 */
 			tooltip: (arg: { label: unknown }) => LocalizedString
 			/**
+			 * 批量操作筛选中的插件
+			 */
+			action_tooltip: () => LocalizedString
+			/**
+			 * 一键启用 ({count})
+			 */
+			action_enable: (arg: { count: unknown }) => LocalizedString
+			/**
+			 * 一键禁用 ({count})
+			 */
+			action_disable: (arg: { count: unknown }) => LocalizedString
+			/**
+			 * 批量禁用包含本插件
+			 */
+			confirm_self_title: () => LocalizedString
+			/**
+			 * 本次批量禁用的目标中包含本插件（RavenHogwarts Toolkit）。禁用后筛选与批量操作将立即不可用，是否一并禁用？
+			 */
+			confirm_self_desc: () => LocalizedString
+			/**
+			 * 一并禁用
+			 */
+			confirm_include_self: () => LocalizedString
+			/**
+			 * 排除本插件
+			 */
+			confirm_exclude_self: () => LocalizedString
+			/**
+			 * 取消
+			 */
+			confirm_cancel: () => LocalizedString
+			/**
 			 * 全部 ({count})
 			 */
 			all: (arg: { count: unknown }) => LocalizedString
@@ -1338,6 +1416,16 @@ export type TranslationFunctions = {
 			 * community-plugins.json 结构异常，已跳过
 			 */
 			invalid: () => LocalizedString
+		}
+		plugin_filter: {
+			/**
+			 * 已启用 {count} 个插件
+			 */
+			enabled_n: (arg: { count: unknown }) => LocalizedString
+			/**
+			 * 已禁用 {count} 个插件
+			 */
+			disabled_n: (arg: { count: unknown }) => LocalizedString
 		}
 		folder_scaffolder: {
 			/**

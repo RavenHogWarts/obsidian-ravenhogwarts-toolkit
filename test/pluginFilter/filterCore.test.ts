@@ -1,6 +1,7 @@
 import {
 	computeCounts,
 	matchesState,
+	pickTargets,
 } from "@src/toolkit/pluginFilter/service/filterCore";
 import { FILTER_STATES } from "@src/toolkit/pluginFilter/types";
 
@@ -41,6 +42,32 @@ describe("computeCounts — 计数", () => {
 		expect(counts.enabled).toBe(3);
 		expect(counts.disabled).toBe(1);
 		expect(counts.enabled + counts.disabled).toBe(counts.total);
+	});
+});
+
+describe("pickTargets — 批量启停目标（跳过已处于目标状态的项）", () => {
+	const items = [
+		{ id: "a", enabled: true },
+		{ id: "b", enabled: false },
+		{ id: "c", enabled: true },
+		{ id: "d", enabled: false },
+	];
+
+	it("一键启用：只选当前禁用的", () => {
+		expect(pickTargets(items, true)).toEqual(["b", "d"]);
+	});
+
+	it("一键禁用：只选当前启用的", () => {
+		expect(pickTargets(items, false)).toEqual(["a", "c"]);
+	});
+
+	it("全部已处于目标状态 → 空目标", () => {
+		const allEnabled = items.map((i) => ({ ...i, enabled: true }));
+		expect(pickTargets(allEnabled, true)).toEqual([]);
+	});
+
+	it("空可见集 → 空目标", () => {
+		expect(pickTargets([], true)).toEqual([]);
 	});
 });
 
