@@ -537,6 +537,83 @@ type RootTranslation = {
 			 * 取​消
 			 */
 			confirm_cancel: string
+			groups: {
+				/**
+				 * 插​件​分​组
+				 */
+				name: string
+				/**
+				 * 为​插​件​建​立​分​组​；​分​组​会​出​现​在​筛​选​菜​单​中​，​同​一​插​件​可​属​于​多​个​分​组
+				 */
+				desc: string
+				/**
+				 * 添​加​分​组
+				 */
+				add_group: string
+				/**
+				 * 未​命​名​分​组
+				 */
+				unnamed: string
+				/**
+				 * 还​没​有​分​组​，​点​击​「​添​加​分​组​」​创​建
+				 */
+				empty_groups: string
+				/**
+				 * 暂​无​成​员​，​在​下​方​搜​索​添​加
+				 */
+				empty_members: string
+				/**
+				 * 输​入​插​件​名​或​ ​I​D​ ​搜​索​添​加​…
+				 */
+				search_placeholder: string
+				/**
+				 * {​c​o​u​n​t​}​ ​个​插​件
+				 * @param {unknown} count
+				 */
+				member_count: RequiredParams<'count'>
+				/**
+				 * 未​安​装
+				 */
+				missing: string
+				/**
+				 * 移​除
+				 */
+				remove_member: string
+				/**
+				 * 删​除​分​组
+				 */
+				delete_group: string
+				/**
+				 * 分​组​名​称
+				 */
+				group_name_aria: string
+				/**
+				 * {​g​r​o​u​p​s​}​ ​个​分​组​ ​·​ ​{​m​e​m​b​e​r​s​}​ ​名​成​员
+				 * @param {unknown} groups
+				 * @param {unknown} members
+				 */
+				summary: RequiredParams<'groups' | 'members'>
+				/**
+				 * 收​起​分​组
+				 */
+				collapse: string
+				/**
+				 * 展​开​分​组
+				 */
+				expand: string
+				/**
+				 * 再​点​一​次​确​认​删​除
+				 */
+				confirm_delete: string
+				/**
+				 * 已​启​用
+				 */
+				status_enabled: string
+				/**
+				 * 未​启​用
+				 */
+				status_disabled: string
+			}
 			/**
 			 * 全​部​ ​(​{​c​o​u​n​t​}​)
 			 * @param {unknown} count
@@ -1264,6 +1341,80 @@ export type TranslationFunctions = {
 			 * 取消
 			 */
 			confirm_cancel: () => LocalizedString
+			groups: {
+				/**
+				 * 插件分组
+				 */
+				name: () => LocalizedString
+				/**
+				 * 为插件建立分组；分组会出现在筛选菜单中，同一插件可属于多个分组
+				 */
+				desc: () => LocalizedString
+				/**
+				 * 添加分组
+				 */
+				add_group: () => LocalizedString
+				/**
+				 * 未命名分组
+				 */
+				unnamed: () => LocalizedString
+				/**
+				 * 还没有分组，点击「添加分组」创建
+				 */
+				empty_groups: () => LocalizedString
+				/**
+				 * 暂无成员，在下方搜索添加
+				 */
+				empty_members: () => LocalizedString
+				/**
+				 * 输入插件名或 ID 搜索添加…
+				 */
+				search_placeholder: () => LocalizedString
+				/**
+				 * {count} 个插件
+				 */
+				member_count: (arg: { count: unknown }) => LocalizedString
+				/**
+				 * 未安装
+				 */
+				missing: () => LocalizedString
+				/**
+				 * 移除
+				 */
+				remove_member: () => LocalizedString
+				/**
+				 * 删除分组
+				 */
+				delete_group: () => LocalizedString
+				/**
+				 * 分组名称
+				 */
+				group_name_aria: () => LocalizedString
+				/**
+				 * {groups} 个分组 · {members} 名成员
+				 */
+				summary: (arg: { groups: unknown, members: unknown }) => LocalizedString
+				/**
+				 * 收起分组
+				 */
+				collapse: () => LocalizedString
+				/**
+				 * 展开分组
+				 */
+				expand: () => LocalizedString
+				/**
+				 * 再点一次确认删除
+				 */
+				confirm_delete: () => LocalizedString
+				/**
+				 * 已启用
+				 */
+				status_enabled: () => LocalizedString
+				/**
+				 * 未启用
+				 */
+				status_disabled: () => LocalizedString
+			}
 			/**
 			 * 全部 ({count})
 			 */
