@@ -1,6 +1,9 @@
 import { LL } from "@src/i18n/i18n";
 import { BaseTool } from "@src/model/manager/BaseTool";
 import { Toolkit } from "@src/model/manager/Decorators";
+import type { IPluginContext } from "@src/model/toolkit/IPluginContext";
+import { reactSetting } from "@src/settings/reactSetting";
+import { collectInstalledPlugins } from "@src/toolkit/pluginOrder/service/pluginInventory";
 import {
 	Menu,
 	Modal,
@@ -10,11 +13,15 @@ import {
 	type SettingDefinitionItem,
 	type SettingTab,
 } from "obsidian";
+import { createElement } from "react";
 import { computeCounts, pickTargets } from "./service/filterCore";
+import { isHiddenByGroup, normalizeGroups } from "./service/groups";
+import { GroupsEditor } from "./settings/GroupsEditor";
 import {
 	DefaultSettings,
 	FILTER_STATES,
 	FILTER_STATE_CLASSES,
+	FilterSelection,
 	ISettings,
 	PluginFilterState,
 } from "./types";
@@ -48,8 +55,11 @@ const ACTION_ICON = "zap";
 	description: LL.settings.plugin_filter.desc(),
 })
 export default class PluginFilterTool extends BaseTool<ISettings> {
-	/** 筛选状态仅会话内记忆（重开设置回「全部」），不落 settings（设计 §5.5） */
-	#state: PluginFilterState = "all";
+	/**
+	 * 筛选选择仅会话内记忆（重开设置回「全部」），不落 settings（设计 §5.5）。
+	 * 分组选择时若分组被删除，applyFilter 会自动回落「全部」。
+	 */
+	#selection: FilterSelection = { kind: "builtin", state: "all" };
 	#tab: SettingTab | null = null;
 	#observer: MutationObserver | null = null;
 	/** 已观察到 containerEl 渲染突变（此后锚点仍缺失才值得告警） */
@@ -70,9 +80,37 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 		return structuredClone(DefaultSettings);
 	}
 
+	async initialize(context: IPluginContext): Promise<void> {
+		// 规范化存储的分组（抵御手改 data.json 的脏数据）
+		const raw = context._settingsStore.settings.toolkit[this.info.id] as
+			| { config?: { groups?: unknown } }
+			| undefined;
+		if (raw?.config) {
+			raw.config.groups = normalizeGroups(
+				raw.config.groups,
+				LL.settings.plugin_filter.groups.unnamed()
+			);
+		}
+		await super.initialize(context);
+	}
+
 	getSettingItems(): SettingDefinitionItem[] {
-		// 零配置工具：仅 buildToolPage 自动 prepend 的 Enabled 开关
-		return [];
+		// 分组编辑器为 React 岛：添加/删除分组、行内改名、成员 chips 增删
+		// （AbstractInputSuggest 联想添加）；本地状态 + 异步落盘，
+		// 不触发 settingTab.update()（不整页重渲染）。
+		return [
+			reactSetting(LL.settings.plugin_filter.groups.name(), () =>
+				createElement(GroupsEditor, {
+					app: this.context._app,
+					initialGroups: this.settings.config.groups,
+					getInstalledPlugins: () =>
+						collectInstalledPlugins(this.context._app),
+					persist: (groups) => {
+						void this.updateConfig("groups", groups);
+					},
+				})
+			),
+		];
 	}
 
 	onload(): void {
@@ -192,7 +230,7 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 	#refreshTab(reason: "attach" | "mutation"): void {
 		if (!this.#tab) return;
 		this.#injectButtons(reason);
-		this.#applyFilterClass();
+		this.#applyFilter();
 		this.#refreshCounts();
 	}
 
@@ -246,7 +284,12 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 		}
 	}
 
-	#applyFilterClass(): void {
+	/** 当前内置三态；分组选择时为 null（分组过滤走 JS 显隐，不走状态类） */
+	#builtinState(): PluginFilterState | null {
+		return this.#selection.kind === "builtin" ? this.#selection.state : null;
+	}
+
+	#applyFilter(): void {
 		const container = this.#tab?.containerEl;
 		if (!container) return;
 		// 1.14 声明式 DOM 含多个 .setting-items 分组（受限模式介绍组 + 已安装插件
@@ -259,9 +302,44 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 			this.#warnAnchorMissing(".setting-items");
 			return;
 		}
+		const state = this.#builtinState();
 		for (const items of groups) {
-			for (const [state, className] of Object.entries(FILTER_STATE_CLASSES)) {
-				items.classList.toggle(className, state === this.#state);
+			for (const [s, className] of Object.entries(FILTER_STATE_CLASSES)) {
+				items.classList.toggle(className, s === state);
+			}
+		}
+		this.#applyGroupVisibility(container);
+	}
+
+	/**
+	 * 分组过滤：成员关系是数据关系，CSS 状态类表达不了，改为 JS 逐行显隐。
+	 * 我们隐藏的行打 `data-otk-group-hidden` 标记，恢复时只清自家标记——
+	 * 与原生搜索的隐藏（无论其用 inline style 还是重建列表）互不覆盖。
+	 * 分组被删除时自动回落「全部」。
+	 */
+	#applyGroupVisibility(container: HTMLElement): void {
+		let members: readonly string[] | undefined;
+		if (this.#selection.kind === "group") {
+			const groupId = this.#selection.groupId;
+			members = this.settings.config.groups.find(
+				(g) => g.id === groupId
+			)?.pluginIds;
+			if (!members) {
+				// 分组已被删除：回落「全部」
+				this.#selection = { kind: "builtin", state: "all" };
+			}
+		}
+		for (const row of Array.from(
+			container.querySelectorAll<HTMLElement>(
+				".setting-items > .setting-item.mod-toggle[data-plugin-id]"
+			)
+		)) {
+			const id = row.getAttribute("data-plugin-id") ?? "";
+			if (isHiddenByGroup(members, id)) {
+				row.addClass("otk-pf-group-hidden");
+			} else if (row.hasClass("otk-pf-group-hidden")) {
+				// 只恢复被本功能隐藏的行；原生搜索隐藏的行没有标记，不触碰
+				row.removeClass("otk-pf-group-hidden");
 			}
 		}
 	}
@@ -291,8 +369,13 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 		for (const button of Array.from(
 			container.querySelectorAll<HTMLElement>("[data-otk-plugin-filter]")
 		)) {
-			// 按钮恒为 filter 图标；有激活筛选时高亮提示
-			button.classList.toggle("is-active", this.#state !== "all");
+			// 按钮恒为 filter 图标；有激活筛选（含分组）时高亮提示
+			const filtering =
+				!(
+					this.#selection.kind === "builtin" &&
+					this.#selection.state === "all"
+				);
+			button.classList.toggle("is-active", filtering);
 			button.setAttribute("aria-label", this.#buttonLabel());
 		}
 	}
@@ -307,29 +390,69 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 		}[state];
 	}
 
+	/** 当前选择的展示文案：内置三态或「分组名 (成员数)」 */
+	#selectionLabel(): string {
+		const selection = this.#selection;
+		if (selection.kind === "group") {
+			const group = this.settings.config.groups.find(
+				(g) => g.id === selection.groupId
+			);
+			if (group) {
+				return `${group.name} (${group.pluginIds.length})`;
+			}
+			// 分组已被删除：回落「全部」（applyFilter 亦会同步清理）
+			this.#selection = { kind: "builtin", state: "all" };
+		}
+		return this.#stateLabel(
+			selection.kind === "builtin" ? selection.state : "all"
+		);
+	}
+
 	/** 按钮 tooltip：如「插件筛选：全部 (82)」 */
 	#buttonLabel(): string {
 		return LL.settings.plugin_filter.tooltip({
-			label: this.#stateLabel(this.#state),
+			label: this.#selectionLabel(),
 		});
 	}
 
 	#openFilterMenu(evt: MouseEvent): void {
 		const menu = new Menu();
+		const activeState = this.#builtinState();
 		for (const state of FILTER_STATES) {
 			menu.addItem((item) => {
 				// ✓ 追加在文字后（MenuItem.setIcon 只能渲染在文字前，不合需求）
+				const active = state === activeState;
 				item.setTitle(
-					state === this.#state
+					active
 						? `${this.#stateLabel(state)} ✓`
 						: this.#stateLabel(state)
 				).onClick(() => {
-					this.#state = state;
-					this.#debug(`filter state -> ${this.#state}`);
-					this.#applyFilterClass();
+					this.#selection = { kind: "builtin", state };
+					this.#debug(`filter -> ${state}`);
+					this.#applyFilter();
 					this.#refreshCounts();
 				});
 			});
+		}
+		const groups = this.settings.config.groups;
+		if (groups.length > 0) {
+			menu.addSeparator();
+			const selection = this.#selection;
+			for (const group of groups) {
+				menu.addItem((item) => {
+					const active =
+						selection.kind === "group" &&
+						selection.groupId === group.id;
+					item.setTitle(
+						`${group.name} (${group.pluginIds.length})${active ? " ✓" : ""}`
+					).onClick(() => {
+						this.#selection = { kind: "group", groupId: group.id };
+						this.#debug(`filter -> group ${group.id}`);
+						this.#applyFilter();
+						this.#refreshCounts();
+					});
+				});
+			}
 		}
 		menu.showAtMouseEvent(evt);
 	}
@@ -488,7 +611,7 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 		this.#anchorWarned = false;
 		this.#injectLogged = false;
 		this.#lastCountsKey = "";
-		this.#state = "all";
+		this.#selection = { kind: "builtin", state: "all" };
 		this.#attempts = 0;
 		if (!tab) return;
 
@@ -503,6 +626,10 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 			.forEach((el) =>
 				el.classList.remove("otk-pf-state-enabled", "otk-pf-state-disabled")
 			);
+		// 恢复被分组筛选隐藏的行（只清自家标记，不动原生搜索的显隐）
+		tab.containerEl
+			.querySelectorAll(".otk-pf-group-hidden")
+			.forEach((el) => el.removeClass("otk-pf-group-hidden"));
 	}
 }
 

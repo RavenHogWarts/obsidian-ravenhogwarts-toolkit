@@ -5,6 +5,260 @@
 	color: var(--text-accent);
 }
 
+/* ── 设置页：插件分组编辑器（React 岛） ─────────────────────────── */
+
+.rht-pf-groups {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+}
+
+/* 区头：标题 + 汇总 | 添加按钮 */
+.rht-pf-groups-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-2-2);
+	min-height: 28px;
+}
+
+.rht-pf-groups-title {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.rht-pf-groups-name {
+	font-weight: var(--font-semibold);
+	color: var(--text-normal);
+}
+
+.rht-pf-groups-summary {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.rht-pf-add-group {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-1);
+	padding: var(--size-2-1) var(--size-4-2);
+	border-radius: var(--radius-s);
+	border: 1px solid var(--background-modifier-border);
+	background: var(--interactive-normal);
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	cursor: var(--cursor);
+}
+
+.rht-pf-add-group:hover {
+	background: var(--interactive-hover);
+}
+
+/* 分组卡片 */
+.rht-pf-group {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	background: var(--background-primary);
+	padding: var(--size-4-2);
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+	transition: border-color 120ms ease;
+}
+
+.rht-pf-group:hover {
+	border-color: var(--background-modifier-border-hover);
+}
+
+/* 空分组：虚线边框提示"待补充成员" */
+.rht-pf-group-empty {
+	border-style: dashed;
+	background: transparent;
+}
+
+.rht-pf-group-head {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+}
+
+/* 收起/展开按钮；箭头随状态旋转的过渡 */
+.rht-pf-collapse {
+	display: inline-flex;
+	padding: var(--size-2-1);
+	color: var(--text-muted);
+}
+
+/* 名称输入：默认透明融入卡片，悬停/聚焦才显输入框（"点击即改"语义） */
+.rht-pf-group-name {
+	flex: 1;
+	min-width: 0;
+	border: 1px solid transparent;
+	background: transparent;
+	border-radius: var(--radius-s);
+	font-weight: var(--font-semibold);
+	color: var(--text-normal);
+	padding: var(--size-2-1) var(--size-2-2);
+}
+
+.rht-pf-group-name:hover {
+	border-color: var(--background-modifier-border);
+}
+
+.rht-pf-group-name:focus {
+	border-color: var(--background-modifier-border-hover);
+	background: var(--background-primary);
+	box-shadow: none;
+}
+
+.rht-pf-count {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	background: var(--background-modifier-hover);
+	border-radius: 999px;
+	padding: 1px var(--size-2-2);
+	white-space: nowrap;
+}
+
+.rht-pf-muted {
+	color: var(--text-muted);
+}
+
+.rht-pf-muted:hover {
+	color: var(--text-error);
+}
+
+.rht-pf-danger {
+	color: var(--text-error);
+}
+
+.rht-pf-icon-btn {
+	display: inline-flex;
+	padding: var(--size-2-1);
+}
+
+/* 成员 chips */
+.rht-pf-members {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-2-1);
+	max-height: 180px;
+	overflow-y: auto;
+	padding: 2px;
+	margin: -2px;
+}
+
+.rht-pf-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-1);
+	background: var(--background-secondary);
+	border-radius: 999px;
+	padding: 2px var(--size-2-1) 2px var(--size-2-2);
+	font-size: var(--font-ui-smaller);
+}
+
+/* 重复添加：chip 闪烁一圈提示（不弹窗不打断） */
+@keyframes rht-pf-chip-flash {
+	0% {
+		box-shadow: 0 0 0 0 var(--text-accent);
+	}
+	100% {
+		box-shadow: 0 0 0 6px transparent;
+	}
+}
+
+.rht-pf-chip-flash {
+	animation: rht-pf-chip-flash 800ms ease-out;
+}
+
+.rht-pf-chip-name {
+	max-width: 220px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 成员启停状态点（绿=启用，灰=未启用；title 供悬停说明） */
+.rht-pf-dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+
+.rht-pf-dot-on {
+	background: var(--text-success);
+}
+
+.rht-pf-dot-off {
+	background: var(--text-faded);
+}
+
+/* 已卸载的插件：弱化展示并标注「未安装」 */
+.rht-pf-chip-missing .rht-pf-chip-name {
+	opacity: 0.6;
+}
+
+.rht-pf-chip-badge {
+	color: var(--text-error);
+	font-size: var(--font-ui-smaller);
+}
+
+.rht-pf-chip-remove {
+	display: inline-flex;
+	align-items: center;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--text-muted);
+	cursor: var(--cursor);
+}
+
+.rht-pf-chip-remove:hover {
+	color: var(--text-error);
+}
+
+/* 联想添加输入：虚线边框的"待输入"态，聚焦转实线 */
+.rht-pf-add-input {
+	width: 100%;
+	border: 1px dashed var(--background-modifier-border);
+	background: transparent;
+	border-radius: var(--radius-s);
+}
+
+.rht-pf-add-input:focus {
+	border-style: solid;
+	border-color: var(--background-modifier-border-hover);
+	background: var(--background-primary);
+	box-shadow: none;
+}
+
+.rht-pf-empty {
+	color: var(--text-faded);
+	font-size: var(--font-ui-smaller);
+	padding: var(--size-2-1) 0;
+}
+
+.rht-pf-icon {
+	display: inline-flex;
+}
+
+.rht-pf-suggest-name {
+	margin-right: var(--size-2-2);
+}
+
+.rht-pf-suggest-id {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.rht-pf-suggest-id {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
 /* 过滤规则：状态类挂在列表容器 .setting-items 上，与原生搜索的显隐天然 AND 叠加。
    [data-plugin-id] 限定只作用于插件行——tab 内原生开关行（如"自动检查插件更新"）
    同样是 .setting-item.mod-toggle 但没有 data-plugin-id，必须排除，否则会被误隐藏。 */
@@ -18,5 +272,10 @@
 /* 已禁用：隐藏所有开关已启用的插件行 */
 .setting-items.otk-pf-state-disabled
 	> .setting-item.mod-toggle[data-plugin-id]:has(.checkbox-container.is-enabled) {
+	display: none;
+}
+
+/* 分组过滤：JS 按成员关系给非成员行挂此类（数据关系无法用容器状态类表达） */
+.setting-item.otk-pf-group-hidden {
 	display: none;
 }
