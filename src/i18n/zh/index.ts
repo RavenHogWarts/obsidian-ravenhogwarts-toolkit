@@ -151,6 +151,14 @@ const zh = {
 				desc: "读取已安装插件（无论是否启用）刷新缓存，并立即按当前列表重排加载顺序",
 			},
 		},
+		plugin_filter: {
+			name: "插件筛选",
+			desc: "在第三方插件设置页按启用状态筛选插件列表",
+			tooltip: "插件筛选：{label}",
+			all: "全部 ({count})",
+			enabled: "已启用 ({count})",
+			disabled: "已禁用 ({count})",
+		},
 	},
 	command: {
 		quick_path: {
