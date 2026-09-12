@@ -7,6 +7,32 @@ export function createGroupId(): string {
 		.slice(2, 8)}`;
 }
 
+/**
+ * 分组按 id 升序排序（id 内嵌创建时间戳 → 结果即稳定的创建顺序），
+ * 供筛选菜单使用：菜单项顺序不随 settings 数组的存储顺序漂移。
+ */
+export function sortGroupsById(
+	groups: readonly IPluginGroup[],
+): IPluginGroup[] {
+	return [...groups].sort((a, b) => a.id.localeCompare(b.id));
+}
+
+/**
+ * 分组成员**展示排序**：按显示名（name 缺省回退 id）不区分大小写，同显名再按 id。
+ * 仅影响渲染顺序，不改动 pluginIds 的存储顺序。
+ */
+export function sortMembersForDisplay(
+	ids: readonly string[],
+	nameOf: (id: string) => string | undefined,
+): string[] {
+	return [...ids].sort((a, b) => {
+		const an = (nameOf(a) ?? a).toLowerCase();
+		const bn = (nameOf(b) ?? b).toLowerCase();
+		if (an !== bn) return an < bn ? -1 : 1;
+		return a.localeCompare(b);
+	});
+}
+
 /** 规范化字符串 id 列表：只留非空字符串、去重保序（抵御手改 data.json） */
 export function normalizeStringList(value: unknown): string[] {
 	if (!Array.isArray(value)) return [];

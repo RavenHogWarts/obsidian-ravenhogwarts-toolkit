@@ -3,6 +3,8 @@ import {
 	isHiddenByGroup,
 	normalizeGroups,
 	normalizeStringList,
+	sortGroupsById,
+	sortMembersForDisplay,
 } from "@src/toolkit/pluginFilter/service/groups";
 
 describe("normalizeStringList — 字符串 id 列表规范化", () => {
@@ -91,5 +93,51 @@ describe("createGroupId — 唯一性", () => {
 		for (const id of ids) {
 			expect(id.startsWith("group-")).toBe(true);
 		}
+	});
+});
+
+describe("sortGroupsById — 筛选菜单分组项按 id 升序", () => {
+	it("不改动原数组，返回 id 升序副本", () => {
+		const groups = [
+			{ id: "group-c", name: "C", pluginIds: [] },
+			{ id: "group-a", name: "A", pluginIds: [] },
+			{ id: "group-b", name: "B", pluginIds: [] },
+		];
+		const sorted = sortGroupsById(groups);
+		expect(sorted.map((g) => g.id)).toEqual([
+			"group-a",
+			"group-b",
+			"group-c",
+		]);
+		expect(groups.map((g) => g.id)).toEqual(["group-c", "group-a", "group-b"]);
+	});
+});
+
+describe("sortMembersForDisplay — 成员按显示名排序（不区分大小写）", () => {
+	const nameOf = (id: string) =>
+		({ alpha: "Alpha", beta: "beta", gamma: "Gamma" })[id];
+
+	it("按显示名字典序排列", () => {
+		expect(
+			sortMembersForDisplay(["gamma", "alpha", "beta"], nameOf)
+		).toEqual(["alpha", "beta", "gamma"]);
+	});
+
+	it("缺 name 回退 id 参与排序", () => {
+		expect(
+			sortMembersForDisplay(["zzz", "alpha"], nameOf)
+		).toEqual(["alpha", "zzz"]);
+	});
+
+	it("同显名（大小写差异）再按 id 决胜", () => {
+		const names = (id: string) => (id === "A" ? "same" : "SAME");
+		expect(sortMembersForDisplay(["b", "A"], names)).toEqual(["A", "b"]);
+	});
+
+	it("空成员集 → 空数组，且不改动原数组", () => {
+		const original = ["b", "a"];
+		const sorted = sortMembersForDisplay(original, nameOf);
+		expect(sorted).toEqual(["a", "b"]);
+		expect(original).toEqual(["b", "a"]);
 	});
 });

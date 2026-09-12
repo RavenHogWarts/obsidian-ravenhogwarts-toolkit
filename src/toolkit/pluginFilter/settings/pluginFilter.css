@@ -5,21 +5,50 @@
 	color: var(--text-accent);
 }
 
-/* ── 设置页：插件分组编辑器（React 岛） ─────────────────────────── */
+/* 过滤规则：状态类挂在列表容器 .setting-items 上，与原生搜索的显隐天然 AND 叠加。
+   [data-plugin-id] 限定只作用于插件行——tab 内原生开关行（如"自动检查插件更新"）
+   同样是 .setting-item.mod-toggle 但没有 data-plugin-id，必须排除，否则会被误隐藏。 */
+
+/* 已启用：隐藏所有开关未启用的插件行 */
+.setting-items.otk-pf-state-enabled
+	> .setting-item.mod-toggle[data-plugin-id]:not(
+		:has(.checkbox-container.is-enabled)
+	) {
+	display: none;
+}
+
+/* 已禁用：隐藏所有开关已启用的插件行 */
+.setting-items.otk-pf-state-disabled
+	> .setting-item.mod-toggle[data-plugin-id]:has(
+		.checkbox-container.is-enabled
+	) {
+	display: none;
+}
+
+/* 分组过滤：JS 按成员关系给非成员行挂此类（数据关系无法用容器状态类表达） */
+.setting-item.otk-pf-group-hidden {
+	display: none;
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   设置页 · 插件分组编辑器（React 岛）
+   设计基调：弱边框 + 留白分层 + 交互态过渡；颜色一律取主题变量。
+   ─────────────────────────────────────────────────────────────────────────── */
 
 .rht-pf-groups {
 	display: flex;
 	flex-direction: column;
-	gap: var(--size-4-2);
+	gap: var(--size-4-3);
 }
 
-/* 区头：标题 + 汇总 | 添加按钮 */
+/* 区头：标题 + 汇总 | 添加按钮；底部分隔线划出区块 */
 .rht-pf-groups-head {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--size-2-2);
-	min-height: 28px;
+	padding-bottom: var(--size-2-2);
+	border-bottom: 1px solid var(--background-modifier-border);
 }
 
 .rht-pf-groups-title {
@@ -38,43 +67,45 @@
 	font-size: var(--font-ui-smaller);
 }
 
+/* 添加按钮：accent 实底 CTA（Obsidian mod-cta 同款观感） */
 .rht-pf-add-group {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--size-2-1);
-	padding: var(--size-2-1) var(--size-4-2);
+	border: none;
 	border-radius: var(--radius-s);
-	border: 1px solid var(--background-modifier-border);
-	background: var(--interactive-normal);
-	color: var(--text-normal);
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	padding: var(--size-2-1) var(--size-4-2);
 	font-size: var(--font-ui-small);
 	cursor: var(--cursor);
+	transition: opacity 120ms ease;
 }
 
 .rht-pf-add-group:hover {
-	background: var(--interactive-hover);
+	opacity: 0.88;
 }
 
-/* 分组卡片 */
+/* 分组卡片：hover / focus-within 双态提边框，内容分组靠留白 */
 .rht-pf-group {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
 	border: 1px solid var(--background-modifier-border);
 	border-radius: var(--radius-m);
 	background: var(--background-primary);
 	padding: var(--size-4-2);
-	display: flex;
-	flex-direction: column;
-	gap: var(--size-2-2);
 	transition: border-color 120ms ease;
 }
 
-.rht-pf-group:hover {
+.rht-pf-group:hover,
+.rht-pf-group:focus-within {
 	border-color: var(--background-modifier-border-hover);
 }
 
 /* 空分组：虚线边框提示"待补充成员" */
 .rht-pf-group-empty {
 	border-style: dashed;
-	background: transparent;
 }
 
 .rht-pf-group-head {
@@ -83,14 +114,25 @@
 	gap: var(--size-2-2);
 }
 
-/* 收起/展开按钮；箭头随状态旋转的过渡 */
+/* 收起/展开：箭头旋转过渡，而非换图标跳变 */
 .rht-pf-collapse {
 	display: inline-flex;
 	padding: var(--size-2-1);
 	color: var(--text-muted);
+	transition:
+		transform 150ms ease,
+		color 100ms ease;
 }
 
-/* 名称输入：默认透明融入卡片，悬停/聚焦才显输入框（"点击即改"语义） */
+.rht-pf-collapse:hover {
+	color: var(--text-normal);
+}
+
+.rht-pf-collapse.is-collapsed {
+	transform: rotate(-90deg);
+}
+
+/* 名称输入：默认透明融入卡片（标题感），悬停/聚焦才显输入框（"点击即改"语义） */
 .rht-pf-group-name {
 	flex: 1;
 	min-width: 0;
@@ -100,6 +142,9 @@
 	font-weight: var(--font-semibold);
 	color: var(--text-normal);
 	padding: var(--size-2-1) var(--size-2-2);
+	transition:
+		border-color 100ms ease,
+		background 100ms ease;
 }
 
 .rht-pf-group-name:hover {
@@ -112,6 +157,7 @@
 	box-shadow: none;
 }
 
+/* 成员计数：胶囊徽章 */
 .rht-pf-count {
 	color: var(--text-muted);
 	font-size: var(--font-ui-smaller);
@@ -121,16 +167,21 @@
 	white-space: nowrap;
 }
 
+/* 删除（两步确认的第一态）：常态弱化，悬停转警示色 */
 .rht-pf-muted {
 	color: var(--text-muted);
+	transition: color 100ms ease;
 }
 
 .rht-pf-muted:hover {
 	color: var(--text-error);
 }
 
+/* 两步删除的确认态：实底警示按钮，动作意图一目了然 */
 .rht-pf-danger {
-	color: var(--text-error);
+	color: var(--text-on-accent);
+	background: var(--text-error);
+	border-radius: var(--radius-s);
 }
 
 .rht-pf-icon-btn {
@@ -138,7 +189,7 @@
 	padding: var(--size-2-1);
 }
 
-/* 成员 chips */
+/* 成员 chips：描边胶囊，悬停整卡提亮，移除钮 chip 悬停才实色 */
 .rht-pf-members {
 	display: flex;
 	flex-wrap: wrap;
@@ -154,9 +205,18 @@
 	align-items: center;
 	gap: var(--size-2-1);
 	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
 	border-radius: 999px;
 	padding: 2px var(--size-2-1) 2px var(--size-2-2);
 	font-size: var(--font-ui-smaller);
+	transition:
+		background 100ms ease,
+		border-color 100ms ease;
+}
+
+.rht-pf-chip:hover {
+	background: var(--background-modifier-hover);
+	border-color: var(--background-modifier-border-hover);
 }
 
 /* 重复添加：chip 闪烁一圈提示（不弹窗不打断） */
@@ -214,23 +274,39 @@
 	background: none;
 	color: var(--text-muted);
 	cursor: var(--cursor);
+	opacity: 0.55;
+	transition:
+		color 100ms ease,
+		opacity 100ms ease;
+}
+
+.rht-pf-chip:hover .rht-pf-chip-remove {
+	opacity: 1;
 }
 
 .rht-pf-chip-remove:hover {
 	color: var(--text-error);
+	opacity: 1;
 }
 
-/* 联想添加输入：虚线边框的"待输入"态，聚焦转实线 */
+/* 联想添加输入：虚线"待输入"态；hover 提边框色，聚焦转实线 + accent */
 .rht-pf-add-input {
 	width: 100%;
 	border: 1px dashed var(--background-modifier-border);
 	background: transparent;
 	border-radius: var(--radius-s);
+	transition:
+		border-color 120ms ease,
+		background 120ms ease;
+}
+
+.rht-pf-add-input:hover {
+	border-color: var(--background-modifier-border-hover);
 }
 
 .rht-pf-add-input:focus {
 	border-style: solid;
-	border-color: var(--background-modifier-border-hover);
+	border-color: var(--interactive-accent);
 	background: var(--background-primary);
 	box-shadow: none;
 }
@@ -254,33 +330,22 @@
 	font-size: var(--font-ui-smaller);
 }
 
-/* 过滤规则：状态类挂在列表容器 .setting-items 上，与原生搜索的显隐天然 AND 叠加。
-   [data-plugin-id] 限定只作用于插件行——tab 内原生开关行（如"自动检查插件更新"）
-   同样是 .setting-item.mod-toggle 但没有 data-plugin-id，必须排除，否则会被误隐藏。 */
-
-/* 已启用：隐藏所有开关未启用的插件行 */
-.setting-items.otk-pf-state-enabled
-	> .setting-item.mod-toggle[data-plugin-id]:not(:has(.checkbox-container.is-enabled)) {
-	display: none;
-}
-
-/* 已禁用：隐藏所有开关已启用的插件行 */
-.setting-items.otk-pf-state-disabled
-	> .setting-item.mod-toggle[data-plugin-id]:has(.checkbox-container.is-enabled) {
-	display: none;
-}
-
-/* 分组过滤：JS 按成员关系给非成员行挂此类（数据关系无法用容器状态类表达） */
-.setting-item.otk-pf-group-hidden {
-	display: none;
-}
-
-/* ── 禁用保护清单编辑器 ────────────────────────────────────────── */
+/* ── 设置页 · 禁用保护清单编辑器 ─────────────────────────────── */
 
 .rht-pf-guard {
 	display: flex;
 	flex-direction: column;
-	gap: var(--size-2-2);
+	gap: var(--size-4-2);
+}
+
+/* 清单说明：accent 左边条的信息条样式 */
+.rht-pf-guard-hint {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	background: var(--background-secondary);
+	border-left: 2px solid var(--interactive-accent);
+	border-radius: 0 var(--radius-s) var(--radius-s) 0;
+	padding: var(--size-2-2) var(--size-4-2);
 }
 
 /* ── 批量禁用确认框：保护插件勾选列表 ──────────────────────────── */
@@ -302,6 +367,7 @@
 	border-radius: var(--radius-s);
 	background: var(--background-secondary);
 	cursor: var(--cursor);
+	transition: background 100ms ease;
 }
 
 .otk-pf-confirm-row:hover {
