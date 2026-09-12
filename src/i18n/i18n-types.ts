@@ -518,25 +518,48 @@ type RootTranslation = {
 			 */
 			action_disable: RequiredParams<'count'>
 			/**
-			 * 批​量​禁​用​包​含​本​插​件
+			 * 批​量​禁​用​包​含​受​保​护​的​插​件
 			 */
-			confirm_self_title: string
+			confirm_title: string
 			/**
-			 * 本​次​批​量​禁​用​的​目​标​中​包​含​本​插​件​（​R​a​v​e​n​H​o​g​w​a​r​t​s​ ​T​o​o​l​k​i​t​）​。​禁​用​后​筛​选​与​批​量​操​作​将​立​即​不​可​用​，​是​否​一​并​禁​用​？
+			 * 以​下​插​件​在​禁​用​保​护​清​单​中​，​禁​用​后​可​能​影​响​使​用​。​勾​选​的​将​被​一​并​禁​用​，​取​消​勾​选​则​跳​过​。
 			 */
-			confirm_self_desc: string
+			confirm_desc: string
 			/**
-			 * 一​并​禁​用
+			 * 禁​用​所​选​ ​(​{​c​o​u​n​t​}​)
+			 * @param {unknown} count
 			 */
-			confirm_include_self: string
+			confirm_run: RequiredParams<'count'>
 			/**
-			 * 排​除​本​插​件
+			 * 本​插​件
 			 */
-			confirm_exclude_self: string
+			confirm_self_badge: string
 			/**
 			 * 取​消
 			 */
 			confirm_cancel: string
+			guard: {
+				/**
+				 * 禁​用​保​护​清​单
+				 */
+				name: string
+				/**
+				 * 一​键​禁​用​的​目​标​中​包​含​这​些​插​件​时​会​先​弹​窗​确​认​（​可​逐​个​排​除​）​；​本​插​件​（​R​a​v​e​n​H​o​g​w​a​r​t​s​ ​T​o​o​l​k​i​t​）​始​终​受​保​护​，​无​需​添​加​。
+				 */
+				hint: string
+				/**
+				 * 暂​无​保​护​插​件​，​在​下​方​搜​索​添​加
+				 */
+				empty: string
+				/**
+				 * 输​入​插​件​名​或​ ​I​D​ ​搜​索​添​加​…
+				 */
+				search_placeholder: string
+				/**
+				 * 移​除
+				 */
+				remove_member: string
+			}
 			groups: {
 				/**
 				 * 插​件​分​组
@@ -1322,25 +1345,47 @@ export type TranslationFunctions = {
 			 */
 			action_disable: (arg: { count: unknown }) => LocalizedString
 			/**
-			 * 批量禁用包含本插件
+			 * 批量禁用包含受保护的插件
 			 */
-			confirm_self_title: () => LocalizedString
+			confirm_title: () => LocalizedString
 			/**
-			 * 本次批量禁用的目标中包含本插件（RavenHogwarts Toolkit）。禁用后筛选与批量操作将立即不可用，是否一并禁用？
+			 * 以下插件在禁用保护清单中，禁用后可能影响使用。勾选的将被一并禁用，取消勾选则跳过。
 			 */
-			confirm_self_desc: () => LocalizedString
+			confirm_desc: () => LocalizedString
 			/**
-			 * 一并禁用
+			 * 禁用所选 ({count})
 			 */
-			confirm_include_self: () => LocalizedString
+			confirm_run: (arg: { count: unknown }) => LocalizedString
 			/**
-			 * 排除本插件
+			 * 本插件
 			 */
-			confirm_exclude_self: () => LocalizedString
+			confirm_self_badge: () => LocalizedString
 			/**
 			 * 取消
 			 */
 			confirm_cancel: () => LocalizedString
+			guard: {
+				/**
+				 * 禁用保护清单
+				 */
+				name: () => LocalizedString
+				/**
+				 * 一键禁用的目标中包含这些插件时会先弹窗确认（可逐个排除）；本插件（RavenHogwarts Toolkit）始终受保护，无需添加。
+				 */
+				hint: () => LocalizedString
+				/**
+				 * 暂无保护插件，在下方搜索添加
+				 */
+				empty: () => LocalizedString
+				/**
+				 * 输入插件名或 ID 搜索添加…
+				 */
+				search_placeholder: () => LocalizedString
+				/**
+				 * 移除
+				 */
+				remove_member: () => LocalizedString
+			}
 			groups: {
 				/**
 				 * 插件分组

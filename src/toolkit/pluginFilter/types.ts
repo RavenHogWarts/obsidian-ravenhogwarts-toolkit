@@ -36,6 +36,11 @@ export interface ISettings extends IToolSettings {
 	config: {
 		/** 插件分组（成员可跨分组重叠） */
 		groups: IPluginGroup[];
+		/**
+		 * 禁用保护清单：批量禁用的目标命中这些插件时先弹确认框（可逐个排除）。
+		 * OTK 自身始终隐式受保护，无需配置。
+		 */
+		protectedIds: string[];
 	};
 }
 
@@ -43,5 +48,6 @@ export const DefaultSettings: ISettings = {
 	enabled: false,
 	config: {
 		groups: [],
+		protectedIds: [],
 	},
 };

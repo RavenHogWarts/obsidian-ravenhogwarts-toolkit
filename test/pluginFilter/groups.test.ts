@@ -2,7 +2,21 @@ import {
 	createGroupId,
 	isHiddenByGroup,
 	normalizeGroups,
+	normalizeStringList,
 } from "@src/toolkit/pluginFilter/service/groups";
+
+describe("normalizeStringList — 字符串 id 列表规范化", () => {
+	it("只留非空字符串、去重保序", () => {
+		expect(
+			normalizeStringList(["a", "", 3, "b", "a", null])
+		).toEqual(["a", "b"]);
+	});
+
+	it("非数组输入 → 空数组", () => {
+		expect(normalizeStringList(undefined)).toEqual([]);
+		expect(normalizeStringList("a")).toEqual([]);
+	});
+});
 
 describe("normalizeGroups — 抵御手改 data.json 的脏数据", () => {
 	it("合法分组原样保留（成员去重保序）", () => {

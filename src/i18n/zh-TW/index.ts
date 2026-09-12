@@ -163,12 +163,19 @@ const zh_TW = {
 			action_tooltip: "批次操作篩選中的外掛",
 			action_enable: "一鍵啟用 ({count})",
 			action_disable: "一鍵停用 ({count})",
-			confirm_self_title: "批量停用包含本外掛",
-			confirm_self_desc:
-				"本次批量停用的目標中包含本外掛（RavenHogwarts Toolkit）。停用後篩選與批次操作將立即不可用，是否一併停用？",
-			confirm_include_self: "一併停用",
-			confirm_exclude_self: "排除本外掛",
+			confirm_title: "批量停用包含受保護的外掛",
+			confirm_desc:
+				"以下外掛在停用保護清單中，停用後可能影響使用。勾選的將被一併停用，取消勾選則跳過。",
+			confirm_run: "停用所選 ({count})",
+			confirm_self_badge: "本外掛",
 			confirm_cancel: "取消",
+			guard: {
+				name: "停用保護清單",
+				hint: "一鍵停用的目標中包含這些外掛時會先彈窗確認（可逐個排除）；本外掛（RavenHogwarts Toolkit）始終受保護，無需新增。",
+				empty: "暫無保護外掛，在下方搜尋新增",
+				search_placeholder: "輸入外掛名或 ID 搜尋新增…",
+				remove_member: "移除",
+			},
 			groups: {
 				name: "外掛分組",
 				desc: "為外掛建立分組；分組會出現在篩選選單中，同一外掛可屬於多個分組",
