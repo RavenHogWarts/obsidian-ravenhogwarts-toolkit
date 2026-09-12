@@ -29,3 +29,22 @@ export function computeCounts(enabledFlags: readonly boolean[]): IFilterCounts {
 	}
 	return { total: enabledFlags.length, enabled, disabled: enabledFlags.length - enabled };
 }
+
+/** 批量操作可见插件的最小形状 */
+export interface IPluginToggleItem {
+	id: string;
+	enabled: boolean;
+}
+
+/**
+ * 批量启停目标：可见插件中**未处于目标状态**的项（一键启用选禁用中的，
+ * 一键禁用选启用中的）；已处于目标状态的原样跳过，不重复调用 API。
+ */
+export function pickTargets(
+	items: readonly IPluginToggleItem[],
+	enable: boolean,
+): string[] {
+	return items
+		.filter((item) => item.enabled !== enable)
+		.map((item) => item.id);
+}
