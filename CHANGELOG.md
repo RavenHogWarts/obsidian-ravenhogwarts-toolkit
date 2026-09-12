@@ -4,6 +4,17 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [2.2.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.1.2...2.2.0) (2026-09-12)
+
+
+### ✨ 新增功能 (Features)
+
+* 初步实现插件筛选功能 ([d670d9b](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/d670d9ba8741811645bcb11101e5ac9fd6e65d10))
+* 增加“批量禁用包含本插件”确认框 ([59c9993](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/59c99938ffe7e38e365f9c2580a95b09bfc13c3b))
+* 插件分组 ([4ad2370](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/4ad2370980cbf49363ed8ba4047b89afa653a7c9))
+* 自定义禁用弹窗插件 ([8e9ff0f](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/8e9ff0fa149e3cb13592dd5e13112503948199fb))
+* 选项自排序 ([b21abde](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/b21abde1e7c99e88fd3fa29343a49e754588c232))
+
 ## [2.1.2](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.1.1...2.1.2) (2026-09-11)
 
 
