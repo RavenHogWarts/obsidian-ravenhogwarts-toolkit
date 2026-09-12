@@ -156,6 +156,14 @@ const zh_TW = {
 				desc: "讀取已安裝插件（無論是否啟用）重新整理快取，並立即按當前列表重排載入順序",
 			},
 		},
+		plugin_filter: {
+			name: "外掛篩選",
+			desc: "在第三方外掛起始頁按啟用狀態篩選外掛清單",
+			tooltip: "外掛篩選：{label}",
+			all: "全部 ({count})",
+			enabled: "已啟用 ({count})",
+			disabled: "已停用 ({count})",
+		},
 	},
 	command: {
 		quick_path: {

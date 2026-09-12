@@ -489,6 +489,36 @@ type RootTranslation = {
 				desc: string
 			}
 		}
+		plugin_filter: {
+			/**
+			 * 插​件​筛​选
+			 */
+			name: string
+			/**
+			 * 在​第​三​方​插​件​设​置​页​按​启​用​状​态​筛​选​插​件​列​表
+			 */
+			desc: string
+			/**
+			 * 插​件​筛​选​：​{​l​a​b​e​l​}
+			 * @param {unknown} label
+			 */
+			tooltip: RequiredParams<'label'>
+			/**
+			 * 全​部​ ​(​{​c​o​u​n​t​}​)
+			 * @param {unknown} count
+			 */
+			all: RequiredParams<'count'>
+			/**
+			 * 已​启​用​ ​(​{​c​o​u​n​t​}​)
+			 * @param {unknown} count
+			 */
+			enabled: RequiredParams<'count'>
+			/**
+			 * 已​禁​用​ ​(​{​c​o​u​n​t​}​)
+			 * @param {unknown} count
+			 */
+			disabled: RequiredParams<'count'>
+		}
 	}
 	command: {
 		quick_path: {
@@ -1142,6 +1172,32 @@ export type TranslationFunctions = {
 				 */
 				desc: () => LocalizedString
 			}
+		}
+		plugin_filter: {
+			/**
+			 * 插件筛选
+			 */
+			name: () => LocalizedString
+			/**
+			 * 在第三方插件设置页按启用状态筛选插件列表
+			 */
+			desc: () => LocalizedString
+			/**
+			 * 插件筛选：{label}
+			 */
+			tooltip: (arg: { label: unknown }) => LocalizedString
+			/**
+			 * 全部 ({count})
+			 */
+			all: (arg: { count: unknown }) => LocalizedString
+			/**
+			 * 已启用 ({count})
+			 */
+			enabled: (arg: { count: unknown }) => LocalizedString
+			/**
+			 * 已禁用 ({count})
+			 */
+			disabled: (arg: { count: unknown }) => LocalizedString
 		}
 	}
 	command: {

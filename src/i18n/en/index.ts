@@ -158,6 +158,14 @@ const en = {
 				desc: "Reads installed plugins (enabled or not) to refresh the cache, then reorders the load order per the current list",
 			},
 		},
+		plugin_filter: {
+			name: "Plugin filter",
+			desc: "Filter the installed-plugin list by enabled state in the Community plugins settings",
+			tooltip: "Plugin filter: {label}",
+			all: "All ({count})",
+			enabled: "Enabled ({count})",
+			disabled: "Disabled ({count})",
+		},
 	},
 	command: {
 		quick_path: {
