@@ -4,6 +4,13 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [2.3.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.2.0...2.3.0) (2026-09-27)
+
+
+### ✨ 新增功能 (Features)
+
+* 插件过滤器支持可更新状态 ([d751c04](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/commit/d751c04680ae78c2e0b95ae7bd04d3694196b79b))
+
 ## [2.2.0](https://github.com/RavenHogWarts/obsidian-ravenhogwarts-toolkit/compare/2.1.2...2.2.0) (2026-09-12)
 
 
