@@ -1,9 +1,16 @@
 import type { PluginFilterState } from "../types";
 
+/** 插件行的两个显隐信号：启停（开关 is-enabled 类）+ 可更新（控制区有更新按钮） */
+export interface IRowSignals {
+	enabled: boolean;
+	updatable: boolean;
+}
+
 export interface IFilterCounts {
 	total: number;
 	enabled: number;
 	disabled: number;
+	updatable: number;
 }
 
 /**
@@ -12,22 +19,32 @@ export interface IFilterCounts {
  * 运行时过滤由 CSS `:has()` 规则完成（见 settings/pluginFilter.css），本函数是
  * 该规则的纯函数镜像：单测钉住语义，防止 CSS 与状态机漂移；若 CSS 方案被证实
  * 不可用（§plugin-filter-design §10.3 JS inline style 备选），它就是现成的实现。
+ * 「可更新」与启停是正交维度：只看更新按钮，不看开关。
  */
 export function matchesState(
 	state: PluginFilterState,
-	enabled: boolean,
+	row: IRowSignals,
 ): boolean {
 	if (state === "all") return true;
-	return state === "enabled" ? enabled : !enabled;
+	if (state === "enabled") return row.enabled;
+	if (state === "disabled") return !row.enabled;
+	return row.updatable;
 }
 
-/** 统计计数，用于菜单项与按钮 tooltip（如「全部 (82)」） */
-export function computeCounts(enabledFlags: readonly boolean[]): IFilterCounts {
+/** 统计计数，用于菜单项与按钮 tooltip（如「全部 (82)」「可更新 (25)」） */
+export function computeCounts(rows: readonly IRowSignals[]): IFilterCounts {
 	let enabled = 0;
-	for (const flag of enabledFlags) {
-		if (flag) enabled++;
+	let updatable = 0;
+	for (const row of rows) {
+		if (row.enabled) enabled++;
+		if (row.updatable) updatable++;
 	}
-	return { total: enabledFlags.length, enabled, disabled: enabledFlags.length - enabled };
+	return {
+		total: rows.length,
+		enabled,
+		disabled: rows.length - enabled,
+		updatable,
+	};
 }
 
 /** 批量操作可见插件的最小形状 */

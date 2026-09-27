@@ -652,6 +652,11 @@ type RootTranslation = {
 			 * @param {unknown} count
 			 */
 			disabled: RequiredParams<'count'>
+			/**
+			 * 可​更​新​ ​(​{​c​o​u​n​t​}​)
+			 * @param {unknown} count
+			 */
+			updatable: RequiredParams<'count'>
 		}
 	}
 	command: {
@@ -1472,6 +1477,10 @@ export type TranslationFunctions = {
 			 * 已禁用 ({count})
 			 */
 			disabled: (arg: { count: unknown }) => LocalizedString
+			/**
+			 * 可更新 ({count})
+			 */
+			updatable: (arg: { count: unknown }) => LocalizedString
 		}
 	}
 	command: {
