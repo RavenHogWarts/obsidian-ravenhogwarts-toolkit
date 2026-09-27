@@ -194,6 +194,7 @@ const zh = {
 			all: "全部 ({count})",
 			enabled: "已启用 ({count})",
 			disabled: "已禁用 ({count})",
+			updatable: "可更新 ({count})",
 		},
 	},
 	command: {

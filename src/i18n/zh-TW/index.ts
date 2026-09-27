@@ -199,6 +199,7 @@ const zh_TW = {
 			all: "全部 ({count})",
 			enabled: "已啟用 ({count})",
 			disabled: "已停用 ({count})",
+			updatable: "可更新 ({count})",
 		},
 	},
 	command: {

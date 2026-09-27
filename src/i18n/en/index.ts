@@ -201,6 +201,7 @@ const en = {
 			all: "All ({count})",
 			enabled: "Enabled ({count})",
 			disabled: "Disabled ({count})",
+			updatable: "Updatable ({count})",
 		},
 	},
 	command: {

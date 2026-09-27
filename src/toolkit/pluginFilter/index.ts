@@ -74,7 +74,7 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 	#sawMutation = false;
 	#anchorWarned = false;
 	#injectLogged = false;
-	#counts = { total: 0, enabled: 0, disabled: 0 };
+	#counts = { total: 0, enabled: 0, disabled: 0, updatable: 0 };
 	#lastCountsKey = "";
 	/** rAF 去抖：合并一次渲染的成批 childList 突变 */
 	#refreshQueued = false;
@@ -373,17 +373,21 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 			".setting-items > .setting-item.mod-toggle[data-plugin-id]"
 		);
 		this.#counts = computeCounts(
-			Array.from(items, (el) =>
-				el
-					.querySelector(".checkbox-container")
-					?.classList.contains("is-enabled") ?? false
-			)
+			Array.from(items, (el) => ({
+				enabled:
+					el
+						.querySelector(".checkbox-container")
+						?.classList.contains("is-enabled") ?? false,
+				// 可更新判别 = 控制区存在更新按钮（检查更新后由 Obsidian 注入，
+				// 无行级状态类；结构判别，语言无关——CSS 规则的镜像）
+				updatable: el.querySelector(".setting-item-control > button") !== null,
+			}))
 		);
-		const key = `${this.#counts.total}/${this.#counts.enabled}`;
+		const key = `${this.#counts.total}/${this.#counts.enabled}/${this.#counts.updatable}`;
 		if (key !== this.#lastCountsKey) {
 			this.#lastCountsKey = key;
 			this.#debug(
-				`counts: total=${this.#counts.total} enabled=${this.#counts.enabled} disabled=${this.#counts.disabled}`
+				`counts: total=${this.#counts.total} enabled=${this.#counts.enabled} disabled=${this.#counts.disabled} updatable=${this.#counts.updatable}`
 			);
 		}
 
@@ -401,13 +405,14 @@ export default class PluginFilterTool extends BaseTool<ISettings> {
 		}
 	}
 
-	/** 菜单项文案（带计数）：如「全部 (82)」 */
+	/** 菜单项文案（带计数）：如「全部 (82)」「可更新 (25)」 */
 	#stateLabel(state: PluginFilterState): string {
-		const { total, enabled, disabled } = this.#counts;
+		const { total, enabled, disabled, updatable } = this.#counts;
 		return {
 			all: LL.settings.plugin_filter.all({ count: total }),
 			enabled: LL.settings.plugin_filter.enabled({ count: enabled }),
 			disabled: LL.settings.plugin_filter.disabled({ count: disabled }),
+			updatable: LL.settings.plugin_filter.updatable({ count: updatable }),
 		}[state];
 	}
 

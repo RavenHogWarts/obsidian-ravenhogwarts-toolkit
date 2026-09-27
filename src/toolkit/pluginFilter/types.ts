@@ -1,13 +1,14 @@
 import { IToolSettings } from "@src/model/toolkit/IToolSettings";
 
-/** 筛选状态：全部 / 已启用 / 已禁用 */
-export type PluginFilterState = "all" | "enabled" | "disabled";
+/** 筛选状态：全部 / 已启用 / 已禁用 / 可更新（检查更新后有按钮的行） */
+export type PluginFilterState = "all" | "enabled" | "disabled" | "updatable";
 
-/** 三态全集（菜单渲染顺序契约：全部 → 已启用 → 已禁用 → 分组） */
+/** 内置态全集（菜单渲染顺序契约：全部 → 已启用 → 已禁用 → 可更新 → 分组） */
 export const FILTER_STATES: readonly PluginFilterState[] = [
 	"all",
 	"enabled",
 	"disabled",
+	"updatable",
 ];
 
 /** 状态 → 挂在 `.setting-items` 上的过滤类（all 不过滤，无类） */
@@ -15,6 +16,7 @@ export const FILTER_STATE_CLASSES: Partial<Record<PluginFilterState, string>> =
 	{
 		enabled: "otk-pf-state-enabled",
 		disabled: "otk-pf-state-disabled",
+		updatable: "otk-pf-state-updatable",
 	};
 
 /**

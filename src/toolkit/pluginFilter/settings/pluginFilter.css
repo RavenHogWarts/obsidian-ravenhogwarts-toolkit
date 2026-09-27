@@ -25,6 +25,16 @@
 	display: none;
 }
 
+/* 可更新：检查更新后行控制区会出现更新按钮（该按钮是唯一信号，无行级状态类；
+   aria-label 随语言本地化，故按结构判别）。隐藏所有没有更新按钮的行——
+   点掉某行的「更新」后按钮消失，该行被即时重新隐藏（与启停行同一机制）。 */
+.setting-items.otk-pf-state-updatable
+	> .setting-item.mod-toggle[data-plugin-id]:not(
+		:has(.setting-item-control > button)
+	) {
+	display: none;
+}
+
 /* 分组过滤：JS 按成员关系给非成员行挂此类（数据关系无法用容器状态类表达） */
 .setting-item.otk-pf-group-hidden {
 	display: none;
